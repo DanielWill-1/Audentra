@@ -11,6 +11,7 @@ import About from './pages/About';
 import Contact from './pages/Contact';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
+import Templates from './pages/Templates';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
           {/* Login page without header/footer */}
           <Route path="/login" element={<Login />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/templates" element={<Templates />} />
           
           {/* Main website pages with header/footer */}
           <Route path="/*" element={
@@ -27,7 +29,7 @@ function App() {
               <Header />
               <main>
                 <Routes>
-                  <Route path="/\" element={<Home />} />
+                  <Route path="/" element={<Home />} />
                   <Route path="/features" element={<Features />} />
                   <Route path="/industries" element={<Industries />} />
                   <Route path="/security" element={<Security />} />

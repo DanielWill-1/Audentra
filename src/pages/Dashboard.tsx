@@ -21,7 +21,23 @@ import {
   Calendar,
   AlertTriangle,
   Download,
-  Upload
+  Upload,
+  UserPlus,
+  MessageSquare,
+  Filter,
+  Search,
+  MoreHorizontal,
+  Edit,
+  Copy,
+  Trash2,
+  Archive,
+  Send,
+  Globe,
+  Lock,
+  Unlock,
+  Target,
+  TrendingUp,
+  Activity
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -332,6 +348,462 @@ function Dashboard() {
     </div>
   );
 
+  const renderCollaboration = () => (
+    <div className="space-y-8">
+      {/* Team Overview */}
+      <div className="grid md:grid-cols-3 gap-6">
+        <div className="bg-white rounded-2xl border border-gray-200 p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-gray-900">Team Members</h3>
+            <button className="text-blue-600 hover:text-blue-700">
+              <UserPlus className="w-5 h-5" />
+            </button>
+          </div>
+          <div className="text-3xl font-bold text-blue-600 mb-2">12</div>
+          <p className="text-sm text-gray-600">Active collaborators</p>
+          <div className="mt-4 flex -space-x-2">
+            {['SM', 'MJ', 'LC', 'DR', 'KW'].map((initials, index) => (
+              <div key={index} className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs font-medium border-2 border-white">
+                {initials}
+              </div>
+            ))}
+            <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center text-gray-600 text-xs font-medium border-2 border-white">
+              +7
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-2xl border border-gray-200 p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-gray-900">Shared Templates</h3>
+            <Share2 className="w-5 h-5 text-gray-400" />
+          </div>
+          <div className="text-3xl font-bold text-emerald-600 mb-2">28</div>
+          <p className="text-sm text-gray-600">Templates shared this month</p>
+          <div className="mt-4 text-xs text-emerald-600">
+            <TrendingUp className="w-4 h-4 inline mr-1" />
+            +15% from last month
+          </div>
+        </div>
+
+        <div className="bg-white rounded-2xl border border-gray-200 p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold text-gray-900">Pending Reviews</h3>
+            <AlertTriangle className="w-5 h-5 text-orange-500" />
+          </div>
+          <div className="text-3xl font-bold text-orange-600 mb-2">5</div>
+          <p className="text-sm text-gray-600">Templates awaiting approval</p>
+          <button className="mt-4 text-xs text-orange-600 hover:text-orange-700 font-medium">
+            Review Now →
+          </button>
+        </div>
+      </div>
+
+      {/* Collaboration Features */}
+      <div className="grid lg:grid-cols-2 gap-8">
+        {/* Shared Templates */}
+        <div className="bg-white rounded-2xl border border-gray-200 p-6">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-xl font-bold text-gray-900">Shared Templates</h3>
+            <div className="flex items-center space-x-2">
+              <button className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg">
+                <Filter className="w-4 h-4" />
+              </button>
+              <button className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg">
+                <Search className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+          
+          <div className="space-y-4">
+            <div className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50">
+              <div className="flex items-center">
+                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
+                  <FileText className="w-5 h-5 text-blue-600" />
+                </div>
+                <div>
+                  <h4 className="font-medium text-gray-900">Patient Intake v2.1</h4>
+                  <p className="text-sm text-gray-600">Shared by Dr. Johnson • 15 uses</p>
+                  <div className="flex items-center mt-1">
+                    <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full mr-2">Pending Review</span>
+                    <span className="text-xs text-gray-500">Updated 2 hours ago</span>
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-center space-x-2">
+                <button className="text-blue-600 hover:text-blue-700 p-1">
+                  <Eye className="w-4 h-4" />
+                </button>
+                <button className="text-green-600 hover:text-green-700 p-1">
+                  <CheckCircle className="w-4 h-4" />
+                </button>
+                <button className="text-gray-600 hover:text-gray-700 p-1">
+                  <MoreHorizontal className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50">
+              <div className="flex items-center">
+                <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center mr-4">
+                  <FileText className="w-5 h-5 text-orange-600" />
+                </div>
+                <div>
+                  <h4 className="font-medium text-gray-900">Safety Checklist Pro</h4>
+                  <p className="text-sm text-gray-600">Shared by Mike Chen • 8 uses</p>
+                  <div className="flex items-center mt-1">
+                    <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full mr-2">Approved</span>
+                    <span className="text-xs text-gray-500">Updated yesterday</span>
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-center space-x-2">
+                <button className="text-blue-600 hover:text-blue-700 p-1">
+                  <Eye className="w-4 h-4" />
+                </button>
+                <button className="text-blue-600 hover:text-blue-700 p-1">
+                  <Share2 className="w-4 h-4" />
+                </button>
+                <button className="text-gray-600 hover:text-gray-700 p-1">
+                  <MoreHorizontal className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50">
+              <div className="flex items-center">
+                <div className="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center mr-4">
+                  <FileText className="w-5 h-5 text-emerald-600" />
+                </div>
+                <div>
+                  <h4 className="font-medium text-gray-900">HR Performance Review</h4>
+                  <p className="text-sm text-gray-600">Shared by Lisa Chen • 12 uses</p>
+                  <div className="flex items-center mt-1">
+                    <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full mr-2">Shared</span>
+                    <span className="text-xs text-gray-500">Updated 3 days ago</span>
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-center space-x-2">
+                <button className="text-blue-600 hover:text-blue-700 p-1">
+                  <Eye className="w-4 h-4" />
+                </button>
+                <button className="text-blue-600 hover:text-blue-700 p-1">
+                  <Copy className="w-4 h-4" />
+                </button>
+                <button className="text-gray-600 hover:text-gray-700 p-1">
+                  <MoreHorizontal className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <button className="w-full mt-6 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">
+            Share New Template
+          </button>
+        </div>
+
+        {/* Team Activity & Communication */}
+        <div className="space-y-6">
+          {/* Team Activity */}
+          <div className="bg-white rounded-2xl border border-gray-200 p-6">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-bold text-gray-900">Team Activity</h3>
+              <button className="text-blue-600 hover:text-blue-700 text-sm font-medium">
+                View All
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              <div className="flex items-start p-3 bg-blue-50 rounded-lg">
+                <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-medium mr-3">
+                  MJ
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm text-gray-900">Mike Johnson completed Safety Inspection template</p>
+                  <p className="text-xs text-gray-600">2 hours ago</p>
+                </div>
+                <button className="text-blue-600 hover:text-blue-700 text-xs">
+                  View
+                </button>
+              </div>
+
+              <div className="flex items-start p-3 bg-green-50 rounded-lg">
+                <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white text-sm font-medium mr-3">
+                  LC
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm text-gray-900">Lisa Chen shared new HR template with team</p>
+                  <p className="text-xs text-gray-600">4 hours ago</p>
+                </div>
+                <button className="text-green-600 hover:text-green-700 text-xs">
+                  Review
+                </button>
+              </div>
+
+              <div className="flex items-start p-3 bg-orange-50 rounded-lg">
+                <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center text-white text-sm font-medium mr-3">
+                  DR
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm text-gray-900">Dr. Rodriguez requested approval for Patient Intake v2.1</p>
+                  <p className="text-xs text-gray-600">6 hours ago</p>
+                </div>
+                <button className="text-orange-600 hover:text-orange-700 text-xs">
+                  Approve
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Quick Actions */}
+          <div className="bg-white rounded-2xl border border-gray-200 p-6">
+            <h3 className="text-lg font-bold text-gray-900 mb-4">Quick Actions</h3>
+            
+            <div className="grid grid-cols-2 gap-3">
+              <button className="flex items-center justify-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                <UserPlus className="w-4 h-4 mr-2 text-blue-600" />
+                <span className="text-sm text-gray-700">Invite Member</span>
+              </button>
+              
+              <button className="flex items-center justify-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                <Share2 className="w-4 h-4 mr-2 text-emerald-600" />
+                <span className="text-sm text-gray-700">Share Template</span>
+              </button>
+              
+              <button className="flex items-center justify-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                <MessageSquare className="w-4 h-4 mr-2 text-purple-600" />
+                <span className="text-sm text-gray-700">Team Chat</span>
+              </button>
+              
+              <button className="flex items-center justify-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                <Eye className="w-4 h-4 mr-2 text-orange-600" />
+                <span className="text-sm text-gray-700">Review Queue</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderSettings = () => (
+    <div className="space-y-8">
+      {/* Settings Grid */}
+      <div className="grid lg:grid-cols-2 gap-8">
+        {/* Voice & AI Settings */}
+        <div className="bg-white rounded-2xl border border-gray-200 p-6">
+          <h3 className="text-xl font-bold text-gray-900 mb-6">Voice & AI Settings</h3>
+          
+          <div className="space-y-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Language</label>
+              <select className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <option>English (US)</option>
+                <option>English (UK)</option>
+                <option>Spanish</option>
+                <option>French</option>
+                <option>German</option>
+              </select>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Voice Sensitivity</label>
+              <input type="range" className="w-full" min="1" max="10" defaultValue="7" />
+              <div className="flex justify-between text-xs text-gray-500 mt-1">
+                <span>Low</span>
+                <span>High</span>
+              </div>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">AI Processing Speed</label>
+              <select className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <option>Real-time (Recommended)</option>
+                <option>Fast</option>
+                <option>Balanced</option>
+                <option>Accurate</option>
+              </select>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Industry Specialization</label>
+              <select className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <option>Healthcare</option>
+                <option>Field Work & Construction</option>
+                <option>Human Resources</option>
+                <option>Legal Services</option>
+                <option>Education</option>
+                <option>General Business</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        {/* Notifications & Alerts */}
+        <div className="bg-white rounded-2xl border border-gray-200 p-6">
+          <h3 className="text-xl font-bold text-gray-900 mb-6">Notifications & Alerts</h3>
+          
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h4 className="text-sm font-medium text-gray-900">Form completion alerts</h4>
+                <p className="text-xs text-gray-600">Get notified when forms are completed</p>
+              </div>
+              <input type="checkbox" defaultChecked className="rounded text-blue-600 focus:ring-blue-500" />
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <div>
+                <h4 className="text-sm font-medium text-gray-900">Template review reminders</h4>
+                <p className="text-xs text-gray-600">Reminders for pending template approvals</p>
+              </div>
+              <input type="checkbox" defaultChecked className="rounded text-blue-600 focus:ring-blue-500" />
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <div>
+                <h4 className="text-sm font-medium text-gray-900">Team collaboration updates</h4>
+                <p className="text-xs text-gray-600">Updates when team members share templates</p>
+              </div>
+              <input type="checkbox" className="rounded text-blue-600 focus:ring-blue-500" />
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <div>
+                <h4 className="text-sm font-medium text-gray-900">Scheduled form reminders</h4>
+                <p className="text-xs text-gray-600">Reminders for recurring forms</p>
+              </div>
+              <input type="checkbox" defaultChecked className="rounded text-blue-600 focus:ring-blue-500" />
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <div>
+                <h4 className="text-sm font-medium text-gray-900">Security alerts</h4>
+                <p className="text-xs text-gray-600">Important security and compliance notifications</p>
+              </div>
+              <input type="checkbox" defaultChecked className="rounded text-blue-600 focus:ring-blue-500" />
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Notification Frequency</label>
+              <select className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                <option>Immediate</option>
+                <option>Hourly digest</option>
+                <option>Daily digest</option>
+                <option>Weekly digest</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        {/* Scheduling & Automation */}
+        <div className="bg-white rounded-2xl border border-gray-200 p-6">
+          <h3 className="text-xl font-bold text-gray-900 mb-6">Scheduling & Automation</h3>
+          
+          <div className="space-y-6">
+            <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+              <div className="flex items-center justify-between mb-3">
+                <h4 className="font-medium text-gray-900">Weekly Safety Inspection</h4>
+                <button className="text-blue-600 hover:text-blue-700">
+                  <Edit className="w-4 h-4" />
+                </button>
+              </div>
+              <p className="text-sm text-gray-600 mb-2">Every Monday at 9:00 AM</p>
+              <div className="flex items-center text-xs text-blue-600">
+                <Calendar className="w-4 h-4 mr-1" />
+                Next: Tomorrow at 9:00 AM
+              </div>
+            </div>
+            
+            <div className="p-4 bg-emerald-50 rounded-lg border border-emerald-200">
+              <div className="flex items-center justify-between mb-3">
+                <h4 className="font-medium text-gray-900">Monthly HR Review</h4>
+                <button className="text-emerald-600 hover:text-emerald-700">
+                  <Edit className="w-4 h-4" />
+                </button>
+              </div>
+              <p className="text-sm text-gray-600 mb-2">First Friday of each month at 2:00 PM</p>
+              <div className="flex items-center text-xs text-emerald-600">
+                <Calendar className="w-4 h-4 mr-1" />
+                Next: March 1st at 2:00 PM
+              </div>
+            </div>
+            
+            <button className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">
+              <Plus className="w-4 h-4 inline mr-2" />
+              Add New Schedule
+            </button>
+          </div>
+        </div>
+
+        {/* Security & Privacy */}
+        <div className="bg-white rounded-2xl border border-gray-200 p-6">
+          <h3 className="text-xl font-bold text-gray-900 mb-6">Security & Privacy</h3>
+          
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h4 className="text-sm font-medium text-gray-900">Two-factor authentication</h4>
+                <p className="text-xs text-gray-600">Add an extra layer of security</p>
+              </div>
+              <button className="text-blue-600 hover:text-blue-700 text-sm font-medium">
+                Enable
+              </button>
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <div>
+                <h4 className="text-sm font-medium text-gray-900">Session timeout</h4>
+                <p className="text-xs text-gray-600">Auto-logout after inactivity</p>
+              </div>
+              <select className="text-sm border border-gray-300 rounded px-2 py-1">
+                <option>30 minutes</option>
+                <option>1 hour</option>
+                <option>4 hours</option>
+                <option>8 hours</option>
+              </select>
+            </div>
+            
+            <div className="flex items-center justify-between">
+              <div>
+                <h4 className="text-sm font-medium text-gray-900">Data retention</h4>
+                <p className="text-xs text-gray-600">How long to keep completed forms</p>
+              </div>
+              <select className="text-sm border border-gray-300 rounded px-2 py-1">
+                <option>30 days</option>
+                <option>90 days</option>
+                <option>1 year</option>
+                <option>7 years</option>
+              </select>
+            </div>
+            
+            <div className="p-4 bg-green-50 rounded-lg border border-green-200">
+              <div className="flex items-center mb-2">
+                <Shield className="w-5 h-5 text-green-600 mr-2" />
+                <h4 className="font-medium text-gray-900">Compliance Status</h4>
+              </div>
+              <div className="space-y-1 text-xs text-gray-600">
+                <div className="flex items-center">
+                  <CheckCircle className="w-3 h-3 text-green-500 mr-2" />
+                  HIPAA Compliant
+                </div>
+                <div className="flex items-center">
+                  <CheckCircle className="w-3 h-3 text-green-500 mr-2" />
+                  SOC 2 Certified
+                </div>
+                <div className="flex items-center">
+                  <CheckCircle className="w-3 h-3 text-green-500 mr-2" />
+                  GDPR Compliant
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -395,121 +867,8 @@ function Dashboard() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {activeTab === 'overview' && renderOverview()}
-        
-        {activeTab === 'collaboration' && (
-          <div className="space-y-8">
-            <div className="bg-white rounded-2xl border border-gray-200 p-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Team Collaboration</h2>
-              
-              <div className="grid md:grid-cols-2 gap-8">
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Shared Templates</h3>
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between p-4 border rounded-lg">
-                      <div>
-                        <h4 className="font-medium text-gray-900">Patient Intake v2.1</h4>
-                        <p className="text-sm text-gray-600">Shared by Dr. Johnson • 15 uses</p>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <button className="text-blue-600 hover:text-blue-700">
-                          <Eye className="w-4 h-4" />
-                        </button>
-                        <button className="text-green-600 hover:text-green-700">
-                          <CheckCircle className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between p-4 border rounded-lg">
-                      <div>
-                        <h4 className="font-medium text-gray-900">Safety Checklist Pro</h4>
-                        <p className="text-sm text-gray-600">Shared by Mike Chen • 8 uses</p>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <button className="text-blue-600 hover:text-blue-700">
-                          <Eye className="w-4 h-4" />
-                        </button>
-                        <button className="text-orange-600 hover:text-orange-700">
-                          <AlertTriangle className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Team Activity</h3>
-                  <div className="space-y-3">
-                    <div className="flex items-center p-3 bg-blue-50 rounded-lg">
-                      <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-medium mr-3">
-                        MJ
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-sm text-gray-900">Mike Johnson completed Safety Inspection</p>
-                        <p className="text-xs text-gray-600">2 hours ago</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center p-3 bg-green-50 rounded-lg">
-                      <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white text-sm font-medium mr-3">
-                        LC
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-sm text-gray-900">Lisa Chen shared new HR template</p>
-                        <p className="text-xs text-gray-600">4 hours ago</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'settings' && (
-          <div className="space-y-8">
-            <div className="bg-white rounded-2xl border border-gray-200 p-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Settings & Customization</h2>
-              
-              <div className="grid md:grid-cols-2 gap-8">
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Voice Settings</h3>
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Language</label>
-                      <select className="w-full border border-gray-300 rounded-lg px-3 py-2">
-                        <option>English (US)</option>
-                        <option>English (UK)</option>
-                        <option>Spanish</option>
-                        <option>French</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Voice Sensitivity</label>
-                      <input type="range" className="w-full" min="1" max="10" defaultValue="7" />
-                    </div>
-                  </div>
-                </div>
-
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Notifications</h3>
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-700">Form completion alerts</span>
-                      <input type="checkbox" defaultChecked className="rounded" />
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-700">Template review reminders</span>
-                      <input type="checkbox" defaultChecked className="rounded" />
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-700">Team collaboration updates</span>
-                      <input type="checkbox" className="rounded" />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
+        {activeTab === 'collaboration' && renderCollaboration()}
+        {activeTab === 'settings' && renderSettings()}
       </div>
     </div>
   );
