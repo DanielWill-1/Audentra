@@ -37,7 +37,12 @@ import {
   Unlock,
   Target,
   TrendingUp,
-  Activity
+  Activity,
+  Heart,
+  Bookmark,
+  ThumbsUp,
+  MessageCircle,
+  Repeat2
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -128,6 +133,59 @@ function Dashboard() {
                 </div>
                 <span className="text-sm text-gray-700">Typeform</span>
               </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Scheduling & Automation */}
+        <section>
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-bold text-gray-900">Scheduling & Automation</h2>
+            <button className="text-blue-600 hover:text-blue-700 text-sm font-medium">
+              Manage All Schedules
+            </button>
+          </div>
+          
+          <div className="bg-white rounded-2xl border border-gray-200 p-6">
+            <div className="grid md:grid-cols-2 gap-6 mb-6">
+              <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+                <div className="flex items-center justify-between mb-3">
+                  <h4 className="font-medium text-gray-900">Weekly Safety Inspection</h4>
+                  <button className="text-blue-600 hover:text-blue-700">
+                    <Edit className="w-4 h-4" />
+                  </button>
+                </div>
+                <p className="text-sm text-gray-600 mb-2">Every Monday at 9:00 AM</p>
+                <div className="flex items-center text-xs text-blue-600">
+                  <Calendar className="w-4 h-4 mr-1" />
+                  Next: Tomorrow at 9:00 AM
+                </div>
+              </div>
+              
+              <div className="p-4 bg-emerald-50 rounded-lg border border-emerald-200">
+                <div className="flex items-center justify-between mb-3">
+                  <h4 className="font-medium text-gray-900">Monthly HR Review</h4>
+                  <button className="text-emerald-600 hover:text-emerald-700">
+                    <Edit className="w-4 h-4" />
+                  </button>
+                </div>
+                <p className="text-sm text-gray-600 mb-2">First Friday of each month at 2:00 PM</p>
+                <div className="flex items-center text-xs text-emerald-600">
+                  <Calendar className="w-4 h-4 mr-1" />
+                  Next: March 1st at 2:00 PM
+                </div>
+              </div>
+            </div>
+            
+            <div className="grid md:grid-cols-2 gap-4">
+              <button className="bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">
+                <Plus className="w-4 h-4 inline mr-2" />
+                Add New Schedule
+              </button>
+              <button className="bg-gray-100 text-gray-700 py-2 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium">
+                <Settings className="w-4 h-4 inline mr-2" />
+                Automation Settings
+              </button>
             </div>
           </div>
         </section>
@@ -344,6 +402,326 @@ function Dashboard() {
             </button>
           </div>
         </section>
+      </div>
+    </div>
+  );
+
+  const renderMarketplace = () => (
+    <div className="space-y-8">
+      {/* Marketplace Header */}
+      <div className="bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl p-8 text-white">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-3xl font-bold mb-2">Template Marketplace</h2>
+            <p className="text-purple-100 text-lg">Discover, share, and collaborate on templates with the community</p>
+          </div>
+          <div className="text-center">
+            <div className="text-2xl font-bold">2.4K+</div>
+            <div className="text-purple-200 text-sm">Community Templates</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Marketplace Navigation */}
+      <div className="bg-white rounded-2xl border border-gray-200 p-6">
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center space-x-6">
+            <button className="text-purple-600 border-b-2 border-purple-600 pb-2 font-medium">
+              Trending
+            </button>
+            <button className="text-gray-600 hover:text-purple-600 pb-2">
+              Most Liked
+            </button>
+            <button className="text-gray-600 hover:text-purple-600 pb-2">
+              Recent
+            </button>
+            <button className="text-gray-600 hover:text-purple-600 pb-2">
+              Following
+            </button>
+          </div>
+          <div className="flex items-center space-x-3">
+            <div className="relative">
+              <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
+              <input
+                type="text"
+                placeholder="Search marketplace..."
+                className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm"
+              />
+            </div>
+            <button className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+              <Filter className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+
+        {/* Featured Templates */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* Template Card 1 */}
+          <div className="bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-shadow">
+            <div className="flex items-start justify-between mb-4">
+              <div className="flex items-center">
+                <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold text-sm mr-3">
+                  DM
+                </div>
+                <div>
+                  <h4 className="font-semibold text-gray-900">Dr. Maria Santos</h4>
+                  <p className="text-xs text-gray-500">Cardiologist • 2.1k followers</p>
+                </div>
+              </div>
+              <button className="text-gray-400 hover:text-gray-600">
+                <MoreHorizontal className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="mb-4">
+              <h3 className="text-lg font-bold text-gray-900 mb-2">Advanced Cardiac Assessment</h3>
+              <p className="text-gray-600 text-sm mb-3">
+                Comprehensive cardiac evaluation form with ECG interpretation guidelines and risk stratification.
+              </p>
+              <div className="flex flex-wrap gap-1 mb-3">
+                <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">Cardiology</span>
+                <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">HIPAA</span>
+                <span className="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded">Advanced</span>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between mb-4 text-sm text-gray-600">
+              <div className="flex items-center space-x-4">
+                <div className="flex items-center">
+                  <ThumbsUp className="w-4 h-4 mr-1" />
+                  342
+                </div>
+                <div className="flex items-center">
+                  <MessageCircle className="w-4 h-4 mr-1" />
+                  28
+                </div>
+                <div className="flex items-center">
+                  <Repeat2 className="w-4 h-4 mr-1" />
+                  156
+                </div>
+              </div>
+              <div className="flex items-center">
+                <Star className="w-4 h-4 text-yellow-400 fill-current mr-1" />
+                4.9
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <button className="flex items-center text-purple-600 hover:text-purple-700 text-sm font-medium">
+                <Heart className="w-4 h-4 mr-1" />
+                Like
+              </button>
+              <button className="flex items-center text-blue-600 hover:text-blue-700 text-sm font-medium">
+                <Download className="w-4 h-4 mr-1" />
+                Use Template
+              </button>
+              <button className="flex items-center text-gray-600 hover:text-gray-700 text-sm font-medium">
+                <Bookmark className="w-4 h-4 mr-1" />
+                Save
+              </button>
+            </div>
+          </div>
+
+          {/* Template Card 2 */}
+          <div className="bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-shadow">
+            <div className="flex items-start justify-between mb-4">
+              <div className="flex items-center">
+                <div className="w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold text-sm mr-3">
+                  JC
+                </div>
+                <div>
+                  <h4 className="font-semibold text-gray-900">Jake Chen</h4>
+                  <p className="text-xs text-gray-500">Safety Manager • 1.8k followers</p>
+                </div>
+              </div>
+              <button className="text-gray-400 hover:text-gray-600">
+                <MoreHorizontal className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="mb-4">
+              <h3 className="text-lg font-bold text-gray-900 mb-2">Construction Site Safety Audit</h3>
+              <p className="text-gray-600 text-sm mb-3">
+                Complete OSHA-compliant safety inspection checklist with photo documentation and immediate hazard reporting.
+              </p>
+              <div className="flex flex-wrap gap-1 mb-3">
+                <span className="text-xs bg-orange-100 text-orange-800 px-2 py-1 rounded">Construction</span>
+                <span className="text-xs bg-red-100 text-red-800 px-2 py-1 rounded">OSHA</span>
+                <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">Safety</span>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between mb-4 text-sm text-gray-600">
+              <div className="flex items-center space-x-4">
+                <div className="flex items-center">
+                  <ThumbsUp className="w-4 h-4 mr-1" />
+                  289
+                </div>
+                <div className="flex items-center">
+                  <MessageCircle className="w-4 h-4 mr-1" />
+                  45
+                </div>
+                <div className="flex items-center">
+                  <Repeat2 className="w-4 h-4 mr-1" />
+                  203
+                </div>
+              </div>
+              <div className="flex items-center">
+                <Star className="w-4 h-4 text-yellow-400 fill-current mr-1" />
+                4.8
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <button className="flex items-center text-purple-600 hover:text-purple-700 text-sm font-medium">
+                <Heart className="w-4 h-4 mr-1 fill-current" />
+                Liked
+              </button>
+              <button className="flex items-center text-blue-600 hover:text-blue-700 text-sm font-medium">
+                <Download className="w-4 h-4 mr-1" />
+                Use Template
+              </button>
+              <button className="flex items-center text-gray-600 hover:text-gray-700 text-sm font-medium">
+                <Bookmark className="w-4 h-4 mr-1" />
+                Save
+              </button>
+            </div>
+          </div>
+
+          {/* Template Card 3 */}
+          <div className="bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-shadow">
+            <div className="flex items-start justify-between mb-4">
+              <div className="flex items-center">
+                <div className="w-10 h-10 bg-emerald-500 rounded-full flex items-center justify-center text-white font-bold text-sm mr-3">
+                  AR
+                </div>
+                <div>
+                  <h4 className="font-semibold text-gray-900">Alex Rodriguez</h4>
+                  <p className="text-xs text-gray-500">HR Director • 3.2k followers</p>
+                </div>
+              </div>
+              <button className="text-gray-400 hover:text-gray-600">
+                <MoreHorizontal className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="mb-4">
+              <h3 className="text-lg font-bold text-gray-900 mb-2">360° Performance Review</h3>
+              <p className="text-gray-600 text-sm mb-3">
+                Comprehensive performance evaluation with peer feedback, goal tracking, and development planning.
+              </p>
+              <div className="flex flex-wrap gap-1 mb-3">
+                <span className="text-xs bg-emerald-100 text-emerald-800 px-2 py-1 rounded">HR</span>
+                <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">Performance</span>
+                <span className="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded">360 Review</span>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between mb-4 text-sm text-gray-600">
+              <div className="flex items-center space-x-4">
+                <div className="flex items-center">
+                  <ThumbsUp className="w-4 h-4 mr-1" />
+                  567
+                </div>
+                <div className="flex items-center">
+                  <MessageCircle className="w-4 h-4 mr-1" />
+                  89
+                </div>
+                <div className="flex items-center">
+                  <Repeat2 className="w-4 h-4 mr-1" />
+                  234
+                </div>
+              </div>
+              <div className="flex items-center">
+                <Star className="w-4 h-4 text-yellow-400 fill-current mr-1" />
+                4.9
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <button className="flex items-center text-purple-600 hover:text-purple-700 text-sm font-medium">
+                <Heart className="w-4 h-4 mr-1" />
+                Like
+              </button>
+              <button className="flex items-center text-blue-600 hover:text-blue-700 text-sm font-medium">
+                <Download className="w-4 h-4 mr-1" />
+                Use Template
+              </button>
+              <button className="flex items-center text-gray-600 hover:text-gray-700 text-sm font-medium">
+                <Bookmark className="w-4 h-4 mr-1 fill-current" />
+                Saved
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Community Stats */}
+        <div className="mt-8 grid md:grid-cols-4 gap-6">
+          <div className="text-center p-4 bg-purple-50 rounded-lg">
+            <div className="text-2xl font-bold text-purple-600">2.4K+</div>
+            <div className="text-sm text-gray-600">Templates Shared</div>
+          </div>
+          <div className="text-center p-4 bg-blue-50 rounded-lg">
+            <div className="text-2xl font-bold text-blue-600">15K+</div>
+            <div className="text-sm text-gray-600">Downloads</div>
+          </div>
+          <div className="text-center p-4 bg-emerald-50 rounded-lg">
+            <div className="text-2xl font-bold text-emerald-600">890+</div>
+            <div className="text-sm text-gray-600">Contributors</div>
+          </div>
+          <div className="text-center p-4 bg-orange-50 rounded-lg">
+            <div className="text-2xl font-bold text-orange-600">4.8</div>
+            <div className="text-sm text-gray-600">Avg. Rating</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Your Contributions */}
+      <div className="bg-white rounded-2xl border border-gray-200 p-6">
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="text-xl font-bold text-gray-900">Your Contributions</h3>
+          <button className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors text-sm font-medium">
+            <Share2 className="w-4 h-4 inline mr-2" />
+            Share Template
+          </button>
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-6">
+          <div className="border border-gray-200 rounded-lg p-4">
+            <div className="flex items-center justify-between mb-3">
+              <h4 className="font-medium text-gray-900">Patient Intake v2.1</h4>
+              <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">Published</span>
+            </div>
+            <p className="text-sm text-gray-600 mb-3">Your enhanced patient intake form with voice summaries</p>
+            <div className="flex items-center justify-between text-sm text-gray-600">
+              <div className="flex items-center space-x-3">
+                <span className="flex items-center">
+                  <ThumbsUp className="w-3 h-3 mr-1" />
+                  45
+                </span>
+                <span className="flex items-center">
+                  <Download className="w-3 h-3 mr-1" />
+                  128
+                </span>
+              </div>
+              <button className="text-blue-600 hover:text-blue-700 text-xs">View Stats</button>
+            </div>
+          </div>
+
+          <div className="border border-gray-200 rounded-lg p-4">
+            <div className="flex items-center justify-between mb-3">
+              <h4 className="font-medium text-gray-900">HR Exit Interview</h4>
+              <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full">Pending Review</span>
+            </div>
+            <p className="text-sm text-gray-600 mb-3">Comprehensive exit interview with sentiment analysis</p>
+            <div className="flex items-center justify-between text-sm text-gray-600">
+              <div className="flex items-center space-x-3">
+                <span className="text-gray-400">Not published yet</span>
+              </div>
+              <button className="text-blue-600 hover:text-blue-700 text-xs">Edit Draft</button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -697,46 +1075,6 @@ function Dashboard() {
           </div>
         </div>
 
-        {/* Scheduling & Automation */}
-        <div className="bg-white rounded-2xl border border-gray-200 p-6">
-          <h3 className="text-xl font-bold text-gray-900 mb-6">Scheduling & Automation</h3>
-          
-          <div className="space-y-6">
-            <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-              <div className="flex items-center justify-between mb-3">
-                <h4 className="font-medium text-gray-900">Weekly Safety Inspection</h4>
-                <button className="text-blue-600 hover:text-blue-700">
-                  <Edit className="w-4 h-4" />
-                </button>
-              </div>
-              <p className="text-sm text-gray-600 mb-2">Every Monday at 9:00 AM</p>
-              <div className="flex items-center text-xs text-blue-600">
-                <Calendar className="w-4 h-4 mr-1" />
-                Next: Tomorrow at 9:00 AM
-              </div>
-            </div>
-            
-            <div className="p-4 bg-emerald-50 rounded-lg border border-emerald-200">
-              <div className="flex items-center justify-between mb-3">
-                <h4 className="font-medium text-gray-900">Monthly HR Review</h4>
-                <button className="text-emerald-600 hover:text-emerald-700">
-                  <Edit className="w-4 h-4" />
-                </button>
-              </div>
-              <p className="text-sm text-gray-600 mb-2">First Friday of each month at 2:00 PM</p>
-              <div className="flex items-center text-xs text-emerald-600">
-                <Calendar className="w-4 h-4 mr-1" />
-                Next: March 1st at 2:00 PM
-              </div>
-            </div>
-            
-            <button className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">
-              <Plus className="w-4 h-4 inline mr-2" />
-              Add New Schedule
-            </button>
-          </div>
-        </div>
-
         {/* Security & Privacy */}
         <div className="bg-white rounded-2xl border border-gray-200 p-6">
           <h3 className="text-xl font-bold text-gray-900 mb-6">Security & Privacy</h3>
@@ -842,6 +1180,16 @@ function Dashboard() {
               Overview
             </button>
             <button
+              onClick={() => setActiveTab('marketplace')}
+              className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'marketplace'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              Template Marketplace
+            </button>
+            <button
               onClick={() => setActiveTab('collaboration')}
               className={`py-4 px-1 border-b-2 font-medium text-sm ${
                 activeTab === 'collaboration'
@@ -867,6 +1215,7 @@ function Dashboard() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {activeTab === 'overview' && renderOverview()}
+        {activeTab === 'marketplace' && renderMarketplace()}
         {activeTab === 'collaboration' && renderCollaboration()}
         {activeTab === 'settings' && renderSettings()}
       </div>
