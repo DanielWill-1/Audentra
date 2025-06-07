@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { AuthProvider } from './contexts/AuthContext';
 import ScrollToTop from './components/ScrollToTop';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -11,6 +12,8 @@ import Pricing from './pages/Pricing';
 import About from './pages/About';
 import Contact from './pages/Contact';
 import Login from './pages/Login';
+import Signup from './pages/Signup';
+import ForgotPassword from './pages/ForgotPassword';
 import Dashboard from './pages/Dashboard';
 import Templates from './pages/Templates';
 import Status from './pages/Status';
@@ -19,109 +22,113 @@ import Documentation from './pages/Documentation';
 
 function App() {
   return (
-    <Router>
-      <ScrollToTop />
-      <div className="min-h-screen bg-white">
-        <Routes>
-          {/* Login page without header/footer */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/templates" element={<Templates />} />
-          
-          {/* Main website pages with header/footer */}
-          <Route path="/" element={
-            <>
-              <Header />
-              <main>
-                <Home />
-              </main>
-              <Footer />
-            </>
-          } />
-          <Route path="/features" element={
-            <>
-              <Header />
-              <main>
-                <Features />
-              </main>
-              <Footer />
-            </>
-          } />
-          <Route path="/industries" element={
-            <>
-              <Header />
-              <main>
-                <Industries />
-              </main>
-              <Footer />
-            </>
-          } />
-          <Route path="/security" element={
-            <>
-              <Header />
-              <main>
-                <Security />
-              </main>
-              <Footer />
-            </>
-          } />
-          <Route path="/pricing" element={
-            <>
-              <Header />
-              <main>
-                <Pricing />
-              </main>
-              <Footer />
-            </>
-          } />
-          <Route path="/about" element={
-            <>
-              <Header />
-              <main>
-                <About />
-              </main>
-              <Footer />
-            </>
-          } />
-          <Route path="/contact" element={
-            <>
-              <Header />
-              <main>
-                <Contact />
-              </main>
-              <Footer />
-            </>
-          } />
-          <Route path="/status" element={
-            <>
-              <Header />
-              <main>
-                <Status />
-              </main>
-              <Footer />
-            </>
-          } />
-          <Route path="/help-center" element={
-            <>
-              <Header />
-              <main>
-                <HelpCenter />
-              </main>
-              <Footer />
-            </>
-          } />
-          <Route path="/documentation" element={
-            <>
-              <Header />
-              <main>
-                <Documentation />
-              </main>
-              <Footer />
-            </>
-          } />
-        </Routes>
-      </div>
-    </Router>
+    <AuthProvider>
+      <Router>
+        <ScrollToTop />
+        <div className="min-h-screen bg-white">
+          <Routes>
+            {/* Auth pages without header/footer */}
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/templates" element={<Templates />} />
+            
+            {/* Main website pages with header/footer */}
+            <Route path="/" element={
+              <>
+                <Header />
+                <main>
+                  <Home />
+                </main>
+                <Footer />
+              </>
+            } />
+            <Route path="/features" element={
+              <>
+                <Header />
+                <main>
+                  <Features />
+                </main>
+                <Footer />
+              </>
+            } />
+            <Route path="/industries" element={
+              <>
+                <Header />
+                <main>
+                  <Industries />
+                </main>
+                <Footer />
+              </>
+            } />
+            <Route path="/security" element={
+              <>
+                <Header />
+                <main>
+                  <Security />
+                </main>
+                <Footer />
+              </>
+            } />
+            <Route path="/pricing" element={
+              <>
+                <Header />
+                <main>
+                  <Pricing />
+                </main>
+                <Footer />
+              </>
+            } />
+            <Route path="/about" element={
+              <>
+                <Header />
+                <main>
+                  <About />
+                </main>
+                <Footer />
+              </>
+            } />
+            <Route path="/contact" element={
+              <>
+                <Header />
+                <main>
+                  <Contact />
+                </main>
+                <Footer />
+              </>
+            } />
+            <Route path="/status" element={
+              <>
+                <Header />
+                <main>
+                  <Status />
+                </main>
+                <Footer />
+              </>
+            } />
+            <Route path="/help-center" element={
+              <>
+                <Header />
+                <main>
+                  <HelpCenter />
+                </main>
+                <Footer />
+              </>
+            } />
+            <Route path="/documentation" element={
+              <>
+                <Header />
+                <main>
+                  <Documentation />
+                </main>
+                <Footer />
+              </>
+            } />
+          </Routes>
+        </div>
+      </Router>
+    </AuthProvider>
   );
 }
 

@@ -1,12 +1,18 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Mic } from 'lucide-react';
+import { Mic, LogOut } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 
 function Header() {
   const location = useLocation();
+  const { user, signOut } = useAuth();
 
   const isActive = (path: string) => {
     return location.pathname === path;
+  };
+
+  const handleSignOut = async () => {
+    await signOut();
   };
 
   return (
@@ -58,18 +64,38 @@ function Header() {
             </Link>
           </nav>
           <div className="flex items-center space-x-4">
-            <Link 
-              to="/login"
-              className="text-gray-700 hover:text-blue-600 transition-colors"
-            >
-              Sign In
-            </Link>
-            <Link 
-              to="/login"
-              className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              Start Free Trial
-            </Link>
+            {user ? (
+              <>
+                <Link 
+                  to="/dashboard"
+                  className="text-gray-700 hover:text-blue-600 transition-colors"
+                >
+                  Dashboard
+                </Link>
+                <button
+                  onClick={handleSignOut}
+                  className="flex items-center text-gray-700 hover:text-blue-600 transition-colors"
+                >
+                  <LogOut className="w-4 h-4 mr-1" />
+                  Sign Out
+                </button>
+              </>
+            ) : (
+              <>
+                <Link 
+                  to="/login"
+                  className="text-gray-700 hover:text-blue-600 transition-colors"
+                >
+                  Sign In
+                </Link>
+                <Link 
+                  to="/signup"
+                  className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  Start Free Trial
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </div>
