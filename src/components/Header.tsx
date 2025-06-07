@@ -57,9 +57,20 @@ function Header() {
               Contact
             </Link>
           </nav>
-          <button className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-            Start Free Trial
-          </button>
+          <div className="flex items-center space-x-4">
+            <Link 
+              to="/login"
+              className="text-gray-700 hover:text-blue-600 transition-colors"
+            >
+              Sign In
+            </Link>
+            <Link 
+              to="/login"
+              className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              Start Free Trial
+            </Link>
+          </div>
         </div>
       </div>
     </header>
