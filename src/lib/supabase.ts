@@ -12,6 +12,8 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 // Auth helper functions
 export const signInWithOAuth = async (provider: 'google' | 'microsoft') => {
   try {
+    console.log(`Starting ${provider} OAuth with URL: ${supabaseUrl}`)
+    
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider,
       options: {
@@ -23,14 +25,20 @@ export const signInWithOAuth = async (provider: 'google' | 'microsoft') => {
       }
     })
     
+    console.log('OAuth response:', { data, error })
+    
     if (error) {
-      console.error('OAuth Error:', error)
+      console.error('OAuth Error Details:', {
+        message: error.message,
+        status: error.status,
+        details: error
+      })
       throw error
     }
     
     return { data, error: null }
   } catch (err) {
-    console.error('OAuth Exception:', err)
+    console.error('OAuth Exception Details:', err)
     return { data: null, error: err }
   }
 }

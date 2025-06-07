@@ -73,11 +73,14 @@ function Login() {
 
     try {
       console.log(`Attempting ${provider} OAuth login...`);
+      console.log('Current URL:', window.location.origin);
+      console.log('Supabase URL:', import.meta.env.VITE_SUPABASE_URL);
+      
       const { error } = await signInWithOAuth(provider);
       
       if (error) {
         console.error(`${provider} OAuth error:`, error);
-        setError(`${provider} authentication failed: ${error.message}`);
+        setError(`${provider} authentication failed. Please check your Supabase OAuth configuration.`);
         setOauthLoading(null);
       } else {
         console.log(`${provider} OAuth initiated successfully`);
@@ -85,7 +88,7 @@ function Login() {
       }
     } catch (err) {
       console.error(`${provider} OAuth exception:`, err);
-      setError(`${provider} authentication failed. Please try again.`);
+      setError(`${provider} authentication failed. Please check your Supabase configuration and try again.`);
       setOauthLoading(null);
     }
   };
@@ -112,9 +115,15 @@ function Login() {
 
         {/* Error/Success Messages */}
         {error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-center">
-            <AlertCircle className="w-5 h-5 text-red-600 mr-3" />
-            <span className="text-red-800 text-sm">{error}</span>
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start">
+            <AlertCircle className="w-5 h-5 text-red-600 mr-3 mt-0.5" />
+            <div>
+              <span className="text-red-800 text-sm font-medium">Authentication Error</span>
+              <p className="text-red-700 text-sm mt-1">{error}</p>
+              <p className="text-red-600 text-xs mt-2">
+                If this persists, please check your Supabase OAuth configuration in the dashboard.
+              </p>
+            </div>
           </div>
         )}
 
