@@ -10,7 +10,7 @@ if (!supabaseUrl || !supabaseAnonKey) {
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
 // Auth helper functions
-export const signInWithOAuth = async (provider: 'google' | 'github' | 'microsoft') => {
+export const signInWithOAuth = async (provider: 'google' | 'microsoft') => {
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider,
     options: {

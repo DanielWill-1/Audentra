@@ -10,7 +10,6 @@ import {
   CheckCircle, 
   AlertCircle,
   ArrowRight,
-  Github,
   Chrome,
   Loader2
 } from 'lucide-react';
@@ -68,7 +67,7 @@ function Login() {
     }
   };
 
-  const handleOAuthLogin = async (provider: 'google' | 'github' | 'microsoft') => {
+  const handleOAuthLogin = async (provider: 'google' | 'microsoft') => {
     setOauthLoading(provider);
     setError(null);
 
@@ -134,19 +133,6 @@ function Login() {
               <Chrome className="w-5 h-5 mr-3" />
             )}
             <span className="font-medium">Continue with Google</span>
-          </button>
-
-          <button
-            onClick={() => handleOAuthLogin('github')}
-            disabled={!!oauthLoading}
-            className="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg shadow-sm bg-white text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {oauthLoading === 'github' ? (
-              <Loader2 className="w-5 h-5 animate-spin mr-3" />
-            ) : (
-              <Github className="w-5 h-5 mr-3" />
-            )}
-            <span className="font-medium">Continue with GitHub</span>
           </button>
 
           <button
