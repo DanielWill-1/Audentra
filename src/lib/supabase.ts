@@ -74,8 +74,13 @@ export const getCurrentUser = async () => {
 }
 
 export const resetPassword = async (email: string) => {
+  // Use production URL if available, otherwise fall back to current origin
+  const redirectUrl = import.meta.env.PROD 
+    ? 'https://your-production-domain.com/reset-password'
+    : `${window.location.origin}/reset-password`
+  
   const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${window.location.origin}/reset-password`
+    redirectTo: redirectUrl
   })
   return { data, error }
 }

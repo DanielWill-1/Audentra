@@ -19,10 +19,12 @@ import {
   Loader2
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 
 function Dashboard() {
   const { user, signOut } = useAuth();
+  const navigate = useNavigate();
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [activeTab, setActiveTab] = useState('profile');
   const [loading, setLoading] = useState(false);
@@ -53,7 +55,14 @@ function Dashboard() {
   });
 
   const handleSignOut = async () => {
-    await signOut();
+    try {
+      await signOut();
+      navigate('/');
+    } catch (error) {
+      console.error('Sign out failed:', error);
+      // Still redirect even if there's an error
+      navigate('/');
+    }
   };
 
   const handleProfileUpdate = async (e: React.FormEvent) => {
