@@ -24,19 +24,65 @@ function App() {
           <Route path="/templates" element={<Templates />} />
           
           {/* Main website pages with header/footer */}
-          <Route path="/*" element={
+          <Route path="/" element={
             <>
               <Header />
               <main>
-                <Routes>
-                  <Route path="/\" element={<Home />} />
-                  <Route path="/features" element={<Features />} />
-                  <Route path="/industries" element={<Industries />} />
-                  <Route path="/security" element={<Security />} />
-                  <Route path="/pricing" element={<Pricing />} />
-                  <Route path="/about" element={<About />} />
-                  <Route path="/contact" element={<Contact />} />
-                </Routes>
+                <Home />
+              </main>
+              <Footer />
+            </>
+          } />
+          <Route path="/features" element={
+            <>
+              <Header />
+              <main>
+                <Features />
+              </main>
+              <Footer />
+            </>
+          } />
+          <Route path="/industries" element={
+            <>
+              <Header />
+              <main>
+                <Industries />
+              </main>
+              <Footer />
+            </>
+          } />
+          <Route path="/security" element={
+            <>
+              <Header />
+              <main>
+                <Security />
+              </main>
+              <Footer />
+            </>
+          } />
+          <Route path="/pricing" element={
+            <>
+              <Header />
+              <main>
+                <Pricing />
+              </main>
+              <Footer />
+            </>
+          } />
+          <Route path="/about" element={
+            <>
+              <Header />
+              <main>
+                <About />
+              </main>
+              <Footer />
+            </>
+          } />
+          <Route path="/contact" element={
+            <>
+              <Header />
+              <main>
+                <Contact />
               </main>
               <Footer />
             </>
