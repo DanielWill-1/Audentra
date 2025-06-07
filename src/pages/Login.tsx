@@ -72,15 +72,20 @@ function Login() {
     setError(null);
 
     try {
+      console.log(`Attempting ${provider} OAuth login...`);
       const { error } = await signInWithOAuth(provider);
       
       if (error) {
-        setError(error.message);
+        console.error(`${provider} OAuth error:`, error);
+        setError(`${provider} authentication failed: ${error.message}`);
         setOauthLoading(null);
+      } else {
+        console.log(`${provider} OAuth initiated successfully`);
+        // Success will be handled by the auth state change or redirect
       }
-      // Success will be handled by the auth state change
     } catch (err) {
-      setError('OAuth authentication failed');
+      console.error(`${provider} OAuth exception:`, err);
+      setError(`${provider} authentication failed. Please try again.`);
       setOauthLoading(null);
     }
   };

@@ -11,13 +11,28 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
 // Auth helper functions
 export const signInWithOAuth = async (provider: 'google' | 'microsoft') => {
-  const { data, error } = await supabase.auth.signInWithOAuth({
-    provider,
-    options: {
-      redirectTo: `${window.location.origin}/dashboard`
+  try {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider,
+      options: {
+        redirectTo: `${window.location.origin}/dashboard`,
+        queryParams: {
+          access_type: 'offline',
+          prompt: 'consent',
+        }
+      }
+    })
+    
+    if (error) {
+      console.error('OAuth Error:', error)
+      throw error
     }
-  })
-  return { data, error }
+    
+    return { data, error: null }
+  } catch (err) {
+    console.error('OAuth Exception:', err)
+    return { data: null, error: err }
+  }
 }
 
 export const signInWithEmail = async (email: string, password: string) => {
