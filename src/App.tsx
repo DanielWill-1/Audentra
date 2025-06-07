@@ -12,6 +12,9 @@ import Contact from './pages/Contact';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Templates from './pages/Templates';
+import Status from './pages/Status';
+import HelpCenter from './pages/HelpCenter';
+import Documentation from './pages/Documentation';
 
 function App() {
   return (
@@ -83,6 +86,33 @@ function App() {
               <Header />
               <main>
                 <Contact />
+              </main>
+              <Footer />
+            </>
+          } />
+          <Route path="/status" element={
+            <>
+              <Header />
+              <main>
+                <Status />
+              </main>
+              <Footer />
+            </>
+          } />
+          <Route path="/help-center" element={
+            <>
+              <Header />
+              <main>
+                <HelpCenter />
+              </main>
+              <Footer />
+            </>
+          } />
+          <Route path="/documentation" element={
+            <>
+              <Header />
+              <main>
+                <Documentation />
               </main>
               <Footer />
             </>

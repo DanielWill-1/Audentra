@@ -31,18 +31,15 @@ function Footer() {
             <h4 className="font-semibold text-gray-900 mb-4">Company</h4>
             <ul className="space-y-2 text-sm text-gray-600">
               <li><Link to="/about" className="hover:text-blue-600">About</Link></li>
-              <li><a href="#" className="hover:text-blue-600">Careers</a></li>
-              <li><a href="#" className="hover:text-blue-600">Press</a></li>
               <li><Link to="/contact" className="hover:text-blue-600">Contact</Link></li>
             </ul>
           </div>
           <div>
             <h4 className="font-semibold text-gray-900 mb-4">Support</h4>
             <ul className="space-y-2 text-sm text-gray-600">
-              <li><a href="#" className="hover:text-blue-600">Help Center</a></li>
-              <li><a href="#" className="hover:text-blue-600">Documentation</a></li>
-              <li><a href="#" className="hover:text-blue-600">Training</a></li>
-              <li><a href="#" className="hover:text-blue-600">Status</a></li>
+              <li><Link to="/help-center" className="hover:text-blue-600">Help Center</Link></li>
+              <li><Link to="/documentation" className="hover:text-blue-600">Documentation</Link></li>
+              <li><Link to="/status" className="hover:text-blue-600">Status</Link></li>
             </ul>
           </div>
         </div>
