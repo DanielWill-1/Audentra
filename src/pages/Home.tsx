@@ -37,10 +37,13 @@ function Home() {
                 Trusted by field workers, healthcare professionals, and HR teams worldwide.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 mb-8">
-                <button className="bg-blue-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-700 transition-all transform hover:scale-105 flex items-center justify-center">
+                <Link 
+                  to="/login"
+                  className="bg-blue-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-700 transition-all transform hover:scale-105 flex items-center justify-center"
+                >
                   <Play className="w-5 h-5 mr-2" />
                   Try Voice Demo
-                </button>
+                </Link>
                 <button className="border-2 border-gray-300 text-gray-700 px-8 py-4 rounded-lg text-lg font-semibold hover:border-blue-600 hover:text-blue-600 transition-colors">
                   Watch 2-Min Demo
                 </button>
@@ -319,10 +322,13 @@ function Home() {
             Start your free trial today and experience the future of form completion.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
-            <button className="bg-blue-600 text-white px-10 py-4 rounded-lg text-lg font-semibold hover:bg-blue-700 transition-all transform hover:scale-105 flex items-center">
+            <Link 
+              to="/login"
+              className="bg-blue-600 text-white px-10 py-4 rounded-lg text-lg font-semibold hover:bg-blue-700 transition-all transform hover:scale-105 flex items-center"
+            >
               Start Free Trial
               <ArrowRight className="w-5 h-5 ml-2" />
-            </button>
+            </Link>
             <Link 
               to="/contact"
               className="border-2 border-gray-400 text-gray-300 px-10 py-4 rounded-lg text-lg font-semibold hover:border-white hover:text-white transition-colors"
