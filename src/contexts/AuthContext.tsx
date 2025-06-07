@@ -36,6 +36,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
+      console.log('Auth state changed:', _event, session?.user?.email)
       setSession(session)
       setUser(session?.user ?? null)
       setLoading(false)
@@ -45,7 +46,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [])
 
   const signOut = async () => {
-    await supabase.auth.signOut()
+    try {
+      console.log('Signing out user...')
+      const { error } = await supabase.auth.signOut()
+      if (error) {
+        console.error('Sign out error:', error)
+        throw error
+      }
+      console.log('Sign out successful')
+      // Clear local state immediately
+      setUser(null)
+      setSession(null)
+    } catch (error) {
+      console.error('Failed to sign out:', error)
+      throw error
+    }
   }
 
   const value = {

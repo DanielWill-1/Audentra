@@ -1,10 +1,11 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Mic, LogOut } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 function Header() {
   const location = useLocation();
+  const navigate = useNavigate();
   const { user, signOut } = useAuth();
 
   const isActive = (path: string) => {
@@ -12,7 +13,15 @@ function Header() {
   };
 
   const handleSignOut = async () => {
-    await signOut();
+    try {
+      await signOut();
+      // Redirect to home page after successful sign out
+      navigate('/');
+    } catch (error) {
+      console.error('Sign out failed:', error);
+      // Still redirect even if there's an error
+      navigate('/');
+    }
   };
 
   return (
