@@ -20,6 +20,8 @@ import Templates from './pages/Templates';
 import Status from './pages/Status';
 import HelpCenter from './pages/HelpCenter';
 import Documentation from './pages/Documentation';
+import Terms from './pages/Terms';
+import Privacy from './pages/Privacy';
 
 function App() {
   return (
@@ -127,6 +129,8 @@ function App() {
                 <Footer />
               </>
             } />
+            <Route path="/terms" element={<Terms />} />
+            <Route path="/privacy" element={<Privacy />} />
           </Routes>
         </div>
       </Router>
