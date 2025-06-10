@@ -207,21 +207,6 @@ function Signup() {
             )}
             <span className="font-medium">Continue with Google</span>
           </button>
-
-          <button
-            onClick={() => handleOAuthSignup('microsoft')}
-            disabled={!!oauthLoading}
-            className="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg shadow-sm bg-white text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {oauthLoading === 'microsoft' ? (
-              <Loader2 className="w-5 h-5 animate-spin mr-3" />
-            ) : (
-              <div className="w-5 h-5 mr-3 bg-gradient-to-r from-blue-500 to-blue-600 rounded-sm flex items-center justify-center">
-                <span className="text-white text-xs font-bold">M</span>
-              </div>
-            )}
-            <span className="font-medium">Continue with Microsoft</span>
-          </button>
         </div>
 
         {/* Divider */}
@@ -299,51 +284,6 @@ function Signup() {
                   className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400 transition-all"
                   placeholder="john@company.com"
                 />
-              </div>
-            </div>
-
-            {/* Company and Industry */}
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label htmlFor="company" className="block text-sm font-medium text-gray-700 mb-2">
-                  Company
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Building2 className="h-5 w-5 text-gray-400" />
-                  </div>
-                  <input
-                    id="company"
-                    name="company"
-                    type="text"
-                    value={formData.company}
-                    onChange={handleInputChange}
-                    className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400 transition-all"
-                    placeholder="Your Company"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label htmlFor="industry" className="block text-sm font-medium text-gray-700 mb-2">
-                  Industry
-                </label>
-                <select
-                  id="industry"
-                  name="industry"
-                  value={formData.industry}
-                  onChange={handleInputChange}
-                  className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                >
-                  <option value="">Select industry</option>
-                  <option value="healthcare">Healthcare</option>
-                  <option value="construction">Construction & Field Work</option>
-                  <option value="hr">Human Resources</option>
-                  <option value="legal">Legal Services</option>
-                  <option value="education">Education</option>
-                  <option value="real-estate">Real Estate</option>
-                  <option value="other">Other</option>
-                </select>
               </div>
             </div>
 

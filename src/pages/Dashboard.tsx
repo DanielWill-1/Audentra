@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { 
   Mic, 
   Plus, 
@@ -44,10 +44,34 @@ import {
   MessageCircle,
   Repeat2
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { AuthContext } from '../contexts/AuthContext'; // Adjust the path if necessary
+
+// Get user's first name for welcome message
+const getUserName = (user) => {
+  if (user?.user_metadata?.first_name) {
+    return user.user_metadata.first_name;
+  }
+  if (user?.email) {
+    return user.email.split('@')[0];
+  }
+  return 'User';
+};
 
 function Dashboard() {
+  const { user, signOut } = useContext(AuthContext); // Retrieve user and signOut from AuthContext
   const [activeTab, setActiveTab] = useState('overview');
+  const navigate = useNavigate(); // Initialize useNavigate for navigation
+
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      console.log('User logged out successfully');
+      navigate('/'); // Redirect to the home/landing page
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
+  };
 
   const renderOverview = () => (
     <div className="grid lg:grid-cols-3 gap-8">
@@ -1149,20 +1173,15 @@ function Dashboard() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Welcome back, User</h1>
+              <h1 className="text-2xl font-bold text-gray-900">Welcome back, {getUserName(user)}!</h1>
               <p className="text-gray-600">Ready to streamline your workflow with voice-powered forms?</p>
             </div>
             <div className="flex items-center space-x-4">
-              <div className="flex items-center text-sm text-green-600 bg-green-50 px-3 py-1 rounded-full">
-                <Shield className="w-4 h-4 mr-1" />
-                Blockchain Trust Active
-              </div>
-              <div className="flex items-center text-sm text-blue-600 bg-blue-50 px-3 py-1 rounded-full">
-                <Brain className="w-4 h-4 mr-1" />
-                AI Assistant Ready
-              </div>
-              <button className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg">
-                <Settings className="w-5 h-5" />
+              <button
+                onClick={handleLogout}
+                className="flex items-center text-sm text-blue-600 bg-blue-50 px-3 py-1 rounded-full hover:bg-blue-100 transition-colors"
+              >
+                Logout
               </button>
             </div>
           </div>
