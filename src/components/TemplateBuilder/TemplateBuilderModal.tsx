@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   X, 
   FileText, 
@@ -13,13 +13,14 @@ import {
   Trash2,
   GripVertical
 } from 'lucide-react';
-import { createTemplate, uploadTemplateFile } from '../../lib/templates';
+import { createTemplate, updateTemplate, uploadTemplateFile, Template } from '../../lib/templates';
 import { useAuth } from '../../contexts/AuthContext';
 
 interface TemplateBuilderModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
+  editingTemplate?: Template | null;
 }
 
 interface FormField {
@@ -51,7 +52,7 @@ const FIELD_TYPES = [
   { id: 'checkbox', name: 'Checkboxes', icon: FileText }
 ];
 
-export default function TemplateBuilderModal({ isOpen, onClose, onSuccess }: TemplateBuilderModalProps) {
+export default function TemplateBuilderModal({ isOpen, onClose, onSuccess, editingTemplate }: TemplateBuilderModalProps) {
   const { user } = useAuth();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -74,6 +75,27 @@ export default function TemplateBuilderModal({ isOpen, onClose, onSuccess }: Tem
 
   // Step 3: File Upload
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+
+  // Initialize form with editing template data
+  useEffect(() => {
+    if (editingTemplate && isOpen) {
+      setTemplateInfo({
+        name: editingTemplate.name,
+        category: editingTemplate.category,
+        description: editingTemplate.description || '',
+        visibility: editingTemplate.visibility
+      });
+      
+      if (editingTemplate.form_data?.fields) {
+        setFormFields(editingTemplate.form_data.fields);
+        setCreationMethod('manual');
+        setStep(3);
+      } else if (editingTemplate.uploaded_file) {
+        setCreationMethod('upload');
+        setStep(3);
+      }
+    }
+  }, [editingTemplate, isOpen]);
 
   const resetModal = () => {
     setStep(1);
@@ -187,9 +209,12 @@ export default function TemplateBuilderModal({ isOpen, onClose, onSuccess }: Tem
         name: templateInfo.name,
         category: templateInfo.category,
         description: templateInfo.description,
-        visibility: templateInfo.visibility,
-        created_by: user.id
+        visibility: templateInfo.visibility
       };
+
+      if (!editingTemplate) {
+        templateData.created_by = user.id;
+      }
 
       if (creationMethod === 'manual') {
         if (formFields.length === 0) {
@@ -199,18 +224,24 @@ export default function TemplateBuilderModal({ isOpen, onClose, onSuccess }: Tem
         }
         templateData.form_data = { fields: formFields };
       } else if (creationMethod === 'upload') {
-        if (!uploadedFile) {
+        if (!uploadedFile && !editingTemplate?.uploaded_file) {
           setError('Please upload a file');
           setLoading(false);
           return;
         }
       }
 
-      // Create the template first
-      const { data: template, error: createError } = await createTemplate(templateData);
-      
-      if (createError) {
-        throw createError;
+      let template;
+      if (editingTemplate) {
+        // Update existing template
+        const { data, error: updateError } = await updateTemplate(editingTemplate.id, templateData);
+        if (updateError) throw updateError;
+        template = data;
+      } else {
+        // Create new template
+        const { data, error: createError } = await createTemplate(templateData);
+        if (createError) throw createError;
+        template = data;
       }
 
       // If there's a file to upload, handle it
@@ -222,23 +253,28 @@ export default function TemplateBuilderModal({ isOpen, onClose, onSuccess }: Tem
         }
 
         // Update template with file path
-        templateData.uploaded_file = fileData?.path;
+        if (fileData?.path) {
+          await updateTemplate(template.id, { uploaded_file: fileData.path });
+        }
       }
 
-      setSuccess('Template created successfully!');
+      setSuccess(editingTemplate ? 'Template updated successfully!' : 'Template created successfully!');
       setTimeout(() => {
         handleClose();
         onSuccess();
       }, 1500);
 
     } catch (err: any) {
-      setError(err.message || 'Failed to create template');
+      setError(err.message || `Failed to ${editingTemplate ? 'update' : 'create'} template`);
     } finally {
       setLoading(false);
     }
   };
 
   if (!isOpen) return null;
+
+  const isEditing = !!editingTemplate;
+  const modalTitle = isEditing ? 'Edit Template' : 'Create New Template';
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -247,8 +283,8 @@ export default function TemplateBuilderModal({ isOpen, onClose, onSuccess }: Tem
         <div className="p-6 border-b border-gray-200">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-2xl font-bold text-gray-900">Create New Template</h2>
-              <p className="text-gray-600 mt-1">Step {step} of 3</p>
+              <h2 className="text-2xl font-bold text-gray-900">{modalTitle}</h2>
+              {!isEditing && <p className="text-gray-600 mt-1">Step {step} of 3</p>}
             </div>
             <button 
               onClick={handleClose}
@@ -258,32 +294,34 @@ export default function TemplateBuilderModal({ isOpen, onClose, onSuccess }: Tem
             </button>
           </div>
 
-          {/* Progress Bar */}
-          <div className="mt-4">
-            <div className="flex items-center">
-              {[1, 2, 3].map((stepNumber) => (
-                <React.Fragment key={stepNumber}>
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                    stepNumber <= step 
-                      ? 'bg-blue-600 text-white' 
-                      : 'bg-gray-200 text-gray-600'
-                  }`}>
-                    {stepNumber}
-                  </div>
-                  {stepNumber < 3 && (
-                    <div className={`flex-1 h-1 mx-2 ${
-                      stepNumber < step ? 'bg-blue-600' : 'bg-gray-200'
-                    }`} />
-                  )}
-                </React.Fragment>
-              ))}
+          {/* Progress Bar - only show for new templates */}
+          {!isEditing && (
+            <div className="mt-4">
+              <div className="flex items-center">
+                {[1, 2, 3].map((stepNumber) => (
+                  <React.Fragment key={stepNumber}>
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+                      stepNumber <= step 
+                        ? 'bg-blue-600 text-white' 
+                        : 'bg-gray-200 text-gray-600'
+                    }`}>
+                      {stepNumber}
+                    </div>
+                    {stepNumber < 3 && (
+                      <div className={`flex-1 h-1 mx-2 ${
+                        stepNumber < step ? 'bg-blue-600' : 'bg-gray-200'
+                      }`} />
+                    )}
+                  </React.Fragment>
+                ))}
+              </div>
+              <div className="flex justify-between mt-2 text-sm text-gray-600">
+                <span>Basic Info</span>
+                <span>Creation Method</span>
+                <span>Build Template</span>
+              </div>
             </div>
-            <div className="flex justify-between mt-2 text-sm text-gray-600">
-              <span>Basic Info</span>
-              <span>Creation Method</span>
-              <span>Build Template</span>
-            </div>
-          </div>
+          )}
         </div>
 
         {/* Content */}
@@ -304,7 +342,7 @@ export default function TemplateBuilderModal({ isOpen, onClose, onSuccess }: Tem
           )}
 
           {/* Step 1: Basic Information */}
-          {step === 1 && (
+          {(step === 1 || isEditing) && (
             <div className="space-y-6">
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
@@ -384,11 +422,141 @@ export default function TemplateBuilderModal({ isOpen, onClose, onSuccess }: Tem
                   </div>
                 </div>
               </div>
+
+              {/* Show form builder for editing */}
+              {isEditing && creationMethod === 'manual' && (
+                <div className="border-t border-gray-200 pt-6">
+                  <div className="flex items-center justify-between mb-6">
+                    <h3 className="text-lg font-semibold text-gray-900">Form Fields</h3>
+                    <button
+                      onClick={addFormField}
+                      className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center"
+                    >
+                      <Plus className="w-4 h-4 mr-2" />
+                      Add Field
+                    </button>
+                  </div>
+
+                  {formFields.length === 0 ? (
+                    <div className="text-center py-12 bg-gray-50 rounded-lg">
+                      <FileText className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                      <h4 className="text-lg font-medium text-gray-900 mb-2">No fields added yet</h4>
+                      <p className="text-gray-600 mb-4">Start building your form by adding your first field</p>
+                      <button
+                        onClick={addFormField}
+                        className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                      >
+                        Add First Field
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {formFields.map((field, index) => (
+                        <div key={field.id} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                          <div className="flex items-center justify-between mb-4">
+                            <div className="flex items-center space-x-2">
+                              <GripVertical className="w-4 h-4 text-gray-400" />
+                              <span className="text-sm font-medium text-gray-700">Field {index + 1}</span>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <button
+                                onClick={() => moveField(field.id, 'up')}
+                                disabled={index === 0}
+                                className="p-1 text-gray-400 hover:text-gray-600 disabled:opacity-50"
+                              >
+                                ↑
+                              </button>
+                              <button
+                                onClick={() => moveField(field.id, 'down')}
+                                disabled={index === formFields.length - 1}
+                                className="p-1 text-gray-400 hover:text-gray-600 disabled:opacity-50"
+                              >
+                                ↓
+                              </button>
+                              <button
+                                onClick={() => removeFormField(field.id)}
+                                className="p-1 text-red-400 hover:text-red-600"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </div>
+                          </div>
+
+                          <div className="grid md:grid-cols-3 gap-4">
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1">Field Type</label>
+                              <select
+                                value={field.type}
+                                onChange={(e) => updateFormField(field.id, { type: e.target.value as any })}
+                                className="w-full border border-gray-300 rounded px-3 py-2 text-sm"
+                              >
+                                {FIELD_TYPES.map(type => (
+                                  <option key={type.id} value={type.id}>{type.name}</option>
+                                ))}
+                              </select>
+                            </div>
+
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1">Label</label>
+                              <input
+                                type="text"
+                                value={field.label}
+                                onChange={(e) => updateFormField(field.id, { label: e.target.value })}
+                                className="w-full border border-gray-300 rounded px-3 py-2 text-sm"
+                                placeholder="Field label"
+                              />
+                            </div>
+
+                            <div>
+                              <label className="block text-sm font-medium text-gray-700 mb-1">Placeholder</label>
+                              <input
+                                type="text"
+                                value={field.placeholder || ''}
+                                onChange={(e) => updateFormField(field.id, { placeholder: e.target.value })}
+                                className="w-full border border-gray-300 rounded px-3 py-2 text-sm"
+                                placeholder="Placeholder text"
+                              />
+                            </div>
+                          </div>
+
+                          <div className="mt-4 flex items-center">
+                            <input
+                              type="checkbox"
+                              id={`required-${field.id}`}
+                              checked={field.required}
+                              onChange={(e) => updateFormField(field.id, { required: e.target.checked })}
+                              className="text-blue-600 focus:ring-blue-500"
+                            />
+                            <label htmlFor={`required-${field.id}`} className="ml-2 text-sm text-gray-700">
+                              Required field
+                            </label>
+                          </div>
+
+                          {(field.type === 'select' || field.type === 'radio' || field.type === 'checkbox') && (
+                            <div className="mt-4">
+                              <label className="block text-sm font-medium text-gray-700 mb-2">Options</label>
+                              <textarea
+                                value={field.options?.join('\n') || ''}
+                                onChange={(e) => updateFormField(field.id, { 
+                                  options: e.target.value.split('\n').filter(opt => opt.trim()) 
+                                })}
+                                className="w-full border border-gray-300 rounded px-3 py-2 text-sm"
+                                rows={3}
+                                placeholder="Enter each option on a new line"
+                              />
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           )}
 
-          {/* Step 2: Creation Method */}
-          {step === 2 && (
+          {/* Step 2: Creation Method - only for new templates */}
+          {step === 2 && !isEditing && (
             <div className="space-y-6">
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">
@@ -436,8 +604,8 @@ export default function TemplateBuilderModal({ isOpen, onClose, onSuccess }: Tem
             </div>
           )}
 
-          {/* Step 3: Manual Form Builder */}
-          {step === 3 && creationMethod === 'manual' && (
+          {/* Step 3: Manual Form Builder - only for new templates */}
+          {step === 3 && creationMethod === 'manual' && !isEditing && (
             <div className="space-y-6">
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-semibold text-gray-900">Build Your Form</h3>
@@ -566,8 +734,8 @@ export default function TemplateBuilderModal({ isOpen, onClose, onSuccess }: Tem
             </div>
           )}
 
-          {/* Step 3: File Upload */}
-          {step === 3 && creationMethod === 'upload' && (
+          {/* Step 3: File Upload - only for new templates */}
+          {step === 3 && creationMethod === 'upload' && !isEditing && (
             <div className="space-y-6">
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">Upload Your Form</h3>
@@ -616,7 +784,7 @@ export default function TemplateBuilderModal({ isOpen, onClose, onSuccess }: Tem
         {/* Footer */}
         <div className="p-6 border-t border-gray-200 flex justify-between">
           <div>
-            {step > 1 && (
+            {step > 1 && !isEditing && (
               <button 
                 onClick={handleBack}
                 className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
@@ -632,7 +800,7 @@ export default function TemplateBuilderModal({ isOpen, onClose, onSuccess }: Tem
             >
               Cancel
             </button>
-            {step < 3 ? (
+            {(step < 3 && !isEditing) ? (
               <button 
                 onClick={handleNext}
                 className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
@@ -650,7 +818,7 @@ export default function TemplateBuilderModal({ isOpen, onClose, onSuccess }: Tem
                 ) : (
                   <Save className="w-4 h-4 mr-2" />
                 )}
-                {loading ? 'Creating...' : 'Create Template'}
+                {loading ? (isEditing ? 'Updating...' : 'Creating...') : (isEditing ? 'Update Template' : 'Create Template')}
               </button>
             )}
           </div>

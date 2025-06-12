@@ -18,7 +18,7 @@ import {
   RefreshCw
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { getUserTemplates, getTemplatesByCategory, Template } from '../lib/templates';
+import { getTemplatesByCategory, Template } from '../lib/templates';
 import TemplateBuilderModal from '../components/TemplateBuilder/TemplateBuilderModal';
 import TemplateCard from '../components/TemplateBuilder/TemplateCard';
 
@@ -32,6 +32,8 @@ const CATEGORIES = [
   { id: 'realestate', name: 'Real Estate', icon: Building2 }
 ];
 
+type SortOption = 'created_at' | 'name' | 'category';
+
 function Templates() {
   const [viewMode, setViewMode] = useState('grid');
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -41,6 +43,8 @@ function Templates() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [editingTemplate, setEditingTemplate] = useState<Template | null>(null);
+  const [sortBy, setSortBy] = useState<SortOption>('created_at');
+  const [sortAscending, setSortAscending] = useState(false);
 
   // Load templates
   const loadTemplates = async () => {
@@ -48,7 +52,7 @@ function Templates() {
     setError(null);
     
     try {
-      const { data, error } = await getTemplatesByCategory(selectedCategory);
+      const { data, error } = await getTemplatesByCategory(selectedCategory, sortBy, sortAscending);
       if (error) throw error;
       setTemplates(data || []);
     } catch (err: any) {
@@ -60,7 +64,7 @@ function Templates() {
 
   useEffect(() => {
     loadTemplates();
-  }, [selectedCategory]);
+  }, [selectedCategory, sortBy, sortAscending]);
 
   // Filter templates based on search query
   const filteredTemplates = templates.filter(template => {
@@ -71,13 +75,14 @@ function Templates() {
 
   // Get category counts
   const getCategoryCount = (categoryId: string) => {
-    if (categoryId === 'all') return templates.length;
-    return templates.filter(t => t.category === categoryId).length;
+    if (categoryId === 'all') return filteredTemplates.length;
+    return filteredTemplates.filter(t => t.category === categoryId).length;
   };
 
   const handleCreateSuccess = () => {
     loadTemplates();
     setShowCreateModal(false);
+    setEditingTemplate(null);
   };
 
   const handleEdit = (template: Template) => {
@@ -95,8 +100,16 @@ function Templates() {
     ));
   };
 
+  const handleSortChange = (value: string) => {
+    const [sortField, direction] = value.split('-');
+    setSortBy(sortField as SortOption);
+    setSortAscending(direction === 'asc');
+  };
+
   const TemplateListItem = ({ template }: { template: Template }) => (
-    <div className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+    <div className={`bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-all ${
+      template.visibility === 'hidden' ? 'opacity-60 bg-gray-50' : ''
+    }`}>
       <div className="flex items-center justify-between">
         <div className="flex items-center flex-1">
           <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
@@ -111,11 +124,22 @@ function Templates() {
               <span className="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded capitalize">
                 {template.category}
               </span>
+              {template.visibility === 'hidden' && (
+                <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded">
+                  Hidden
+                </span>
+              )}
             </div>
             <p className="text-sm text-gray-600 mb-2">{template.description}</p>
             <div className="flex items-center space-x-4 text-xs text-gray-500">
               <span>{template.form_data?.fields?.length || 0} fields</span>
-              <span>Updated {new Date(template.updated_at).toLocaleDateString()}</span>
+              <span>Updated {new Date(template.updated_at).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+              })}</span>
               <span className={`px-2 py-1 rounded ${
                 template.visibility === 'visible' 
                   ? 'bg-green-100 text-green-600' 
@@ -238,11 +262,18 @@ function Templates() {
               </div>
 
               <div className="flex items-center justify-between text-sm text-gray-600">
-                <span>{filteredTemplates.length} templates found</span>
-                <select className="border border-gray-300 rounded px-3 py-1 text-sm">
-                  <option>Sort by: Most Recent</option>
-                  <option>Sort by: Name</option>
-                  <option>Sort by: Category</option>
+                <span>{filteredTemplates.length} template{filteredTemplates.length !== 1 ? 's' : ''} found</span>
+                <select 
+                  value={`${sortBy}-${sortAscending ? 'asc' : 'desc'}`}
+                  onChange={(e) => handleSortChange(e.target.value)}
+                  className="border border-gray-300 rounded px-3 py-1 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="created_at-desc">Sort by: Most Recent</option>
+                  <option value="created_at-asc">Sort by: Oldest First</option>
+                  <option value="name-asc">Sort by: Name (A-Z)</option>
+                  <option value="name-desc">Sort by: Name (Z-A)</option>
+                  <option value="category-asc">Sort by: Category (A-Z)</option>
+                  <option value="category-desc">Sort by: Category (Z-A)</option>
                 </select>
               </div>
             </div>
@@ -331,6 +362,7 @@ function Templates() {
           setEditingTemplate(null);
         }}
         onSuccess={handleCreateSuccess}
+        editingTemplate={editingTemplate}
       />
     </div>
   );

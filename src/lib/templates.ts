@@ -43,22 +43,26 @@ export const createTemplate = async (templateData: CreateTemplateData) => {
   return { data, error };
 };
 
-// Get all templates for the current user
-export const getUserTemplates = async () => {
+// Get all templates for the current user with sorting
+export const getUserTemplates = async (sortBy: 'created_at' | 'name' | 'category' = 'created_at', ascending = false) => {
   const { data, error } = await supabase
     .from('templates')
     .select('*')
-    .order('created_at', { ascending: false });
+    .order(sortBy, { ascending });
 
   return { data, error };
 };
 
-// Get templates by category
-export const getTemplatesByCategory = async (category: string) => {
+// Get templates by category with sorting
+export const getTemplatesByCategory = async (
+  category: string, 
+  sortBy: 'created_at' | 'name' | 'category' = 'created_at', 
+  ascending = false
+) => {
   let query = supabase
     .from('templates')
     .select('*')
-    .order('created_at', { ascending: false });
+    .order(sortBy, { ascending });
 
   if (category !== 'all') {
     query = query.eq('category', category);
@@ -111,6 +115,34 @@ export const toggleTemplateVisibility = async (id: string, visibility: 'visible'
     .single();
 
   return { data, error };
+};
+
+// Export template as JSON
+export const exportTemplate = async (template: Template) => {
+  const exportData = {
+    name: template.name,
+    category: template.category,
+    description: template.description,
+    form_data: template.form_data,
+    created_at: template.created_at,
+    exported_at: new Date().toISOString()
+  };
+
+  const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `${template.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_template.json`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+};
+
+// Generate shareable link for template
+export const generateShareLink = (templateId: string) => {
+  return `${window.location.origin}/templates/shared/${templateId}`;
 };
 
 // Upload file for template
