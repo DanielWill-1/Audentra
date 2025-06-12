@@ -14,6 +14,7 @@ import {
   GripVertical
 } from 'lucide-react';
 import { createTemplate, uploadTemplateFile } from '../../lib/templates';
+import { useAuth } from '../../contexts/AuthContext';
 
 interface TemplateBuilderModalProps {
   isOpen: boolean;
@@ -51,6 +52,7 @@ const FIELD_TYPES = [
 ];
 
 export default function TemplateBuilderModal({ isOpen, onClose, onSuccess }: TemplateBuilderModalProps) {
+  const { user } = useAuth();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -172,6 +174,11 @@ export default function TemplateBuilderModal({ isOpen, onClose, onSuccess }: Tem
   };
 
   const handleSubmit = async () => {
+    if (!user?.id) {
+      setError('You must be logged in to create a template');
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
@@ -180,7 +187,8 @@ export default function TemplateBuilderModal({ isOpen, onClose, onSuccess }: Tem
         name: templateInfo.name,
         category: templateInfo.category,
         description: templateInfo.description,
-        visibility: templateInfo.visibility
+        visibility: templateInfo.visibility,
+        created_by: user.id
       };
 
       if (creationMethod === 'manual') {

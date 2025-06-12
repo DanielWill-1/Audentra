@@ -20,6 +20,7 @@ export interface CreateTemplateData {
   form_data?: any;
   uploaded_file?: string;
   visibility?: 'visible' | 'hidden';
+  created_by: string;
 }
 
 export interface UpdateTemplateData {
