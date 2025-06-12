@@ -266,9 +266,8 @@ function Templates() {
                 <select 
                   value={`${sortBy}-${sortAscending ? 'asc' : 'desc'}`}
                   onChange={(e) => handleSortChange(e.target.value)}
-                  className="border border-gray-300 rounded px-3 py-1 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="border border-gray-300 rounded px-3 py-1 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white z-10 relative w-64 max-h-48 overflow-y-auto"
                 >
-                  <option value="created_at-desc">Sort by: Most Recent</option>
                   <option value="created_at-asc">Sort by: Oldest First</option>
                   <option value="name-asc">Sort by: Name (A-Z)</option>
                   <option value="name-desc">Sort by: Name (Z-A)</option>
