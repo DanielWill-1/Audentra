@@ -73,6 +73,10 @@ function Dashboard() {
     }
   };
 
+  const handleChooseTemplateRedirect = () => {
+    navigate('/templates');
+  };
+
   const renderOverview = () => (
     <div className="grid lg:grid-cols-3 gap-8">
       {/* Main Content */}
@@ -104,7 +108,10 @@ function Dashboard() {
               </div>
             </div>
 
-            <div className="bg-white rounded-2xl p-6 border border-gray-200 hover:shadow-lg transition-shadow cursor-pointer">
+            <div
+              className="bg-white rounded-2xl p-6 border border-gray-200 hover:shadow-lg transition-shadow cursor-pointer"
+              onClick={handleChooseTemplateRedirect}
+            >
               <div className="flex items-center justify-between mb-4">
                 <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center">
                   <FileText className="w-6 h-6 text-emerald-600" />
