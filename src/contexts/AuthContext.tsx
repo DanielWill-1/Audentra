@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { User, Session } from '@supabase/supabase-js'
 import { supabase } from '../lib/supabase'
 
@@ -9,7 +9,7 @@ interface AuthContextType {
   signOut: () => Promise<void>
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined)
+export const AuthContext = React.createContext<AuthContextType | undefined>(undefined)
 
 export const useAuth = () => {
   const context = useContext(AuthContext)

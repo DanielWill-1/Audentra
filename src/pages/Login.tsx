@@ -67,7 +67,7 @@ function Login() {
     }
   };
 
-  const handleOAuthLogin = async (provider: 'google' | 'microsoft') => {
+  const handleOAuthLogin = async (provider: 'google') => {
     setOauthLoading(provider);
     setError(null);
 
