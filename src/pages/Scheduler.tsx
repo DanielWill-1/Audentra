@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { 
   ArrowLeft,
   Calendar,
@@ -23,26 +23,21 @@ import {
   AlertCircle,
   CheckCircle,
   Settings,
-  Database
+  Database,
+  Loader2
 } from 'lucide-react';
-
-interface ScheduledEvent {
-  id: string;
-  title: string;
-  description: string;
-  date: string;
-  time: string;
-  duration: number; // in minutes
-  type: 'form_review' | 'team_meeting' | 'training' | 'maintenance' | 'other';
-  priority: 'low' | 'medium' | 'high';
-  attendees?: string[];
-  location?: string;
-  formId?: string;
-  reminderMinutes?: number;
-  status: 'scheduled' | 'in_progress' | 'completed' | 'cancelled';
-  createdAt: string;
-  updatedAt: string;
-}
+import { useAuth } from '../contexts/AuthContext';
+import { 
+  createEvent, 
+  getUserEvents, 
+  updateEvent, 
+  deleteEvent,
+  getUpcomingEvents,
+  getEventStats,
+  type ScheduledEvent,
+  type CreateEventData,
+  type UpdateEventData
+} from '../lib/scheduler';
 
 type ViewMode = 'month' | 'week';
 
@@ -61,70 +56,69 @@ const PRIORITY_COLORS = {
 };
 
 function Scheduler() {
+  const { user, loading: authLoading } = useAuth();
+  const navigate = useNavigate();
   const [viewMode, setViewMode] = useState<ViewMode>('month');
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [events, setEvents] = useState<ScheduledEvent[]>([]);
+  const [upcomingEvents, setUpcomingEvents] = useState<ScheduledEvent[]>([]);
+  const [stats, setStats] = useState({ total: 0, completed: 0, upcoming: 0, highPriority: 0 });
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [editingEvent, setEditingEvent] = useState<ScheduledEvent | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState<string>('all');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Mock data for demonstration
+  // Redirect if not authenticated
   useEffect(() => {
-    const mockEvents: ScheduledEvent[] = [
-      {
-        id: '1',
-        title: 'Healthcare Forms Review',
-        description: 'Review and update patient intake forms for Q1',
-        date: '2024-01-20',
-        time: '09:00',
-        duration: 60,
-        type: 'form_review',
-        priority: 'high',
-        attendees: ['Dr. Sarah Martinez', 'Alex Chen'],
-        location: 'Conference Room A',
-        formId: 'form_123',
-        reminderMinutes: 15,
-        status: 'scheduled',
-        createdAt: '2024-01-15T10:00:00Z',
-        updatedAt: '2024-01-15T10:00:00Z'
-      },
-      {
-        id: '2',
-        title: 'Voice AI Training Session',
-        description: 'Training new team members on voice form technology',
-        date: '2024-01-22',
-        time: '14:00',
-        duration: 120,
-        type: 'training',
-        priority: 'medium',
-        attendees: ['Maria Johnson', 'Team Members'],
-        location: 'Training Room B',
-        reminderMinutes: 30,
-        status: 'scheduled',
-        createdAt: '2024-01-16T14:00:00Z',
-        updatedAt: '2024-01-16T14:00:00Z'
-      },
-      {
-        id: '3',
-        title: 'Weekly Team Sync',
-        description: 'Regular team synchronization meeting',
-        date: '2024-01-24',
-        time: '10:00',
-        duration: 45,
-        type: 'team_meeting',
-        priority: 'medium',
-        attendees: ['All Team Members'],
-        location: 'Virtual Meeting',
-        reminderMinutes: 10,
-        status: 'scheduled',
-        createdAt: '2024-01-17T09:00:00Z',
-        updatedAt: '2024-01-17T09:00:00Z'
-      }
-    ];
-    setEvents(mockEvents);
-  }, []);
+    if (!authLoading && !user) {
+      navigate('/login');
+    }
+  }, [user, authLoading, navigate]);
+
+  // Load events and stats
+  useEffect(() => {
+    if (user) {
+      loadEvents();
+      loadUpcomingEvents();
+      loadStats();
+    }
+  }, [user]);
+
+  const loadEvents = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await getUserEvents();
+      if (error) throw error;
+      setEvents(data || []);
+    } catch (err: any) {
+      setError(err.message || 'Failed to load events');
+      console.error('Error loading events:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadUpcomingEvents = async () => {
+    try {
+      const { data, error } = await getUpcomingEvents(5);
+      if (error) throw error;
+      setUpcomingEvents(data || []);
+    } catch (err: any) {
+      console.error('Error loading upcoming events:', err);
+    }
+  };
+
+  const loadStats = async () => {
+    try {
+      const eventStats = await getEventStats();
+      setStats(eventStats);
+    } catch (err: any) {
+      console.error('Error loading stats:', err);
+    }
+  };
 
   // Calendar navigation
   const navigateMonth = (direction: 'prev' | 'next') => {
@@ -151,20 +145,6 @@ function Scheduler() {
   const getEventsForDate = (date: Date) => {
     const dateStr = date.toISOString().split('T')[0];
     return events.filter(event => event.date === dateStr);
-  };
-
-  // Get upcoming events
-  const getUpcomingEvents = () => {
-    const today = new Date();
-    const upcoming = events
-      .filter(event => {
-        const eventDate = new Date(event.date);
-        return eventDate >= today && event.status === 'scheduled';
-      })
-      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-      .slice(0, 5);
-    
-    return upcoming;
   };
 
   // Filter events based on search and type
@@ -231,6 +211,95 @@ function Scheduler() {
     return EVENT_TYPES.find(t => t.id === type)?.color || 'bg-gray-500';
   };
 
+  const handleEventSave = async (eventData: any) => {
+    try {
+      if (!user?.id) {
+        throw new Error('User not authenticated');
+      }
+
+      if (editingEvent) {
+        // Update existing event
+        const updateData: UpdateEventData = {
+          title: eventData.title,
+          description: eventData.description,
+          date: eventData.date,
+          time: eventData.time,
+          duration: eventData.duration,
+          type: eventData.type,
+          priority: eventData.priority,
+          location: eventData.location,
+          reminderMinutes: eventData.reminderMinutes
+        };
+
+        const { data, error } = await updateEvent(editingEvent.id, updateData);
+        if (error) throw error;
+
+        // Update local state
+        setEvents(events.map(e => e.id === editingEvent.id ? data : e));
+      } else {
+        // Create new event
+        const createData: CreateEventData = {
+          title: eventData.title,
+          description: eventData.description,
+          date: eventData.date,
+          time: eventData.time,
+          duration: eventData.duration,
+          type: eventData.type,
+          priority: eventData.priority,
+          location: eventData.location,
+          reminderMinutes: eventData.reminderMinutes,
+          createdBy: user.id
+        };
+
+        const { data, error } = await createEvent(createData);
+        if (error) throw error;
+
+        // Update local state
+        setEvents([...events, data]);
+      }
+
+      // Refresh data
+      loadUpcomingEvents();
+      loadStats();
+      
+      setShowCreateModal(false);
+      setEditingEvent(null);
+    } catch (err: any) {
+      setError(err.message || 'Failed to save event');
+      console.error('Error saving event:', err);
+    }
+  };
+
+  const handleEventDelete = async (eventId: string) => {
+    try {
+      const { error } = await deleteEvent(eventId);
+      if (error) throw error;
+
+      // Update local state
+      setEvents(events.filter(e => e.id !== eventId));
+      loadUpcomingEvents();
+      loadStats();
+    } catch (err: any) {
+      setError(err.message || 'Failed to delete event');
+      console.error('Error deleting event:', err);
+    }
+  };
+
+  if (authLoading || loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-8 h-8 animate-spin text-blue-600 mx-auto mb-4" />
+          <p className="text-gray-600">Loading scheduler...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null; // Will redirect to login
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
@@ -272,6 +341,22 @@ function Scheduler() {
           </div>
         </div>
       </div>
+
+      {/* Error Message */}
+      {error && (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-center">
+            <AlertCircle className="w-5 h-5 text-red-600 mr-3" />
+            <span className="text-red-800 text-sm">{error}</span>
+            <button 
+              onClick={() => setError(null)}
+              className="ml-auto text-red-600 hover:text-red-700"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      )}
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex gap-8">
@@ -473,7 +558,7 @@ function Scheduler() {
             <div className="bg-white rounded-2xl border border-gray-200 p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Upcoming Events</h3>
               <div className="space-y-3">
-                {getUpcomingEvents().map(event => (
+                {upcomingEvents.map(event => (
                   <div key={event.id} className="p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
@@ -499,7 +584,7 @@ function Scheduler() {
                     </div>
                   </div>
                 ))}
-                {getUpcomingEvents().length === 0 && (
+                {upcomingEvents.length === 0 && (
                   <p className="text-gray-500 text-sm text-center py-4">No upcoming events</p>
                 )}
               </div>
@@ -511,25 +596,19 @@ function Scheduler() {
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <span className="text-gray-600">Total Events</span>
-                  <span className="font-semibold text-gray-900">{events.length}</span>
+                  <span className="font-semibold text-gray-900">{stats.total}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-gray-600">Completed</span>
-                  <span className="font-semibold text-green-600">
-                    {events.filter(e => e.status === 'completed').length}
-                  </span>
+                  <span className="font-semibold text-green-600">{stats.completed}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-gray-600">Upcoming</span>
-                  <span className="font-semibold text-blue-600">
-                    {events.filter(e => e.status === 'scheduled').length}
-                  </span>
+                  <span className="font-semibold text-blue-600">{stats.upcoming}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-gray-600">High Priority</span>
-                  <span className="font-semibold text-red-600">
-                    {events.filter(e => e.priority === 'high').length}
-                  </span>
+                  <span className="font-semibold text-red-600">{stats.highPriority}</span>
                 </div>
               </div>
             </div>
@@ -558,15 +637,7 @@ function Scheduler() {
             setShowCreateModal(false);
             setEditingEvent(null);
           }}
-          onSave={(event) => {
-            if (editingEvent) {
-              setEvents(events.map(e => e.id === event.id ? event : e));
-            } else {
-              setEvents([...events, { ...event, id: Date.now().toString() }]);
-            }
-            setShowCreateModal(false);
-            setEditingEvent(null);
-          }}
+          onSave={handleEventSave}
           selectedDate={selectedDate}
         />
       )}
@@ -578,7 +649,7 @@ function Scheduler() {
 interface EventModalProps {
   event?: ScheduledEvent | null;
   onClose: () => void;
-  onSave: (event: ScheduledEvent) => void;
+  onSave: (event: any) => void;
   selectedDate?: Date | null;
 }
 
@@ -596,6 +667,7 @@ function EventModal({ event, onClose, onSave, selectedDate }: EventModalProps) {
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [saving, setSaving] = useState(false);
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
@@ -614,28 +686,19 @@ function EventModal({ event, onClose, onSave, selectedDate }: EventModalProps) {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!validateForm()) return;
 
-    const eventData: ScheduledEvent = {
-      id: event?.id || '',
-      title: formData.title,
-      description: formData.description,
-      date: formData.date,
-      time: formData.time,
-      duration: formData.duration,
-      type: formData.type as any,
-      priority: formData.priority as any,
-      location: formData.location,
-      reminderMinutes: formData.reminderMinutes,
-      status: event?.status || 'scheduled',
-      createdAt: event?.createdAt || new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    };
-
-    onSave(eventData);
+    setSaving(true);
+    try {
+      await onSave(formData);
+    } catch (err) {
+      console.error('Error saving event:', err);
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -803,10 +866,15 @@ function EventModal({ event, onClose, onSave, selectedDate }: EventModalProps) {
             </button>
             <button
               type="submit"
-              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center"
+              disabled={saving}
+              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center disabled:opacity-50"
             >
-              <Save className="w-4 h-4 mr-2" />
-              {event ? 'Update Event' : 'Create Event'}
+              {saving ? (
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              ) : (
+                <Save className="w-4 h-4 mr-2" />
+              )}
+              {saving ? 'Saving...' : (event ? 'Update Event' : 'Create Event')}
             </button>
           </div>
         </form>
