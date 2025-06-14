@@ -21,7 +21,9 @@ import {
   X,
   Save,
   AlertCircle,
-  CheckCircle
+  CheckCircle,
+  Settings,
+  Database
 } from 'lucide-react';
 
 interface ScheduledEvent {
@@ -245,6 +247,20 @@ function Scheduler() {
               </div>
             </div>
             <div className="flex items-center space-x-4">
+              <Link 
+                to="/manage-schedules"
+                className="text-gray-600 hover:text-gray-900 px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors flex items-center"
+              >
+                <Database className="w-4 h-4 mr-2" />
+                Manage All Schedules
+              </Link>
+              <Link 
+                to="/scheduler-settings"
+                className="text-gray-600 hover:text-gray-900 p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                title="Scheduler Settings"
+              >
+                <Settings className="w-5 h-5" />
+              </Link>
               <button 
                 onClick={() => setShowCreateModal(true)}
                 className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center"
