@@ -17,6 +17,7 @@ import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import Dashboard from './pages/Dashboard';
 import Templates from './pages/Templates';
+import Scheduler from './pages/Scheduler';
 import Status from './pages/Status';
 import HelpCenter from './pages/HelpCenter';
 import Documentation from './pages/Documentation';
@@ -37,6 +38,7 @@ function App() {
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/templates" element={<Templates />} />
+            <Route path="/scheduler" element={<Scheduler />} />
             
             {/* Main website pages with header/footer */}
             <Route path="/" element={
