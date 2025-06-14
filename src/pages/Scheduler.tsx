@@ -228,7 +228,7 @@ function Scheduler() {
           type: eventData.type,
           priority: eventData.priority,
           location: eventData.location,
-          reminderMinutes: eventData.reminderMinutes
+          reminder_minutes: eventData.reminderMinutes
         };
 
         const { data, error } = await updateEvent(editingEvent.id, updateData);
@@ -247,8 +247,8 @@ function Scheduler() {
           type: eventData.type,
           priority: eventData.priority,
           location: eventData.location,
-          reminderMinutes: eventData.reminderMinutes,
-          createdBy: user.id
+          reminder_minutes: eventData.reminderMinutes,
+          created_by: user.id
         };
 
         const { data, error } = await createEvent(createData);
@@ -663,7 +663,7 @@ function EventModal({ event, onClose, onSave, selectedDate }: EventModalProps) {
     type: event?.type || 'other',
     priority: event?.priority || 'medium',
     location: event?.location || '',
-    reminderMinutes: event?.reminderMinutes || 15
+    reminderMinutes: event?.reminder_minutes || 15
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
