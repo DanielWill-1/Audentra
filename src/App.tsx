@@ -17,6 +17,9 @@ import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import Dashboard from './pages/Dashboard';
 import Templates from './pages/Templates';
+import Scheduler from './pages/Scheduler';
+import ManageSchedules from './pages/ManageSchedules';
+import SchedulerSettings from './pages/SchedulerSettings';
 import Status from './pages/Status';
 import HelpCenter from './pages/HelpCenter';
 import Documentation from './pages/Documentation';
@@ -37,6 +40,9 @@ function App() {
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/templates" element={<Templates />} />
+            <Route path="/scheduler" element={<Scheduler />} />
+            <Route path="/manage-schedules" element={<ManageSchedules />} />
+            <Route path="/scheduler-settings" element={<SchedulerSettings />} />
             
             {/* Main website pages with header/footer */}
             <Route path="/" element={

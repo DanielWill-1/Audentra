@@ -77,6 +77,14 @@ function Dashboard() {
     navigate('/templates');
   };
 
+  const handleManageSchedulesRedirect = () => {
+    navigate('/ManageSchedules');
+  };
+
+  const handleAddNewScheduleRedirect = () => {
+    navigate('/scheduler');
+  };
+
   const renderOverview = () => (
     <div className="grid lg:grid-cols-3 gap-8">
       {/* Main Content */}
@@ -172,7 +180,10 @@ function Dashboard() {
         <section>
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-bold text-gray-900">Scheduling & Automation</h2>
-            <button className="text-blue-600 hover:text-blue-700 text-sm font-medium">
+            <button 
+              onClick={handleManageSchedulesRedirect} 
+              className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+            >
               Manage All Schedules
             </button>
           </div>
@@ -209,13 +220,12 @@ function Dashboard() {
             </div>
             
             <div className="grid md:grid-cols-2 gap-4">
-              <button className="bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">
+              <button 
+                onClick={handleAddNewScheduleRedirect} 
+                className="bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+              >
                 <Plus className="w-4 h-4 inline mr-2" />
                 Add New Schedule
-              </button>
-              <button className="bg-gray-100 text-gray-700 py-2 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium">
-                <Settings className="w-4 h-4 inline mr-2" />
-                Automation Settings
               </button>
             </div>
           </div>
