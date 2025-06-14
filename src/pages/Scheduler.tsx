@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { 
   ArrowLeft,
   Calendar,
@@ -34,6 +34,7 @@ import {
   deleteEvent,
   getUpcomingEvents,
   getEventStats,
+  getEventById,
   type ScheduledEvent,
   type CreateEventData,
   type UpdateEventData
@@ -58,6 +59,7 @@ const PRIORITY_COLORS = {
 function Scheduler() {
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [viewMode, setViewMode] = useState<ViewMode>('month');
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
@@ -78,6 +80,14 @@ function Scheduler() {
     }
   }, [user, authLoading, navigate]);
 
+  // Handle edit parameter from URL
+  useEffect(() => {
+    const editId = searchParams.get('edit');
+    if (editId && user) {
+      loadEventForEdit(editId);
+    }
+  }, [searchParams, user]);
+
   // Load events and stats
   useEffect(() => {
     if (user) {
@@ -86,6 +96,21 @@ function Scheduler() {
       loadStats();
     }
   }, [user]);
+
+  const loadEventForEdit = async (eventId: string) => {
+    try {
+      const { data, error } = await getEventById(eventId);
+      if (error) throw error;
+      if (data) {
+        setEditingEvent(data);
+        setShowCreateModal(true);
+        // Remove the edit parameter from URL
+        setSearchParams({});
+      }
+    } catch (err: any) {
+      setError(err.message || 'Failed to load event for editing');
+    }
+  };
 
   const loadEvents = async () => {
     try {
@@ -264,6 +289,7 @@ function Scheduler() {
       
       setShowCreateModal(false);
       setEditingEvent(null);
+      setError(null);
     } catch (err: any) {
       setError(err.message || 'Failed to save event');
       console.error('Error saving event:', err);
