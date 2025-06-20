@@ -20,6 +20,7 @@ import Templates from './pages/Templates';
 import Scheduler from './pages/Scheduler';
 import ManageSchedules from './pages/ManageSchedules';
 import SchedulerSettings from './pages/SchedulerSettings';
+import AIVoiceAutoFill from './pages/AIVoiceAutoFill';
 import Status from './pages/Status';
 import HelpCenter from './pages/HelpCenter';
 import Documentation from './pages/Documentation';
@@ -43,6 +44,8 @@ function App() {
             <Route path="/scheduler" element={<Scheduler />} />
             <Route path="/manage-schedules" element={<ManageSchedules />} />
             <Route path="/scheduler-settings" element={<SchedulerSettings />} />
+            <Route path="/ai-voice-autofill" element={<AIVoiceAutoFill />} />
+            <Route path="/AIVoiceAutoFill" element={<AIVoiceAutoFill />} />
             
             {/* Main website pages with header/footer */}
             <Route path="/" element={

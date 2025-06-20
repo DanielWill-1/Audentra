@@ -85,6 +85,10 @@ function Dashboard() {
     navigate('/scheduler');
   };
 
+  const handleQuickVoiceFormRedirect = () => {
+    navigate('/AIVoiceAutoFill');
+  };
+
   const renderOverview = () => (
     <div className="grid lg:grid-cols-3 gap-8">
       {/* Main Content */}
@@ -99,7 +103,8 @@ function Dashboard() {
           </div>
           
           <div className="grid md:grid-cols-2 gap-6 mb-6">
-            <div className="bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl p-6 text-white cursor-pointer hover:shadow-lg transition-shadow">
+            <div className="bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl p-6 text-white cursor-pointer hover:shadow-lg transition-shadow" 
+                 onClick={handleQuickVoiceFormRedirect}>
               <div className="flex items-center justify-between mb-4">
                 <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
                   <Mic className="w-6 h-6 text-white" />
