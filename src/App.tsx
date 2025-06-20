@@ -45,6 +45,7 @@ function App() {
             <Route path="/manage-schedules" element={<ManageSchedules />} />
             <Route path="/scheduler-settings" element={<SchedulerSettings />} />
             <Route path="/ai-voice-autofill" element={<AIVoiceAutoFill />} />
+            <Route path="/AIVoiceAutoFill" element={<AIVoiceAutoFill />} />
             
             {/* Main website pages with header/footer */}
             <Route path="/" element={

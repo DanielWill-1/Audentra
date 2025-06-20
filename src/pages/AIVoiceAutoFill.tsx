@@ -1,8 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Mic, MicOff, Send, Bot, User, Play, Pause, RotateCcw, CheckCircle, AlertCircle, Loader2, FileText, MessageSquare, Volume2, Download, Edit, Save, X, Zap, Brain, AudioWaveform as Waveform } from 'lucide-react';
+import { 
+  ArrowLeft, Mic, MicOff, Send, Bot, User, Play, Pause, RotateCcw, 
+  CheckCircle, AlertCircle, Loader2, FileText, Brain, Volume2, 
+  Zap, X, Edit, Save
+} from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { getUserTemplates, Template } from '../lib/templates';
+import { transcribeAudio, processWithGroq, synthesizeSpeech } from '../services/ai';
 
 interface FormField {
   id: string;
@@ -27,38 +32,33 @@ interface FormData {
 }
 
 function AIVoiceAutoFill() {
+  // Essential state
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
-  
-  // State management
   const [templates, setTemplates] = useState<Template[]>([]);
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
   const [formFields, setFormFields] = useState<FormField[]>([]);
   const [formData, setFormData] = useState<FormData>({});
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
-  
-  // Voice recording state
   const [isRecording, setIsRecording] = useState(false);
   const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  
-  // Processing state
-  const [isTranscribing, setIsTranscribing] = useState(false);
-  const [isProcessingAI, setIsProcessingAI] = useState(false);
-  const [transcription, setTranscription] = useState('');
-  
-  // UI state
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [step, setStep] = useState<'select' | 'chat' | 'review'>('select');
-  const [isFormComplete, setIsFormComplete] = useState(false);
-  
-  // Refs
+  const [isTranscribing, setIsTranscribing] = useState(false);
+  const [isProcessingAI, setIsProcessingAI] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  // Essential refs
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const audioPlayerRef = useRef<HTMLAudioElement | null>(null);
   const chatContainerRef = useRef<HTMLDivElement | null>(null);
+
+  // Computed properties
+  const isFormComplete = formFields.every(field => 
+    !field.required || (formData[field.id] && formData[field.id].toString().trim() !== '')
+  );
 
   // Redirect if not authenticated
   useEffect(() => {
@@ -83,49 +83,46 @@ function AIVoiceAutoFill() {
 
   const loadTemplates = async () => {
     try {
-      setLoading(true);
       const { data, error } = await getUserTemplates();
       if (error) throw error;
       setTemplates(data || []);
     } catch (err: any) {
       setError(err.message || 'Failed to load templates');
-    } finally {
-      setLoading(false);
     }
   };
 
   const selectTemplate = (template: Template) => {
     setSelectedTemplate(template);
-    if (template.form_data?.fields) {
-      const fields = template.form_data.fields.map((field: any) => ({
-        ...field,
-        value: field.type === 'checkbox' ? [] : ''
-      }));
-      setFormFields(fields);
-      
-      // Initialize form data
-      const initialData: FormData = {};
-      fields.forEach((field: FormField) => {
-        initialData[field.id] = field.type === 'checkbox' ? [] : '';
-      });
-      setFormData(initialData);
-    }
-    
-    // Add welcome message
-    const welcomeMessage: ChatMessage = {
-      id: Date.now().toString(),
-      type: 'ai',
-      content: `Hi! I'm here to help you fill out the "${template.name}" form using your voice. You can speak naturally, and I'll understand what information goes where. What would you like to tell me about this form?`,
-      timestamp: new Date()
-    };
-    setChatMessages([welcomeMessage]);
+    const fields = template.form_data?.fields || [];
+    setFormFields(fields);
+    setFormData({});
+    setChatMessages([
+      {
+        id: Date.now().toString(),
+        type: 'system',
+        content: `AI Assistant activated for "${template.name}". I'll help you fill out this form. You can speak naturally about your information, and I'll extract the relevant details for each field.`,
+        timestamp: new Date()
+      }
+    ]);
     setStep('chat');
   };
 
   const startRecording = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new MediaRecorder(stream);
+      setError(null);
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        audio: {
+          sampleRate: 16000,
+          channelCount: 1,
+          echoCancellation: true,
+          noiseSuppression: true
+        }
+      });
+      
+      const mediaRecorder = new MediaRecorder(stream, {
+        mimeType: 'audio/webm;codecs=opus'
+      });
+      
       mediaRecorderRef.current = mediaRecorder;
       audioChunksRef.current = [];
 
@@ -135,19 +132,18 @@ function AIVoiceAutoFill() {
         }
       };
 
-      mediaRecorder.onstop = () => {
-        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/wav' });
+      mediaRecorder.onstop = async () => {
+        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
         setAudioBlob(audioBlob);
         setAudioUrl(URL.createObjectURL(audioBlob));
-        
-        // Stop all tracks
         stream.getTracks().forEach(track => track.stop());
       };
 
-      mediaRecorder.start();
+      mediaRecorder.start(1000);
       setIsRecording(true);
-    } catch (err) {
-      setError('Failed to access microphone. Please check permissions.');
+    } catch (err: any) {
+      setError('Failed to access microphone. Please check permissions and try again.');
+      console.error('Recording error:', err);
     }
   };
 
@@ -159,7 +155,7 @@ function AIVoiceAutoFill() {
   };
 
   const playAudio = () => {
-    if (audioUrl && audioPlayerRef.current) {
+    if (audioPlayerRef.current && audioUrl) {
       if (isPlaying) {
         audioPlayerRef.current.pause();
         setIsPlaying(false);
@@ -170,141 +166,147 @@ function AIVoiceAutoFill() {
     }
   };
 
-  const transcribeAudio = async () => {
-    if (!audioBlob) return;
+  const resetRecording = () => {
+    setAudioBlob(null);
+    setAudioUrl(null);
+    setIsPlaying(false);
+    if (audioPlayerRef.current) {
+      audioPlayerRef.current.pause();
+      audioPlayerRef.current.currentTime = 0;
+    }
+  };
 
+  const applyExtractedDataToForm = (extractedData: Record<string, string>) => {
+    setFormData(prev => {
+      const updated = { ...prev };
+      
+      // Map formFields to the format needed for matching
+      const fieldMappings = formFields.map(field => ({
+        label: field.label,
+        key: field.id
+      }));
+
+      // Process each extracted piece of data
+      for (const [extractedLabel, value] of Object.entries(extractedData)) {
+        const match = fieldMappings.find(
+          field => field.label.trim().toLowerCase() === extractedLabel.trim().toLowerCase()
+        );
+        if (match?.key) {
+          updated[match.key] = value;
+        }
+      }
+
+      return updated;
+    });
+  };
+
+  const transcribeAndProcess = async () => {
+    if (!audioBlob) return;
+    
     setIsTranscribing(true);
+    setError(null);
+
     try {
-      // Simulate ElevenLabs Speech-to-Text API call
-      // In a real implementation, you would send the audioBlob to ElevenLabs
-      const formData = new FormData();
-      formData.append('audio', audioBlob, 'recording.wav');
+      // Convert blob to base64
+      const reader = new FileReader();
+      reader.readAsDataURL(audioBlob);
       
-      // Mock transcription for demo
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      const mockTranscription = "I'm John Smith, born March 15th 1985. I'm here for shoulder pain that started last week after playing tennis. My phone number is 555-123-4567 and my email is john.smith@email.com.";
-      
-      setTranscription(mockTranscription);
-      
-      // Add user message to chat
-      const userMessage: ChatMessage = {
-        id: Date.now().toString(),
-        type: 'user',
-        content: mockTranscription,
-        timestamp: new Date(),
-        audioUrl: audioUrl || undefined
+      reader.onloadend = async () => {
+        try {
+          const base64Audio = reader.result?.toString() || '';
+          
+          // Transcribe audio
+          const transcribedText = await transcribeAudio({
+            audio: base64Audio,
+            mimeType: audioBlob.type
+          });
+
+          // Add user message
+          const userMessage: ChatMessage = {
+            id: Date.now().toString(),
+            type: 'user',
+            content: transcribedText,
+            timestamp: new Date()
+          };
+          setChatMessages(prev => [...prev, userMessage]);
+          setIsTranscribing(false);
+          setIsProcessingAI(true);
+
+          // Process with AI
+          const result = await processWithGroq(
+            transcribedText, 
+            formFields, 
+            formData, 
+            [...chatMessages, userMessage]
+          );
+
+          // Apply extracted data to form fields
+          if (result.extractedData) {
+            applyExtractedDataToForm(result.extractedData);
+          }
+
+          // Add AI response
+          const aiMessage: ChatMessage = {
+            id: (Date.now() + 1).toString(),
+            type: 'ai',
+            content: result.response,
+            timestamp: new Date(),
+            audioUrl: result.audioUrl
+          };
+          setChatMessages(prev => [...prev, aiMessage]);
+
+          // Update form data
+          if (result.extractedData && Object.keys(result.extractedData).length > 0) {
+            setFormData(prev => ({ ...prev, ...result.extractedData }));
+            
+            // Add system message about extracted data
+            const extractedFields = Object.keys(result.extractedData);
+            if (extractedFields.length > 0) {
+              const systemMessage: ChatMessage = {
+                id: (Date.now() + 2).toString(),
+                type: 'system',
+                content: `✅ Extracted information for: ${extractedFields.join(', ')}`,
+                timestamp: new Date()
+              };
+              setChatMessages(prev => [...prev, systemMessage]);
+            }
+          }
+
+          // Play AI response audio if available
+          if (result.audioUrl) {
+            const audio = new Audio(result.audioUrl);
+            audio.play().catch(console.error);
+          }
+
+          setIsProcessingAI(false);
+          resetRecording();
+
+        } catch (err: any) {
+          setError('Failed to process audio. Please try again.');
+          console.error('Processing error:', err);
+          setIsTranscribing(false);
+          setIsProcessingAI(false);
+        }
       };
-      setChatMessages(prev => [...prev, userMessage]);
-      
-      // Process with AI
-      await processWithAI(mockTranscription);
-      
-    } catch (err) {
-      setError('Failed to transcribe audio. Please try again.');
-    } finally {
+
+      reader.onerror = () => {
+        setError('Failed to read audio file.');
+        setIsTranscribing(false);
+      };
+
+    } catch (err: any) {
+      setError('Failed to process audio. Please try again.');
+      console.error('Transcription error:', err);
       setIsTranscribing(false);
     }
   };
 
-  const processWithAI = async (text: string) => {
-    setIsProcessingAI(true);
-    try {
-      // Simulate Groq AI processing
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Mock AI response that fills form fields
-      const updatedFormData = { ...formData };
-      const aiResponse = [];
-      
-      // Extract information and fill fields
-      if (text.toLowerCase().includes('john smith')) {
-        const nameField = formFields.find(f => f.label.toLowerCase().includes('name'));
-        if (nameField) {
-          updatedFormData[nameField.id] = 'John Smith';
-          aiResponse.push(`✓ I've filled in your name as "John Smith"`);
-        }
-      }
-      
-      if (text.includes('555-123-4567')) {
-        const phoneField = formFields.find(f => f.label.toLowerCase().includes('phone'));
-        if (phoneField) {
-          updatedFormData[phoneField.id] = '555-123-4567';
-          aiResponse.push(`✓ I've added your phone number: 555-123-4567`);
-        }
-      }
-      
-      if (text.includes('john.smith@email.com')) {
-        const emailField = formFields.find(f => f.label.toLowerCase().includes('email'));
-        if (emailField) {
-          updatedFormData[emailField.id] = 'john.smith@email.com';
-          aiResponse.push(`✓ I've added your email: john.smith@email.com`);
-        }
-      }
-      
-      if (text.includes('march 15') || text.includes('1985')) {
-        const dobField = formFields.find(f => f.label.toLowerCase().includes('birth') || f.label.toLowerCase().includes('dob'));
-        if (dobField) {
-          updatedFormData[dobField.id] = '1985-03-15';
-          aiResponse.push(`✓ I've set your date of birth as March 15, 1985`);
-        }
-      }
-      
-      if (text.includes('shoulder pain')) {
-        const complaintField = formFields.find(f => f.label.toLowerCase().includes('complaint') || f.label.toLowerCase().includes('reason'));
-        if (complaintField) {
-          updatedFormData[complaintField.id] = 'Shoulder pain - onset 1 week ago, sports-related';
-          aiResponse.push(`✓ I've noted your chief complaint: Shoulder pain from tennis`);
-        }
-      }
-      
-      setFormData(updatedFormData);
-      
-      // Create AI response
-      let responseText = aiResponse.join('\n');
-      if (aiResponse.length === 0) {
-        responseText = "I heard what you said, but I'm not sure which fields to fill. Could you be more specific about what information you'd like to provide?";
-      } else {
-        responseText += '\n\nIs there anything else you\'d like to add or any information you\'d like to correct?';
-      }
-      
-      const aiMessage: ChatMessage = {
-        id: Date.now().toString(),
-        type: 'ai',
-        content: responseText,
-        timestamp: new Date()
-      };
-      setChatMessages(prev => [...prev, aiMessage]);
-      
-      // Check if form is complete
-      checkFormCompletion(updatedFormData);
-      
-    } catch (err) {
-      setError('Failed to process with AI. Please try again.');
-    } finally {
-      setIsProcessingAI(false);
-    }
-  };
-
-  const checkFormCompletion = (data: FormData) => {
-    const requiredFields = formFields.filter(f => f.required);
-    const filledRequiredFields = requiredFields.filter(f => {
-      const value = data[f.id];
-      return value && value !== '' && (Array.isArray(value) ? value.length > 0 : true);
-    });
-    
-    setIsFormComplete(filledRequiredFields.length === requiredFields.length);
-  };
-
-  const resetRecording = () => {
-    setAudioBlob(null);
-    setAudioUrl(null);
-    setTranscription('');
-    setIsPlaying(false);
-  };
-
-  const sendTextMessage = (text: string) => {
+  const sendTextMessage = async (text: string) => {
     if (!text.trim()) return;
+
+    setError(null);
     
+    // Add user message
     const userMessage: ChatMessage = {
       id: Date.now().toString(),
       type: 'user',
@@ -312,36 +314,92 @@ function AIVoiceAutoFill() {
       timestamp: new Date()
     };
     setChatMessages(prev => [...prev, userMessage]);
-    
-    // Process with AI
-    processWithAI(text);
+    setIsProcessingAI(true);
+
+    try {
+      // Process with AI
+      const result = await processWithGroq(
+        text, 
+        formFields, 
+        formData, 
+        [...chatMessages, userMessage]
+      );
+
+      // Apply extracted data to form fields
+      if (result.extractedData) {
+        applyExtractedDataToForm(result.extractedData);
+      }
+
+      // Add AI response
+      const aiMessage: ChatMessage = {
+        id: (Date.now() + 1).toString(),
+        type: 'ai',
+        content: result.response,
+        timestamp: new Date(),
+        audioUrl: result.audioUrl
+      };
+      setChatMessages(prev => [...prev, aiMessage]);
+
+      // Update form data
+      if (result.extractedData && Object.keys(result.extractedData).length > 0) {
+        setFormData(prev => ({ ...prev, ...result.extractedData }));
+        
+        // Add system message about extracted data
+        const extractedFields = Object.keys(result.extractedData);
+        if (extractedFields.length > 0) {
+          const systemMessage: ChatMessage = {
+            id: (Date.now() + 2).toString(),
+            type: 'system',
+            content: `✅ Extracted information for: ${extractedFields.join(', ')}`,
+            timestamp: new Date()
+          };
+          setChatMessages(prev => [...prev, systemMessage]);
+        }
+      }
+
+      // Play AI response audio if available
+      if (result.audioUrl) {
+        const audio = new Audio(result.audioUrl);
+        audio.play().catch(console.error);
+      }
+
+    } catch (err: any) {
+      setError('Failed to process message. Please try again.');
+      console.error('AI processing error:', err);
+    } finally {
+      setIsProcessingAI(false);
+    }
   };
 
   const updateFormField = (fieldId: string, value: any) => {
-    const updatedData = { ...formData, [fieldId]: value };
-    setFormData(updatedData);
-    checkFormCompletion(updatedData);
+    setFormData(prev => ({ ...prev, [fieldId]: value }));
   };
 
   const submitForm = async () => {
     try {
-      // Simulate form submission
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Here you would typically save the form data
+      console.log('Submitting form:', { template: selectedTemplate, data: formData });
       
+      // Add success message
       const successMessage: ChatMessage = {
         id: Date.now().toString(),
         type: 'system',
-        content: '✅ Form submitted successfully! Your information has been saved.',
+        content: '🎉 Form submitted successfully!',
         timestamp: new Date()
       };
       setChatMessages(prev => [...prev, successMessage]);
       
-    } catch (err) {
+      // Navigate back or show success state
+      setTimeout(() => {
+        navigate('/dashboard');
+      }, 2000);
+      
+    } catch (err: any) {
       setError('Failed to submit form. Please try again.');
     }
   };
 
-  if (authLoading || loading) {
+  if (authLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
@@ -509,7 +567,7 @@ function AIVoiceAutoFill() {
                               <button
                                 onClick={() => {
                                   const audio = new Audio(message.audioUrl);
-                                  audio.play();
+                                  audio.play().catch(console.error);
                                 }}
                                 className="mt-2 flex items-center text-xs opacity-75 hover:opacity-100"
                               >
@@ -545,7 +603,8 @@ function AIVoiceAutoFill() {
                       {!isRecording ? (
                         <button
                           onClick={startRecording}
-                          className="w-16 h-16 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full flex items-center justify-center hover:from-purple-700 hover:to-blue-700 transition-all transform hover:scale-105"
+                          disabled={isTranscribing || isProcessingAI}
+                          className="w-16 h-16 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full flex items-center justify-center hover:from-purple-700 hover:to-blue-700 transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           <Mic className="w-8 h-8" />
                         </button>
@@ -563,7 +622,7 @@ function AIVoiceAutoFill() {
                     {isRecording && (
                       <div className="text-center">
                         <div className="flex items-center justify-center space-x-2 text-red-600">
-                          <Waveform className="w-4 h-4 animate-pulse" />
+                          <div className="w-2 h-2 bg-red-600 rounded-full animate-pulse"></div>
                           <span className="text-sm font-medium">Recording...</span>
                         </div>
                       </div>
@@ -584,11 +643,11 @@ function AIVoiceAutoFill() {
                           </div>
                           <div className="flex items-center space-x-2">
                             <button
-                              onClick={transcribeAudio}
-                              disabled={isTranscribing}
+                              onClick={transcribeAndProcess}
+                              disabled={isTranscribing || isProcessingAI}
                               className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50 flex items-center"
                             >
-                              {isTranscribing ? (
+                              {isTranscribing || isProcessingAI ? (
                                 <Loader2 className="w-4 h-4 animate-spin mr-2" />
                               ) : (
                                 <Send className="w-4 h-4 mr-2" />
@@ -617,9 +676,10 @@ function AIVoiceAutoFill() {
                       <input
                         type="text"
                         placeholder="Or type your message here..."
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent pr-12"
+                        disabled={isTranscribing || isProcessingAI}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent pr-12 disabled:opacity-50"
                         onKeyPress={(e) => {
-                          if (e.key === 'Enter') {
+                          if (e.key === 'Enter' && !isTranscribing && !isProcessingAI) {
                             sendTextMessage(e.currentTarget.value);
                             e.currentTarget.value = '';
                           }
@@ -628,10 +688,13 @@ function AIVoiceAutoFill() {
                       <button
                         onClick={(e) => {
                           const input = e.currentTarget.previousElementSibling as HTMLInputElement;
-                          sendTextMessage(input.value);
-                          input.value = '';
+                          if (input.value.trim() && !isTranscribing && !isProcessingAI) {
+                            sendTextMessage(input.value);
+                            input.value = '';
+                          }
                         }}
-                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-purple-600 hover:text-purple-700"
+                        disabled={isTranscribing || isProcessingAI}
+                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-purple-600 hover:text-purple-700 disabled:opacity-50"
                       >
                         <Send className="w-4 h-4" />
                       </button>
