@@ -1,29 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { 
-  ArrowLeft,
-  Mic,
-  MicOff,
-  Send,
-  Bot,
-  User,
-  Play,
-  Pause,
-  RotateCcw,
-  CheckCircle,
-  AlertCircle,
-  Loader2,
-  FileText,
-  MessageSquare,
-  Volume2,
-  Download,
-  Edit,
-  Save,
-  X,
-  Zap,
-  Brain,
-  Waveform
-} from 'lucide-react';
+import { ArrowLeft, Mic, MicOff, Send, Bot, User, Play, Pause, RotateCcw, CheckCircle, AlertCircle, Loader2, FileText, MessageSquare, Volume2, Download, Edit, Save, X, Zap, Brain, AudioWaveform as Waveform } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { getUserTemplates, Template } from '../lib/templates';
 
