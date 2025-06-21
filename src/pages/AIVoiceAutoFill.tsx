@@ -176,28 +176,13 @@ function AIVoiceAutoFill() {
     }
   };
 
+  // Remove any display of raw JSON in chat messages (handled by only showing result.response)
+  // Update applyExtractedDataToForm to use keys directly (AI returns field IDs)
   const applyExtractedDataToForm = (extractedData: Record<string, string>) => {
-    setFormData(prev => {
-      const updated = { ...prev };
-      
-      // Map formFields to the format needed for matching
-      const fieldMappings = formFields.map(field => ({
-        label: field.label,
-        key: field.id
-      }));
-
-      // Process each extracted piece of data
-      for (const [extractedLabel, value] of Object.entries(extractedData)) {
-        const match = fieldMappings.find(
-          field => field.label.trim().toLowerCase() === extractedLabel.trim().toLowerCase()
-        );
-        if (match?.key) {
-          updated[match.key] = value;
-        }
-      }
-
-      return updated;
-    });
+    setFormData(prev => ({
+      ...prev,
+      ...extractedData,
+    }));
   };
 
   const transcribeAndProcess = async () => {

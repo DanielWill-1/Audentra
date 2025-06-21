@@ -103,10 +103,15 @@ export async function transcribeAudio({
       if (!response.ok) {
         const errorData = await response.json().catch(() => null);
         console.error("Transcription API Error:", errorData);
-        
+
         if (response.status === 404) {
           console.error("Transcription API endpoint not found. Please ensure the local API server is running and the endpoint is correct.");
           throw new Error("Transcription API endpoint not found (404). Check server configuration.");
+        }
+
+        if (response.status === 500) {
+          console.error("Internal server error occurred at the transcription API.");
+          throw new Error("Internal server error (500). Please check the server logs.");
         }
 
         throw new Error(
