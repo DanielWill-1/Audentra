@@ -7,7 +7,7 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "server": "ts-node --compilerOptions \"{\\\"module\\\":\\\"commonjs\\\"}\" server/index.ts"
+    "server": "ts-node server/index.ts"
   },
   "dependencies": {
     "@google-cloud/text-to-speech": "^5.8.1",
