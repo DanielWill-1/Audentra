@@ -211,16 +211,12 @@ export async function synthesizeSpeech(text: string): Promise<string> {
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         console.error("TTS API Error:", errorData);
-
-        if (response.status === 500) {
-          throw new Error("TTS service temporarily unavailable. Please try again later.");
-        }
-
         throw new Error(errorData.error?.details || "Failed to generate speech.");
       }
 
       const { audioContent } = await response.json();
       if (!audioContent) {
+        console.error("No audio content received from TTS API response.");
         throw new Error("No audio content received.");
       }
 

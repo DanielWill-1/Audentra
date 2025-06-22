@@ -13,7 +13,7 @@ app.use(bodyParser.urlencoded({ limit: '20mb', extended: true }));
 app.use("/api", transcriptionRoute);
 
 // Add TTS route
-app.use("/api", ttsRoute);
+app.use("/api/tts", ttsRoute);
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

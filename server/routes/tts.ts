@@ -1,13 +1,11 @@
-// api/tts.js
-import express from "express";
-import { TextToSpeechClient } from "@google-cloud/text-to-speech";
-
+// api/transcribe.js
+const { TextToSpeechClient } = require('@google-cloud/text-to-speech'); // Correct module
+const express = require('express');
 const router = express.Router();
 
 // Initialize Google Cloud Text-to-Speech client
 const ttsClient = new TextToSpeechClient({
-  keyFilename: process.env.GOOGLE_APPLICATION_CREDENTIALS,
-  projectId: process.env.GOOGLE_CLOUD_PROJECT_ID,
+  keyFilename: "service-account.json", // Ensure this file is in the backend
 });
 
 // Validate text input
@@ -79,24 +77,23 @@ async function synthesizeSpeech(req, res) {
       });
     }
 
-    // Check if Google Cloud credentials are available
-    if (!process.env.GOOGLE_APPLICATION_CREDENTIALS && !process.env.GOOGLE_CLOUD_API_KEY) {
-      console.warn('No Google Cloud credentials found, returning empty response');
-      return res.json({ 
-        audioContent: '',
-        message: 'TTS service not configured' 
+    console.log("Original text:", text);
+    const cleanText = prepareTextForTTS(text);
+    console.log("Cleaned text:", cleanText);
+
+    if (!cleanText) {
+      return res.status(400).json({ 
+        error: 'Input text is invalid or contains only unsupported characters.' 
       });
     }
-
-    // Prepare text for TTS
-    const cleanText = prepareTextForTTS(text);
 
     // Configure voice settings
     const voiceConfig = {
       languageCode: voice?.languageCode || 'en-US',
       name: voice?.name || 'en-US-Neural2-D',
-      ssmlGender: voice?.ssmlGender || 'NEUTRAL',
+      ssmlGender: voice?.ssmlGender || 'MALE',
     };
+    console.log("Voice configuration:", voiceConfig);
 
     // Configure audio settings
     const audioConfig = {
@@ -113,12 +110,7 @@ async function synthesizeSpeech(req, res) {
       voice: voiceConfig,
       audioConfig: audioConfig,
     };
-
-    console.log('Processing TTS request:', {
-      textLength: cleanText.length,
-      voice: voiceConfig.name,
-      encoding: audioConfig.audioEncoding,
-    });
+    console.log("TTS request object:", request);
 
     // Perform the text-to-speech request
     const [response] = await ttsClient.synthesizeSpeech(request);
@@ -173,6 +165,6 @@ async function synthesizeSpeech(req, res) {
 }
 
 // Define the /api/tts route
-router.post('/api/tts', synthesizeSpeech);
+router.post('/', synthesizeSpeech);
 
 export default router;
