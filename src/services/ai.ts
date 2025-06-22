@@ -103,10 +103,15 @@ export async function transcribeAudio({
       if (!response.ok) {
         const errorData = await response.json().catch(() => null);
         console.error("Transcription API Error:", errorData);
-        
+
         if (response.status === 404) {
           console.error("Transcription API endpoint not found. Please ensure the local API server is running and the endpoint is correct.");
           throw new Error("Transcription API endpoint not found (404). Check server configuration.");
+        }
+
+        if (response.status === 500) {
+          console.error("Internal server error occurred at the transcription API.");
+          throw new Error("Internal server error (500). Please check the server logs.");
         }
 
         throw new Error(
@@ -315,6 +320,19 @@ export function createAudioPlayer(audioUrl: string): Promise<HTMLAudioElement> {
   });
 }
 
+// Helper to extract JSON from a string (even if LLM adds extra text)
+function extractJSONFromString(text: string): any | null {
+  const jsonMatch = text.match(/\{[\s\S]*\}/);
+  if (jsonMatch) {
+    try {
+      return JSON.parse(jsonMatch[0]);
+    } catch {
+      return null;
+    }
+  }
+  return null;
+}
+
 export async function processWithGroq(
   userInput: string,
   formFields: any[],
@@ -403,26 +421,20 @@ Example response format:
     const data = await response.json();
     const rawContent = data.choices?.[0]?.message?.content;
 
-    if (!rawContent) {
-      throw new Error("No response content received from AI");
-    }
-
-    // Try parsing the response as JSON
     let parsedResponse = {
       response: rawContent,
       extractedData: {}
     };
 
+    // Try parsing the response as JSON
+    let extracted = null;
     try {
-      const parsed = JSON.parse(rawContent);
-      if (parsed.response && typeof parsed.response === 'string') {
-        parsedResponse = parsed;
-      }
-    } catch (parseError) {
-      console.warn("AI did not return valid JSON, using raw response");
-      // Try to extract data using regex as fallback
-      const extractedData = extractDataFromText(rawContent, formFields, currentFormData);
-      parsedResponse.extractedData = extractedData;
+      extracted = JSON.parse(rawContent);
+    } catch {
+      extracted = extractJSONFromString(rawContent);
+    }
+    if (extracted && extracted.response && typeof extracted.response === 'string') {
+      parsedResponse = extracted;
     }
 
     // Generate speech for the response

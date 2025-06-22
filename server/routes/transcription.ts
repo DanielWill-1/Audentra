@@ -1,5 +1,5 @@
 import express from "express";
-import { SpeechClient } from "@google-cloud/speech";
+import { SpeechClient, protos } from "@google-cloud/speech";
 
 const router = express.Router();
 
@@ -7,6 +7,33 @@ const router = express.Router();
 const client = new SpeechClient({
   keyFilename: "service-account.json", // Ensure this file is in the backend
 });
+
+// Helper function to map MIME types to Google Cloud audio encodings
+function getGoogleAudioEncoding(mimeType: string): protos.google.cloud.speech.v1.RecognitionConfig.AudioEncoding {
+  const encodingMap: { [key: string]: protos.google.cloud.speech.v1.RecognitionConfig.AudioEncoding } = {
+    "audio/wav": protos.google.cloud.speech.v1.RecognitionConfig.AudioEncoding.LINEAR16,
+    "audio/x-wav": protos.google.cloud.speech.v1.RecognitionConfig.AudioEncoding.LINEAR16,
+    "audio/webm": protos.google.cloud.speech.v1.RecognitionConfig.AudioEncoding.WEBM_OPUS,
+    "audio/ogg": protos.google.cloud.speech.v1.RecognitionConfig.AudioEncoding.OGG_OPUS,
+    "audio/mp3": protos.google.cloud.speech.v1.RecognitionConfig.AudioEncoding.MP3,
+    "audio/mpeg": protos.google.cloud.speech.v1.RecognitionConfig.AudioEncoding.MP3,
+    "audio/flac": protos.google.cloud.speech.v1.RecognitionConfig.AudioEncoding.FLAC,
+  };
+
+  return encodingMap[mimeType] || protos.google.cloud.speech.v1.RecognitionConfig.AudioEncoding.ENCODING_UNSPECIFIED;
+}
+
+// Helper function to get sample rate based on MIME type
+function getSampleRateHertz(mimeType: string): number | undefined {
+  if (mimeType === "audio/webm" || mimeType === "audio/ogg") {
+    return 48000;
+  }
+  if (mimeType === "audio/wav" || mimeType === "audio/x-wav") {
+    return 16000;
+  }
+  // Return undefined for formats where sample rate should be omitted
+  return undefined;
+}
 
 router.post("/transcribe", async (req, res) => {
   const { audio, mimeType } = req.body;
@@ -21,18 +48,19 @@ router.post("/transcribe", async (req, res) => {
       throw new Error("Invalid audio data format: Base64 content is missing.");
     }
 
+    const sampleRateHertz = getSampleRateHertz(mimeType);
     const request = {
       audio: { content: audioContent },
       config: {
         encoding: getGoogleAudioEncoding(mimeType),
-        sampleRateHertz: 16000,
         languageCode: "en-US",
         enableAutomaticPunctuation: true,
+        ...(sampleRateHertz ? { sampleRateHertz } : {}),
       },
     };
 
-    const [response] = await client.recognize(request);
-    const transcript = response.results
+    const response = await client.recognize(request);
+    const transcript = response[0].results
       ?.map((result) => result.alternatives?.[0]?.transcript)
       .join("\n");
 
@@ -42,20 +70,5 @@ router.post("/transcribe", async (req, res) => {
     res.status(500).json({ error: "Failed to transcribe audio", details: error.message });
   }
 });
-
-// Helper function to map MIME types to Google Cloud audio encodings
-function getGoogleAudioEncoding(mimeType: string): string {
-  const encodingMap: { [key: string]: string } = {
-    "audio/wav": "LINEAR16",
-    "audio/x-wav": "LINEAR16",
-    "audio/webm": "WEBM_OPUS",
-    "audio/ogg": "OGG_OPUS",
-    "audio/mp3": "MP3",
-    "audio/mpeg": "MP3",
-    "audio/flac": "FLAC",
-  };
-
-  return encodingMap[mimeType] || "LINEAR16";
-}
 
 export default router;

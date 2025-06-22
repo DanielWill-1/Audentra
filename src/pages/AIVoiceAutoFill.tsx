@@ -176,26 +176,19 @@ function AIVoiceAutoFill() {
     }
   };
 
-  const applyExtractedDataToForm = (extractedData: Record<string, string>) => {
+  // Helper to normalize keys for mapping extractedData to form fields
+  const normalizeKey = (key: string) => key.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+
+  const applyExtractedDataToForm = (extractedData: Record<string, any>) => {
     setFormData(prev => {
-      const updated = { ...prev };
-      
-      // Map formFields to the format needed for matching
-      const fieldMappings = formFields.map(field => ({
-        label: field.label,
-        key: field.id
-      }));
-
-      // Process each extracted piece of data
-      for (const [extractedLabel, value] of Object.entries(extractedData)) {
-        const match = fieldMappings.find(
-          field => field.label.trim().toLowerCase() === extractedLabel.trim().toLowerCase()
-        );
-        if (match?.key) {
-          updated[match.key] = value;
+      const updated: Record<string, any> = { ...prev };
+      Object.entries(extractedData).forEach(([key, value]) => {
+        // Try to match extracted key to form field id (case-insensitive, ignore spaces/underscores)
+        const match = formFields.find(f => normalizeKey(f.id) === normalizeKey(key) || normalizeKey(f.label) === normalizeKey(key));
+        if (match) {
+          updated[match.id] = value;
         }
-      }
-
+      });
       return updated;
     });
   };
@@ -240,36 +233,14 @@ function AIVoiceAutoFill() {
             [...chatMessages, userMessage]
           );
 
-          // Apply extracted data to form fields
+          // Only show the assistant's message, not raw JSON
+          setChatMessages(prev => [
+            ...prev,
+            { id: Date.now().toString(), type: 'ai', content: result.response, timestamp: new Date(), audioUrl: result.audioUrl }
+          ]);
+          // Autofill form fields using extractedData (with mapping)
           if (result.extractedData) {
             applyExtractedDataToForm(result.extractedData);
-          }
-
-          // Add AI response
-          const aiMessage: ChatMessage = {
-            id: (Date.now() + 1).toString(),
-            type: 'ai',
-            content: result.response,
-            timestamp: new Date(),
-            audioUrl: result.audioUrl
-          };
-          setChatMessages(prev => [...prev, aiMessage]);
-
-          // Update form data
-          if (result.extractedData && Object.keys(result.extractedData).length > 0) {
-            setFormData(prev => ({ ...prev, ...result.extractedData }));
-            
-            // Add system message about extracted data
-            const extractedFields = Object.keys(result.extractedData);
-            if (extractedFields.length > 0) {
-              const systemMessage: ChatMessage = {
-                id: (Date.now() + 2).toString(),
-                type: 'system',
-                content: `✅ Extracted information for: ${extractedFields.join(', ')}`,
-                timestamp: new Date()
-              };
-              setChatMessages(prev => [...prev, systemMessage]);
-            }
           }
 
           // Play AI response audio if available
@@ -325,36 +296,14 @@ function AIVoiceAutoFill() {
         [...chatMessages, userMessage]
       );
 
-      // Apply extracted data to form fields
+      // Only show the assistant's message, not raw JSON
+      setChatMessages(prev => [
+        ...prev,
+        { id: Date.now().toString(), type: 'ai', content: result.response, timestamp: new Date(), audioUrl: result.audioUrl }
+      ]);
+      // Autofill form fields using extractedData (with mapping)
       if (result.extractedData) {
         applyExtractedDataToForm(result.extractedData);
-      }
-
-      // Add AI response
-      const aiMessage: ChatMessage = {
-        id: (Date.now() + 1).toString(),
-        type: 'ai',
-        content: result.response,
-        timestamp: new Date(),
-        audioUrl: result.audioUrl
-      };
-      setChatMessages(prev => [...prev, aiMessage]);
-
-      // Update form data
-      if (result.extractedData && Object.keys(result.extractedData).length > 0) {
-        setFormData(prev => ({ ...prev, ...result.extractedData }));
-        
-        // Add system message about extracted data
-        const extractedFields = Object.keys(result.extractedData);
-        if (extractedFields.length > 0) {
-          const systemMessage: ChatMessage = {
-            id: (Date.now() + 2).toString(),
-            type: 'system',
-            content: `✅ Extracted information for: ${extractedFields.join(', ')}`,
-            timestamp: new Date()
-          };
-          setChatMessages(prev => [...prev, systemMessage]);
-        }
       }
 
       // Play AI response audio if available
