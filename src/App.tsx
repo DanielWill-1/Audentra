@@ -17,6 +17,8 @@ import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import Dashboard from './pages/Dashboard';
 import Templates from './pages/Templates';
+import ShareTemplate from './pages/ShareTemplate';
+import ReviewTemplate from './pages/ReviewTemplate';
 import Scheduler from './pages/Scheduler';
 import ManageSchedules from './pages/ManageSchedules';
 import SchedulerSettings from './pages/SchedulerSettings';
@@ -41,6 +43,8 @@ function App() {
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/templates" element={<Templates />} />
+            <Route path="/template/share/:templateId" element={<ShareTemplate />} />
+            <Route path="/template/review/:templateId" element={<ReviewTemplate />} />
             <Route path="/scheduler" element={<Scheduler />} />
             <Route path="/manage-schedules" element={<ManageSchedules />} />
             <Route path="/scheduler-settings" element={<SchedulerSettings />} />
