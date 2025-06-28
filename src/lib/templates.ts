@@ -225,17 +225,10 @@ export const shareTemplate = async (shareData: ShareTemplateData) => {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { data: null, error: new Error('Not authenticated') };
 
-  // Get the current user's profile information
-  const { data: userProfileData } = await supabase
-    .from('users')
-    .select('first_name, last_name')
-    .eq('id', user.id);
-
-  const userProfile = userProfileData && userProfileData.length > 0 ? userProfileData[0] : null;
-
-  const userName = userProfile 
-    ? `${userProfile.first_name || ''} ${userProfile.last_name || ''}`.trim() || user.email
-    : user.email;
+  // Get user name from user metadata instead of querying users table
+  const firstName = user.user_metadata?.first_name || '';
+  const lastName = user.user_metadata?.last_name || '';
+  const userName = `${firstName} ${lastName}`.trim() || user.email || 'Unknown User';
 
   // Create shares for each email
   const shares = shareData.user_emails.map(email => ({
@@ -261,17 +254,10 @@ export const shareTemplatesWithTeam = async (templateIds: string[], message?: st
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { data: null, error: new Error('Not authenticated') };
 
-  // Get the current user's profile information
-  const { data: userProfileData } = await supabase
-    .from('users')
-    .select('first_name, last_name')
-    .eq('id', user.id);
-
-  const userProfile = userProfileData && userProfileData.length > 0 ? userProfileData[0] : null;
-
-  const userName = userProfile 
-    ? `${userProfile.first_name || ''} ${userProfile.last_name || ''}`.trim() || user.email
-    : user.email;
+  // Get user name from user metadata instead of querying users table
+  const firstName = user.user_metadata?.first_name || '';
+  const lastName = user.user_metadata?.last_name || '';
+  const userName = `${firstName} ${lastName}`.trim() || user.email || 'Unknown User';
 
   // Share with the current user's email (for demo purposes)
   // In a real app, you'd get actual team member emails from the team_members table
@@ -411,17 +397,10 @@ export const addTemplateToReviewQueue = async (templateId: string, priority: 'lo
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { data: null, error: new Error('Not authenticated') };
 
-  // Get the current user's profile information
-  const { data: userProfileData } = await supabase
-    .from('users')
-    .select('first_name, last_name')
-    .eq('id', user.id);
-
-  const userProfile = userProfileData && userProfileData.length > 0 ? userProfileData[0] : null;
-
-  const userName = userProfile 
-    ? `${userProfile.first_name || ''} ${userProfile.last_name || ''}`.trim() || user.email
-    : user.email;
+  // Get user name from user metadata instead of querying users table
+  const firstName = user.user_metadata?.first_name || '';
+  const lastName = user.user_metadata?.last_name || '';
+  const userName = `${firstName} ${lastName}`.trim() || user.email || 'Unknown User';
 
   const review = {
     template_id: templateId,
@@ -481,17 +460,10 @@ export const addTemplateReview = async (reviewData: {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { data: null, error: new Error('Not authenticated') };
 
-  // Get the current user's profile information
-  const { data: userProfileData } = await supabase
-    .from('users')
-    .select('first_name, last_name')
-    .eq('id', user.id);
-
-  const userProfile = userProfileData && userProfileData.length > 0 ? userProfileData[0] : null;
-
-  const userName = userProfile 
-    ? `${userProfile.first_name || ''} ${userProfile.last_name || ''}`.trim() || user.email
-    : user.email;
+  // Get user name from user metadata instead of querying users table
+  const firstName = user.user_metadata?.first_name || '';
+  const lastName = user.user_metadata?.last_name || '';
+  const userName = `${firstName} ${lastName}`.trim() || user.email || 'Unknown User';
 
   const review = {
     ...reviewData,
