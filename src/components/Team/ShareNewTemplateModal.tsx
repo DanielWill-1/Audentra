@@ -19,7 +19,7 @@ import {
   GraduationCap,
   Building2
 } from 'lucide-react';
-import { getUserTemplates, shareTemplate, Template } from '../../lib/templates';
+import { getUserTemplates, shareTemplatesWithTeam, Template } from '../../lib/templates';
 
 interface ShareNewTemplateModalProps {
   isOpen: boolean;
@@ -75,7 +75,7 @@ export default function ShareNewTemplateModal({ isOpen, onClose, onSuccess }: Sh
       const { data, error } = await getUserTemplates('created_at', false);
       if (error) throw error;
       
-      // Only show templates that are not already shared or are owned by the user
+      // Only show templates that are owned by the user
       const userTemplates = (data || []).filter(template => 
         template.visibility === 'visible' || template.visibility === 'hidden'
       );
@@ -133,18 +133,12 @@ export default function ShareNewTemplateModal({ isOpen, onClose, onSuccess }: Sh
     setError(null);
 
     try {
-      // For now, we'll simulate sharing with team members
-      // In a real implementation, this would share with actual team members
-      const sharePromises = selectedTemplates.map(templateId => 
-        shareTemplate({
-          template_id: templateId,
-          user_emails: ['team@company.com'], // Mock team email
-          role: 'viewer',
-          message: 'Shared via team collaboration'
-        })
+      const { error } = await shareTemplatesWithTeam(
+        selectedTemplates,
+        'Shared via team collaboration'
       );
 
-      await Promise.all(sharePromises);
+      if (error) throw error;
 
       setSuccess(`Successfully shared ${selectedTemplates.length} template${selectedTemplates.length > 1 ? 's' : ''} with the team!`);
       

@@ -236,10 +236,11 @@ export const shareTemplate = async (shareData: ShareTemplateData) => {
     ? `${userProfile.first_name || ''} ${userProfile.last_name || ''}`.trim() || user.email
     : user.email;
 
+  // Create shares for each email
   const shares = shareData.user_emails.map(email => ({
     template_id: shareData.template_id,
     user_email: email,
-    user_name: '', // Will be filled when user accepts/views
+    user_name: email.split('@')[0], // Use email prefix as default name
     role: shareData.role,
     shared_by: user.id,
     shared_at: new Date().toISOString(),
@@ -249,6 +250,49 @@ export const shareTemplate = async (shareData: ShareTemplateData) => {
   const { data, error } = await supabase
     .from('template_shares')
     .insert(shares)
+    .select();
+
+  return { data, error };
+};
+
+// Share multiple templates with team (simplified version for team sharing)
+export const shareTemplatesWithTeam = async (templateIds: string[], message?: string) => {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { data: null, error: new Error('Not authenticated') };
+
+  // Get the current user's profile information
+  const { data: userProfile } = await supabase
+    .from('users')
+    .select('first_name, last_name')
+    .eq('id', user.id)
+    .single();
+
+  const userName = userProfile 
+    ? `${userProfile.first_name || ''} ${userProfile.last_name || ''}`.trim() || user.email
+    : user.email;
+
+  // For demo purposes, we'll share with a mock team email
+  // In a real app, you'd get actual team member emails from the team_members table
+  const teamEmails = ['team@company.com']; // Mock team email
+
+  const allShares = [];
+  
+  for (const templateId of templateIds) {
+    const shares = teamEmails.map(email => ({
+      template_id: templateId,
+      user_email: email,
+      user_name: 'Team Member', // Default name for team shares
+      role: 'viewer' as const,
+      shared_by: user.id,
+      shared_at: new Date().toISOString(),
+      message: message || 'Shared via team collaboration'
+    }));
+    allShares.push(...shares);
+  }
+
+  const { data, error } = await supabase
+    .from('template_shares')
+    .insert(allShares)
     .select();
 
   return { data, error };
