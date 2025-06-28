@@ -61,76 +61,90 @@ export default function TeamCollaboration() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const sharedTemplatesRef = useRef<HTMLDivElement>(null);
+  const sharedByMeRef = useRef<HTMLDivElement>(null);
 
   // Load real shared templates data
   useEffect(() => {
-    const loadTeamData = async () => {
-      setLoading(true);
-      setError(null);
-      
-      try {
-        console.log('Loading team collaboration data...');
-        
-        // Load templates shared with me
-        const { data: sharedWithMeResponse, error: sharedWithMeError } = await getSharedTemplates();
-        console.log('Templates shared with me:', { sharedWithMeResponse, sharedWithMeError });
-        
-        // Load templates I've shared with others
-        const { data: sharedByMeResponse, error: sharedByMeError } = await getTemplatesSharedByUser();
-        console.log('Templates shared by me:', { sharedByMeResponse, sharedByMeError });
-        
-        if (sharedWithMeError) {
-          console.error('Error loading shared templates:', sharedWithMeError);
-          setError('Failed to load shared templates');
-        } else {
-          // Filter out hidden templates and templates with null template data
-          const validSharedWithMe = (sharedWithMeResponse || [])
-            .filter(share => share.template !== null && share.message !== 'hidden_by_user');
-          
-          setSharedWithMeData(validSharedWithMe);
-          console.log('Processed templates shared with me:', validSharedWithMe);
-        }
-
-        if (sharedByMeError) {
-          console.error('Error loading templates shared by me:', sharedByMeError);
-        } else {
-          // Filter out templates with null template data
-          const validSharedByMe = (sharedByMeResponse || [])
-            .filter(share => share.template !== null);
-          
-          setSharedByMeData(validSharedByMe);
-          console.log('Processed templates shared by me:', validSharedByMe);
-        }
-      } catch (err: any) {
-        console.error('Error loading team data:', err);
-        setError(err.message || 'Failed to load team data');
-      } finally {
-        setLoading(false);
-      }
-    };
-
     loadTeamData();
   }, []);
 
-  // Add scroll wheel event handler
+  // Add scroll wheel event handlers
   useEffect(() => {
     const handleWheel = (e: WheelEvent) => {
-      if (sharedTemplatesRef.current) {
+      if (sharedTemplatesRef.current && e.target && sharedTemplatesRef.current.contains(e.target as Node)) {
         sharedTemplatesRef.current.scrollLeft += e.deltaY;
+        e.preventDefault();
+      }
+      if (sharedByMeRef.current && e.target && sharedByMeRef.current.contains(e.target as Node)) {
+        sharedByMeRef.current.scrollLeft += e.deltaY;
+        e.preventDefault();
       }
     };
 
-    const container = sharedTemplatesRef.current;
-    if (container) {
-      container.addEventListener('wheel', handleWheel, { passive: true });
+    const sharedContainer = sharedTemplatesRef.current;
+    const sharedByContainer = sharedByMeRef.current;
+
+    if (sharedContainer) {
+      sharedContainer.addEventListener('wheel', handleWheel, { passive: false });
+    }
+    if (sharedByContainer) {
+      sharedByContainer.addEventListener('wheel', handleWheel, { passive: false });
     }
 
     return () => {
-      if (container) {
-        container.removeEventListener('wheel', handleWheel);
+      if (sharedContainer) {
+        sharedContainer.removeEventListener('wheel', handleWheel);
+      }
+      if (sharedByContainer) {
+        sharedByContainer.removeEventListener('wheel', handleWheel);
       }
     };
   }, []);
+
+  const loadTeamData = async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      console.log('Loading team collaboration data...');
+      
+      // Load templates shared with me
+      const { data: sharedWithMeResponse, error: sharedWithMeError } = await getSharedTemplates();
+      console.log('Templates shared with me:', { sharedWithMeResponse, sharedWithMeError });
+      
+      // Load templates I've shared with others
+      const { data: sharedByMeResponse, error: sharedByMeError } = await getTemplatesSharedByUser();
+      console.log('Templates shared by me:', { sharedByMeResponse, sharedByMeError });
+      
+      if (sharedWithMeError) {
+        console.error('Error loading shared templates:', sharedWithMeError);
+        setError('Failed to load shared templates');
+      } else {
+        // Filter out hidden templates and templates with null template data
+        const validSharedWithMe = (sharedWithMeResponse || [])
+          .filter(share => share.template !== null && share.message !== 'hidden_by_user');
+        
+        setSharedWithMeData(validSharedWithMe);
+        console.log('Processed templates shared with me:', validSharedWithMe);
+      }
+
+      if (sharedByMeError) {
+        console.error('Error loading templates shared by me:', sharedByMeError);
+      } else {
+        // Filter out templates with null template data
+        const validSharedByMe = (sharedByMeResponse || [])
+          .filter(share => share.template !== null);
+        
+        setSharedByMeData(validSharedByMe);
+        console.log('Processed templates shared by me:', validSharedByMe);
+      }
+    } catch (err: any) {
+      console.error('Error loading team data:', err);
+      setError(err.message || 'Failed to load team data');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleRefresh = async () => {
     setLoading(true);
@@ -244,12 +258,12 @@ export default function TeamCollaboration() {
           </div>
 
           {/* Tabs */}
-          <div className="flex space-x-8">
+          <div className="flex space-x-8 overflow-x-auto">
             {TABS.map(tab => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+                className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors whitespace-nowrap ${
                   activeTab === tab.id
                     ? 'border-blue-500 text-blue-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
@@ -449,12 +463,15 @@ export default function TeamCollaboration() {
                       </button>
                     </div>
                   ) : (
-                    <div className="space-y-6" ref={sharedTemplatesRef}>
+                    <div className="space-y-6">
                       {/* Templates shared with me */}
                       {sharedWithMeData.length > 0 && (
                         <div>
                           <h3 className="text-lg font-semibold text-gray-900 mb-4">Shared with You ({sharedWithMeData.length})</h3>
-                          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                          <div 
+                            className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 overflow-x-auto"
+                            ref={sharedTemplatesRef}
+                          >
                             {sharedWithMeData.map((share) => (
                               <SharedTemplateCard
                                 key={share.id}
@@ -475,7 +492,10 @@ export default function TeamCollaboration() {
                       {sharedByMeData.length > 0 && (
                         <div className="mt-8">
                           <h3 className="text-lg font-semibold text-gray-900 mb-4">Shared by You ({sharedByMeData.length})</h3>
-                          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                          <div 
+                            className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 overflow-x-auto"
+                            ref={sharedByMeRef}
+                          >
                             {sharedByMeData.map((share) => (
                               <SharedTemplateCard
                                 key={share.id}

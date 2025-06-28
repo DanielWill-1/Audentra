@@ -16,6 +16,7 @@ import {
   AlertTriangle
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import { supabase } from '../../lib/supabase';
 
 interface TeamMembersModalProps {
   isOpen: boolean;
@@ -61,17 +62,64 @@ export default function TeamMembersModal({ isOpen, onClose, onInvite }: TeamMemb
   const [showRoleModal, setShowRoleModal] = useState<string | null>(null);
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [pendingInvites, setPendingInvites] = useState<PendingInvite[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const membersContainerRef = useRef<HTMLDivElement>(null);
   const invitesContainerRef = useRef<HTMLDivElement>(null);
 
-  // Initialize with current user as admin
+  // Load team data when modal opens
   useEffect(() => {
-    if (user) {
+    if (isOpen && user) {
+      loadTeamData();
+    }
+  }, [isOpen, user]);
+
+  // Add scroll wheel event handlers
+  useEffect(() => {
+    const handleWheel = (e: WheelEvent) => {
+      if (membersContainerRef.current && activeTab === 'members') {
+        membersContainerRef.current.scrollTop += e.deltaY;
+        e.preventDefault();
+      }
+      if (invitesContainerRef.current && activeTab === 'invites') {
+        invitesContainerRef.current.scrollTop += e.deltaY;
+        e.preventDefault();
+      }
+    };
+
+    const membersContainer = membersContainerRef.current;
+    const invitesContainer = invitesContainerRef.current;
+
+    if (membersContainer) {
+      membersContainer.addEventListener('wheel', handleWheel, { passive: false });
+    }
+    if (invitesContainer) {
+      invitesContainer.addEventListener('wheel', handleWheel, { passive: false });
+    }
+
+    return () => {
+      if (membersContainer) {
+        membersContainer.removeEventListener('wheel', handleWheel);
+      }
+      if (invitesContainer) {
+        invitesContainer.removeEventListener('wheel', handleWheel);
+      }
+    };
+  }, [activeTab]);
+
+  const loadTeamData = async () => {
+    if (!user) return;
+    
+    setLoading(true);
+    setError(null);
+    
+    try {
+      // Get current user details
       const firstName = user.user_metadata?.first_name || '';
       const lastName = user.user_metadata?.last_name || '';
       const userName = `${firstName} ${lastName}`.trim() || user.email?.split('@')[0] || 'User';
       
-      // Create team members with current user as admin
+      // Create current user as admin
       const currentUserMember: TeamMember = {
         id: '1',
         name: userName,
@@ -82,7 +130,8 @@ export default function TeamMembersModal({ isOpen, onClose, onInvite }: TeamMemb
         lastActive: '2 minutes ago'
       };
       
-      // Add some example team members
+      // Fetch team members from database (in a real app)
+      // For now, we'll use some example team members
       const otherMembers: TeamMember[] = [
         {
           id: '2',
@@ -106,7 +155,8 @@ export default function TeamMembersModal({ isOpen, onClose, onInvite }: TeamMemb
       
       setTeamMembers([currentUserMember, ...otherMembers]);
       
-      // Set pending invites
+      // Fetch pending invites from database (in a real app)
+      // For now, we'll use some example invites
       setPendingInvites([
         {
           id: '1',
@@ -125,39 +175,13 @@ export default function TeamMembersModal({ isOpen, onClose, onInvite }: TeamMemb
           status: 'pending'
         }
       ]);
+    } catch (err) {
+      console.error('Failed to load team data:', err);
+      setError('Failed to load team data. Please try again.');
+    } finally {
+      setLoading(false);
     }
-  }, [user]);
-
-  // Add scroll wheel event handlers
-  useEffect(() => {
-    const handleWheel = (e: WheelEvent) => {
-      if (membersContainerRef.current && activeTab === 'members') {
-        membersContainerRef.current.scrollTop += e.deltaY;
-      }
-      if (invitesContainerRef.current && activeTab === 'invites') {
-        invitesContainerRef.current.scrollTop += e.deltaY;
-      }
-    };
-
-    const membersContainer = membersContainerRef.current;
-    const invitesContainer = invitesContainerRef.current;
-
-    if (membersContainer) {
-      membersContainer.addEventListener('wheel', handleWheel, { passive: true });
-    }
-    if (invitesContainer) {
-      invitesContainer.addEventListener('wheel', handleWheel, { passive: true });
-    }
-
-    return () => {
-      if (membersContainer) {
-        membersContainer.removeEventListener('wheel', handleWheel);
-      }
-      if (invitesContainer) {
-        invitesContainer.removeEventListener('wheel', handleWheel);
-      }
-    };
-  }, [activeTab]);
+  };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -173,53 +197,69 @@ export default function TeamMembersModal({ isOpen, onClose, onInvite }: TeamMemb
     return name.split(' ').map(n => n[0]).join('').toUpperCase();
   };
 
-  const handleResendInvite = (inviteId: string) => {
-    console.log('Resending invite:', inviteId);
-    // In a real implementation, this would call an API to resend the invite
-    
-    // For demo purposes, update the UI to show the invite was resent
-    setPendingInvites(prevInvites => 
-      prevInvites.map(invite => 
-        invite.id === inviteId 
-          ? { ...invite, sentAt: new Date().toISOString() } 
-          : invite
-      )
-    );
+  const handleResendInvite = async (inviteId: string) => {
+    try {
+      // In a real implementation, this would call an API to resend the invite
+      console.log('Resending invite:', inviteId);
+      
+      // Update the invite's sent date
+      setPendingInvites(prevInvites => 
+        prevInvites.map(invite => 
+          invite.id === inviteId 
+            ? { ...invite, sentAt: new Date().toISOString() } 
+            : invite
+        )
+      );
+    } catch (error) {
+      console.error('Failed to resend invite:', error);
+    }
   };
 
-  const handleCancelInvite = (inviteId: string) => {
-    console.log('Canceling invite:', inviteId);
-    // In a real implementation, this would call an API to cancel the invite
-    
-    // For demo purposes, remove the invite from the UI
-    setPendingInvites(prevInvites => 
-      prevInvites.filter(invite => invite.id !== inviteId)
-    );
+  const handleCancelInvite = async (inviteId: string) => {
+    try {
+      // In a real implementation, this would call an API to cancel the invite
+      console.log('Canceling invite:', inviteId);
+      
+      // Remove the invite from the UI
+      setPendingInvites(prevInvites => 
+        prevInvites.filter(invite => invite.id !== inviteId)
+      );
+    } catch (error) {
+      console.error('Failed to cancel invite:', error);
+    }
   };
 
-  const handleRemoveMember = (memberId: string) => {
-    console.log('Removing member:', memberId);
-    // In a real implementation, this would call an API to remove the member
-    
-    // For demo purposes, remove the member from the UI
-    setTeamMembers(prevMembers => 
-      prevMembers.filter(member => member.id !== memberId)
-    );
+  const handleRemoveMember = async (memberId: string) => {
+    try {
+      // In a real implementation, this would call an API to remove the member
+      console.log('Removing member:', memberId);
+      
+      // Remove the member from the UI
+      setTeamMembers(prevMembers => 
+        prevMembers.filter(member => member.id !== memberId)
+      );
+    } catch (error) {
+      console.error('Failed to remove member:', error);
+    }
   };
 
-  const handleChangeRole = (memberId: string, newRole: string) => {
-    console.log('Changing role:', memberId, newRole);
-    // In a real implementation, this would call an API to change the role
-    
-    // For demo purposes, update the member's role in the UI
-    setTeamMembers(prevMembers => 
-      prevMembers.map(member => 
-        member.id === memberId 
-          ? { ...member, role: newRole as 'admin' | 'editor' | 'viewer' } 
-          : member
-      )
-    );
-    setShowRoleModal(null);
+  const handleChangeRole = async (memberId: string, newRole: string) => {
+    try {
+      // In a real implementation, this would call an API to change the role
+      console.log('Changing role:', memberId, newRole);
+      
+      // Update the member's role in the UI
+      setTeamMembers(prevMembers => 
+        prevMembers.map(member => 
+          member.id === memberId 
+            ? { ...member, role: newRole as 'admin' | 'editor' | 'viewer' } 
+            : member
+        )
+      );
+      setShowRoleModal(null);
+    } catch (error) {
+      console.error('Failed to change role:', error);
+    }
   };
 
   if (!isOpen) return null;
@@ -280,180 +320,198 @@ export default function TeamMembersModal({ isOpen, onClose, onInvite }: TeamMemb
 
         {/* Content */}
         <div className="p-6">
-          {activeTab === 'members' ? (
-            <div 
-              className="space-y-4 max-h-[400px] overflow-y-auto pr-2" 
-              ref={membersContainerRef}
-            >
-              {teamMembers.map((member) => {
-                const RoleIcon = ROLE_ICONS[member.role];
-                return (
-                  <div key={member.id} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-4">
-                        <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-semibold">
-                          {getInitials(member.name)}
-                        </div>
-                        <div>
-                          <div className="flex items-center space-x-3">
-                            <h3 className="text-lg font-semibold text-gray-900">{member.name}</h3>
-                            <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${ROLE_COLORS[member.role]}`}>
-                              <RoleIcon className="w-3 h-3 mr-1" />
-                              {member.role.charAt(0).toUpperCase() + member.role.slice(1)}
-                            </span>
-                            {getStatusIcon(member.status)}
+          {/* Error Message */}
+          {error && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-center mb-6">
+              <AlertTriangle className="w-5 h-5 text-red-600 mr-3" />
+              <span className="text-red-800 text-sm">{error}</span>
+            </div>
+          )}
+
+          {/* Loading State */}
+          {loading ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="w-8 h-8 border-4 border-purple-600 border-t-transparent rounded-full animate-spin"></div>
+              <span className="ml-2 text-gray-600">Loading team data...</span>
+            </div>
+          ) : (
+            <>
+              {activeTab === 'members' ? (
+                <div 
+                  className="space-y-4 max-h-[400px] overflow-y-auto pr-2" 
+                  ref={membersContainerRef}
+                >
+                  {teamMembers.map((member) => {
+                    const RoleIcon = ROLE_ICONS[member.role];
+                    return (
+                      <div key={member.id} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-4">
+                            <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-semibold">
+                              {getInitials(member.name)}
+                            </div>
+                            <div>
+                              <div className="flex items-center space-x-3">
+                                <h3 className="text-lg font-semibold text-gray-900">{member.name}</h3>
+                                <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${ROLE_COLORS[member.role]}`}>
+                                  <RoleIcon className="w-3 h-3 mr-1" />
+                                  {member.role.charAt(0).toUpperCase() + member.role.slice(1)}
+                                </span>
+                                {getStatusIcon(member.status)}
+                              </div>
+                              <p className="text-gray-600">{member.email}</p>
+                              <div className="flex items-center space-x-4 text-sm text-gray-500 mt-1">
+                                <span>Joined {new Date(member.joinedAt).toLocaleDateString()}</span>
+                                {member.lastActive && (
+                                  <span>Last active {member.lastActive}</span>
+                                )}
+                              </div>
+                            </div>
                           </div>
-                          <p className="text-gray-600">{member.email}</p>
-                          <div className="flex items-center space-x-4 text-sm text-gray-500 mt-1">
-                            <span>Joined {new Date(member.joinedAt).toLocaleDateString()}</span>
-                            {member.lastActive && (
-                              <span>Last active {member.lastActive}</span>
+                          
+                          <div className="flex items-center space-x-2">
+                            {member.role !== 'admin' && (
+                              <>
+                                <button
+                                  onClick={() => setShowRoleModal(member.id)}
+                                  className="p-2 text-gray-400 hover:text-blue-600 transition-colors"
+                                  title="Change Role"
+                                >
+                                  <Shield className="w-4 h-4" />
+                                </button>
+                                <button
+                                  onClick={() => handleRemoveMember(member.id)}
+                                  className="p-2 text-gray-400 hover:text-red-600 transition-colors"
+                                  title="Remove Member"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              </>
+                            )}
+                            <button className="p-2 text-gray-400 hover:text-gray-600 transition-colors">
+                              <MoreHorizontal className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* Role Change Modal */}
+                        {showRoleModal === member.id && (
+                          <div className="mt-4 p-4 bg-white rounded-lg border border-gray-200">
+                            <h4 className="text-sm font-medium text-gray-900 mb-3">Change Role for {member.name}</h4>
+                            <div className="space-y-2">
+                              {Object.entries(ROLE_COLORS).map(([role, colorClass]) => {
+                                const RoleIcon = ROLE_ICONS[role as keyof typeof ROLE_ICONS];
+                                return (
+                                  <button
+                                    key={role}
+                                    onClick={() => handleChangeRole(member.id, role)}
+                                    className={`w-full text-left p-3 rounded-lg border transition-colors ${
+                                      member.role === role
+                                        ? 'border-blue-500 bg-blue-50'
+                                        : 'border-gray-200 hover:border-gray-300'
+                                    }`}
+                                  >
+                                    <div className="flex items-center space-x-3">
+                                      <RoleIcon className="w-4 h-4" />
+                                      <span className="font-medium capitalize">{role}</span>
+                                      {member.role === role && (
+                                        <span className="text-xs text-blue-600">(Current)</span>
+                                      )}
+                                    </div>
+                                  </button>
+                                );
+                              })}
+                            </div>
+                            <div className="flex justify-end space-x-2 mt-4">
+                              <button
+                                onClick={() => setShowRoleModal(null)}
+                                className="px-3 py-1 text-sm text-gray-600 hover:text-gray-800"
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div 
+                  className="space-y-4 max-h-[400px] overflow-y-auto pr-2" 
+                  ref={invitesContainerRef}
+                >
+                  {pendingInvites.length > 0 ? (
+                    pendingInvites.map((invite) => (
+                      <div key={invite.id} className={`rounded-lg p-4 border ${
+                        invite.status === 'expired' 
+                          ? 'bg-red-50 border-red-200' 
+                          : 'bg-yellow-50 border-yellow-200'
+                      }`}>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-4">
+                            <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
+                              <Mail className="w-5 h-5 text-gray-500" />
+                            </div>
+                            <div>
+                              <div className="flex items-center space-x-3">
+                                <h3 className="text-lg font-semibold text-gray-900">{invite.email}</h3>
+                                <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${ROLE_COLORS[invite.role]}`}>
+                                  {invite.role.charAt(0).toUpperCase() + invite.role.slice(1)}
+                                </span>
+                                {getStatusIcon(invite.status)}
+                              </div>
+                              <div className="flex items-center space-x-4 text-sm text-gray-500 mt-1">
+                                <span>Sent {new Date(invite.sentAt).toLocaleDateString()}</span>
+                                <span>by {invite.sentBy}</span>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div className="flex items-center space-x-2">
+                            {invite.status === 'pending' ? (
+                              <>
+                                <button
+                                  onClick={() => handleResendInvite(invite.id)}
+                                  className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+                                >
+                                  Resend
+                                </button>
+                                <button
+                                  onClick={() => handleCancelInvite(invite.id)}
+                                  className="px-3 py-1 text-sm text-red-600 border border-red-300 rounded hover:bg-red-50 transition-colors"
+                                >
+                                  Cancel
+                                </button>
+                              </>
+                            ) : (
+                              <button
+                                onClick={() => handleCancelInvite(invite.id)}
+                                className="px-3 py-1 text-sm text-gray-600 border border-gray-300 rounded hover:bg-gray-50 transition-colors"
+                              >
+                                Remove
+                              </button>
                             )}
                           </div>
                         </div>
                       </div>
-                      
-                      <div className="flex items-center space-x-2">
-                        {member.role !== 'admin' && (
-                          <>
-                            <button
-                              onClick={() => setShowRoleModal(member.id)}
-                              className="p-2 text-gray-400 hover:text-blue-600 transition-colors"
-                              title="Change Role"
-                            >
-                              <Shield className="w-4 h-4" />
-                            </button>
-                            <button
-                              onClick={() => handleRemoveMember(member.id)}
-                              className="p-2 text-gray-400 hover:text-red-600 transition-colors"
-                              title="Remove Member"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
-                          </>
-                        )}
-                        <button className="p-2 text-gray-400 hover:text-gray-600 transition-colors">
-                          <MoreHorizontal className="w-4 h-4" />
-                        </button>
-                      </div>
+                    ))
+                  ) : (
+                    <div className="text-center py-8">
+                      <Mail className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                      <h3 className="text-lg font-medium text-gray-900 mb-2">No pending invitations</h3>
+                      <p className="text-gray-600 mb-4">All team members have joined your workspace</p>
+                      <button
+                        onClick={onInvite}
+                        className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors"
+                      >
+                        Invite New Member
+                      </button>
                     </div>
-
-                    {/* Role Change Modal */}
-                    {showRoleModal === member.id && (
-                      <div className="mt-4 p-4 bg-white rounded-lg border border-gray-200">
-                        <h4 className="text-sm font-medium text-gray-900 mb-3">Change Role for {member.name}</h4>
-                        <div className="space-y-2">
-                          {Object.entries(ROLE_COLORS).map(([role, colorClass]) => {
-                            const RoleIcon = ROLE_ICONS[role as keyof typeof ROLE_ICONS];
-                            return (
-                              <button
-                                key={role}
-                                onClick={() => handleChangeRole(member.id, role)}
-                                className={`w-full text-left p-3 rounded-lg border transition-colors ${
-                                  member.role === role
-                                    ? 'border-blue-500 bg-blue-50'
-                                    : 'border-gray-200 hover:border-gray-300'
-                                }`}
-                              >
-                                <div className="flex items-center space-x-3">
-                                  <RoleIcon className="w-4 h-4" />
-                                  <span className="font-medium capitalize">{role}</span>
-                                  {member.role === role && (
-                                    <span className="text-xs text-blue-600">(Current)</span>
-                                  )}
-                                </div>
-                              </button>
-                            );
-                          })}
-                        </div>
-                        <div className="flex justify-end space-x-2 mt-4">
-                          <button
-                            onClick={() => setShowRoleModal(null)}
-                            className="px-3 py-1 text-sm text-gray-600 hover:text-gray-800"
-                          >
-                            Cancel
-                          </button>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          ) : (
-            <div 
-              className="space-y-4 max-h-[400px] overflow-y-auto pr-2" 
-              ref={invitesContainerRef}
-            >
-              {pendingInvites.map((invite) => (
-                <div key={invite.id} className={`rounded-lg p-4 border ${
-                  invite.status === 'expired' 
-                    ? 'bg-red-50 border-red-200' 
-                    : 'bg-yellow-50 border-yellow-200'
-                }`}>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
-                      <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
-                        <Mail className="w-5 h-5 text-gray-500" />
-                      </div>
-                      <div>
-                        <div className="flex items-center space-x-3">
-                          <h3 className="text-lg font-semibold text-gray-900">{invite.email}</h3>
-                          <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${ROLE_COLORS[invite.role]}`}>
-                            {invite.role.charAt(0).toUpperCase() + invite.role.slice(1)}
-                          </span>
-                          {getStatusIcon(invite.status)}
-                        </div>
-                        <div className="flex items-center space-x-4 text-sm text-gray-500 mt-1">
-                          <span>Sent {new Date(invite.sentAt).toLocaleDateString()}</span>
-                          <span>by {invite.sentBy}</span>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-center space-x-2">
-                      {invite.status === 'pending' ? (
-                        <>
-                          <button
-                            onClick={() => handleResendInvite(invite.id)}
-                            className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-                          >
-                            Resend
-                          </button>
-                          <button
-                            onClick={() => handleCancelInvite(invite.id)}
-                            className="px-3 py-1 text-sm text-red-600 border border-red-300 rounded hover:bg-red-50 transition-colors"
-                          >
-                            Cancel
-                          </button>
-                        </>
-                      ) : (
-                        <button
-                          onClick={() => handleCancelInvite(invite.id)}
-                          className="px-3 py-1 text-sm text-gray-600 border border-gray-300 rounded hover:bg-gray-50 transition-colors"
-                        >
-                          Remove
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              ))}
-              
-              {pendingInvites.length === 0 && (
-                <div className="text-center py-8">
-                  <Mail className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">No pending invitations</h3>
-                  <p className="text-gray-600 mb-4">All team members have joined your workspace</p>
-                  <button
-                    onClick={onInvite}
-                    className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors"
-                  >
-                    Invite New Member
-                  </button>
+                  )}
                 </div>
               )}
-            </div>
+            </>
           )}
         </div>
 

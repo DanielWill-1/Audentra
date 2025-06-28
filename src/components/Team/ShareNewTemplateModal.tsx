@@ -20,6 +20,7 @@ import {
   Building2
 } from 'lucide-react';
 import { getUserTemplates, shareTemplatesWithTeam, Template } from '../../lib/templates';
+import { useAuth } from '../../contexts/AuthContext';
 
 interface ShareNewTemplateModalProps {
   isOpen: boolean;
@@ -47,6 +48,7 @@ const CATEGORIES = [
 ];
 
 export default function ShareNewTemplateModal({ isOpen, onClose, onSuccess }: ShareNewTemplateModalProps) {
+  const { user } = useAuth();
   const [templates, setTemplates] = useState<Template[]>([]);
   const [filteredTemplates, setFilteredTemplates] = useState<Template[]>([]);
   const [selectedTemplates, setSelectedTemplates] = useState<string[]>([]);
@@ -73,12 +75,13 @@ export default function ShareNewTemplateModal({ isOpen, onClose, onSuccess }: Sh
     const handleWheel = (e: WheelEvent) => {
       if (templatesContainerRef.current) {
         templatesContainerRef.current.scrollTop += e.deltaY;
+        e.preventDefault();
       }
     };
 
     const container = templatesContainerRef.current;
     if (container) {
-      container.addEventListener('wheel', handleWheel, { passive: true });
+      container.addEventListener('wheel', handleWheel, { passive: false });
     }
 
     return () => {

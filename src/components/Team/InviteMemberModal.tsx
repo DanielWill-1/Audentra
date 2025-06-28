@@ -10,6 +10,7 @@ import {
   Plus,
   Trash2
 } from 'lucide-react';
+import { useAuth } from '../../contexts/AuthContext';
 
 interface InviteMemberModalProps {
   isOpen: boolean;
@@ -44,6 +45,7 @@ const ROLES = [
 ];
 
 export default function InviteMemberModal({ isOpen, onClose }: InviteMemberModalProps) {
+  const { user } = useAuth();
   const [invites, setInvites] = useState<InviteData[]>([
     { email: '', role: 'editor', message: '' }
   ]);
@@ -57,12 +59,13 @@ export default function InviteMemberModal({ isOpen, onClose }: InviteMemberModal
     const handleWheel = (e: WheelEvent) => {
       if (invitesContainerRef.current) {
         invitesContainerRef.current.scrollTop += e.deltaY;
+        e.preventDefault();
       }
     };
 
     const container = invitesContainerRef.current;
     if (container) {
-      container.addEventListener('wheel', handleWheel, { passive: true });
+      container.addEventListener('wheel', handleWheel, { passive: false });
     }
 
     return () => {
@@ -123,6 +126,9 @@ export default function InviteMemberModal({ isOpen, onClose }: InviteMemberModal
     setLoading(true);
 
     try {
+      // In a real implementation, this would call an API to send invites
+      console.log('Sending invites:', invites);
+      
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 2000));
       
@@ -135,8 +141,8 @@ export default function InviteMemberModal({ isOpen, onClose }: InviteMemberModal
         onClose();
       }, 2000);
       
-    } catch (err) {
-      setError('Failed to send invitations. Please try again.');
+    } catch (err: any) {
+      setError(err.message || 'Failed to send invitations. Please try again.');
     } finally {
       setLoading(false);
     }

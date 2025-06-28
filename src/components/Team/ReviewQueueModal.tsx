@@ -25,6 +25,7 @@ import {
   Building2
 } from 'lucide-react';
 import { getReviewQueue, updateTemplateReview, TemplateReview } from '../../lib/templates';
+import { useAuth } from '../../contexts/AuthContext';
 
 interface ReviewQueueModalProps {
   isOpen: boolean;
@@ -62,6 +63,7 @@ const STATUS_OPTIONS = [
 ];
 
 export default function ReviewQueueModal({ isOpen, onClose }: ReviewQueueModalProps) {
+  const { user } = useAuth();
   const [reviewItems, setReviewItems] = useState<ReviewQueueItem[]>([]);
   const [filteredItems, setFilteredItems] = useState<ReviewQueueItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -74,6 +76,8 @@ export default function ReviewQueueModal({ isOpen, onClose }: ReviewQueueModalPr
     status: 'pending' as 'pending' | 'approved' | 'rejected' | 'needs_changes'
   });
   const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
   const itemsContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -91,12 +95,13 @@ export default function ReviewQueueModal({ isOpen, onClose }: ReviewQueueModalPr
     const handleWheel = (e: WheelEvent) => {
       if (itemsContainerRef.current) {
         itemsContainerRef.current.scrollTop += e.deltaY;
+        e.preventDefault();
       }
     };
 
     const container = itemsContainerRef.current;
     if (container) {
-      container.addEventListener('wheel', handleWheel, { passive: true });
+      container.addEventListener('wheel', handleWheel, { passive: false });
     }
 
     return () => {
@@ -108,12 +113,19 @@ export default function ReviewQueueModal({ isOpen, onClose }: ReviewQueueModalPr
 
   const loadReviewQueue = async () => {
     setLoading(true);
+    setError(null);
+    
     try {
       const { data, error } = await getReviewQueue();
       if (error) throw error;
       
       // If no data is returned, create some mock data for demonstration
       if (!data || data.length === 0) {
+        // Get user name from metadata
+        const firstName = user?.user_metadata?.first_name || '';
+        const lastName = user?.user_metadata?.last_name || '';
+        const userName = `${firstName} ${lastName}`.trim() || user?.email?.split('@')[0] || 'User';
+        
         const mockReviewItems: ReviewQueueItem[] = [
           {
             id: '1',
@@ -128,9 +140,9 @@ export default function ReviewQueueModal({ isOpen, onClose }: ReviewQueueModalPr
               created_at: new Date().toISOString(),
               updated_at: new Date().toISOString()
             },
-            reviewer_id: 'user-id',
-            reviewer_name: 'Dr. Sarah Martinez',
-            reviewer_email: 'sarah@example.com',
+            reviewer_id: user?.id || 'user-id',
+            reviewer_name: userName,
+            reviewer_email: user?.email || 'user@example.com',
             rating: 0,
             comment: '',
             status: 'pending',
@@ -150,9 +162,9 @@ export default function ReviewQueueModal({ isOpen, onClose }: ReviewQueueModalPr
               created_at: new Date().toISOString(),
               updated_at: new Date().toISOString()
             },
-            reviewer_id: 'user-id',
-            reviewer_name: 'Alex Chen',
-            reviewer_email: 'alex@example.com',
+            reviewer_id: user?.id || 'user-id',
+            reviewer_name: userName,
+            reviewer_email: user?.email || 'user@example.com',
             rating: 0,
             comment: '',
             status: 'pending',
@@ -164,8 +176,9 @@ export default function ReviewQueueModal({ isOpen, onClose }: ReviewQueueModalPr
       } else {
         setReviewItems(data);
       }
-    } catch (error) {
-      console.error('Failed to load review queue:', error);
+    } catch (err: any) {
+      console.error('Failed to load review queue:', err);
+      setError(err.message || 'Failed to load review queue');
     } finally {
       setLoading(false);
     }
@@ -214,6 +227,9 @@ export default function ReviewQueueModal({ isOpen, onClose }: ReviewQueueModalPr
     if (!selectedItem) return;
 
     setSubmitting(true);
+    setError(null);
+    setSuccess(null);
+    
     try {
       const { error } = await updateTemplateReview(selectedItem.id, {
         rating: reviewData.rating,
@@ -223,6 +239,8 @@ export default function ReviewQueueModal({ isOpen, onClose }: ReviewQueueModalPr
 
       if (error) throw error;
 
+      setSuccess('Review submitted successfully!');
+      
       // Update the review item in the local state
       setReviewItems(prevItems => 
         prevItems.map(item => 
@@ -238,10 +256,14 @@ export default function ReviewQueueModal({ isOpen, onClose }: ReviewQueueModalPr
         )
       );
 
-      setSelectedItem(null);
-      setReviewData({ rating: 5, comment: '', status: 'pending' });
-    } catch (error) {
-      console.error('Failed to submit review:', error);
+      setTimeout(() => {
+        setSuccess(null);
+        setSelectedItem(null);
+        setReviewData({ rating: 5, comment: '', status: 'pending' });
+      }, 1500);
+    } catch (err: any) {
+      setError(err.message || 'Failed to submit review');
+      console.error('Failed to submit review:', err);
     } finally {
       setSubmitting(false);
     }
@@ -252,6 +274,8 @@ export default function ReviewQueueModal({ isOpen, onClose }: ReviewQueueModalPr
     setReviewData({ rating: 5, comment: '', status: 'pending' });
     setSearchQuery('');
     setStatusFilter('all');
+    setError(null);
+    setSuccess(null);
     onClose();
   };
 
@@ -307,6 +331,22 @@ export default function ReviewQueueModal({ isOpen, onClose }: ReviewQueueModalPr
 
         {/* Content */}
         <div className="p-6">
+          {/* Error Message */}
+          {error && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-center mb-6">
+              <AlertTriangle className="w-5 h-5 text-red-600 mr-3" />
+              <span className="text-red-800 text-sm">{error}</span>
+            </div>
+          )}
+
+          {/* Success Message */}
+          {success && (
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4 flex items-center mb-6">
+              <CheckCircle className="w-5 h-5 text-green-600 mr-3" />
+              <span className="text-green-800 text-sm">{success}</span>
+            </div>
+          )}
+
           {loading ? (
             <div className="flex items-center justify-center py-12">
               <div className="w-8 h-8 border-4 border-purple-600 border-t-transparent rounded-full animate-spin"></div>
@@ -430,6 +470,21 @@ export default function ReviewQueueModal({ isOpen, onClose }: ReviewQueueModalPr
               </div>
 
               <div className="p-6 space-y-6">
+                {/* Error/Success Messages */}
+                {error && (
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-center">
+                    <AlertTriangle className="w-5 h-5 text-red-600 mr-3" />
+                    <span className="text-red-800 text-sm">{error}</span>
+                  </div>
+                )}
+
+                {success && (
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-4 flex items-center">
+                    <CheckCircle className="w-5 h-5 text-green-600 mr-3" />
+                    <span className="text-green-800 text-sm">{success}</span>
+                  </div>
+                )}
+
                 {/* Rating */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Rating</label>
