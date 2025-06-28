@@ -23,9 +23,13 @@ import {
   Building2,
   ChevronUp,
   ChevronDown,
-  X
+  X,
+  Star,
+  MessageSquare
 } from 'lucide-react';
 import { Template, deleteTemplate, toggleTemplateVisibility, exportTemplate, generateShareLink } from '../../lib/templates';
+import ShareTemplateModal from './ShareTemplateModal';
+import TemplateReviewModal from './TemplateReviewModal';
 
 interface TemplateCardProps {
   template: Template;
@@ -48,6 +52,7 @@ export default function TemplateCard({ template, onEdit, onDelete, onToggleVisib
   const [loading, setLoading] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
+  const [showReviewModal, setShowReviewModal] = useState(false);
   const [shareLink, setShareLink] = useState('');
   const [linkCopied, setLinkCopied] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -93,6 +98,12 @@ export default function TemplateCard({ template, onEdit, onDelete, onToggleVisib
     });
   };
 
+  const getAverageRating = () => {
+    if (!template.reviews || template.reviews.length === 0) return 0;
+    const sum = template.reviews.reduce((acc, review) => acc + review.rating, 0);
+    return sum / template.reviews.length;
+  };
+
   const handleDelete = async () => {
     setLoading(true);
     try {
@@ -122,15 +133,19 @@ export default function TemplateCard({ template, onEdit, onDelete, onToggleVisib
   };
 
   const handleShare = () => {
-    const link = generateShareLink(template.id);
-    setShareLink(link);
     setShowShareModal(true);
+    setShowActions(false);
+  };
+
+  const handleReview = () => {
+    setShowReviewModal(true);
     setShowActions(false);
   };
 
   const handleCopyLink = async () => {
     try {
-      await navigator.clipboard.writeText(shareLink);
+      const link = generateShareLink(template.id);
+      await navigator.clipboard.writeText(link);
       setLinkCopied(true);
       setTimeout(() => setLinkCopied(false), 2000);
     } catch (error) {
@@ -175,10 +190,13 @@ export default function TemplateCard({ template, onEdit, onDelete, onToggleVisib
   };
 
   const IconComponent = getCategoryIcon(template.category);
+  const averageRating = getAverageRating();
+  const reviewCount = template.reviews?.length || 0;
+  const sharedCount = template.shared_with?.length || 0;
 
   return (
     <>
-      <div className="relative"> {/* Make the card relative for absolute positioning of actions */}
+      <div className="relative">
         <div className={`bg-white rounded-2xl border border-gray-200 hover:shadow-lg transition-all overflow-hidden ${
           template.visibility === 'hidden' ? 'opacity-60 bg-gray-50' : ''
         }`}>
@@ -211,7 +229,7 @@ export default function TemplateCard({ template, onEdit, onDelete, onToggleVisib
                       className="fixed inset-0 z-10" 
                       onClick={() => setShowActions(false)}
                     />
-                    <div className="absolute right-0 top-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-50 min-w-[160px]"> {/* Adjusted positioning */}
+                    <div className="absolute right-0 top-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-50 min-w-[160px]">
                       <div className="relative">
                         {canScrollUp && (
                           <button
@@ -266,6 +284,13 @@ export default function TemplateCard({ template, onEdit, onDelete, onToggleVisib
                           >
                             <Share2 className="w-4 h-4 mr-2" />
                             Share
+                          </button>
+                          <button
+                            onClick={handleReview}
+                            className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center"
+                          >
+                            <MessageSquare className="w-4 h-4 mr-2" />
+                            Review
                           </button>
                           <button
                             onClick={() => {
@@ -323,7 +348,34 @@ export default function TemplateCard({ template, onEdit, onDelete, onToggleVisib
                 <Clock className="w-4 h-4 mr-1" />
                 {formatDate(template.updated_at)}
               </div>
+              {sharedCount > 0 && (
+                <div className="flex items-center">
+                  <Share2 className="w-4 h-4 mr-1" />
+                  {sharedCount} shared
+                </div>
+              )}
             </div>
+
+            {/* Rating and Reviews */}
+            {reviewCount > 0 && (
+              <div className="flex items-center space-x-2 mb-4">
+                <div className="flex items-center">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <Star
+                      key={star}
+                      className={`w-4 h-4 ${
+                        star <= averageRating
+                          ? 'text-yellow-400 fill-current'
+                          : 'text-gray-300'
+                      }`}
+                    />
+                  ))}
+                </div>
+                <span className="text-sm text-gray-600">
+                  {averageRating.toFixed(1)} ({reviewCount} review{reviewCount !== 1 ? 's' : ''})
+                </span>
+              </div>
+            )}
 
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
@@ -357,6 +409,13 @@ export default function TemplateCard({ template, onEdit, onDelete, onToggleVisib
                   <Share2 className="w-4 h-4" />
                 </button>
                 <button
+                  onClick={handleReview}
+                  className="p-2 text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
+                  title="Review"
+                >
+                  <MessageSquare className="w-4 h-4" />
+                </button>
+                <button
                   onClick={handleToggleVisibility}
                   disabled={loading}
                   className="p-2 text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors disabled:opacity-50"
@@ -373,63 +432,19 @@ export default function TemplateCard({ template, onEdit, onDelete, onToggleVisib
           </div>
         </div>
 
-        {/* Share Modal */}
-        {showShareModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-2xl max-w-md w-full p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-gray-900">Share Template</h3>
-                <button
-                  onClick={() => setShowShareModal(false)}
-                  className="text-gray-400 hover:text-gray-600"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-              
-              <p className="text-gray-600 mb-4">
-                Share this template with others using the link below:
-              </p>
-              
-              <div className="bg-gray-50 rounded-lg p-3 mb-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-700 truncate mr-2">{shareLink}</span>
-                  <button
-                    onClick={handleCopyLink}
-                    className="flex items-center text-blue-600 hover:text-blue-700 text-sm font-medium"
-                  >
-                    {linkCopied ? (
-                      <>
-                        <CheckCircle className="w-4 h-4 mr-1" />
-                        Copied!
-                      </>
-                    ) : (
-                      <>
-                        <Copy className="w-4 h-4 mr-1" />
-                        Copy
-                      </>
-                    )}
-                  </button>
-                </div>
-              </div>
-              
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                <p className="text-blue-800 text-sm">
-                  <strong>Note:</strong> This is a placeholder link. The sharing functionality will be implemented in a future update.
-                </p>
-              </div>
-              
-              <div className="flex justify-end mt-6">
-                <button
-                  onClick={() => setShowShareModal(false)}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                >
-                  Done
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+        {/* Share Template Modal */}
+        <ShareTemplateModal
+          isOpen={showShareModal}
+          onClose={() => setShowShareModal(false)}
+          template={template}
+        />
+
+        {/* Template Review Modal */}
+        <TemplateReviewModal
+          isOpen={showReviewModal}
+          onClose={() => setShowReviewModal(false)}
+          template={template}
+        />
 
         {/* Delete Confirmation Modal */}
         {showDeleteConfirm && (
@@ -464,7 +479,7 @@ export default function TemplateCard({ template, onEdit, onDelete, onToggleVisib
                 >
                   {loading ? (
                     <>
-                      <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
                       Deleting...
                     </>
                   ) : (

@@ -11,6 +11,32 @@ export interface Template {
   created_by: string;
   created_at: string;
   updated_at: string;
+  shared_with?: SharedUser[];
+  reviews?: TemplateReview[];
+}
+
+export interface SharedUser {
+  id: string;
+  user_id: string;
+  template_id: string;
+  role: 'viewer' | 'editor' | 'admin';
+  shared_by: string;
+  shared_at: string;
+  user_email?: string;
+  user_name?: string;
+}
+
+export interface TemplateReview {
+  id: string;
+  template_id: string;
+  reviewer_id: string;
+  reviewer_name?: string;
+  reviewer_email?: string;
+  rating: number; // 1-5 stars
+  comment?: string;
+  status: 'pending' | 'approved' | 'rejected' | 'needs_changes';
+  created_at: string;
+  updated_at: string;
 }
 
 export interface CreateTemplateData {
@@ -32,6 +58,13 @@ export interface UpdateTemplateData {
   visibility?: 'visible' | 'hidden';
 }
 
+export interface ShareTemplateData {
+  template_id: string;
+  user_emails: string[];
+  role: 'viewer' | 'editor' | 'admin';
+  message?: string;
+}
+
 // Create a new template
 export const createTemplate = async (templateData: CreateTemplateData) => {
   const { data, error } = await supabase
@@ -47,7 +80,29 @@ export const createTemplate = async (templateData: CreateTemplateData) => {
 export const getUserTemplates = async (sortBy: 'created_at' | 'name' | 'category' = 'created_at', ascending = false) => {
   const { data, error } = await supabase
     .from('templates')
-    .select('*')
+    .select(`
+      *,
+      shared_with:template_shares(
+        id,
+        user_id,
+        role,
+        shared_by,
+        shared_at,
+        user_email,
+        user_name
+      ),
+      reviews:template_reviews(
+        id,
+        reviewer_id,
+        reviewer_name,
+        reviewer_email,
+        rating,
+        comment,
+        status,
+        created_at,
+        updated_at
+      )
+    `)
     .order(sortBy, { ascending });
 
   return { data, error };
@@ -61,7 +116,29 @@ export const getTemplatesByCategory = async (
 ) => {
   let query = supabase
     .from('templates')
-    .select('*')
+    .select(`
+      *,
+      shared_with:template_shares(
+        id,
+        user_id,
+        role,
+        shared_by,
+        shared_at,
+        user_email,
+        user_name
+      ),
+      reviews:template_reviews(
+        id,
+        reviewer_id,
+        reviewer_name,
+        reviewer_email,
+        rating,
+        comment,
+        status,
+        created_at,
+        updated_at
+      )
+    `)
     .order(sortBy, { ascending });
 
   if (category !== 'all') {
@@ -76,7 +153,29 @@ export const getTemplatesByCategory = async (
 export const getTemplateById = async (id: string) => {
   const { data, error } = await supabase
     .from('templates')
-    .select('*')
+    .select(`
+      *,
+      shared_with:template_shares(
+        id,
+        user_id,
+        role,
+        shared_by,
+        shared_at,
+        user_email,
+        user_name
+      ),
+      reviews:template_reviews(
+        id,
+        reviewer_id,
+        reviewer_name,
+        reviewer_email,
+        rating,
+        comment,
+        status,
+        created_at,
+        updated_at
+      )
+    `)
     .eq('id', id)
     .single();
 
@@ -113,6 +212,132 @@ export const toggleTemplateVisibility = async (id: string, visibility: 'visible'
     .eq('id', id)
     .select()
     .single();
+
+  return { data, error };
+};
+
+// Share template with users
+export const shareTemplate = async (shareData: ShareTemplateData) => {
+  const shares = shareData.user_emails.map(email => ({
+    template_id: shareData.template_id,
+    user_email: email,
+    role: shareData.role,
+    shared_by: shareData.template_id, // This should be the current user ID
+    shared_at: new Date().toISOString(),
+    message: shareData.message
+  }));
+
+  const { data, error } = await supabase
+    .from('template_shares')
+    .insert(shares)
+    .select();
+
+  return { data, error };
+};
+
+// Get shared templates for current user
+export const getSharedTemplates = async () => {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { data: null, error: new Error('Not authenticated') };
+
+  const { data, error } = await supabase
+    .from('template_shares')
+    .select(`
+      *,
+      template:templates(
+        id,
+        name,
+        category,
+        description,
+        form_data,
+        visibility,
+        created_by,
+        created_at,
+        updated_at
+      )
+    `)
+    .eq('user_email', user.email);
+
+  return { data, error };
+};
+
+// Remove user from template sharing
+export const removeTemplateShare = async (templateId: string, userEmail: string) => {
+  const { error } = await supabase
+    .from('template_shares')
+    .delete()
+    .eq('template_id', templateId)
+    .eq('user_email', userEmail);
+
+  return { error };
+};
+
+// Update template share role
+export const updateTemplateShareRole = async (shareId: string, role: 'viewer' | 'editor' | 'admin') => {
+  const { data, error } = await supabase
+    .from('template_shares')
+    .update({ role })
+    .eq('id', shareId)
+    .select()
+    .single();
+
+  return { data, error };
+};
+
+// Add template review
+export const addTemplateReview = async (reviewData: {
+  template_id: string;
+  rating: number;
+  comment?: string;
+  status: 'pending' | 'approved' | 'rejected' | 'needs_changes';
+}) => {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { data: null, error: new Error('Not authenticated') };
+
+  const review = {
+    ...reviewData,
+    reviewer_id: user.id,
+    reviewer_name: user.user_metadata?.first_name + ' ' + user.user_metadata?.last_name || user.email,
+    reviewer_email: user.email,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
+  };
+
+  const { data, error } = await supabase
+    .from('template_reviews')
+    .insert([review])
+    .select()
+    .single();
+
+  return { data, error };
+};
+
+// Update template review
+export const updateTemplateReview = async (reviewId: string, updates: {
+  rating?: number;
+  comment?: string;
+  status?: 'pending' | 'approved' | 'rejected' | 'needs_changes';
+}) => {
+  const { data, error } = await supabase
+    .from('template_reviews')
+    .update({
+      ...updates,
+      updated_at: new Date().toISOString()
+    })
+    .eq('id', reviewId)
+    .select()
+    .single();
+
+  return { data, error };
+};
+
+// Get template reviews
+export const getTemplateReviews = async (templateId: string) => {
+  const { data, error } = await supabase
+    .from('template_reviews')
+    .select('*')
+    .eq('template_id', templateId)
+    .order('created_at', { ascending: false });
 
   return { data, error };
 };
