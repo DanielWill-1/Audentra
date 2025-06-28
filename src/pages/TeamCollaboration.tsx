@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   ArrowLeft,
@@ -31,17 +31,6 @@ import ShareNewTemplateModal from '../components/Team/ShareNewTemplateModal';
 import SharedTemplateCard from '../components/Team/SharedTemplateCard';
 import ReviewQueueModal from '../components/Team/ReviewQueueModal';
 
-interface TeamMember {
-  id: string;
-  name: string;
-  email: string;
-  avatar?: string;
-  initials: string;
-  role: 'admin' | 'editor' | 'viewer';
-  status: 'active' | 'pending' | 'inactive';
-  lastActive: string;
-}
-
 interface SharedTemplateData {
   id: string;
   template: Template;
@@ -69,9 +58,9 @@ export default function TeamCollaboration() {
   const [showReviewQueueModal, setShowReviewQueueModal] = useState(false);
   const [sharedWithMeData, setSharedWithMeData] = useState<SharedTemplateData[]>([]);
   const [sharedByMeData, setSharedByMeData] = useState<SharedTemplateData[]>([]);
-  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const sharedTemplatesRef = useRef<HTMLDivElement>(null);
 
   // Load real shared templates data
   useEffect(() => {
@@ -112,57 +101,6 @@ export default function TeamCollaboration() {
           setSharedByMeData(validSharedByMe);
           console.log('Processed templates shared by me:', validSharedByMe);
         }
-
-        // Mock team members (in real app this would come from team API)
-        const mockMembers: TeamMember[] = [
-          {
-            id: '1',
-            name: 'Dr. Sarah Martinez',
-            email: 'sarah@company.com',
-            initials: 'SM',
-            role: 'admin',
-            status: 'active',
-            lastActive: '2 minutes ago'
-          },
-          {
-            id: '2',
-            name: 'Mike Johnson',
-            email: 'mike@company.com',
-            initials: 'MJ',
-            role: 'editor',
-            status: 'active',
-            lastActive: '1 hour ago'
-          },
-          {
-            id: '3',
-            name: 'Lisa Chen',
-            email: 'lisa@company.com',
-            initials: 'LC',
-            role: 'editor',
-            status: 'active',
-            lastActive: '3 hours ago'
-          },
-          {
-            id: '4',
-            name: 'David Rodriguez',
-            email: 'david@company.com',
-            initials: 'DR',
-            role: 'viewer',
-            status: 'active',
-            lastActive: '5 hours ago'
-          },
-          {
-            id: '5',
-            name: 'Kevin Wilson',
-            email: 'kevin@company.com',
-            initials: 'KW',
-            role: 'viewer',
-            status: 'active',
-            lastActive: '1 day ago'
-          }
-        ];
-
-        setTeamMembers(mockMembers);
       } catch (err: any) {
         console.error('Error loading team data:', err);
         setError(err.message || 'Failed to load team data');
@@ -172,6 +110,26 @@ export default function TeamCollaboration() {
     };
 
     loadTeamData();
+  }, []);
+
+  // Add scroll wheel event handler
+  useEffect(() => {
+    const handleWheel = (e: WheelEvent) => {
+      if (sharedTemplatesRef.current) {
+        sharedTemplatesRef.current.scrollLeft += e.deltaY;
+      }
+    };
+
+    const container = sharedTemplatesRef.current;
+    if (container) {
+      container.addEventListener('wheel', handleWheel, { passive: true });
+    }
+
+    return () => {
+      if (container) {
+        container.removeEventListener('wheel', handleWheel);
+      }
+    };
   }, []);
 
   const handleRefresh = async () => {
@@ -221,14 +179,6 @@ export default function TeamCollaboration() {
     handleRefresh();
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
-  };
-
   const formatTimeAgo = (dateString: string) => {
     const date = new Date(dateString);
     const now = new Date();
@@ -237,12 +187,12 @@ export default function TeamCollaboration() {
     if (diffInHours < 1) return 'Just now';
     if (diffInHours < 24) return `${diffInHours}h ago`;
     if (diffInHours < 168) return `${Math.floor(diffInHours / 24)}d ago`;
-    return formatDate(dateString);
+    return new Date(dateString).toLocaleDateString();
   };
 
-  const activeMembers = teamMembers.filter(m => m.status === 'active').length;
+  const activeMembers = 3; // Would be calculated from actual team members data
   const totalSharedTemplates = sharedWithMeData.length + sharedByMeData.length;
-  const templatesAwaitingApproval = 3; // Would be calculated from actual data
+  const templatesAwaitingApproval = 2; // Would be calculated from actual review queue data
   const growthPercentage = 15; // Would be calculated from actual data
 
   return (
@@ -352,20 +302,26 @@ export default function TeamCollaboration() {
                 
                 {/* Member Avatars */}
                 <div className="flex items-center space-x-2 mb-4">
-                  {teamMembers.slice(0, 4).map((member) => (
-                    <div
-                      key={member.id}
-                      className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white text-xs font-semibold"
-                      title={member.name}
-                    >
-                      {member.initials}
-                    </div>
-                  ))}
-                  {teamMembers.length > 4 && (
-                    <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center text-gray-600 text-xs font-semibold">
-                      +{teamMembers.length - 4}
-                    </div>
-                  )}
+                  <div
+                    className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white text-xs font-semibold"
+                    title={user?.user_metadata?.first_name ? `${user.user_metadata.first_name} ${user.user_metadata.last_name}` : user?.email}
+                  >
+                    {user?.user_metadata?.first_name ? 
+                      `${user.user_metadata.first_name[0]}${user.user_metadata.last_name ? user.user_metadata.last_name[0] : ''}` : 
+                      user?.email?.[0].toUpperCase() || 'U'}
+                  </div>
+                  <div
+                    className="w-8 h-8 bg-gradient-to-r from-green-500 to-blue-500 rounded-full flex items-center justify-center text-white text-xs font-semibold"
+                    title="Alex Chen"
+                  >
+                    AC
+                  </div>
+                  <div
+                    className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white text-xs font-semibold"
+                    title="Maria Johnson"
+                  >
+                    MJ
+                  </div>
                 </div>
                 
                 <button 
@@ -475,7 +431,7 @@ export default function TeamCollaboration() {
 
                   {loading ? (
                     <div className="flex items-center justify-center py-12">
-                      <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+                      <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
                       <span className="ml-2 text-gray-600">Loading shared templates...</span>
                     </div>
                   ) : totalSharedTemplates === 0 ? (
@@ -493,7 +449,7 @@ export default function TeamCollaboration() {
                       </button>
                     </div>
                   ) : (
-                    <div className="space-y-6">
+                    <div className="space-y-6" ref={sharedTemplatesRef}>
                       {/* Templates shared with me */}
                       {sharedWithMeData.length > 0 && (
                         <div>

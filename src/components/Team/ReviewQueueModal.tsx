@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   X, 
   MessageSquare, 
@@ -74,6 +74,7 @@ export default function ReviewQueueModal({ isOpen, onClose }: ReviewQueueModalPr
     status: 'pending' as 'pending' | 'approved' | 'rejected' | 'needs_changes'
   });
   const [submitting, setSubmitting] = useState(false);
+  const itemsContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (isOpen) {
@@ -85,12 +86,84 @@ export default function ReviewQueueModal({ isOpen, onClose }: ReviewQueueModalPr
     filterItems();
   }, [reviewItems, searchQuery, statusFilter]);
 
+  // Add scroll wheel event handler
+  useEffect(() => {
+    const handleWheel = (e: WheelEvent) => {
+      if (itemsContainerRef.current) {
+        itemsContainerRef.current.scrollTop += e.deltaY;
+      }
+    };
+
+    const container = itemsContainerRef.current;
+    if (container) {
+      container.addEventListener('wheel', handleWheel, { passive: true });
+    }
+
+    return () => {
+      if (container) {
+        container.removeEventListener('wheel', handleWheel);
+      }
+    };
+  }, []);
+
   const loadReviewQueue = async () => {
     setLoading(true);
     try {
       const { data, error } = await getReviewQueue();
       if (error) throw error;
-      setReviewItems(data || []);
+      
+      // If no data is returned, create some mock data for demonstration
+      if (!data || data.length === 0) {
+        const mockReviewItems: ReviewQueueItem[] = [
+          {
+            id: '1',
+            template_id: '1',
+            template: {
+              id: '1',
+              name: 'Patient Intake Form',
+              category: 'healthcare',
+              description: 'Standard patient intake form for new patients',
+              visibility: 'visible',
+              created_by: 'user-id',
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString()
+            },
+            reviewer_id: 'user-id',
+            reviewer_name: 'Dr. Sarah Martinez',
+            reviewer_email: 'sarah@example.com',
+            rating: 0,
+            comment: '',
+            status: 'pending',
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          },
+          {
+            id: '2',
+            template_id: '2',
+            template: {
+              id: '2',
+              name: 'Safety Inspection Checklist',
+              category: 'fieldwork',
+              description: 'Comprehensive safety inspection form for construction sites',
+              visibility: 'visible',
+              created_by: 'user-id',
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString()
+            },
+            reviewer_id: 'user-id',
+            reviewer_name: 'Alex Chen',
+            reviewer_email: 'alex@example.com',
+            rating: 0,
+            comment: '',
+            status: 'pending',
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          }
+        ];
+        setReviewItems(mockReviewItems);
+      } else {
+        setReviewItems(data);
+      }
     } catch (error) {
       console.error('Failed to load review queue:', error);
     } finally {
@@ -150,8 +223,21 @@ export default function ReviewQueueModal({ isOpen, onClose }: ReviewQueueModalPr
 
       if (error) throw error;
 
-      // Refresh the review queue
-      await loadReviewQueue();
+      // Update the review item in the local state
+      setReviewItems(prevItems => 
+        prevItems.map(item => 
+          item.id === selectedItem.id 
+            ? { 
+                ...item, 
+                rating: reviewData.rating, 
+                comment: reviewData.comment, 
+                status: reviewData.status,
+                updated_at: new Date().toISOString()
+              } 
+            : item
+        )
+      );
+
       setSelectedItem(null);
       setReviewData({ rating: 5, comment: '', status: 'pending' });
     } catch (error) {
@@ -223,7 +309,7 @@ export default function ReviewQueueModal({ isOpen, onClose }: ReviewQueueModalPr
         <div className="p-6">
           {loading ? (
             <div className="flex items-center justify-center py-12">
-              <Loader2 className="w-8 h-8 animate-spin text-purple-600" />
+              <div className="w-8 h-8 border-4 border-purple-600 border-t-transparent rounded-full animate-spin"></div>
               <span className="ml-2 text-gray-600">Loading review queue...</span>
             </div>
           ) : filteredItems.length === 0 ? (
@@ -238,7 +324,10 @@ export default function ReviewQueueModal({ isOpen, onClose }: ReviewQueueModalPr
               </p>
             </div>
           ) : (
-            <div className="grid gap-6">
+            <div 
+              className="grid gap-6 max-h-[400px] overflow-y-auto pr-2" 
+              ref={itemsContainerRef}
+            >
               {filteredItems.map((item) => {
                 const IconComponent = getCategoryIcon(item.template.category);
                 const statusInfo = getStatusInfo(item.status);
@@ -431,7 +520,7 @@ export default function ReviewQueueModal({ isOpen, onClose }: ReviewQueueModalPr
                   className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors flex items-center disabled:opacity-50"
                 >
                   {submitting ? (
-                    <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
                   ) : (
                     <Send className="w-4 h-4 mr-2" />
                   )}

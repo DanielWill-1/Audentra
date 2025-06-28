@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { 
   X, 
   Mail, 
@@ -50,6 +50,27 @@ export default function InviteMemberModal({ isOpen, onClose }: InviteMemberModal
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const invitesContainerRef = useRef<HTMLDivElement>(null);
+
+  // Add scroll wheel event handler
+  useEffect(() => {
+    const handleWheel = (e: WheelEvent) => {
+      if (invitesContainerRef.current) {
+        invitesContainerRef.current.scrollTop += e.deltaY;
+      }
+    };
+
+    const container = invitesContainerRef.current;
+    if (container) {
+      container.addEventListener('wheel', handleWheel, { passive: true });
+    }
+
+    return () => {
+      if (container) {
+        container.removeEventListener('wheel', handleWheel);
+      }
+    };
+  }, []);
 
   const addInvite = () => {
     setInvites([...invites, { email: '', role: 'editor', message: '' }]);
@@ -169,7 +190,10 @@ export default function InviteMemberModal({ isOpen, onClose }: InviteMemberModal
           )}
 
           {/* Invite Forms */}
-          <div className="space-y-6">
+          <div 
+            className="space-y-6 max-h-[400px] overflow-y-auto pr-2" 
+            ref={invitesContainerRef}
+          >
             {invites.map((invite, index) => (
               <div key={index} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
                 <div className="flex items-center justify-between mb-4">
@@ -287,7 +311,7 @@ export default function InviteMemberModal({ isOpen, onClose }: InviteMemberModal
             className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors flex items-center disabled:opacity-50"
           >
             {loading ? (
-              <Loader2 className="w-4 h-4 animate-spin mr-2" />
+              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
             ) : (
               <Send className="w-4 h-4 mr-2" />
             )}

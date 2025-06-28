@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   X, 
   Users, 
@@ -15,6 +15,7 @@ import {
   Eye,
   AlertTriangle
 } from 'lucide-react';
+import { useAuth } from '../../contexts/AuthContext';
 
 interface TeamMembersModalProps {
   isOpen: boolean;
@@ -55,75 +56,108 @@ const ROLE_ICONS = {
 };
 
 export default function TeamMembersModal({ isOpen, onClose, onInvite }: TeamMembersModalProps) {
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<'members' | 'invites'>('members');
   const [showRoleModal, setShowRoleModal] = useState<string | null>(null);
+  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
+  const [pendingInvites, setPendingInvites] = useState<PendingInvite[]>([]);
+  const membersContainerRef = useRef<HTMLDivElement>(null);
+  const invitesContainerRef = useRef<HTMLDivElement>(null);
 
-  // Mock data
-  const teamMembers: TeamMember[] = [
-    {
-      id: '1',
-      name: 'Dr. Sarah Martinez',
-      email: 'sarah@voiceformpro.com',
-      role: 'admin',
-      status: 'active',
-      joinedAt: '2024-01-15',
-      lastActive: '2 minutes ago'
-    },
-    {
-      id: '2',
-      name: 'Alex Chen',
-      email: 'alex@voiceformpro.com',
-      role: 'editor',
-      status: 'active',
-      joinedAt: '2024-01-16',
-      lastActive: '1 hour ago'
-    },
-    {
-      id: '3',
-      name: 'Maria Johnson',
-      email: 'maria@voiceformpro.com',
-      role: 'editor',
-      status: 'active',
-      joinedAt: '2024-01-18',
-      lastActive: '3 hours ago'
-    },
-    {
-      id: '4',
-      name: 'David Wilson',
-      email: 'david@voiceformpro.com',
-      role: 'viewer',
-      status: 'inactive',
-      joinedAt: '2024-01-10',
-      lastActive: '2 days ago'
+  // Initialize with current user as admin
+  useEffect(() => {
+    if (user) {
+      const firstName = user.user_metadata?.first_name || '';
+      const lastName = user.user_metadata?.last_name || '';
+      const userName = `${firstName} ${lastName}`.trim() || user.email?.split('@')[0] || 'User';
+      
+      // Create team members with current user as admin
+      const currentUserMember: TeamMember = {
+        id: '1',
+        name: userName,
+        email: user.email || 'user@example.com',
+        role: 'admin',
+        status: 'active',
+        joinedAt: new Date().toISOString(),
+        lastActive: '2 minutes ago'
+      };
+      
+      // Add some example team members
+      const otherMembers: TeamMember[] = [
+        {
+          id: '2',
+          name: 'Alex Chen',
+          email: 'alex@voiceformpro.com',
+          role: 'editor',
+          status: 'active',
+          joinedAt: '2024-01-16',
+          lastActive: '1 hour ago'
+        },
+        {
+          id: '3',
+          name: 'Maria Johnson',
+          email: 'maria@voiceformpro.com',
+          role: 'editor',
+          status: 'active',
+          joinedAt: '2024-01-18',
+          lastActive: '3 hours ago'
+        }
+      ];
+      
+      setTeamMembers([currentUserMember, ...otherMembers]);
+      
+      // Set pending invites
+      setPendingInvites([
+        {
+          id: '1',
+          email: 'john@company.com',
+          role: 'editor',
+          sentAt: '2024-01-20',
+          sentBy: userName,
+          status: 'pending'
+        },
+        {
+          id: '2',
+          email: 'lisa@company.com',
+          role: 'viewer',
+          sentAt: '2024-01-19',
+          sentBy: userName,
+          status: 'pending'
+        }
+      ]);
     }
-  ];
+  }, [user]);
 
-  const pendingInvites: PendingInvite[] = [
-    {
-      id: '1',
-      email: 'john@company.com',
-      role: 'editor',
-      sentAt: '2024-01-20',
-      sentBy: 'Dr. Sarah Martinez',
-      status: 'pending'
-    },
-    {
-      id: '2',
-      email: 'lisa@company.com',
-      role: 'viewer',
-      sentAt: '2024-01-19',
-      sentBy: 'Alex Chen',
-      status: 'pending'
-    },
-    {
-      id: '3',
-      email: 'expired@company.com',
-      role: 'editor',
-      sentAt: '2024-01-10',
-      sentBy: 'Dr. Sarah Martinez',
-      status: 'expired'
+  // Add scroll wheel event handlers
+  useEffect(() => {
+    const handleWheel = (e: WheelEvent) => {
+      if (membersContainerRef.current && activeTab === 'members') {
+        membersContainerRef.current.scrollTop += e.deltaY;
+      }
+      if (invitesContainerRef.current && activeTab === 'invites') {
+        invitesContainerRef.current.scrollTop += e.deltaY;
+      }
+    };
+
+    const membersContainer = membersContainerRef.current;
+    const invitesContainer = invitesContainerRef.current;
+
+    if (membersContainer) {
+      membersContainer.addEventListener('wheel', handleWheel, { passive: true });
     }
-  ];
+    if (invitesContainer) {
+      invitesContainer.addEventListener('wheel', handleWheel, { passive: true });
+    }
+
+    return () => {
+      if (membersContainer) {
+        membersContainer.removeEventListener('wheel', handleWheel);
+      }
+      if (invitesContainer) {
+        invitesContainer.removeEventListener('wheel', handleWheel);
+      }
+    };
+  }, [activeTab]);
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -141,22 +175,50 @@ export default function TeamMembersModal({ isOpen, onClose, onInvite }: TeamMemb
 
   const handleResendInvite = (inviteId: string) => {
     console.log('Resending invite:', inviteId);
-    // Implement resend logic
+    // In a real implementation, this would call an API to resend the invite
+    
+    // For demo purposes, update the UI to show the invite was resent
+    setPendingInvites(prevInvites => 
+      prevInvites.map(invite => 
+        invite.id === inviteId 
+          ? { ...invite, sentAt: new Date().toISOString() } 
+          : invite
+      )
+    );
   };
 
   const handleCancelInvite = (inviteId: string) => {
     console.log('Canceling invite:', inviteId);
-    // Implement cancel logic
+    // In a real implementation, this would call an API to cancel the invite
+    
+    // For demo purposes, remove the invite from the UI
+    setPendingInvites(prevInvites => 
+      prevInvites.filter(invite => invite.id !== inviteId)
+    );
   };
 
   const handleRemoveMember = (memberId: string) => {
     console.log('Removing member:', memberId);
-    // Implement remove logic
+    // In a real implementation, this would call an API to remove the member
+    
+    // For demo purposes, remove the member from the UI
+    setTeamMembers(prevMembers => 
+      prevMembers.filter(member => member.id !== memberId)
+    );
   };
 
   const handleChangeRole = (memberId: string, newRole: string) => {
     console.log('Changing role:', memberId, newRole);
-    // Implement role change logic
+    // In a real implementation, this would call an API to change the role
+    
+    // For demo purposes, update the member's role in the UI
+    setTeamMembers(prevMembers => 
+      prevMembers.map(member => 
+        member.id === memberId 
+          ? { ...member, role: newRole as 'admin' | 'editor' | 'viewer' } 
+          : member
+      )
+    );
     setShowRoleModal(null);
   };
 
@@ -219,7 +281,10 @@ export default function TeamMembersModal({ isOpen, onClose, onInvite }: TeamMemb
         {/* Content */}
         <div className="p-6">
           {activeTab === 'members' ? (
-            <div className="space-y-4">
+            <div 
+              className="space-y-4 max-h-[400px] overflow-y-auto pr-2" 
+              ref={membersContainerRef}
+            >
               {teamMembers.map((member) => {
                 const RoleIcon = ROLE_ICONS[member.role];
                 return (
@@ -316,7 +381,10 @@ export default function TeamMembersModal({ isOpen, onClose, onInvite }: TeamMemb
               })}
             </div>
           ) : (
-            <div className="space-y-4">
+            <div 
+              className="space-y-4 max-h-[400px] overflow-y-auto pr-2" 
+              ref={invitesContainerRef}
+            >
               {pendingInvites.map((invite) => (
                 <div key={invite.id} className={`rounded-lg p-4 border ${
                   invite.status === 'expired' 

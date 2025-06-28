@@ -53,6 +53,8 @@ export default function SharedTemplateCard({
   const [showActions, setShowActions] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
 
   const getCategoryIcon = (category: string) => {
     const IconComponent = CATEGORY_ICONS[category as keyof typeof CATEGORY_ICONS] || FileText;
@@ -80,40 +82,52 @@ export default function SharedTemplateCard({
 
   const handleDelete = async () => {
     setLoading(true);
+    setError(null);
     try {
       const { error } = await deleteSharedTemplate(shareId);
       if (error) throw error;
-      onUpdate();
-    } catch (error) {
-      console.error('Failed to delete shared template:', error);
-    } finally {
+      setSuccess('Template removed from shared successfully');
+      setTimeout(() => {
+        setShowDeleteConfirm(false);
+        onUpdate();
+      }, 1500);
+    } catch (err: any) {
+      setError(err.message || 'Failed to delete shared template');
       setLoading(false);
-      setShowDeleteConfirm(false);
+      console.error('Failed to delete shared template:', err);
     }
   };
 
   const handleToggleVisibility = async () => {
     setLoading(true);
+    setError(null);
     try {
       const { error } = await toggleSharedTemplateVisibility(shareId, !isHidden);
       if (error) throw error;
-      onUpdate();
-    } catch (error) {
-      console.error('Failed to toggle visibility:', error);
-    } finally {
+      setSuccess(isHidden ? 'Template is now visible' : 'Template is now hidden');
+      setTimeout(() => {
+        onUpdate();
+      }, 1500);
+    } catch (err: any) {
+      setError(err.message || 'Failed to toggle visibility');
       setLoading(false);
+      console.error('Failed to toggle visibility:', err);
     }
   };
 
   const handleAddToReviewQueue = async () => {
     setLoading(true);
+    setError(null);
     try {
       const { error } = await addTemplateToReviewQueue(template.id, 'medium');
       if (error) throw error;
-      setShowActions(false);
-      // Show success message or notification
-    } catch (error) {
-      console.error('Failed to add to review queue:', error);
+      setSuccess('Template added to review queue successfully');
+      setTimeout(() => {
+        setShowActions(false);
+      }, 1500);
+    } catch (err: any) {
+      setError(err.message || 'Failed to add to review queue');
+      console.error('Failed to add to review queue:', err);
     } finally {
       setLoading(false);
     }
@@ -131,6 +145,21 @@ export default function SharedTemplateCard({
         isHidden ? 'opacity-60 bg-gray-50' : ''
       }`}>
         <div className="p-6">
+          {/* Success/Error Messages */}
+          {success && (
+            <div className="bg-green-50 border border-green-200 rounded-lg p-3 flex items-center mb-4">
+              <CheckCircle className="w-4 h-4 text-green-600 mr-2" />
+              <span className="text-green-800 text-sm">{success}</span>
+            </div>
+          )}
+
+          {error && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-3 flex items-center mb-4">
+              <AlertCircle className="w-4 h-4 text-red-600 mr-2" />
+              <span className="text-red-800 text-sm">{error}</span>
+            </div>
+          )}
+
           <div className="flex items-start justify-between mb-4">
             <div className="flex items-center flex-1">
               <div className={`w-12 h-12 rounded-lg flex items-center justify-center mr-4 ${
@@ -171,7 +200,10 @@ export default function SharedTemplateCard({
                       View Template
                     </button>
                     <button
-                      onClick={handleAddToReviewQueue}
+                      onClick={() => {
+                        setShowActions(false);
+                        handleAddToReviewQueue();
+                      }}
                       disabled={loading}
                       className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center disabled:opacity-50"
                     >
@@ -335,7 +367,7 @@ export default function SharedTemplateCard({
               >
                 {loading ? (
                   <>
-                    <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
                     Removing...
                   </>
                 ) : (

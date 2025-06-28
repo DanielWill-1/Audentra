@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   X, 
   Share2, 
@@ -56,6 +56,7 @@ export default function ShareNewTemplateModal({ isOpen, onClose, onSuccess }: Sh
   const [sharing, setSharing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const templatesContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (isOpen) {
@@ -66,6 +67,26 @@ export default function ShareNewTemplateModal({ isOpen, onClose, onSuccess }: Sh
   useEffect(() => {
     filterTemplates();
   }, [templates, searchQuery, selectedCategory]);
+
+  // Add scroll wheel event handler
+  useEffect(() => {
+    const handleWheel = (e: WheelEvent) => {
+      if (templatesContainerRef.current) {
+        templatesContainerRef.current.scrollTop += e.deltaY;
+      }
+    };
+
+    const container = templatesContainerRef.current;
+    if (container) {
+      container.addEventListener('wheel', handleWheel, { passive: true });
+    }
+
+    return () => {
+      if (container) {
+        container.removeEventListener('wheel', handleWheel);
+      }
+    };
+  }, []);
 
   const loadTemplates = async () => {
     setLoading(true);
@@ -260,7 +281,7 @@ export default function ShareNewTemplateModal({ isOpen, onClose, onSuccess }: Sh
           {/* Templates List */}
           {loading ? (
             <div className="flex items-center justify-center py-12">
-              <Loader2 className="w-8 h-8 animate-spin text-emerald-600" />
+              <div className="w-8 h-8 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin"></div>
               <span className="ml-2 text-gray-600">Loading your templates...</span>
             </div>
           ) : filteredTemplates.length === 0 ? (
@@ -275,7 +296,10 @@ export default function ShareNewTemplateModal({ isOpen, onClose, onSuccess }: Sh
               </p>
             </div>
           ) : (
-            <div className="space-y-3 max-h-96 overflow-y-auto">
+            <div 
+              className="space-y-3 max-h-96 overflow-y-auto pr-2"
+              ref={templatesContainerRef}
+            >
               {filteredTemplates.map((template) => {
                 const IconComponent = getCategoryIcon(template.category);
                 const isSelected = selectedTemplates.includes(template.id);
@@ -413,7 +437,7 @@ export default function ShareNewTemplateModal({ isOpen, onClose, onSuccess }: Sh
             className="px-6 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {sharing ? (
-              <Loader2 className="w-4 h-4 animate-spin mr-2" />
+              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
             ) : (
               <Send className="w-4 h-4 mr-2" />
             )}
