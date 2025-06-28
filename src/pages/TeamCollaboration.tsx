@@ -216,6 +216,13 @@ export default function TeamCollaboration() {
                 <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
               </button>
               <button 
+                onClick={() => setShowShareTemplateModal(true)}
+                className="bg-emerald-600 text-white px-6 py-2 rounded-lg hover:bg-emerald-700 transition-colors flex items-center"
+              >
+                <Share2 className="w-4 h-4 mr-2" />
+                Share Templates
+              </button>
+              <button 
                 onClick={() => setShowInviteModal(true)}
                 className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center"
               >
@@ -424,15 +431,6 @@ export default function TeamCollaboration() {
                       ))}
                     </div>
                   )}
-
-                  <div className="mt-6 text-center">
-                    <button 
-                      onClick={() => setShowShareTemplateModal(true)}
-                      className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-                    >
-                      Share New Template
-                    </button>
-                  </div>
                 </div>
               </div>
 
