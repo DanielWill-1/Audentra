@@ -226,11 +226,12 @@ export const shareTemplate = async (shareData: ShareTemplateData) => {
   if (!user) return { data: null, error: new Error('Not authenticated') };
 
   // Get the current user's profile information
-  const { data: userProfile } = await supabase
+  const { data: userProfileData } = await supabase
     .from('users')
     .select('first_name, last_name')
-    .eq('id', user.id)
-    .single();
+    .eq('id', user.id);
+
+  const userProfile = userProfileData && userProfileData.length > 0 ? userProfileData[0] : null;
 
   const userName = userProfile 
     ? `${userProfile.first_name || ''} ${userProfile.last_name || ''}`.trim() || user.email
@@ -261,11 +262,12 @@ export const shareTemplatesWithTeam = async (templateIds: string[], message?: st
   if (!user) return { data: null, error: new Error('Not authenticated') };
 
   // Get the current user's profile information
-  const { data: userProfile } = await supabase
+  const { data: userProfileData } = await supabase
     .from('users')
     .select('first_name, last_name')
-    .eq('id', user.id)
-    .single();
+    .eq('id', user.id);
+
+  const userProfile = userProfileData && userProfileData.length > 0 ? userProfileData[0] : null;
 
   const userName = userProfile 
     ? `${userProfile.first_name || ''} ${userProfile.last_name || ''}`.trim() || user.email
@@ -358,11 +360,12 @@ export const addTemplateReview = async (reviewData: {
   if (!user) return { data: null, error: new Error('Not authenticated') };
 
   // Get the current user's profile information
-  const { data: userProfile } = await supabase
+  const { data: userProfileData } = await supabase
     .from('users')
     .select('first_name, last_name')
-    .eq('id', user.id)
-    .single();
+    .eq('id', user.id);
+
+  const userProfile = userProfileData && userProfileData.length > 0 ? userProfileData[0] : null;
 
   const userName = userProfile 
     ? `${userProfile.first_name || ''} ${userProfile.last_name || ''}`.trim() || user.email
