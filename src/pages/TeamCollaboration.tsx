@@ -23,6 +23,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { getSharedTemplates, getUserTemplates } from '../lib/templates';
 import InviteMemberModal from '../components/Team/InviteMemberModal';
 import TeamMembersModal from '../components/Team/TeamMembersModal';
+import ShareNewTemplateModal from '../components/Team/ShareNewTemplateModal';
 
 interface TeamMember {
   id: string;
@@ -45,19 +46,6 @@ interface SharedTemplate {
   category: string;
 }
 
-interface TeamActivity {
-  id: string;
-  user: {
-    name: string;
-    initials: string;
-    avatar?: string;
-  };
-  action: string;
-  template?: string;
-  time: string;
-  type: 'completed' | 'shared' | 'requested' | 'approved';
-}
-
 const TABS = [
   { id: 'overview', name: 'Overview' },
   { id: 'marketplace', name: 'Template Marketplace' },
@@ -70,9 +58,9 @@ export default function TeamCollaboration() {
   const [activeTab, setActiveTab] = useState('collaboration');
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [showTeamModal, setShowTeamModal] = useState(false);
+  const [showShareTemplateModal, setShowShareTemplateModal] = useState(false);
   const [sharedTemplates, setSharedTemplates] = useState<SharedTemplate[]>([]);
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
-  const [teamActivity, setTeamActivity] = useState<TeamActivity[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Mock data - in real app this would come from API
@@ -160,34 +148,8 @@ export default function TeamCollaboration() {
         }
       ];
 
-      // Mock team activity
-      const mockActivity: TeamActivity[] = [
-        {
-          id: '1',
-          user: { name: 'Mike Johnson', initials: 'MJ' },
-          action: 'completed Safety Inspection template',
-          time: '2 hours ago',
-          type: 'completed'
-        },
-        {
-          id: '2',
-          user: { name: 'Lisa Chen', initials: 'LC' },
-          action: 'shared new HR template with team',
-          time: '4 hours ago',
-          type: 'shared'
-        },
-        {
-          id: '3',
-          user: { name: 'Dr. Rodriguez', initials: 'DR' },
-          action: 'requested approval for Patient Intake v2.1',
-          time: '6 hours ago',
-          type: 'requested'
-        }
-      ];
-
       setTeamMembers(mockMembers);
       setSharedTemplates(mockSharedTemplates);
-      setTeamActivity(mockActivity);
       setLoading(false);
     };
 
@@ -203,23 +165,10 @@ export default function TeamCollaboration() {
     }
   };
 
-  const getActivityIcon = (type: string) => {
-    switch (type) {
-      case 'completed': return <CheckCircle className="w-4 h-4 text-blue-600" />;
-      case 'shared': return <Share2 className="w-4 h-4 text-emerald-600" />;
-      case 'requested': return <AlertTriangle className="w-4 h-4 text-orange-600" />;
-      case 'approved': return <Star className="w-4 h-4 text-purple-600" />;
-      default: return <FileText className="w-4 h-4 text-gray-600" />;
-    }
-  };
-
-  const getActionButton = (type: string) => {
-    switch (type) {
-      case 'completed': return { text: 'View', color: 'text-blue-600' };
-      case 'shared': return { text: 'Review', color: 'text-emerald-600' };
-      case 'requested': return { text: 'Approve', color: 'text-orange-600' };
-      default: return { text: 'View', color: 'text-gray-600' };
-    }
+  const handleShareTemplateSuccess = () => {
+    // Refresh shared templates data
+    // In a real app, this would reload the shared templates from the API
+    console.log('Templates shared successfully, refreshing data...');
   };
 
   const activeMembers = teamMembers.filter(m => m.status === 'active').length;
@@ -412,47 +361,18 @@ export default function TeamCollaboration() {
                   </div>
 
                   <div className="mt-6 text-center">
-                    <button className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                    <button 
+                      onClick={() => setShowShareTemplateModal(true)}
+                      className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                    >
                       Share New Template
                     </button>
                   </div>
                 </div>
               </div>
 
-              {/* Team Activity & Quick Actions */}
+              {/* Quick Actions */}
               <div className="space-y-6">
-                {/* Team Activity */}
-                <div className="bg-white rounded-2xl border border-gray-200 p-6">
-                  <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-xl font-bold text-gray-900">Team Activity</h2>
-                    <button className="text-blue-600 hover:text-blue-700 text-sm font-medium">
-                      View All
-                    </button>
-                  </div>
-
-                  <div className="space-y-4">
-                    {teamActivity.map((activity) => (
-                      <div key={activity.id} className="flex items-start space-x-3">
-                        <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white text-xs font-semibold flex-shrink-0">
-                          {activity.user.initials}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center space-x-2 mb-1">
-                            {getActivityIcon(activity.type)}
-                            <p className="text-sm font-medium text-gray-900">{activity.user.name}</p>
-                          </div>
-                          <p className="text-sm text-gray-600">{activity.action}</p>
-                          <p className="text-xs text-gray-500 mt-1">{activity.time}</p>
-                        </div>
-                        <button className={`text-sm font-medium ${getActionButton(activity.type).color} hover:underline`}>
-                          {getActionButton(activity.type).text}
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Quick Actions */}
                 <div className="bg-white rounded-2xl border border-gray-200 p-6">
                   <h2 className="text-xl font-bold text-gray-900 mb-6">Quick Actions</h2>
                   
@@ -465,14 +385,12 @@ export default function TeamCollaboration() {
                       Invite Member
                     </button>
                     
-                    <button className="w-full flex items-center justify-center p-3 border border-emerald-300 text-emerald-600 rounded-lg hover:bg-emerald-50 transition-colors">
+                    <button 
+                      onClick={() => setShowShareTemplateModal(true)}
+                      className="w-full flex items-center justify-center p-3 border border-emerald-300 text-emerald-600 rounded-lg hover:bg-emerald-50 transition-colors"
+                    >
                       <Share2 className="w-4 h-4 mr-2" />
                       Share Template
-                    </button>
-                    
-                    <button className="w-full flex items-center justify-center p-3 border border-purple-300 text-purple-600 rounded-lg hover:bg-purple-50 transition-colors">
-                      <MessageSquare className="w-4 h-4 mr-2" />
-                      Team Chat
                     </button>
                     
                     <button className="w-full flex items-center justify-center p-3 border border-orange-300 text-orange-600 rounded-lg hover:bg-orange-50 transition-colors">
@@ -522,6 +440,12 @@ export default function TeamCollaboration() {
           setShowTeamModal(false);
           setShowInviteModal(true);
         }}
+      />
+
+      <ShareNewTemplateModal
+        isOpen={showShareTemplateModal}
+        onClose={() => setShowShareTemplateModal(false)}
+        onSuccess={handleShareTemplateSuccess}
       />
     </div>
   );
