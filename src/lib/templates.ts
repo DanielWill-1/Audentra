@@ -22,16 +22,17 @@ export interface SharedUser {
   role: 'viewer' | 'editor' | 'admin';
   shared_by: string;
   shared_at: string;
-  user_email?: string;
-  user_name?: string;
+  user_email: string;
+  user_name: string;
+  message?: string;
 }
 
 export interface TemplateReview {
   id: string;
   template_id: string;
   reviewer_id: string;
-  reviewer_name?: string;
-  reviewer_email?: string;
+  reviewer_name: string;
+  reviewer_email: string;
   rating: number; // 1-5 stars
   comment?: string;
   status: 'pending' | 'approved' | 'rejected' | 'needs_changes';
@@ -89,7 +90,8 @@ export const getUserTemplates = async (sortBy: 'created_at' | 'name' | 'category
         shared_by,
         shared_at,
         user_email,
-        user_name
+        user_name,
+        message
       ),
       reviews:template_reviews(
         id,
@@ -125,7 +127,8 @@ export const getTemplatesByCategory = async (
         shared_by,
         shared_at,
         user_email,
-        user_name
+        user_name,
+        message
       ),
       reviews:template_reviews(
         id,
@@ -162,7 +165,8 @@ export const getTemplateById = async (id: string) => {
         shared_by,
         shared_at,
         user_email,
-        user_name
+        user_name,
+        message
       ),
       reviews:template_reviews(
         id,
@@ -221,13 +225,25 @@ export const shareTemplate = async (shareData: ShareTemplateData) => {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { data: null, error: new Error('Not authenticated') };
 
+  // Get the current user's profile information
+  const { data: userProfile } = await supabase
+    .from('users')
+    .select('first_name, last_name')
+    .eq('id', user.id)
+    .single();
+
+  const userName = userProfile 
+    ? `${userProfile.first_name || ''} ${userProfile.last_name || ''}`.trim() || user.email
+    : user.email;
+
   const shares = shareData.user_emails.map(email => ({
     template_id: shareData.template_id,
     user_email: email,
+    user_name: '', // Will be filled when user accepts/views
     role: shareData.role,
     shared_by: user.id,
     shared_at: new Date().toISOString(),
-    message: shareData.message
+    message: shareData.message || ''
   }));
 
   const { data, error } = await supabase
@@ -297,11 +313,22 @@ export const addTemplateReview = async (reviewData: {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { data: null, error: new Error('Not authenticated') };
 
+  // Get the current user's profile information
+  const { data: userProfile } = await supabase
+    .from('users')
+    .select('first_name, last_name')
+    .eq('id', user.id)
+    .single();
+
+  const userName = userProfile 
+    ? `${userProfile.first_name || ''} ${userProfile.last_name || ''}`.trim() || user.email
+    : user.email;
+
   const review = {
     ...reviewData,
     reviewer_id: user.id,
-    reviewer_name: user.user_metadata?.first_name + ' ' + user.user_metadata?.last_name || user.email,
-    reviewer_email: user.email,
+    reviewer_name: userName,
+    reviewer_email: user.email || '',
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString()
   };
