@@ -87,15 +87,11 @@ export const getUserTemplates = async (sortBy: 'created_at' | 'name' | 'category
         user_id,
         role,
         shared_by,
-        shared_at,
-        user_email,
-        user_name
+        shared_at
       ),
       reviews:template_reviews(
         id,
         reviewer_id,
-        reviewer_name,
-        reviewer_email,
         rating,
         comment,
         status,
@@ -123,15 +119,11 @@ export const getTemplatesByCategory = async (
         user_id,
         role,
         shared_by,
-        shared_at,
-        user_email,
-        user_name
+        shared_at
       ),
       reviews:template_reviews(
         id,
         reviewer_id,
-        reviewer_name,
-        reviewer_email,
         rating,
         comment,
         status,
