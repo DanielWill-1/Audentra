@@ -87,11 +87,15 @@ export const getUserTemplates = async (sortBy: 'created_at' | 'name' | 'category
         user_id,
         role,
         shared_by,
-        shared_at
+        shared_at,
+        user_email,
+        user_name
       ),
       reviews:template_reviews(
         id,
         reviewer_id,
+        reviewer_name,
+        reviewer_email,
         rating,
         comment,
         status,
@@ -119,11 +123,15 @@ export const getTemplatesByCategory = async (
         user_id,
         role,
         shared_by,
-        shared_at
+        shared_at,
+        user_email,
+        user_name
       ),
       reviews:template_reviews(
         id,
         reviewer_id,
+        reviewer_name,
+        reviewer_email,
         rating,
         comment,
         status,
@@ -210,11 +218,14 @@ export const toggleTemplateVisibility = async (id: string, visibility: 'visible'
 
 // Share template with users
 export const shareTemplate = async (shareData: ShareTemplateData) => {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { data: null, error: new Error('Not authenticated') };
+
   const shares = shareData.user_emails.map(email => ({
     template_id: shareData.template_id,
     user_email: email,
     role: shareData.role,
-    shared_by: shareData.template_id, // This should be the current user ID
+    shared_by: user.id,
     shared_at: new Date().toISOString(),
     message: shareData.message
   }));
