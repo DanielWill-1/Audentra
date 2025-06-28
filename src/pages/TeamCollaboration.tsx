@@ -22,7 +22,7 @@ import {
   RefreshCw
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import { getSharedTemplates, getUserTemplates, Template } from '../lib/templates';
+import { getSharedTemplates, getTemplatesSharedByUser, Template } from '../lib/templates';
 import InviteMemberModal from '../components/Team/InviteMemberModal';
 import TeamMembersModal from '../components/Team/TeamMembersModal';
 import ShareNewTemplateModal from '../components/Team/ShareNewTemplateModal';
@@ -52,6 +52,7 @@ export default function TeamCollaboration() {
   const [showTeamModal, setShowTeamModal] = useState(false);
   const [showShareTemplateModal, setShowShareTemplateModal] = useState(false);
   const [sharedTemplates, setSharedTemplates] = useState<Template[]>([]);
+  const [sharedByMeTemplates, setSharedByMeTemplates] = useState<Template[]>([]);
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -63,19 +64,39 @@ export default function TeamCollaboration() {
       setError(null);
       
       try {
-        // Load actual shared templates from database
-        const { data: sharedData, error: sharedError } = await getSharedTemplates();
+        console.log('Loading team collaboration data...');
         
-        if (sharedError) {
-          console.error('Error loading shared templates:', sharedError);
+        // Load templates shared with me
+        const { data: sharedWithMeData, error: sharedWithMeError } = await getSharedTemplates();
+        console.log('Templates shared with me:', { sharedWithMeData, sharedWithMeError });
+        
+        // Load templates I've shared with others
+        const { data: sharedByMeData, error: sharedByMeError } = await getTemplatesSharedByUser();
+        console.log('Templates shared by me:', { sharedByMeData, sharedByMeError });
+        
+        if (sharedWithMeError) {
+          console.error('Error loading shared templates:', sharedWithMeError);
           setError('Failed to load shared templates');
         } else {
           // Extract templates from shared data
-          const templates = (sharedData || [])
+          const templatesSharedWithMe = (sharedWithMeData || [])
             .map(share => share.template)
             .filter(template => template !== null);
           
-          setSharedTemplates(templates);
+          setSharedTemplates(templatesSharedWithMe);
+          console.log('Processed templates shared with me:', templatesSharedWithMe);
+        }
+
+        if (sharedByMeError) {
+          console.error('Error loading templates shared by me:', sharedByMeError);
+        } else {
+          // Extract templates from shared data
+          const templatesSharedByMe = (sharedByMeData || [])
+            .map(share => share.template)
+            .filter(template => template !== null);
+          
+          setSharedByMeTemplates(templatesSharedByMe);
+          console.log('Processed templates shared by me:', templatesSharedByMe);
         }
 
         // Mock team members (in real app this would come from team API)
@@ -144,17 +165,37 @@ export default function TeamCollaboration() {
     setError(null);
     
     try {
-      const { data: sharedData, error: sharedError } = await getSharedTemplates();
+      console.log('Refreshing shared templates...');
       
-      if (sharedError) {
-        throw sharedError;
+      // Reload templates shared with me
+      const { data: sharedWithMeData, error: sharedWithMeError } = await getSharedTemplates();
+      
+      // Reload templates I've shared with others
+      const { data: sharedByMeData, error: sharedByMeError } = await getTemplatesSharedByUser();
+      
+      if (sharedWithMeError) {
+        throw sharedWithMeError;
       }
       
-      const templates = (sharedData || [])
+      if (sharedByMeError) {
+        console.error('Error refreshing templates shared by me:', sharedByMeError);
+      }
+      
+      const templatesSharedWithMe = (sharedWithMeData || [])
         .map(share => share.template)
         .filter(template => template !== null);
       
-      setSharedTemplates(templates);
+      const templatesSharedByMe = (sharedByMeData || [])
+        .map(share => share.template)
+        .filter(template => template !== null);
+      
+      setSharedTemplates(templatesSharedWithMe);
+      setSharedByMeTemplates(templatesSharedByMe);
+      
+      console.log('Refreshed data:', { 
+        sharedWithMe: templatesSharedWithMe.length, 
+        sharedByMe: templatesSharedByMe.length 
+      });
     } catch (err: any) {
       setError(err.message || 'Failed to refresh shared templates');
     } finally {
@@ -164,6 +205,7 @@ export default function TeamCollaboration() {
 
   const handleShareTemplateSuccess = () => {
     // Refresh shared templates data
+    console.log('Template shared successfully, refreshing data...');
     handleRefresh();
   };
 
@@ -187,7 +229,7 @@ export default function TeamCollaboration() {
   };
 
   const activeMembers = teamMembers.filter(m => m.status === 'active').length;
-  const templatesSharedThisMonth = sharedTemplates.length;
+  const totalSharedTemplates = sharedTemplates.length + sharedByMeTemplates.length;
   const templatesAwaitingApproval = 0; // Would be calculated from actual data
   const growthPercentage = 15; // Would be calculated from actual data
 
@@ -325,8 +367,10 @@ export default function TeamCollaboration() {
                     <h3 className="text-lg font-semibold text-gray-900">Shared Templates</h3>
                   </div>
                 </div>
-                <div className="text-3xl font-bold text-emerald-600 mb-2">{templatesSharedThisMonth}</div>
-                <p className="text-sm text-gray-600 mb-4">Templates shared with you</p>
+                <div className="text-3xl font-bold text-emerald-600 mb-2">{totalSharedTemplates}</div>
+                <p className="text-sm text-gray-600 mb-4">
+                  {sharedTemplates.length} shared with you, {sharedByMeTemplates.length} shared by you
+                </p>
                 
                 <div className="flex items-center text-sm">
                   <TrendingUp className="w-4 h-4 text-green-500 mr-1" />
@@ -374,12 +418,12 @@ export default function TeamCollaboration() {
                       <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
                       <span className="ml-2 text-gray-600">Loading shared templates...</span>
                     </div>
-                  ) : sharedTemplates.length === 0 ? (
+                  ) : totalSharedTemplates === 0 ? (
                     <div className="text-center py-12">
                       <Share2 className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                       <h3 className="text-lg font-medium text-gray-900 mb-2">No shared templates</h3>
                       <p className="text-gray-600 mb-6">
-                        No templates have been shared with you yet. Ask your team members to share templates or share some of your own.
+                        No templates have been shared yet. Share some of your templates with the team to get started.
                       </p>
                       <button 
                         onClick={() => setShowShareTemplateModal(true)}
@@ -389,46 +433,102 @@ export default function TeamCollaboration() {
                       </button>
                     </div>
                   ) : (
-                    <div className="space-y-4">
-                      {sharedTemplates.map((template) => (
-                        <div key={template.id} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-                          <div className="flex items-center space-x-4">
-                            <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                              <FileText className="w-5 h-5 text-blue-600" />
-                            </div>
-                            <div>
-                              <h3 className="font-semibold text-gray-900">{template.name}</h3>
-                              <div className="flex items-center space-x-4 text-sm text-gray-600">
-                                <span className="capitalize">{template.category}</span>
-                                <span>•</span>
-                                <span>{template.form_data?.fields?.length || 0} fields</span>
-                                <span>•</span>
-                                <span>Updated {formatTimeAgo(template.updated_at)}</span>
+                    <div className="space-y-6">
+                      {/* Templates shared with me */}
+                      {sharedTemplates.length > 0 && (
+                        <div>
+                          <h3 className="text-lg font-semibold text-gray-900 mb-4">Shared with You ({sharedTemplates.length})</h3>
+                          <div className="space-y-3">
+                            {sharedTemplates.map((template) => (
+                              <div key={template.id} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                                <div className="flex items-center space-x-4">
+                                  <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                    <FileText className="w-5 h-5 text-blue-600" />
+                                  </div>
+                                  <div>
+                                    <h4 className="font-semibold text-gray-900">{template.name}</h4>
+                                    <div className="flex items-center space-x-4 text-sm text-gray-600">
+                                      <span className="capitalize">{template.category}</span>
+                                      <span>•</span>
+                                      <span>{template.form_data?.fields?.length || 0} fields</span>
+                                      <span>•</span>
+                                      <span>Updated {formatTimeAgo(template.updated_at)}</span>
+                                    </div>
+                                    {template.description && (
+                                      <p className="text-sm text-gray-500 mt-1 line-clamp-1">{template.description}</p>
+                                    )}
+                                  </div>
+                                </div>
+                                
+                                <div className="flex items-center space-x-3">
+                                  <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                    Shared with you
+                                  </span>
+                                  <div className="flex items-center space-x-1">
+                                    <button className="p-1 text-gray-400 hover:text-blue-600 transition-colors">
+                                      <Eye className="w-4 h-4" />
+                                    </button>
+                                    <button className="p-1 text-gray-400 hover:text-emerald-600 transition-colors">
+                                      <MessageSquare className="w-4 h-4" />
+                                    </button>
+                                    <button className="p-1 text-gray-400 hover:text-gray-600 transition-colors">
+                                      <MoreHorizontal className="w-4 h-4" />
+                                    </button>
+                                  </div>
+                                </div>
                               </div>
-                              {template.description && (
-                                <p className="text-sm text-gray-500 mt-1 line-clamp-1">{template.description}</p>
-                              )}
-                            </div>
-                          </div>
-                          
-                          <div className="flex items-center space-x-3">
-                            <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                              Shared
-                            </span>
-                            <div className="flex items-center space-x-1">
-                              <button className="p-1 text-gray-400 hover:text-blue-600 transition-colors">
-                                <Eye className="w-4 h-4" />
-                              </button>
-                              <button className="p-1 text-gray-400 hover:text-emerald-600 transition-colors">
-                                <MessageSquare className="w-4 h-4" />
-                              </button>
-                              <button className="p-1 text-gray-400 hover:text-gray-600 transition-colors">
-                                <MoreHorizontal className="w-4 h-4" />
-                              </button>
-                            </div>
+                            ))}
                           </div>
                         </div>
-                      ))}
+                      )}
+
+                      {/* Templates shared by me */}
+                      {sharedByMeTemplates.length > 0 && (
+                        <div>
+                          <h3 className="text-lg font-semibold text-gray-900 mb-4">Shared by You ({sharedByMeTemplates.length})</h3>
+                          <div className="space-y-3">
+                            {sharedByMeTemplates.map((template) => (
+                              <div key={template.id} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                                <div className="flex items-center space-x-4">
+                                  <div className="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center">
+                                    <FileText className="w-5 h-5 text-emerald-600" />
+                                  </div>
+                                  <div>
+                                    <h4 className="font-semibold text-gray-900">{template.name}</h4>
+                                    <div className="flex items-center space-x-4 text-sm text-gray-600">
+                                      <span className="capitalize">{template.category}</span>
+                                      <span>•</span>
+                                      <span>{template.form_data?.fields?.length || 0} fields</span>
+                                      <span>•</span>
+                                      <span>Updated {formatTimeAgo(template.updated_at)}</span>
+                                    </div>
+                                    {template.description && (
+                                      <p className="text-sm text-gray-500 mt-1 line-clamp-1">{template.description}</p>
+                                    )}
+                                  </div>
+                                </div>
+                                
+                                <div className="flex items-center space-x-3">
+                                  <span className="px-2 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
+                                    Shared by you
+                                  </span>
+                                  <div className="flex items-center space-x-1">
+                                    <button className="p-1 text-gray-400 hover:text-blue-600 transition-colors">
+                                      <Eye className="w-4 h-4" />
+                                    </button>
+                                    <button className="p-1 text-gray-400 hover:text-emerald-600 transition-colors">
+                                      <MessageSquare className="w-4 h-4" />
+                                    </button>
+                                    <button className="p-1 text-gray-400 hover:text-gray-600 transition-colors">
+                                      <MoreHorizontal className="w-4 h-4" />
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>

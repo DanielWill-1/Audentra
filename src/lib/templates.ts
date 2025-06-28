@@ -273,9 +273,9 @@ export const shareTemplatesWithTeam = async (templateIds: string[], message?: st
     ? `${userProfile.first_name || ''} ${userProfile.last_name || ''}`.trim() || user.email
     : user.email;
 
-  // For demo purposes, we'll share with a mock team email
+  // Share with the current user's email (for demo purposes)
   // In a real app, you'd get actual team member emails from the team_members table
-  const teamEmails = ['team@company.com']; // Mock team email
+  const teamEmails = [user.email || 'team@company.com']; // Use current user's email for demo
 
   const allShares = [];
   
@@ -283,7 +283,7 @@ export const shareTemplatesWithTeam = async (templateIds: string[], message?: st
     const shares = teamEmails.map(email => ({
       template_id: templateId,
       user_email: email,
-      user_name: 'Team Member', // Default name for team shares
+      user_name: userName,
       role: 'viewer' as const,
       shared_by: user.id,
       shared_at: new Date().toISOString(),
@@ -305,6 +305,8 @@ export const getSharedTemplates = async () => {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { data: null, error: new Error('Not authenticated') };
 
+  console.log('Getting shared templates for user:', user.email);
+
   const { data, error } = await supabase
     .from('template_shares')
     .select(`
@@ -322,6 +324,34 @@ export const getSharedTemplates = async () => {
       )
     `)
     .eq('user_email', user.email);
+
+  console.log('Shared templates query result:', { data, error });
+
+  return { data, error };
+};
+
+// Get all templates shared by current user (templates they've shared with others)
+export const getTemplatesSharedByUser = async () => {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { data: null, error: new Error('Not authenticated') };
+
+  const { data, error } = await supabase
+    .from('template_shares')
+    .select(`
+      *,
+      template:templates(
+        id,
+        name,
+        category,
+        description,
+        form_data,
+        visibility,
+        created_by,
+        created_at,
+        updated_at
+      )
+    `)
+    .eq('shared_by', user.id);
 
   return { data, error };
 };
