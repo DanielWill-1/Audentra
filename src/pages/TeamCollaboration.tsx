@@ -19,13 +19,17 @@ import {
   Calendar,
   Settings,
   Loader2,
-  RefreshCw
+  RefreshCw,
+  EyeOff,
+  Trash2
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { getSharedTemplates, getTemplatesSharedByUser, Template } from '../lib/templates';
 import InviteMemberModal from '../components/Team/InviteMemberModal';
 import TeamMembersModal from '../components/Team/TeamMembersModal';
 import ShareNewTemplateModal from '../components/Team/ShareNewTemplateModal';
+import SharedTemplateCard from '../components/Team/SharedTemplateCard';
+import ReviewQueueModal from '../components/Team/ReviewQueueModal';
 
 interface TeamMember {
   id: string;
@@ -36,6 +40,17 @@ interface TeamMember {
   role: 'admin' | 'editor' | 'viewer';
   status: 'active' | 'pending' | 'inactive';
   lastActive: string;
+}
+
+interface SharedTemplateData {
+  id: string;
+  template: Template;
+  shared_by: string;
+  shared_at: string;
+  user_email: string;
+  user_name: string;
+  role: string;
+  message: string;
 }
 
 const TABS = [
@@ -51,8 +66,9 @@ export default function TeamCollaboration() {
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [showTeamModal, setShowTeamModal] = useState(false);
   const [showShareTemplateModal, setShowShareTemplateModal] = useState(false);
-  const [sharedTemplates, setSharedTemplates] = useState<Template[]>([]);
-  const [sharedByMeTemplates, setSharedByMeTemplates] = useState<Template[]>([]);
+  const [showReviewQueueModal, setShowReviewQueueModal] = useState(false);
+  const [sharedWithMeData, setSharedWithMeData] = useState<SharedTemplateData[]>([]);
+  const [sharedByMeData, setSharedByMeData] = useState<SharedTemplateData[]>([]);
   const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -67,36 +83,34 @@ export default function TeamCollaboration() {
         console.log('Loading team collaboration data...');
         
         // Load templates shared with me
-        const { data: sharedWithMeData, error: sharedWithMeError } = await getSharedTemplates();
-        console.log('Templates shared with me:', { sharedWithMeData, sharedWithMeError });
+        const { data: sharedWithMeResponse, error: sharedWithMeError } = await getSharedTemplates();
+        console.log('Templates shared with me:', { sharedWithMeResponse, sharedWithMeError });
         
         // Load templates I've shared with others
-        const { data: sharedByMeData, error: sharedByMeError } = await getTemplatesSharedByUser();
-        console.log('Templates shared by me:', { sharedByMeData, sharedByMeError });
+        const { data: sharedByMeResponse, error: sharedByMeError } = await getTemplatesSharedByUser();
+        console.log('Templates shared by me:', { sharedByMeResponse, sharedByMeError });
         
         if (sharedWithMeError) {
           console.error('Error loading shared templates:', sharedWithMeError);
           setError('Failed to load shared templates');
         } else {
-          // Extract templates from shared data
-          const templatesSharedWithMe = (sharedWithMeData || [])
-            .map(share => share.template)
-            .filter(template => template !== null);
+          // Filter out hidden templates and templates with null template data
+          const validSharedWithMe = (sharedWithMeResponse || [])
+            .filter(share => share.template !== null && share.message !== 'hidden_by_user');
           
-          setSharedTemplates(templatesSharedWithMe);
-          console.log('Processed templates shared with me:', templatesSharedWithMe);
+          setSharedWithMeData(validSharedWithMe);
+          console.log('Processed templates shared with me:', validSharedWithMe);
         }
 
         if (sharedByMeError) {
           console.error('Error loading templates shared by me:', sharedByMeError);
         } else {
-          // Extract templates from shared data
-          const templatesSharedByMe = (sharedByMeData || [])
-            .map(share => share.template)
-            .filter(template => template !== null);
+          // Filter out templates with null template data
+          const validSharedByMe = (sharedByMeResponse || [])
+            .filter(share => share.template !== null);
           
-          setSharedByMeTemplates(templatesSharedByMe);
-          console.log('Processed templates shared by me:', templatesSharedByMe);
+          setSharedByMeData(validSharedByMe);
+          console.log('Processed templates shared by me:', validSharedByMe);
         }
 
         // Mock team members (in real app this would come from team API)
@@ -168,10 +182,10 @@ export default function TeamCollaboration() {
       console.log('Refreshing shared templates...');
       
       // Reload templates shared with me
-      const { data: sharedWithMeData, error: sharedWithMeError } = await getSharedTemplates();
+      const { data: sharedWithMeResponse, error: sharedWithMeError } = await getSharedTemplates();
       
       // Reload templates I've shared with others
-      const { data: sharedByMeData, error: sharedByMeError } = await getTemplatesSharedByUser();
+      const { data: sharedByMeResponse, error: sharedByMeError } = await getTemplatesSharedByUser();
       
       if (sharedWithMeError) {
         throw sharedWithMeError;
@@ -181,20 +195,18 @@ export default function TeamCollaboration() {
         console.error('Error refreshing templates shared by me:', sharedByMeError);
       }
       
-      const templatesSharedWithMe = (sharedWithMeData || [])
-        .map(share => share.template)
-        .filter(template => template !== null);
+      const validSharedWithMe = (sharedWithMeResponse || [])
+        .filter(share => share.template !== null && share.message !== 'hidden_by_user');
       
-      const templatesSharedByMe = (sharedByMeData || [])
-        .map(share => share.template)
-        .filter(template => template !== null);
+      const validSharedByMe = (sharedByMeResponse || [])
+        .filter(share => share.template !== null);
       
-      setSharedTemplates(templatesSharedWithMe);
-      setSharedByMeTemplates(templatesSharedByMe);
+      setSharedWithMeData(validSharedWithMe);
+      setSharedByMeData(validSharedByMe);
       
       console.log('Refreshed data:', { 
-        sharedWithMe: templatesSharedWithMe.length, 
-        sharedByMe: templatesSharedByMe.length 
+        sharedWithMe: validSharedWithMe.length, 
+        sharedByMe: validSharedByMe.length 
       });
     } catch (err: any) {
       setError(err.message || 'Failed to refresh shared templates');
@@ -229,8 +241,8 @@ export default function TeamCollaboration() {
   };
 
   const activeMembers = teamMembers.filter(m => m.status === 'active').length;
-  const totalSharedTemplates = sharedTemplates.length + sharedByMeTemplates.length;
-  const templatesAwaitingApproval = 0; // Would be calculated from actual data
+  const totalSharedTemplates = sharedWithMeData.length + sharedByMeData.length;
+  const templatesAwaitingApproval = 3; // Would be calculated from actual data
   const growthPercentage = 15; // Would be calculated from actual data
 
   return (
@@ -256,6 +268,13 @@ export default function TeamCollaboration() {
                 title="Refresh"
               >
                 <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
+              </button>
+              <button 
+                onClick={() => setShowReviewQueueModal(true)}
+                className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors flex items-center"
+              >
+                <MessageSquare className="w-4 h-4 mr-2" />
+                Review Queue
               </button>
               <button 
                 onClick={() => setShowShareTemplateModal(true)}
@@ -317,7 +336,7 @@ export default function TeamCollaboration() {
             )}
 
             {/* Stats Cards */}
-            <div className="grid md:grid-cols-3 gap-6 mb-8">
+            <div className="grid md:grid-cols-4 gap-6 mb-8">
               {/* Team Members */}
               <div className="bg-white rounded-2xl border border-gray-200 p-6">
                 <div className="flex items-center justify-between mb-4">
@@ -369,7 +388,7 @@ export default function TeamCollaboration() {
                 </div>
                 <div className="text-3xl font-bold text-emerald-600 mb-2">{totalSharedTemplates}</div>
                 <p className="text-sm text-gray-600 mb-4">
-                  {sharedTemplates.length} shared with you, {sharedByMeTemplates.length} shared by you
+                  {sharedWithMeData.length} shared with you, {sharedByMeData.length} shared by you
                 </p>
                 
                 <div className="flex items-center text-sm">
@@ -383,23 +402,64 @@ export default function TeamCollaboration() {
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center">
                     <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center mr-3">
-                      <AlertTriangle className="w-5 h-5 text-orange-600" />
+                      <MessageSquare className="w-5 h-5 text-orange-600" />
                     </div>
-                    <h3 className="text-lg font-semibold text-gray-900">Pending Reviews</h3>
+                    <h3 className="text-lg font-semibold text-gray-900">Review Queue</h3>
                   </div>
                 </div>
                 <div className="text-3xl font-bold text-orange-600 mb-2">{templatesAwaitingApproval}</div>
-                <p className="text-sm text-gray-600 mb-4">Templates awaiting approval</p>
+                <p className="text-sm text-gray-600 mb-4">Templates awaiting review</p>
                 
-                <button className="text-orange-600 hover:text-orange-700 text-sm font-medium">
+                <button 
+                  onClick={() => setShowReviewQueueModal(true)}
+                  className="text-orange-600 hover:text-orange-700 text-sm font-medium"
+                >
                   Review Now →
                 </button>
+              </div>
+
+              {/* Quick Actions */}
+              <div className="bg-white rounded-2xl border border-gray-200 p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center">
+                    <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
+                      <Settings className="w-5 h-5 text-purple-600" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-gray-900">Quick Actions</h3>
+                  </div>
+                </div>
+                
+                <div className="space-y-3">
+                  <button 
+                    onClick={() => setShowInviteModal(true)}
+                    className="w-full flex items-center justify-center p-2 border border-blue-300 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
+                  >
+                    <UserPlus className="w-4 h-4 mr-2" />
+                    Invite Member
+                  </button>
+                  
+                  <button 
+                    onClick={() => setShowShareTemplateModal(true)}
+                    className="w-full flex items-center justify-center p-2 border border-emerald-300 text-emerald-600 rounded-lg hover:bg-emerald-50 transition-colors"
+                  >
+                    <Share2 className="w-4 h-4 mr-2" />
+                    Share Template
+                  </button>
+                  
+                  <button 
+                    onClick={() => setShowReviewQueueModal(true)}
+                    className="w-full flex items-center justify-center p-2 border border-orange-300 text-orange-600 rounded-lg hover:bg-orange-50 transition-colors"
+                  >
+                    <MessageSquare className="w-4 h-4 mr-2" />
+                    Review Queue
+                  </button>
+                </div>
               </div>
             </div>
 
             <div className="grid lg:grid-cols-3 gap-8">
               {/* Shared Templates */}
-              <div className="lg:col-span-2">
+              <div className="lg:col-span-3">
                 <div className="bg-white rounded-2xl border border-gray-200 p-6">
                   <div className="flex items-center justify-between mb-6">
                     <h2 className="text-xl font-bold text-gray-900">Shared Templates</h2>
@@ -435,132 +495,47 @@ export default function TeamCollaboration() {
                   ) : (
                     <div className="space-y-6">
                       {/* Templates shared with me */}
-                      {sharedTemplates.length > 0 && (
+                      {sharedWithMeData.length > 0 && (
                         <div>
-                          <h3 className="text-lg font-semibold text-gray-900 mb-4">Shared with You ({sharedTemplates.length})</h3>
-                          <div className="space-y-3">
-                            {sharedTemplates.map((template) => (
-                              <div key={template.id} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-                                <div className="flex items-center space-x-4">
-                                  <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                                    <FileText className="w-5 h-5 text-blue-600" />
-                                  </div>
-                                  <div>
-                                    <h4 className="font-semibold text-gray-900">{template.name}</h4>
-                                    <div className="flex items-center space-x-4 text-sm text-gray-600">
-                                      <span className="capitalize">{template.category}</span>
-                                      <span>•</span>
-                                      <span>{template.form_data?.fields?.length || 0} fields</span>
-                                      <span>•</span>
-                                      <span>Updated {formatTimeAgo(template.updated_at)}</span>
-                                    </div>
-                                    {template.description && (
-                                      <p className="text-sm text-gray-500 mt-1 line-clamp-1">{template.description}</p>
-                                    )}
-                                  </div>
-                                </div>
-                                
-                                <div className="flex items-center space-x-3">
-                                  <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                    Shared with you
-                                  </span>
-                                  <div className="flex items-center space-x-1">
-                                    <button className="p-1 text-gray-400 hover:text-blue-600 transition-colors">
-                                      <Eye className="w-4 h-4" />
-                                    </button>
-                                    <button className="p-1 text-gray-400 hover:text-emerald-600 transition-colors">
-                                      <MessageSquare className="w-4 h-4" />
-                                    </button>
-                                    <button className="p-1 text-gray-400 hover:text-gray-600 transition-colors">
-                                      <MoreHorizontal className="w-4 h-4" />
-                                    </button>
-                                  </div>
-                                </div>
-                              </div>
+                          <h3 className="text-lg font-semibold text-gray-900 mb-4">Shared with You ({sharedWithMeData.length})</h3>
+                          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {sharedWithMeData.map((share) => (
+                              <SharedTemplateCard
+                                key={share.id}
+                                template={share.template}
+                                shareId={share.id}
+                                sharedBy={share.user_name || share.user_email}
+                                sharedAt={share.shared_at}
+                                role={share.role}
+                                isHidden={share.message === 'hidden_by_user'}
+                                onUpdate={handleRefresh}
+                              />
                             ))}
                           </div>
                         </div>
                       )}
 
                       {/* Templates shared by me */}
-                      {sharedByMeTemplates.length > 0 && (
-                        <div>
-                          <h3 className="text-lg font-semibold text-gray-900 mb-4">Shared by You ({sharedByMeTemplates.length})</h3>
-                          <div className="space-y-3">
-                            {sharedByMeTemplates.map((template) => (
-                              <div key={template.id} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-                                <div className="flex items-center space-x-4">
-                                  <div className="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center">
-                                    <FileText className="w-5 h-5 text-emerald-600" />
-                                  </div>
-                                  <div>
-                                    <h4 className="font-semibold text-gray-900">{template.name}</h4>
-                                    <div className="flex items-center space-x-4 text-sm text-gray-600">
-                                      <span className="capitalize">{template.category}</span>
-                                      <span>•</span>
-                                      <span>{template.form_data?.fields?.length || 0} fields</span>
-                                      <span>•</span>
-                                      <span>Updated {formatTimeAgo(template.updated_at)}</span>
-                                    </div>
-                                    {template.description && (
-                                      <p className="text-sm text-gray-500 mt-1 line-clamp-1">{template.description}</p>
-                                    )}
-                                  </div>
-                                </div>
-                                
-                                <div className="flex items-center space-x-3">
-                                  <span className="px-2 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800">
-                                    Shared by you
-                                  </span>
-                                  <div className="flex items-center space-x-1">
-                                    <button className="p-1 text-gray-400 hover:text-blue-600 transition-colors">
-                                      <Eye className="w-4 h-4" />
-                                    </button>
-                                    <button className="p-1 text-gray-400 hover:text-emerald-600 transition-colors">
-                                      <MessageSquare className="w-4 h-4" />
-                                    </button>
-                                    <button className="p-1 text-gray-400 hover:text-gray-600 transition-colors">
-                                      <MoreHorizontal className="w-4 h-4" />
-                                    </button>
-                                  </div>
-                                </div>
-                              </div>
+                      {sharedByMeData.length > 0 && (
+                        <div className="mt-8">
+                          <h3 className="text-lg font-semibold text-gray-900 mb-4">Shared by You ({sharedByMeData.length})</h3>
+                          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {sharedByMeData.map((share) => (
+                              <SharedTemplateCard
+                                key={share.id}
+                                template={share.template}
+                                shareId={share.id}
+                                sharedBy="You"
+                                sharedAt={share.shared_at}
+                                role={share.role}
+                                onUpdate={handleRefresh}
+                              />
                             ))}
                           </div>
                         </div>
                       )}
                     </div>
                   )}
-                </div>
-              </div>
-
-              {/* Quick Actions */}
-              <div className="space-y-6">
-                <div className="bg-white rounded-2xl border border-gray-200 p-6">
-                  <h2 className="text-xl font-bold text-gray-900 mb-6">Quick Actions</h2>
-                  
-                  <div className="space-y-3">
-                    <button 
-                      onClick={() => setShowInviteModal(true)}
-                      className="w-full flex items-center justify-center p-3 border border-blue-300 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
-                    >
-                      <UserPlus className="w-4 h-4 mr-2" />
-                      Invite Member
-                    </button>
-                    
-                    <button 
-                      onClick={() => setShowShareTemplateModal(true)}
-                      className="w-full flex items-center justify-center p-3 border border-emerald-300 text-emerald-600 rounded-lg hover:bg-emerald-50 transition-colors"
-                    >
-                      <Share2 className="w-4 h-4 mr-2" />
-                      Share Template
-                    </button>
-                    
-                    <button className="w-full flex items-center justify-center p-3 border border-orange-300 text-orange-600 rounded-lg hover:bg-orange-50 transition-colors">
-                      <Star className="w-4 h-4 mr-2" />
-                      Review Queue
-                    </button>
-                  </div>
                 </div>
               </div>
             </div>
@@ -609,6 +584,11 @@ export default function TeamCollaboration() {
         isOpen={showShareTemplateModal}
         onClose={() => setShowShareTemplateModal(false)}
         onSuccess={handleShareTemplateSuccess}
+      />
+
+      <ReviewQueueModal
+        isOpen={showReviewQueueModal}
+        onClose={() => setShowReviewQueueModal(false)}
       />
     </div>
   );

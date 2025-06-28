@@ -367,6 +367,33 @@ export const removeTemplateShare = async (templateId: string, userEmail: string)
   return { error };
 };
 
+// Delete shared template (remove from sharing)
+export const deleteSharedTemplate = async (shareId: string) => {
+  const { error } = await supabase
+    .from('template_shares')
+    .delete()
+    .eq('id', shareId);
+
+  return { error };
+};
+
+// Hide/unhide shared template for current user
+export const toggleSharedTemplateVisibility = async (shareId: string, hidden: boolean) => {
+  // For now, we'll use a metadata field to track if user has hidden the shared template
+  // In a real implementation, you might want a separate user_template_preferences table
+  const { data, error } = await supabase
+    .from('template_shares')
+    .update({ 
+      message: hidden ? 'hidden_by_user' : '',
+      updated_at: new Date().toISOString()
+    })
+    .eq('id', shareId)
+    .select()
+    .single();
+
+  return { data, error };
+};
+
 // Update template share role
 export const updateTemplateShareRole = async (shareId: string, role: 'viewer' | 'editor' | 'admin') => {
   const { data, error } = await supabase
@@ -375,6 +402,71 @@ export const updateTemplateShareRole = async (shareId: string, role: 'viewer' | 
     .eq('id', shareId)
     .select()
     .single();
+
+  return { data, error };
+};
+
+// Add template to review queue
+export const addTemplateToReviewQueue = async (templateId: string, priority: 'low' | 'medium' | 'high' = 'medium') => {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { data: null, error: new Error('Not authenticated') };
+
+  // Get the current user's profile information
+  const { data: userProfileData } = await supabase
+    .from('users')
+    .select('first_name, last_name')
+    .eq('id', user.id);
+
+  const userProfile = userProfileData && userProfileData.length > 0 ? userProfileData[0] : null;
+
+  const userName = userProfile 
+    ? `${userProfile.first_name || ''} ${userProfile.last_name || ''}`.trim() || user.email
+    : user.email;
+
+  const review = {
+    template_id: templateId,
+    reviewer_id: user.id,
+    reviewer_name: userName,
+    reviewer_email: user.email || '',
+    rating: 0, // Will be set when review is completed
+    comment: '',
+    status: 'pending' as const,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
+  };
+
+  const { data, error } = await supabase
+    .from('template_reviews')
+    .insert([review])
+    .select()
+    .single();
+
+  return { data, error };
+};
+
+// Get templates in review queue
+export const getReviewQueue = async () => {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { data: null, error: new Error('Not authenticated') };
+
+  const { data, error } = await supabase
+    .from('template_reviews')
+    .select(`
+      *,
+      template:templates(
+        id,
+        name,
+        category,
+        description,
+        form_data,
+        visibility,
+        created_by,
+        created_at,
+        updated_at
+      )
+    `)
+    .eq('status', 'pending')
+    .order('created_at', { ascending: false });
 
   return { data, error };
 };
