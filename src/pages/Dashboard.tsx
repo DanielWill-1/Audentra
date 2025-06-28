@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect, useRef } from 'react';
 import { 
   Mic, 
   Plus, 
@@ -42,10 +42,30 @@ import {
   Bookmark,
   ThumbsUp,
   MessageCircle,
-  Repeat2
+  Repeat2,
+  Loader2,
+  RefreshCw,
+  EyeOff
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import { AuthContext } from '../contexts/AuthContext'; // Adjust the path if necessary
+import { AuthContext } from '../contexts/AuthContext';
+import { getSharedTemplates, getTemplatesSharedByUser, Template } from '../lib/templates';
+import InviteMemberModal from '../components/Team/InviteMemberModal';
+import TeamMembersModal from '../components/Team/TeamMembersModal';
+import ShareNewTemplateModal from '../components/Team/ShareNewTemplateModal';
+import SharedTemplateCard from '../components/Team/SharedTemplateCard';
+import ReviewQueueModal from '../components/Team/ReviewQueueModal';
+
+interface SharedTemplateData {
+  id: string;
+  template: Template;
+  shared_by: string;
+  shared_at: string;
+  user_email: string;
+  user_name: string;
+  role: string;
+  message: string;
+}
 
 // Get user's first name for welcome message
 const getUserName = (user) => {
@@ -59,15 +79,161 @@ const getUserName = (user) => {
 };
 
 function Dashboard() {
-  const { user, signOut } = useContext(AuthContext); // Retrieve user and signOut from AuthContext
+  const { user, signOut } = useContext(AuthContext);
   const [activeTab, setActiveTab] = useState('overview');
-  const navigate = useNavigate(); // Initialize useNavigate for navigation
+  const navigate = useNavigate();
+
+  // Team collaboration state
+  const [showInviteModal, setShowInviteModal] = useState(false);
+  const [showTeamModal, setShowTeamModal] = useState(false);
+  const [showShareTemplateModal, setShowShareTemplateModal] = useState(false);
+  const [showReviewQueueModal, setShowReviewQueueModal] = useState(false);
+  const [sharedWithMeData, setSharedWithMeData] = useState<SharedTemplateData[]>([]);
+  const [sharedByMeData, setSharedByMeData] = useState<SharedTemplateData[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const sharedTemplatesRef = useRef<HTMLDivElement>(null);
+  const sharedByMeRef = useRef<HTMLDivElement>(null);
+
+  // Load team collaboration data when collaboration tab is active
+  useEffect(() => {
+    if (activeTab === 'collaboration') {
+      loadTeamData();
+    }
+  }, [activeTab]);
+
+  // Add scroll wheel event handlers for collaboration tab
+  useEffect(() => {
+    if (activeTab !== 'collaboration') return;
+
+    const handleWheel = (e: WheelEvent) => {
+      if (sharedTemplatesRef.current && e.target && sharedTemplatesRef.current.contains(e.target as Node)) {
+        sharedTemplatesRef.current.scrollLeft += e.deltaY;
+        e.preventDefault();
+      }
+      if (sharedByMeRef.current && e.target && sharedByMeRef.current.contains(e.target as Node)) {
+        sharedByMeRef.current.scrollLeft += e.deltaY;
+        e.preventDefault();
+      }
+    };
+
+    const sharedContainer = sharedTemplatesRef.current;
+    const sharedByContainer = sharedByMeRef.current;
+
+    if (sharedContainer) {
+      sharedContainer.addEventListener('wheel', handleWheel, { passive: false });
+    }
+    if (sharedByContainer) {
+      sharedByContainer.addEventListener('wheel', handleWheel, { passive: false });
+    }
+
+    return () => {
+      if (sharedContainer) {
+        sharedContainer.removeEventListener('wheel', handleWheel);
+      }
+      if (sharedByContainer) {
+        sharedByContainer.removeEventListener('wheel', handleWheel);
+      }
+    };
+  }, [activeTab]);
+
+  const loadTeamData = async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      console.log('Loading team collaboration data...');
+      
+      // Load templates shared with me
+      const { data: sharedWithMeResponse, error: sharedWithMeError } = await getSharedTemplates();
+      console.log('Templates shared with me:', { sharedWithMeResponse, sharedWithMeError });
+      
+      // Load templates I've shared with others
+      const { data: sharedByMeResponse, error: sharedByMeError } = await getTemplatesSharedByUser();
+      console.log('Templates shared by me:', { sharedByMeResponse, sharedByMeError });
+      
+      if (sharedWithMeError) {
+        console.error('Error loading shared templates:', sharedWithMeError);
+        setError('Failed to load shared templates');
+      } else {
+        // Filter out hidden templates and templates with null template data
+        const validSharedWithMe = (sharedWithMeResponse || [])
+          .filter(share => share.template !== null && share.message !== 'hidden_by_user');
+        
+        setSharedWithMeData(validSharedWithMe);
+        console.log('Processed templates shared with me:', validSharedWithMe);
+      }
+
+      if (sharedByMeError) {
+        console.error('Error loading templates shared by me:', sharedByMeError);
+      } else {
+        // Filter out templates with null template data
+        const validSharedByMe = (sharedByMeResponse || [])
+          .filter(share => share.template !== null);
+        
+        setSharedByMeData(validSharedByMe);
+        console.log('Processed templates shared by me:', validSharedByMe);
+      }
+    } catch (err: any) {
+      console.error('Error loading team data:', err);
+      setError(err.message || 'Failed to load team data');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRefresh = async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      console.log('Refreshing shared templates...');
+      
+      // Reload templates shared with me
+      const { data: sharedWithMeResponse, error: sharedWithMeError } = await getSharedTemplates();
+      
+      // Reload templates I've shared with others
+      const { data: sharedByMeResponse, error: sharedByMeError } = await getTemplatesSharedByUser();
+      
+      if (sharedWithMeError) {
+        throw sharedWithMeError;
+      }
+      
+      if (sharedByMeError) {
+        console.error('Error refreshing templates shared by me:', sharedByMeError);
+      }
+      
+      const validSharedWithMe = (sharedWithMeResponse || [])
+        .filter(share => share.template !== null && share.message !== 'hidden_by_user');
+      
+      const validSharedByMe = (sharedByMeResponse || [])
+        .filter(share => share.template !== null);
+      
+      setSharedWithMeData(validSharedWithMe);
+      setSharedByMeData(validSharedByMe);
+      
+      console.log('Refreshed data:', { 
+        sharedWithMe: validSharedWithMe.length, 
+        sharedByMe: validSharedByMe.length 
+      });
+    } catch (err: any) {
+      setError(err.message || 'Failed to refresh shared templates');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleShareTemplateSuccess = () => {
+    // Refresh shared templates data
+    console.log('Template shared successfully, refreshing data...');
+    handleRefresh();
+  };
 
   const handleLogout = async () => {
     try {
       await signOut();
       console.log('User logged out successfully');
-      navigate('/'); // Redirect to the home/landing page
+      navigate('/');
     } catch (error) {
       console.error('Error logging out:', error);
     }
@@ -454,562 +620,269 @@ function Dashboard() {
 
   const renderMarketplace = () => (
     <div className="space-y-8">
-      {/* Marketplace Header */}
-      <div className="bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl p-8 text-white">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-3xl font-bold mb-2">Template Marketplace</h2>
-            <p className="text-purple-100 text-lg">Discover, share, and collaborate on templates with the community</p>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold">2.4K+</div>
-            <div className="text-purple-200 text-sm">Community Templates</div>
-          </div>
-        </div>
-      </div>
-
-      {/* Marketplace Navigation */}
-      <div className="bg-white rounded-2xl border border-gray-200 p-6">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center space-x-6">
-            <button className="text-purple-600 border-b-2 border-purple-600 pb-2 font-medium">
-              Trending
-            </button>
-            <button className="text-gray-600 hover:text-purple-600 pb-2">
-              Most Liked
-            </button>
-            <button className="text-gray-600 hover:text-purple-600 pb-2">
-              Recent
-            </button>
-            <button className="text-gray-600 hover:text-purple-600 pb-2">
-              Following
-            </button>
-          </div>
-          <div className="flex items-center space-x-3">
-            <div className="relative">
-              <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
-              <input
-                type="text"
-                placeholder="Search marketplace..."
-                className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm"
-              />
-            </div>
-            <button className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50">
-              <Filter className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-
-        {/* Featured Templates */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/* Template Card 1 */}
-          <div className="bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-shadow">
-            <div className="flex items-start justify-between mb-4">
-              <div className="flex items-center">
-                <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold text-sm mr-3">
-                  DM
-                </div>
-                <div>
-                  <h4 className="font-semibold text-gray-900">Dr. Maria Santos</h4>
-                  <p className="text-xs text-gray-500">Cardiologist • 2.1k followers</p>
-                </div>
-              </div>
-              <button className="text-gray-400 hover:text-gray-600">
-                <MoreHorizontal className="w-4 h-4" />
-              </button>
-            </div>
-
-            <div className="mb-4">
-              <h3 className="text-lg font-bold text-gray-900 mb-2">Advanced Cardiac Assessment</h3>
-              <p className="text-gray-600 text-sm mb-3">
-                Comprehensive cardiac evaluation form with ECG interpretation guidelines and risk stratification.
-              </p>
-              <div className="flex flex-wrap gap-1 mb-3">
-                <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">Cardiology</span>
-                <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">HIPAA</span>
-                <span className="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded">Advanced</span>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between mb-4 text-sm text-gray-600">
-              <div className="flex items-center space-x-4">
-                <div className="flex items-center">
-                  <ThumbsUp className="w-4 h-4 mr-1" />
-                  342
-                </div>
-                <div className="flex items-center">
-                  <MessageCircle className="w-4 h-4 mr-1" />
-                  28
-                </div>
-                <div className="flex items-center">
-                  <Repeat2 className="w-4 h-4 mr-1" />
-                  156
-                </div>
-              </div>
-              <div className="flex items-center">
-                <Star className="w-4 h-4 text-yellow-400 fill-current mr-1" />
-                4.9
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <button className="flex items-center text-purple-600 hover:text-purple-700 text-sm font-medium">
-                <Heart className="w-4 h-4 mr-1" />
-                Like
-              </button>
-              <button className="flex items-center text-blue-600 hover:text-blue-700 text-sm font-medium">
-                <Download className="w-4 h-4 mr-1" />
-                Use Template
-              </button>
-              <button className="flex items-center text-gray-600 hover:text-gray-700 text-sm font-medium">
-                <Bookmark className="w-4 h-4 mr-1" />
-                Save
-              </button>
-            </div>
-          </div>
-
-          {/* Template Card 2 */}
-          <div className="bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-shadow">
-            <div className="flex items-start justify-between mb-4">
-              <div className="flex items-center">
-                <div className="w-10 h-10 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold text-sm mr-3">
-                  JC
-                </div>
-                <div>
-                  <h4 className="font-semibold text-gray-900">Jake Chen</h4>
-                  <p className="text-xs text-gray-500">Safety Manager • 1.8k followers</p>
-                </div>
-              </div>
-              <button className="text-gray-400 hover:text-gray-600">
-                <MoreHorizontal className="w-4 h-4" />
-              </button>
-            </div>
-
-            <div className="mb-4">
-              <h3 className="text-lg font-bold text-gray-900 mb-2">Construction Site Safety Audit</h3>
-              <p className="text-gray-600 text-sm mb-3">
-                Complete OSHA-compliant safety inspection checklist with photo documentation and immediate hazard reporting.
-              </p>
-              <div className="flex flex-wrap gap-1 mb-3">
-                <span className="text-xs bg-orange-100 text-orange-800 px-2 py-1 rounded">Construction</span>
-                <span className="text-xs bg-red-100 text-red-800 px-2 py-1 rounded">OSHA</span>
-                <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">Safety</span>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between mb-4 text-sm text-gray-600">
-              <div className="flex items-center space-x-4">
-                <div className="flex items-center">
-                  <ThumbsUp className="w-4 h-4 mr-1" />
-                  289
-                </div>
-                <div className="flex items-center">
-                  <MessageCircle className="w-4 h-4 mr-1" />
-                  45
-                </div>
-                <div className="flex items-center">
-                  <Repeat2 className="w-4 h-4 mr-1" />
-                  203
-                </div>
-              </div>
-              <div className="flex items-center">
-                <Star className="w-4 h-4 text-yellow-400 fill-current mr-1" />
-                4.8
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <button className="flex items-center text-purple-600 hover:text-purple-700 text-sm font-medium">
-                <Heart className="w-4 h-4 mr-1 fill-current" />
-                Liked
-              </button>
-              <button className="flex items-center text-blue-600 hover:text-blue-700 text-sm font-medium">
-                <Download className="w-4 h-4 mr-1" />
-                Use Template
-              </button>
-              <button className="flex items-center text-gray-600 hover:text-gray-700 text-sm font-medium">
-                <Bookmark className="w-4 h-4 mr-1" />
-                Save
-              </button>
-            </div>
-          </div>
-
-          {/* Template Card 3 */}
-          <div className="bg-white border border-gray-200 rounded-xl p-6 hover:shadow-lg transition-shadow">
-            <div className="flex items-start justify-between mb-4">
-              <div className="flex items-center">
-                <div className="w-10 h-10 bg-emerald-500 rounded-full flex items-center justify-center text-white font-bold text-sm mr-3">
-                  AR
-                </div>
-                <div>
-                  <h4 className="font-semibold text-gray-900">Alex Rodriguez</h4>
-                  <p className="text-xs text-gray-500">HR Director • 3.2k followers</p>
-                </div>
-              </div>
-              <button className="text-gray-400 hover:text-gray-600">
-                <MoreHorizontal className="w-4 h-4" />
-              </button>
-            </div>
-
-            <div className="mb-4">
-              <h3 className="text-lg font-bold text-gray-900 mb-2">360° Performance Review</h3>
-              <p className="text-gray-600 text-sm mb-3">
-                Comprehensive performance evaluation with peer feedback, goal tracking, and development planning.
-              </p>
-              <div className="flex flex-wrap gap-1 mb-3">
-                <span className="text-xs bg-emerald-100 text-emerald-800 px-2 py-1 rounded">HR</span>
-                <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">Performance</span>
-                <span className="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded">360 Review</span>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between mb-4 text-sm text-gray-600">
-              <div className="flex items-center space-x-4">
-                <div className="flex items-center">
-                  <ThumbsUp className="w-4 h-4 mr-1" />
-                  567
-                </div>
-                <div className="flex items-center">
-                  <MessageCircle className="w-4 h-4 mr-1" />
-                  89
-                </div>
-                <div className="flex items-center">
-                  <Repeat2 className="w-4 h-4 mr-1" />
-                  234
-                </div>
-              </div>
-              <div className="flex items-center">
-                <Star className="w-4 h-4 text-yellow-400 fill-current mr-1" />
-                4.9
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <button className="flex items-center text-purple-600 hover:text-purple-700 text-sm font-medium">
-                <Heart className="w-4 h-4 mr-1" />
-                Like
-              </button>
-              <button className="flex items-center text-blue-600 hover:text-blue-700 text-sm font-medium">
-                <Download className="w-4 h-4 mr-1" />
-                Use Template
-              </button>
-              <button className="flex items-center text-gray-600 hover:text-gray-700 text-sm font-medium">
-                <Bookmark className="w-4 h-4 mr-1 fill-current" />
-                Saved
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Community Stats */}
-        <div className="mt-8 grid md:grid-cols-4 gap-6">
-          <div className="text-center p-4 bg-purple-50 rounded-lg">
-            <div className="text-2xl font-bold text-purple-600">2.4K+</div>
-            <div className="text-sm text-gray-600">Templates Shared</div>
-          </div>
-          <div className="text-center p-4 bg-blue-50 rounded-lg">
-            <div className="text-2xl font-bold text-blue-600">15K+</div>
-            <div className="text-sm text-gray-600">Downloads</div>
-          </div>
-          <div className="text-center p-4 bg-emerald-50 rounded-lg">
-            <div className="text-2xl font-bold text-emerald-600">890+</div>
-            <div className="text-sm text-gray-600">Contributors</div>
-          </div>
-          <div className="text-center p-4 bg-orange-50 rounded-lg">
-            <div className="text-2xl font-bold text-orange-600">4.8</div>
-            <div className="text-sm text-gray-600">Avg. Rating</div>
-          </div>
-        </div>
-      </div>
-
-      {/* Your Contributions */}
-      <div className="bg-white rounded-2xl border border-gray-200 p-6">
-        <div className="flex items-center justify-between mb-6">
-          <h3 className="text-xl font-bold text-gray-900">Your Contributions</h3>
-          <button className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors text-sm font-medium">
-            <Share2 className="w-4 h-4 inline mr-2" />
-            Share Template
-          </button>
-        </div>
-
-        <div className="grid md:grid-cols-2 gap-6">
-          <div className="border border-gray-200 rounded-lg p-4">
-            <div className="flex items-center justify-between mb-3">
-              <h4 className="font-medium text-gray-900">Patient Intake v2.1</h4>
-              <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">Published</span>
-            </div>
-            <p className="text-sm text-gray-600 mb-3">Your enhanced patient intake form with voice summaries</p>
-            <div className="flex items-center justify-between text-sm text-gray-600">
-              <div className="flex items-center space-x-3">
-                <span className="flex items-center">
-                  <ThumbsUp className="w-3 h-3 mr-1" />
-                  45
-                </span>
-                <span className="flex items-center">
-                  <Download className="w-3 h-3 mr-1" />
-                  128
-                </span>
-              </div>
-              <button className="text-blue-600 hover:text-blue-700 text-xs">View Stats</button>
-            </div>
-          </div>
-
-          <div className="border border-gray-200 rounded-lg p-4">
-            <div className="flex items-center justify-between mb-3">
-              <h4 className="font-medium text-gray-900">HR Exit Interview</h4>
-              <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full">Pending Review</span>
-            </div>
-            <p className="text-sm text-gray-600 mb-3">Comprehensive exit interview with sentiment analysis</p>
-            <div className="flex items-center justify-between text-sm text-gray-600">
-              <div className="flex items-center space-x-3">
-                <span className="text-gray-400">Not published yet</span>
-              </div>
-              <button className="text-blue-600 hover:text-blue-700 text-xs">Edit Draft</button>
-            </div>
-          </div>
+      <div className="bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl p-8 text-white flex items-center justify-center min-h-[300px]">
+        <div className="text-center w-full">
+          <h2 className="text-3xl font-bold mb-4">Template Marketplace</h2>
+          <p className="text-xl text-purple-100 mb-6">Coming Soon</p>
+          <p className="text-purple-200 text-base">
+            We’re working hard to bring you a community-driven template marketplace.<br />
+            Stay tuned for updates!
+          </p>
         </div>
       </div>
     </div>
   );
 
-  const renderCollaboration = () => (
-    <div className="space-y-8">
-      {/* Team Overview */}
-      <div className="grid md:grid-cols-3 gap-6">
-        <div className="bg-white rounded-2xl border border-gray-200 p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-gray-900">Team Members</h3>
-            <button className="text-blue-600 hover:text-blue-700">
-              <UserPlus className="w-5 h-5" />
+  const renderCollaboration = () => {
+    const activeMembers = 3;
+    const totalSharedTemplates = sharedWithMeData.length + sharedByMeData.length;
+    const templatesAwaitingApproval = 2;
+    const growthPercentage = 15;
+
+    return (
+      <div className="space-y-8">
+        {/* Error Message */}
+        {error && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+            <div className="flex items-center">
+              <AlertTriangle className="w-5 h-5 text-red-600 mr-3" />
+              <div>
+                <h3 className="text-red-800 font-medium">Error</h3>
+                <p className="text-red-700 text-sm mt-1">{error}</p>
+              </div>
+            </div>
+            <button
+              onClick={handleRefresh}
+              className="mt-3 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors text-sm"
+            >
+              Try Again
             </button>
           </div>
-          <div className="text-3xl font-bold text-blue-600 mb-2">12</div>
-          <p className="text-sm text-gray-600">Active collaborators</p>
-          <div className="mt-4 flex -space-x-2">
-            {['SM', 'MJ', 'LC', 'DR', 'KW'].map((initials, index) => (
-              <div key={index} className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs font-medium border-2 border-white">
-                {initials}
-              </div>
-            ))}
-            <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center text-gray-600 text-xs font-medium border-2 border-white">
-              +7
-            </div>
-          </div>
-        </div>
+        )}
 
-        <div className="bg-white rounded-2xl border border-gray-200 p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-gray-900">Shared Templates</h3>
-            <Share2 className="w-5 h-5 text-gray-400" />
-          </div>
-          <div className="text-3xl font-bold text-emerald-600 mb-2">28</div>
-          <p className="text-sm text-gray-600">Templates shared this month</p>
-          <div className="mt-4 text-xs text-emerald-600">
-            <TrendingUp className="w-4 h-4 inline mr-1" />
-            +15% from last month
-          </div>
-        </div>
-
-        <div className="bg-white rounded-2xl border border-gray-200 p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-gray-900">Pending Reviews</h3>
-            <AlertTriangle className="w-5 h-5 text-orange-500" />
-          </div>
-          <div className="text-3xl font-bold text-orange-600 mb-2">5</div>
-          <p className="text-sm text-gray-600">Templates awaiting approval</p>
-          <button className="mt-4 text-xs text-orange-600 hover:text-orange-700 font-medium">
-            Review Now →
-          </button>
-        </div>
-      </div>
-
-      {/* Collaboration Features */}
-      <div className="grid lg:grid-cols-2 gap-8">
-        {/* Shared Templates */}
-        <div className="bg-white rounded-2xl border border-gray-200 p-6">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-xl font-bold text-gray-900">Shared Templates</h3>
-            <div className="flex items-center space-x-2">
-              <button className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg">
-                <Filter className="w-4 h-4" />
-              </button>
-              <button className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg">
-                <Search className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-          
-          <div className="space-y-4">
-            <div className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50">
-              <div className="flex items-center">
-                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
-                  <FileText className="w-5 h-5 text-blue-600" />
-                </div>
-                <div>
-                  <h4 className="font-medium text-gray-900">Patient Intake v2.1</h4>
-                  <p className="text-sm text-gray-600">Shared by Dr. Johnson • 15 uses</p>
-                  <div className="flex items-center mt-1">
-                    <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full mr-2">Pending Review</span>
-                    <span className="text-xs text-gray-500">Updated 2 hours ago</span>
-                  </div>
-                </div>
-              </div>
-              <div className="flex items-center space-x-2">
-                <button className="text-blue-600 hover:text-blue-700 p-1">
-                  <Eye className="w-4 h-4" />
-                </button>
-                <button className="text-green-600 hover:text-green-700 p-1">
-                  <CheckCircle className="w-4 h-4" />
-                </button>
-                <button className="text-gray-600 hover:text-gray-700 p-1">
-                  <MoreHorizontal className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50">
-              <div className="flex items-center">
-                <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center mr-4">
-                  <FileText className="w-5 h-5 text-orange-600" />
-                </div>
-                <div>
-                  <h4 className="font-medium text-gray-900">Safety Checklist Pro</h4>
-                  <p className="text-sm text-gray-600">Shared by Mike Chen • 8 uses</p>
-                  <div className="flex items-center mt-1">
-                    <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full mr-2">Approved</span>
-                    <span className="text-xs text-gray-500">Updated yesterday</span>
-                  </div>
-                </div>
-              </div>
-              <div className="flex items-center space-x-2">
-                <button className="text-blue-600 hover:text-blue-700 p-1">
-                  <Eye className="w-4 h-4" />
-                </button>
-                <button className="text-blue-600 hover:text-blue-700 p-1">
-                  <Share2 className="w-4 h-4" />
-                </button>
-                <button className="text-gray-600 hover:text-gray-700 p-1">
-                  <MoreHorizontal className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50">
-              <div className="flex items-center">
-                <div className="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center mr-4">
-                  <FileText className="w-5 h-5 text-emerald-600" />
-                </div>
-                <div>
-                  <h4 className="font-medium text-gray-900">HR Performance Review</h4>
-                  <p className="text-sm text-gray-600">Shared by Lisa Chen • 12 uses</p>
-                  <div className="flex items-center mt-1">
-                    <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full mr-2">Shared</span>
-                    <span className="text-xs text-gray-500">Updated 3 days ago</span>
-                  </div>
-                </div>
-              </div>
-              <div className="flex items-center space-x-2">
-                <button className="text-blue-600 hover:text-blue-700 p-1">
-                  <Eye className="w-4 h-4" />
-                </button>
-                <button className="text-blue-600 hover:text-blue-700 p-1">
-                  <Copy className="w-4 h-4" />
-                </button>
-                <button className="text-gray-600 hover:text-gray-700 p-1">
-                  <MoreHorizontal className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <button className="w-full mt-6 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">
-            Share New Template
-          </button>
-        </div>
-
-        {/* Team Activity & Communication */}
-        <div className="space-y-6">
-          {/* Team Activity */}
+        {/* Stats Cards */}
+        <div className="grid md:grid-cols-4 gap-6">
+          {/* Team Members */}
           <div className="bg-white rounded-2xl border border-gray-200 p-6">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-bold text-gray-900">Team Activity</h3>
-              <button className="text-blue-600 hover:text-blue-700 text-sm font-medium">
-                View All
-              </button>
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center">
+                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                  <Users className="w-5 h-5 text-blue-600" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900">Team Members</h3>
+              </div>
+            </div>
+            <div className="text-3xl font-bold text-blue-600 mb-2">{activeMembers}</div>
+            <p className="text-sm text-gray-600 mb-4">Active collaborators</p>
+            
+            {/* Member Avatars */}
+            <div className="flex items-center space-x-2 mb-4">
+              <div
+                className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white text-xs font-semibold"
+                title={user?.user_metadata?.first_name ? `${user.user_metadata.first_name} ${user.user_metadata.last_name}` : user?.email}
+              >
+                {user?.user_metadata?.first_name ? 
+                  `${user.user_metadata.first_name[0]}${user.user_metadata.last_name ? user.user_metadata.last_name[0] : ''}` : 
+                  user?.email?.[0].toUpperCase() || 'U'}
+              </div>
+              <div
+                className="w-8 h-8 bg-gradient-to-r from-green-500 to-blue-500 rounded-full flex items-center justify-center text-white text-xs font-semibold"
+                title="Alex Chen"
+              >
+                AC
+              </div>
+              <div
+                className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white text-xs font-semibold"
+                title="Maria Johnson"
+              >
+                MJ
+              </div>
             </div>
             
-            <div className="space-y-4">
-              <div className="flex items-start p-3 bg-blue-50 rounded-lg">
-                <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-white text-sm font-medium mr-3">
-                  MJ
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm text-gray-900">Mike Johnson completed Safety Inspection template</p>
-                  <p className="text-xs text-gray-600">2 hours ago</p>
-                </div>
-                <button className="text-blue-600 hover:text-blue-700 text-xs">
-                  View
-                </button>
-              </div>
+            <button 
+              onClick={() => setShowTeamModal(true)}
+              className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+            >
+              Manage team →
+            </button>
+          </div>
 
-              <div className="flex items-start p-3 bg-green-50 rounded-lg">
-                <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white text-sm font-medium mr-3">
-                  LC
+          {/* Shared Templates */}
+          <div className="bg-white rounded-2xl border border-gray-200 p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center">
+                <div className="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center mr-3">
+                  <Share2 className="w-5 h-5 text-emerald-600" />
                 </div>
-                <div className="flex-1">
-                  <p className="text-sm text-gray-900">Lisa Chen shared new HR template with team</p>
-                  <p className="text-xs text-gray-600">4 hours ago</p>
-                </div>
-                <button className="text-green-600 hover:text-green-700 text-xs">
-                  Review
-                </button>
-              </div>
-
-              <div className="flex items-start p-3 bg-orange-50 rounded-lg">
-                <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center text-white text-sm font-medium mr-3">
-                  DR
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm text-gray-900">Dr. Rodriguez requested approval for Patient Intake v2.1</p>
-                  <p className="text-xs text-gray-600">6 hours ago</p>
-                </div>
-                <button className="text-orange-600 hover:text-orange-700 text-xs">
-                  Approve
-                </button>
+                <h3 className="text-lg font-semibold text-gray-900">Shared Templates</h3>
               </div>
             </div>
+            <div className="text-3xl font-bold text-emerald-600 mb-2">{totalSharedTemplates}</div>
+            <p className="text-sm text-gray-600 mb-4">
+              {sharedWithMeData.length} shared with you, {sharedByMeData.length} shared by you
+            </p>
+            
+            <div className="flex items-center text-sm">
+              <TrendingUp className="w-4 h-4 text-green-500 mr-1" />
+              <span className="text-green-600">+{growthPercentage}% from last month</span>
+            </div>
+          </div>
+
+          {/* Pending Reviews */}
+          <div className="bg-white rounded-2xl border border-gray-200 p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center">
+                <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center mr-3">
+                  <MessageSquare className="w-5 h-5 text-orange-600" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900">Review Queue</h3>
+              </div>
+            </div>
+            <div className="text-3xl font-bold text-orange-600 mb-2">{templatesAwaitingApproval}</div>
+            <p className="text-sm text-gray-600 mb-4">Templates awaiting review</p>
+            
+            <button 
+              onClick={() => setShowReviewQueueModal(true)}
+              className="text-orange-600 hover:text-orange-700 text-sm font-medium"
+            >
+              Review Now →
+            </button>
           </div>
 
           {/* Quick Actions */}
           <div className="bg-white rounded-2xl border border-gray-200 p-6">
-            <h3 className="text-lg font-bold text-gray-900 mb-4">Quick Actions</h3>
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center">
+                <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
+                  <Settings className="w-5 h-5 text-purple-600" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900">Quick Actions</h3>
+              </div>
+              <button 
+                onClick={handleRefresh}
+                disabled={loading}
+                className="p-2 text-gray-600 hover:text-gray-900 transition-colors"
+                title="Refresh"
+              >
+                <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
+              </button>
+            </div>
             
-            <div className="grid grid-cols-2 gap-3">
-              <button className="flex items-center justify-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-                <UserPlus className="w-4 h-4 mr-2 text-blue-600" />
-                <span className="text-sm text-gray-700">Invite Member</span>
+            <div className="space-y-3">
+              <button 
+                onClick={() => setShowInviteModal(true)}
+                className="w-full flex items-center justify-center p-2 border border-blue-300 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
+              >
+                <UserPlus className="w-4 h-4 mr-2" />
+                Invite Member
               </button>
               
-              <button className="flex items-center justify-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-                <Share2 className="w-4 h-4 mr-2 text-emerald-600" />
-                <span className="text-sm text-gray-700">Share Template</span>
+              <button 
+                onClick={() => setShowShareTemplateModal(true)}
+                className="w-full flex items-center justify-center p-2 border border-emerald-300 text-emerald-600 rounded-lg hover:bg-emerald-50 transition-colors"
+              >
+                <Share2 className="w-4 h-4 mr-2" />
+                Share Template
               </button>
               
-              <button className="flex items-center justify-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-                <MessageSquare className="w-4 h-4 mr-2 text-purple-600" />
-                <span className="text-sm text-gray-700">Team Chat</span>
-              </button>
-              
-              <button className="flex items-center justify-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-                <Eye className="w-4 h-4 mr-2 text-orange-600" />
-                <span className="text-sm text-gray-700">Review Queue</span>
+              <button 
+                onClick={() => setShowReviewQueueModal(true)}
+                className="w-full flex items-center justify-center p-2 border border-orange-300 text-orange-600 rounded-lg hover:bg-orange-50 transition-colors"
+              >
+                <MessageSquare className="w-4 h-4 mr-2" />
+                Review Queue
               </button>
             </div>
           </div>
         </div>
+
+        {/* Shared Templates */}
+        <div className="bg-white rounded-2xl border border-gray-200 p-6">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xl font-bold text-gray-900">Shared Templates</h2>
+            <div className="flex items-center space-x-2">
+              <button className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100">
+                <Filter className="w-4 h-4" />
+              </button>
+              <button className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100">
+                <Search className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+
+          {loading ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+              <span className="ml-2 text-gray-600">Loading shared templates...</span>
+            </div>
+          ) : totalSharedTemplates === 0 ? (
+            <div className="text-center py-12">
+              <Share2 className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">No shared templates</h3>
+              <p className="text-gray-600 mb-6">
+                No templates have been shared yet. Share some of your templates with the team to get started.
+              </p>
+              <button 
+                onClick={() => setShowShareTemplateModal(true)}
+                className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Share Your Templates
+              </button>
+            </div>
+          ) : (
+            <div className="space-y-6">
+              {/* Templates shared with me */}
+              {sharedWithMeData.length > 0 && (
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Shared with You ({sharedWithMeData.length})</h3>
+                  <div 
+                    className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 overflow-x-auto"
+                    ref={sharedTemplatesRef}
+                  >
+                    {sharedWithMeData.map((share) => (
+                      <SharedTemplateCard
+                        key={share.id}
+                        template={share.template}
+                        shareId={share.id}
+                        sharedBy={share.user_name || share.user_email}
+                        sharedAt={share.shared_at}
+                        role={share.role}
+                        isHidden={share.message === 'hidden_by_user'}
+                        onUpdate={handleRefresh}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Templates shared by me */}
+              {sharedByMeData.length > 0 && (
+                <div className="mt-8">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">Shared by You ({sharedByMeData.length})</h3>
+                  <div 
+                    className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 overflow-x-auto"
+                    ref={sharedByMeRef}
+                  >
+                    {sharedByMeData.map((share) => (
+                      <SharedTemplateCard
+                        key={share.id}
+                        template={share.template}
+                        shareId={share.id}
+                        sharedBy="You"
+                        sharedAt={share.shared_at}
+                        role={share.role}
+                        onUpdate={handleRefresh}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   const renderSettings = () => (
     <div className="space-y-8">
@@ -1079,7 +952,7 @@ function Dashboard() {
             
             <div className="flex items-center justify-between">
               <div>
-                <h4 className="text-sm font-medium text-gray-900">Template review reminders</h4>
+              <h4 className="text-sm font-medium text-gray-900">Template review reminders</h4>
                 <p className="text-xs text-gray-600">Reminders for pending template approvals</p>
               </div>
               <input type="checkbox" defaultChecked className="rounded text-blue-600 focus:ring-blue-500" />
@@ -1260,6 +1133,36 @@ function Dashboard() {
         {activeTab === 'collaboration' && renderCollaboration()}
         {activeTab === 'settings' && renderSettings()}
       </div>
+
+      {/* Modals - Only render when collaboration tab is active */}
+      {activeTab === 'collaboration' && (
+        <>
+          <InviteMemberModal 
+            isOpen={showInviteModal}
+            onClose={() => setShowInviteModal(false)}
+          />
+          
+          <TeamMembersModal 
+            isOpen={showTeamModal}
+            onClose={() => setShowTeamModal(false)}
+            onInvite={() => {
+              setShowTeamModal(false);
+              setShowInviteModal(true);
+            }}
+          />
+
+          <ShareNewTemplateModal
+            isOpen={showShareTemplateModal}
+            onClose={() => setShowShareTemplateModal(false)}
+            onSuccess={handleShareTemplateSuccess}
+          />
+
+          <ReviewQueueModal
+            isOpen={showReviewQueueModal}
+            onClose={() => setShowReviewQueueModal(false)}
+          />
+        </>
+      )}
     </div>
   );
 }
