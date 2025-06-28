@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { 
   ArrowLeft,
   Search,
@@ -21,21 +21,26 @@ import {
   MapPin,
   FileText,
   Archive,
-  Star,
-  Loader2,
-  X
+  Star
 } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
-import { 
-  getUserEvents, 
-  updateEvent, 
-  deleteEvent,
-  markEventCompleted,
-  cancelEvent,
-  getEventStats,
-  type ScheduledEvent,
-  type UpdateEventData
-} from '../lib/scheduler';
+
+interface ScheduledEvent {
+  id: string;
+  title: string;
+  description: string;
+  date: string;
+  time: string;
+  duration: number;
+  type: 'form_review' | 'team_meeting' | 'training' | 'maintenance' | 'other';
+  priority: 'low' | 'medium' | 'high';
+  attendees?: string[];
+  location?: string;
+  formId?: string;
+  reminderMinutes?: number;
+  status: 'scheduled' | 'in_progress' | 'completed' | 'cancelled';
+  createdAt: string;
+  updatedAt: string;
+}
 
 const EVENT_TYPES = [
   { id: 'all', name: 'All Types' },
@@ -61,8 +66,6 @@ const PRIORITY_COLORS = {
 };
 
 function ManageSchedules() {
-  const { user, loading: authLoading } = useAuth();
-  const navigate = useNavigate();
   const [events, setEvents] = useState<ScheduledEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -72,48 +75,94 @@ function ManageSchedules() {
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [selectedEvents, setSelectedEvents] = useState<string[]>([]);
   const [showBulkActions, setShowBulkActions] = useState(false);
-  const [stats, setStats] = useState({ total: 0, completed: 0, upcoming: 0, highPriority: 0 });
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
 
-  // Redirect if not authenticated
+  // Mock data for demonstration
   useEffect(() => {
-    if (!authLoading && !user) {
-      navigate('/login');
-    }
-  }, [user, authLoading, navigate]);
-
-  // Load events and stats
-  useEffect(() => {
-    if (user) {
-      loadEvents();
-      loadStats();
-    }
-  }, [user]);
-
-  const loadEvents = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const { data, error } = await getUserEvents();
-      if (error) throw error;
-      setEvents(data || []);
-    } catch (err: any) {
-      setError(err.message || 'Failed to load events');
-      console.error('Error loading events:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const loadStats = async () => {
-    try {
-      const eventStats = await getEventStats();
-      setStats(eventStats);
-    } catch (err: any) {
-      console.error('Error loading stats:', err);
-    }
-  };
+    const mockEvents: ScheduledEvent[] = [
+      {
+        id: '1',
+        title: 'Healthcare Forms Review',
+        description: 'Review and update patient intake forms for Q1',
+        date: '2024-01-20',
+        time: '09:00',
+        duration: 60,
+        type: 'form_review',
+        priority: 'high',
+        attendees: ['Dr. Sarah Martinez', 'Alex Chen'],
+        location: 'Conference Room A',
+        formId: 'form_123',
+        reminderMinutes: 15,
+        status: 'scheduled',
+        createdAt: '2024-01-15T10:00:00Z',
+        updatedAt: '2024-01-15T10:00:00Z'
+      },
+      {
+        id: '2',
+        title: 'Voice AI Training Session',
+        description: 'Training new team members on voice form technology',
+        date: '2024-01-22',
+        time: '14:00',
+        duration: 120,
+        type: 'training',
+        priority: 'medium',
+        attendees: ['Maria Johnson', 'Team Members'],
+        location: 'Training Room B',
+        reminderMinutes: 30,
+        status: 'completed',
+        createdAt: '2024-01-16T14:00:00Z',
+        updatedAt: '2024-01-22T16:00:00Z'
+      },
+      {
+        id: '3',
+        title: 'Weekly Team Sync',
+        description: 'Regular team synchronization meeting',
+        date: '2024-01-24',
+        time: '10:00',
+        duration: 45,
+        type: 'team_meeting',
+        priority: 'medium',
+        attendees: ['All Team Members'],
+        location: 'Virtual Meeting',
+        reminderMinutes: 10,
+        status: 'scheduled',
+        createdAt: '2024-01-17T09:00:00Z',
+        updatedAt: '2024-01-17T09:00:00Z'
+      },
+      {
+        id: '4',
+        title: 'System Maintenance Window',
+        description: 'Scheduled maintenance for voice processing servers',
+        date: '2024-01-25',
+        time: '02:00',
+        duration: 180,
+        type: 'maintenance',
+        priority: 'high',
+        location: 'Data Center',
+        reminderMinutes: 60,
+        status: 'scheduled',
+        createdAt: '2024-01-18T11:00:00Z',
+        updatedAt: '2024-01-18T11:00:00Z'
+      },
+      {
+        id: '5',
+        title: 'Client Demo Preparation',
+        description: 'Prepare demo materials for upcoming client presentation',
+        date: '2024-01-19',
+        time: '15:30',
+        duration: 90,
+        type: 'other',
+        priority: 'high',
+        attendees: ['Sales Team', 'Product Team'],
+        location: 'Conference Room C',
+        reminderMinutes: 30,
+        status: 'cancelled',
+        createdAt: '2024-01-14T13:00:00Z',
+        updatedAt: '2024-01-19T12:00:00Z'
+      }
+    ];
+    setEvents(mockEvents);
+    setLoading(false);
+  }, []);
 
   // Filter and sort events
   const filteredEvents = events
@@ -147,8 +196,8 @@ function ManageSchedules() {
           bValue = b.status;
           break;
         default:
-          aValue = a.created_at;
-          bValue = b.created_at;
+          aValue = a.createdAt;
+          bValue = b.createdAt;
       }
       
       if (sortOrder === 'asc') {
@@ -198,59 +247,11 @@ function ManageSchedules() {
     }
   };
 
-  const handleBulkAction = async (action: string) => {
-    try {
-      setError(null);
-      
-      switch (action) {
-        case 'complete':
-          await Promise.all(selectedEvents.map(id => markEventCompleted(id)));
-          setSuccess(`${selectedEvents.length} events marked as completed`);
-          break;
-        case 'cancel':
-          await Promise.all(selectedEvents.map(id => cancelEvent(id)));
-          setSuccess(`${selectedEvents.length} events cancelled`);
-          break;
-        case 'delete':
-          await Promise.all(selectedEvents.map(id => deleteEvent(id)));
-          setSuccess(`${selectedEvents.length} events deleted`);
-          break;
-        case 'export':
-          exportSelectedEvents();
-          setSuccess('Events exported successfully');
-          break;
-      }
-      
-      // Reload data
-      loadEvents();
-      loadStats();
-      setSelectedEvents([]);
-      setShowBulkActions(false);
-      
-      // Clear success message after 3 seconds
-      setTimeout(() => setSuccess(null), 3000);
-    } catch (err: any) {
-      setError(err.message || `Failed to ${action} events`);
-    }
-  };
-
-  const exportSelectedEvents = () => {
-    const selectedEventData = events.filter(event => selectedEvents.includes(event.id));
-    const exportData = {
-      exported_at: new Date().toISOString(),
-      events: selectedEventData
-    };
-    
-    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `events_export_${new Date().toISOString().split('T')[0]}.json`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+  const handleBulkAction = (action: string) => {
+    console.log(`Bulk action: ${action} on events:`, selectedEvents);
+    // Implement bulk actions here
+    setSelectedEvents([]);
+    setShowBulkActions(false);
   };
 
   const handleSort = (field: string) => {
@@ -259,36 +260,6 @@ function ManageSchedules() {
     } else {
       setSortBy(field);
       setSortOrder('asc');
-    }
-  };
-
-  const handleEventAction = async (eventId: string, action: string) => {
-    try {
-      setError(null);
-      
-      switch (action) {
-        case 'complete':
-          await markEventCompleted(eventId);
-          setSuccess('Event marked as completed');
-          break;
-        case 'cancel':
-          await cancelEvent(eventId);
-          setSuccess('Event cancelled');
-          break;
-        case 'delete':
-          await deleteEvent(eventId);
-          setSuccess('Event deleted');
-          break;
-      }
-      
-      // Reload data
-      loadEvents();
-      loadStats();
-      
-      // Clear success message after 3 seconds
-      setTimeout(() => setSuccess(null), 3000);
-    } catch (err: any) {
-      setError(err.message || `Failed to ${action} event`);
     }
   };
 
@@ -302,22 +273,7 @@ function ManageSchedules() {
     };
   };
 
-  const currentStats = getEventStats();
-
-  if (authLoading || loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <Loader2 className="w-8 h-8 animate-spin text-blue-600 mx-auto mb-4" />
-          <p className="text-gray-600">Loading schedules...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!user) {
-    return null; // Will redirect to login
-  }
+  const stats = getEventStats();
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -336,8 +292,7 @@ function ManageSchedules() {
             </div>
             <div className="flex items-center space-x-4">
               <button 
-                onClick={loadEvents}
-                disabled={loading}
+                onClick={() => setLoading(true)}
                 className="p-2 text-gray-600 hover:text-gray-900 rounded-lg hover:bg-gray-100 transition-colors"
                 title="Refresh"
               >
@@ -362,37 +317,6 @@ function ManageSchedules() {
         </div>
       </div>
 
-      {/* Error/Success Messages */}
-      {error && (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-center">
-            <AlertCircle className="w-5 h-5 text-red-600 mr-3" />
-            <span className="text-red-800 text-sm">{error}</span>
-            <button 
-              onClick={() => setError(null)}
-              className="ml-auto text-red-600 hover:text-red-700"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-      )}
-
-      {success && (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
-          <div className="bg-green-50 border border-green-200 rounded-lg p-4 flex items-center">
-            <CheckCircle className="w-5 h-5 text-green-600 mr-3" />
-            <span className="text-green-800 text-sm">{success}</span>
-            <button 
-              onClick={() => setSuccess(null)}
-              className="ml-auto text-green-600 hover:text-green-700"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-      )}
-
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Stats Cards */}
         <div className="grid md:grid-cols-5 gap-6 mb-8">
@@ -400,7 +324,7 @@ function ManageSchedules() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Total Events</p>
-                <p className="text-2xl font-bold text-gray-900">{currentStats.total}</p>
+                <p className="text-2xl font-bold text-gray-900">{stats.total}</p>
               </div>
               <Calendar className="w-8 h-8 text-blue-600" />
             </div>
@@ -409,7 +333,7 @@ function ManageSchedules() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Scheduled</p>
-                <p className="text-2xl font-bold text-blue-600">{currentStats.scheduled}</p>
+                <p className="text-2xl font-bold text-blue-600">{stats.scheduled}</p>
               </div>
               <Clock className="w-8 h-8 text-blue-600" />
             </div>
@@ -418,7 +342,7 @@ function ManageSchedules() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Completed</p>
-                <p className="text-2xl font-bold text-green-600">{currentStats.completed}</p>
+                <p className="text-2xl font-bold text-green-600">{stats.completed}</p>
               </div>
               <CheckCircle className="w-8 h-8 text-green-600" />
             </div>
@@ -427,7 +351,7 @@ function ManageSchedules() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">Cancelled</p>
-                <p className="text-2xl font-bold text-red-600">{currentStats.cancelled}</p>
+                <p className="text-2xl font-bold text-red-600">{stats.cancelled}</p>
               </div>
               <XCircle className="w-8 h-8 text-red-600" />
             </div>
@@ -436,7 +360,7 @@ function ManageSchedules() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600">High Priority</p>
-                <p className="text-2xl font-bold text-orange-600">{currentStats.highPriority}</p>
+                <p className="text-2xl font-bold text-orange-600">{stats.highPriority}</p>
               </div>
               <AlertCircle className="w-8 h-8 text-orange-600" />
             </div>
@@ -627,37 +551,17 @@ function ManageSchedules() {
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end space-x-2">
-                        {event.status === 'scheduled' && (
-                          <button 
-                            onClick={() => handleEventAction(event.id, 'complete')}
-                            className="p-1 text-gray-400 hover:text-green-600 transition-colors"
-                            title="Mark Complete"
-                          >
-                            <CheckCircle className="w-4 h-4" />
-                          </button>
-                        )}
-                        <Link 
-                          to={`/scheduler?edit=${event.id}`}
-                          className="p-1 text-gray-400 hover:text-blue-600 transition-colors"
-                          title="Edit"
-                        >
+                        <button className="p-1 text-gray-400 hover:text-blue-600 transition-colors">
+                          <Eye className="w-4 h-4" />
+                        </button>
+                        <button className="p-1 text-gray-400 hover:text-blue-600 transition-colors">
                           <Edit className="w-4 h-4" />
-                        </Link>
-                        {event.status === 'scheduled' && (
-                          <button 
-                            onClick={() => handleEventAction(event.id, 'cancel')}
-                            className="p-1 text-gray-400 hover:text-yellow-600 transition-colors"
-                            title="Cancel"
-                          >
-                            <XCircle className="w-4 h-4" />
-                          </button>
-                        )}
-                        <button 
-                          onClick={() => handleEventAction(event.id, 'delete')}
-                          className="p-1 text-gray-400 hover:text-red-600 transition-colors"
-                          title="Delete"
-                        >
+                        </button>
+                        <button className="p-1 text-gray-400 hover:text-red-600 transition-colors">
                           <Trash2 className="w-4 h-4" />
+                        </button>
+                        <button className="p-1 text-gray-400 hover:text-gray-600 transition-colors">
+                          <MoreHorizontal className="w-4 h-4" />
                         </button>
                       </div>
                     </td>

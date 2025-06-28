@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { 
   ArrowLeft,
   Settings,
@@ -19,11 +19,8 @@ import {
   EyeOff,
   Download,
   Upload,
-  Trash2,
-  X,
-  Loader2
+  Trash2
 } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
 
 interface SchedulerSettings {
   // General Settings
@@ -97,8 +94,6 @@ const COLOR_SCHEMES = [
 ];
 
 function SchedulerSettings() {
-  const { user, loading: authLoading } = useAuth();
-  const navigate = useNavigate();
   const [settings, setSettings] = useState<SchedulerSettings>({
     // General Settings
     defaultDuration: 60,
@@ -143,77 +138,23 @@ function SchedulerSettings() {
   const [activeTab, setActiveTab] = useState('general');
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  // Redirect if not authenticated
-  useEffect(() => {
-    if (!authLoading && !user) {
-      navigate('/login');
-    }
-  }, [user, authLoading, navigate]);
-
-  // Load settings from localStorage or API
-  useEffect(() => {
-    if (user) {
-      loadSettings();
-    }
-  }, [user]);
-
-  const loadSettings = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      
-      // Try to load from localStorage first
-      const savedSettings = localStorage.getItem(`scheduler_settings_${user?.id}`);
-      if (savedSettings) {
-        const parsedSettings = JSON.parse(savedSettings);
-        setSettings(prev => ({ ...prev, ...parsedSettings }));
-      }
-      
-      // In a real app, you would load from your API here
-      // const { data, error } = await getSchedulerSettings();
-      // if (error) throw error;
-      // setSettings(data);
-      
-    } catch (err: any) {
-      setError(err.message || 'Failed to load settings');
-      console.error('Error loading settings:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleSave = async () => {
-    try {
-      setSaving(true);
-      setError(null);
-      
-      // Save to localStorage
-      localStorage.setItem(`scheduler_settings_${user?.id}`, JSON.stringify(settings));
-      
-      // In a real app, you would save to your API here
-      // const { error } = await updateSchedulerSettings(settings);
-      // if (error) throw error;
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      setSaved(true);
-      
-      // Hide success message after 3 seconds
-      setTimeout(() => setSaved(false), 3000);
-    } catch (err: any) {
-      setError(err.message || 'Failed to save settings');
-    } finally {
-      setSaving(false);
-    }
+    setSaving(true);
+    
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    setSaving(false);
+    setSaved(true);
+    
+    // Hide success message after 3 seconds
+    setTimeout(() => setSaved(false), 3000);
   };
 
   const handleReset = () => {
     // Reset to default settings
-    const defaultSettings: SchedulerSettings = {
+    setSettings({
       defaultDuration: 60,
       defaultReminderMinutes: 15,
       workingHours: { start: '09:00', end: '17:00' },
@@ -238,52 +179,11 @@ function SchedulerSettings() {
       outlookSync: false,
       slackNotifications: false,
       teamsNotifications: false
-    };
-    
-    setSettings(defaultSettings);
+    });
   };
 
   const updateSettings = (updates: Partial<SchedulerSettings>) => {
     setSettings(prev => ({ ...prev, ...updates }));
-  };
-
-  const exportSettings = () => {
-    const exportData = {
-      exported_at: new Date().toISOString(),
-      user_id: user?.id,
-      settings: settings
-    };
-    
-    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `scheduler_settings_${new Date().toISOString().split('T')[0]}.json`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-  };
-
-  const importSettings = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      try {
-        const importData = JSON.parse(e.target?.result as string);
-        if (importData.settings) {
-          setSettings(prev => ({ ...prev, ...importData.settings }));
-          setSaved(true);
-          setTimeout(() => setSaved(false), 3000);
-        }
-      } catch (err) {
-        setError('Invalid settings file format');
-      }
-    };
-    reader.readAsText(file);
   };
 
   const tabs = [
@@ -294,21 +194,6 @@ function SchedulerSettings() {
     { id: 'appearance', name: 'Appearance', icon: Palette },
     { id: 'integrations', name: 'Integrations', icon: Globe }
   ];
-
-  if (authLoading || loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <Loader2 className="w-8 h-8 animate-spin text-blue-600 mx-auto mb-4" />
-          <p className="text-gray-600">Loading settings...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!user) {
-    return null; // Will redirect to login
-  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -332,29 +217,6 @@ function SchedulerSettings() {
                   <span className="text-sm font-medium">Settings saved</span>
                 </div>
               )}
-              {error && (
-                <div className="flex items-center text-red-600">
-                  <AlertCircle className="w-5 h-5 mr-2" />
-                  <span className="text-sm font-medium">Error saving</span>
-                </div>
-              )}
-              <button
-                onClick={exportSettings}
-                className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors flex items-center"
-              >
-                <Download className="w-4 h-4 mr-2" />
-                Export
-              </button>
-              <label className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors flex items-center cursor-pointer">
-                <Upload className="w-4 h-4 mr-2" />
-                Import
-                <input
-                  type="file"
-                  accept=".json"
-                  onChange={importSettings}
-                  className="hidden"
-                />
-              </label>
               <button
                 onClick={handleReset}
                 className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors flex items-center"
@@ -368,7 +230,7 @@ function SchedulerSettings() {
                 className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center disabled:opacity-50"
               >
                 {saving ? (
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
                 ) : (
                   <Save className="w-4 h-4 mr-2" />
                 )}
@@ -378,22 +240,6 @@ function SchedulerSettings() {
           </div>
         </div>
       </div>
-
-      {/* Error Message */}
-      {error && (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4">
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-center">
-            <AlertCircle className="w-5 h-5 text-red-600 mr-3" />
-            <span className="text-red-800 text-sm">{error}</span>
-            <button 
-              onClick={() => setError(null)}
-              className="ml-auto text-red-600 hover:text-red-700"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-      )}
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex gap-8">

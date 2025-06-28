@@ -11,12 +11,12 @@ export interface ScheduledEvent {
   priority: 'low' | 'medium' | 'high';
   attendees?: string[];
   location?: string;
-  form_id?: string;
-  reminder_minutes?: number;
+  formId?: string;
+  reminderMinutes?: number;
   status: 'scheduled' | 'in_progress' | 'completed' | 'cancelled';
-  created_by: string;
-  created_at: string;
-  updated_at: string;
+  createdBy: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface CreateEventData {
@@ -29,9 +29,9 @@ export interface CreateEventData {
   priority: 'low' | 'medium' | 'high';
   attendees?: string[];
   location?: string;
-  form_id?: string;
-  reminder_minutes?: number;
-  created_by: string;
+  formId?: string;
+  reminderMinutes?: number;
+  createdBy: string;
 }
 
 export interface UpdateEventData {
@@ -44,8 +44,8 @@ export interface UpdateEventData {
   priority?: 'low' | 'medium' | 'high';
   attendees?: string[];
   location?: string;
-  form_id?: string;
-  reminder_minutes?: number;
+  formId?: string;
+  reminderMinutes?: number;
   status?: 'scheduled' | 'in_progress' | 'completed' | 'cancelled';
 }
 
@@ -53,20 +53,7 @@ export interface UpdateEventData {
 export const createEvent = async (eventData: CreateEventData) => {
   const { data, error } = await supabase
     .from('scheduled_events')
-    .insert([{
-      title: eventData.title,
-      description: eventData.description,
-      date: eventData.date,
-      time: eventData.time,
-      duration: eventData.duration,
-      type: eventData.type,
-      priority: eventData.priority,
-      attendees: eventData.attendees || [],
-      location: eventData.location || '',
-      form_id: eventData.form_id,
-      reminder_minutes: eventData.reminder_minutes || 15,
-      created_by: eventData.created_by
-    }])
+    .insert([eventData])
     .select()
     .single();
 
@@ -201,7 +188,8 @@ export const markEventCompleted = async (id: string) => {
   const { data, error } = await supabase
     .from('scheduled_events')
     .update({ 
-      status: 'completed'
+      status: 'completed',
+      updatedAt: new Date().toISOString()
     })
     .eq('id', id)
     .select()
@@ -215,7 +203,8 @@ export const cancelEvent = async (id: string) => {
   const { data, error } = await supabase
     .from('scheduled_events')
     .update({ 
-      status: 'cancelled'
+      status: 'cancelled',
+      updatedAt: new Date().toISOString()
     })
     .eq('id', id)
     .select()
