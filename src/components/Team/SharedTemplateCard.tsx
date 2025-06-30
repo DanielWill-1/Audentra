@@ -21,6 +21,7 @@ import {
   Building2
 } from 'lucide-react';
 import { Template, deleteSharedTemplate, toggleSharedTemplateVisibility, addTemplateToReviewQueue } from '../../lib/templates';
+import { addActivityItem } from '../../lib/activity';
 
 interface SharedTemplateCardProps {
   template: Template;
@@ -46,7 +47,7 @@ export default function SharedTemplateCard({
   shareId, 
   sharedBy, 
   sharedAt, 
-  role = 'viewer',
+  role = 'user',
   isHidden = false,
   onUpdate 
 }: SharedTemplateCardProps) {
@@ -87,6 +88,15 @@ export default function SharedTemplateCard({
       const { error } = await deleteSharedTemplate(shareId);
       if (error) throw error;
       setSuccess('Template removed from shared successfully');
+      
+      // Add activity
+      await addActivityItem({
+        type: 'template_shared',
+        title: `${template.name} removed from shared`,
+        description: 'Template sharing removed',
+        user: 'You'
+      });
+      
       setTimeout(() => {
         setShowDeleteConfirm(false);
         onUpdate();
@@ -105,6 +115,15 @@ export default function SharedTemplateCard({
       const { error } = await toggleSharedTemplateVisibility(shareId, !isHidden);
       if (error) throw error;
       setSuccess(isHidden ? 'Template is now visible' : 'Template is now hidden');
+      
+      // Add activity
+      await addActivityItem({
+        type: 'template_shared',
+        title: `${template.name} ${isHidden ? 'unhidden' : 'hidden'}`,
+        description: `Template visibility changed to ${isHidden ? 'visible' : 'hidden'}`,
+        user: 'You'
+      });
+      
       setTimeout(() => {
         onUpdate();
       }, 1500);
@@ -119,9 +138,19 @@ export default function SharedTemplateCard({
     setLoading(true);
     setError(null);
     try {
-      const { error } = await addTemplateToReviewQueue(template.id, 'medium');
+      const { data, error } = await addTemplateToReviewQueue(template.id, 'medium');
       if (error) throw error;
+      
       setSuccess('Template added to review queue successfully');
+      
+      // Add activity
+      await addActivityItem({
+        type: 'template_reviewed',
+        title: `${template.name} added to review queue`,
+        description: 'Template added for review',
+        user: 'You'
+      });
+      
       setTimeout(() => {
         setShowActions(false);
       }, 1500);

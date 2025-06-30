@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
+import { addActivityItem } from '../../lib/activity';
 
 interface TeamMembersModalProps {
   isOpen: boolean;
@@ -218,6 +219,14 @@ export default function TeamMembersModal({ isOpen, onClose, onInvite }: TeamMemb
       
       setSuccess('Invitation resent successfully');
       setTimeout(() => setSuccess(null), 3000);
+      
+      // Add activity
+      await addActivityItem({
+        type: 'team_invite',
+        title: 'Invitation resent',
+        description: 'Team invitation resent',
+        user: 'You'
+      });
     } catch (error) {
       console.error('Failed to resend invite:', error);
       setError('Failed to resend invitation');
@@ -239,6 +248,14 @@ export default function TeamMembersModal({ isOpen, onClose, onInvite }: TeamMemb
       
       setSuccess('Invitation cancelled successfully');
       setTimeout(() => setSuccess(null), 3000);
+      
+      // Add activity
+      await addActivityItem({
+        type: 'team_invite',
+        title: 'Invitation cancelled',
+        description: 'Team invitation cancelled',
+        user: 'You'
+      });
     } catch (error) {
       console.error('Failed to cancel invite:', error);
       setError('Failed to cancel invitation');
@@ -255,6 +272,9 @@ export default function TeamMembersModal({ isOpen, onClose, onInvite }: TeamMemb
         return;
       }
       
+      // Get member info for activity log
+      const memberToRemove = teamMembers.find(m => m.id === memberId);
+      
       // Remove the member
       setTeamMembers(prevMembers => {
         const updatedMembers = prevMembers.filter(member => member.id !== memberId);
@@ -267,6 +287,16 @@ export default function TeamMembersModal({ isOpen, onClose, onInvite }: TeamMemb
       
       setSuccess('Team member removed successfully');
       setTimeout(() => setSuccess(null), 3000);
+      
+      // Add activity
+      if (memberToRemove) {
+        await addActivityItem({
+          type: 'team_invite',
+          title: `${memberToRemove.name} removed from team`,
+          description: 'Team member removed',
+          user: 'You'
+        });
+      }
     } catch (error) {
       console.error('Failed to remove member:', error);
       setError('Failed to remove team member');
@@ -282,6 +312,9 @@ export default function TeamMembersModal({ isOpen, onClose, onInvite }: TeamMemb
         setTimeout(() => setError(null), 3000);
         return;
       }
+      
+      // Get member info for activity log
+      const memberToUpdate = teamMembers.find(m => m.id === memberId);
       
       // Update the member's role
       setTeamMembers(prevMembers => {
@@ -300,6 +333,16 @@ export default function TeamMembersModal({ isOpen, onClose, onInvite }: TeamMemb
       setShowRoleModal(null);
       setSuccess('Team member role updated successfully');
       setTimeout(() => setSuccess(null), 3000);
+      
+      // Add activity
+      if (memberToUpdate) {
+        await addActivityItem({
+          type: 'team_invite',
+          title: `${memberToUpdate.name}'s role changed to ${newRole}`,
+          description: 'Team member role updated',
+          user: 'You'
+        });
+      }
     } catch (error) {
       console.error('Failed to change role:', error);
       setError('Failed to update team member role');

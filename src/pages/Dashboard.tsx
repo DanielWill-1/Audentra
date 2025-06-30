@@ -51,6 +51,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { getSharedTemplates, getTemplatesSharedByUser, Template } from '../lib/templates';
+import { addActivityItem } from '../lib/activity';
 import InviteMemberModal from '../components/Team/InviteMemberModal';
 import TeamMembersModal from '../components/Team/TeamMembersModal';
 import ShareNewTemplateModal from '../components/Team/ShareNewTemplateModal';
@@ -60,6 +61,7 @@ import StatsCard from '../components/Stats/StatsCard';
 import UpcomingEvents from '../components/Scheduler/UpcomingEvents';
 import ScheduleStats from '../components/Scheduler/ScheduleStats';
 import TeamTemplates from '../components/Dashboard/TeamTemplates';
+import RecentActivity from '../components/Dashboard/RecentActivity';
 
 interface SharedTemplateData {
   id: string;
@@ -270,10 +272,18 @@ function Dashboard() {
     }
   };
 
-  const handleShareTemplateSuccess = () => {
+  const handleShareTemplateSuccess = async () => {
     // Refresh shared templates data
     console.log('Template shared successfully, refreshing data...');
-    handleRefresh();
+    await handleRefresh();
+    
+    // Add activity item
+    await addActivityItem({
+      type: 'template_shared',
+      title: 'Template shared with team',
+      description: 'Template shared with team members',
+      user: 'You'
+    });
   };
 
   const handleLogout = async () => {
@@ -298,7 +308,15 @@ function Dashboard() {
     navigate('/scheduler');
   };
 
-  const handleQuickVoiceFormRedirect = () => {
+  const handleQuickVoiceFormRedirect = async () => {
+    // Add activity for starting a form
+    await addActivityItem({
+      type: 'form_started',
+      title: 'Quick Voice Form',
+      description: 'Started a new voice form',
+      user: 'You'
+    });
+    
     navigate('/templates');
   };
 
@@ -413,62 +431,8 @@ function Dashboard() {
             </button>
           </div>
           
-          <div className="bg-white rounded-2xl border border-gray-200">
-            <div className="p-6 space-y-4">
-              <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg border border-green-200">
-                <div className="flex items-center">
-                  <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mr-4">
-                    <CheckCircle className="w-5 h-5 text-green-600" />
-                  </div>
-                  <div>
-                    <h4 className="font-medium text-gray-900">Patient Intake - John Smith</h4>
-                    <p className="text-sm text-gray-600">Completed 2 hours ago • 1:34 duration</p>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">Verified</span>
-                  <button className="text-blue-600 hover:text-blue-700 text-sm">View</button>
-                  <button className="text-gray-600 hover:text-gray-700">
-                    <Share2 className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between p-4 bg-blue-50 rounded-lg border border-blue-200">
-                <div className="flex items-center">
-                  <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
-                    <Clock className="w-5 h-5 text-blue-600" />
-                  </div>
-                  <div>
-                    <h4 className="font-medium text-gray-900">Safety Inspection Report</h4>
-                    <p className="text-sm text-gray-600">In progress • Started 30 minutes ago</p>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">Draft</span>
-                  <button className="text-blue-600 hover:text-blue-700 text-sm">Continue</button>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between p-4 hover:bg-gray-50 rounded-lg">
-                <div className="flex items-center">
-                  <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mr-4">
-                    <FileText className="w-5 h-5 text-purple-600" />
-                  </div>
-                  <div>
-                    <h4 className="font-medium text-gray-900">Employee Onboarding - Maria Garcia</h4>
-                    <p className="text-sm text-gray-600">Completed yesterday • 2:15 duration</p>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <span className="text-xs bg-gray-100 text-gray-800 px-2 py-1 rounded-full">Archived</span>
-                  <button className="text-blue-600 hover:text-blue-700 text-sm">View</button>
-                  <button className="text-gray-600 hover:text-gray-700">
-                    <Download className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-            </div>
+          <div className="bg-white rounded-2xl border border-gray-200 p-6">
+            <RecentActivity limit={3} showViewAll={true} />
           </div>
         </section>
       </div>

@@ -38,6 +38,9 @@ const ROLES = [
   }
 ];
 
+// Storage key for pending invites
+const STORAGE_KEY = 'pendingInvites';
+
 export default function InviteMemberModal({ isOpen, onClose }: InviteMemberModalProps) {
   const { user } = useAuth();
   const [invites, setInvites] = useState<InviteData[]>([
@@ -132,7 +135,7 @@ export default function InviteMemberModal({ isOpen, onClose }: InviteMemberModal
       await new Promise(resolve => setTimeout(resolve, 1000));
       
       // Store invites in localStorage for persistence
-      const existingInvites = localStorage.getItem('pendingInvites');
+      const existingInvites = localStorage.getItem(STORAGE_KEY);
       const parsedExistingInvites = existingInvites ? JSON.parse(existingInvites) : [];
       
       const newInvites = invites.map(invite => ({
@@ -145,7 +148,7 @@ export default function InviteMemberModal({ isOpen, onClose }: InviteMemberModal
       }));
       
       const updatedInvites = [...parsedExistingInvites, ...newInvites];
-      localStorage.setItem('pendingInvites', JSON.stringify(updatedInvites));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedInvites));
       
       setSuccess(`Successfully sent ${invites.length} invitation${invites.length > 1 ? 's' : ''}!`);
       
