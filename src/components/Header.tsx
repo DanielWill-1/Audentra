@@ -33,13 +33,11 @@ function Header() {
               <Mic className="w-8 h-8 text-white" />
             </div>
             <span className="text-2xl font-bold text-gray-900">Audentra</span>
-            <a href="https://bolt.new" target="_blank" rel="noopener noreferrer">
-              <img
-                src="/image.png" // Ensure this path points to the correct location of the image
-                alt="Audentra Logo"
-                className="w-20 h-20 object-contain"
-              />
-            </a>
+            <img
+              src="/image.png" // Reference the logo from the public folder
+              alt="Audentra Logo"
+              className="w-20 h-20 object-contain"
+            />
           </Link>
           <nav className="hidden md:flex space-x-8">
             <Link 
