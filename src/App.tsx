@@ -29,6 +29,8 @@ import Privacy from './pages/Privacy';
 import ActivityLog from './pages/ActivityLog';
 import FilledTemplates from './pages/FilledTemplates';
 
+const API_BASE = import.meta.env.MODE === "development" ? "http://localhost:3001" : "";
+
 function App() {
   return (
     <AuthProvider>

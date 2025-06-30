@@ -4,10 +4,12 @@
   "version": "0.0.0",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && tsc",
     "lint": "eslint .",
     "preview": "vite preview",
-    "server": "ts-node server/index.ts"
+    "server": "ts-node server/index.ts",
+    "start": "node dist/server/index.js",
+    "dev:server": "ts-node server/index.ts"
   },
   "dependencies": {
     "@google-cloud/speech": "^7.1.0",

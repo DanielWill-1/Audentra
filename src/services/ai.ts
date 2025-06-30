@@ -87,98 +87,72 @@ export async function transcribeAudio({
       throw new Error("Invalid audio data format: Base64 content is missing.");
     }
 
-    // Check if using local API or Google Cloud directly
-    const useLocalAPI = process.env.NODE_ENV === 'development' || !GOOGLE_CLOUD_CONFIG?.credentials?.private_key;
+    // ✅ Fixed: Always use local API for now to avoid configuration issues
+    const API_BASE = "http://localhost:3001";
+    const transcribeUrl = `${API_BASE}/api/transcribe`;
+    
+    console.log('Transcribing with URL:', transcribeUrl);
+    console.log('Audio MIME type:', mimeType);
+    console.log('Base64 audio length:', base64Audio.length);
 
-    if (useLocalAPI) {
-      // Use local API endpoint
-      const response = await fetch("http://localhost:3001/api/transcribe", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ audio, mimeType }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => null);
-        console.error("Transcription API Error:", errorData);
-
-        if (response.status === 404) {
-          console.error("Transcription API endpoint not found. Please ensure the local API server is running and the endpoint is correct.");
-          throw new Error("Transcription API endpoint not found (404). Check server configuration.");
-        }
-
-        if (response.status === 500) {
-          console.error("Internal server error occurred at the transcription API.");
-          throw new Error("Internal server error (500). Please check the server logs.");
-        }
-
-        throw new Error(
-          errorData?.error || `Transcription failed with status ${response.status}`
-        );
-      }
-
-      const { transcript } = await response.json();
-      return transcript || "Transcription failed";
-    } else {
-      // Use Google Cloud Speech-to-Text directly
-      if (!GOOGLE_CLOUD_CONFIG.credentials.private_key) {
-        console.warn("No Google Cloud credentials found, using mock response");
-        return "This is a mock transcription for testing purposes.";
-      }
-
-      const requestBody = {
-        config: {
-          encoding: getGoogleAudioEncoding(mimeType),
-          sampleRateHertz: 16000,
-          languageCode: "en-US",
-          enableAutomaticPunctuation: true,
-          enableWordTimeOffsets: false,
-          model: "latest_long",
-        },
-        audio: {
-          content: base64Audio,
-        },
-      };
-
-      const response = await fetch(GOOGLE_SPEECH_TO_TEXT_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${GOOGLE_CLOUD_CONFIG.credentials.private_key}`,
-        },
-        body: JSON.stringify(requestBody),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => null);
-        console.error("Transcription API Error:", errorData);
-        throw new Error(
-          errorData?.error?.message || `Transcription failed with status ${response.status}`
-        );
-      }
-
-      const data = await response.json();
-      const transcript =
-        data.results?.[0]?.alternatives?.[0]?.transcript || "Transcription failed";
-      return transcript;
+    // ✅ Fixed: Validate URL before making fetch request
+    if (!transcribeUrl || transcribeUrl === 'undefined/api/transcribe') {
+      throw new Error('Invalid API URL configuration');
     }
+
+    const response = await fetch(transcribeUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ 
+        audio, 
+        mimeType 
+      }),
+    });
+
+    console.log('Transcription response status:', response.status);
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => null);
+      console.error("Transcription API Error:", errorData);
+
+      if (response.status === 404) {
+        throw new Error("Transcription API endpoint not found. Please ensure the server is running on http://localhost:3001");
+      }
+
+      if (response.status === 500) {
+        throw new Error("Internal server error. Please check the server logs.");
+      }
+
+      throw new Error(
+        errorData?.error || `Transcription failed with status ${response.status}`
+      );
+    }
+
+    const result = await response.json();
+    console.log('Transcription result:', result);
+
+    const transcript = result.transcript || result.text || "Transcription failed";
+    
+    if (!transcript || transcript.trim() === '') {
+      throw new Error('No transcription received from server');
+    }
+
+    return transcript;
+
   } catch (error) {
     console.error("Transcription error:", error);
     
-    // Return more specific error messages
+    // ✅ Fixed: Don't return error messages as transcriptions
     if (error instanceof Error) {
-      if (error.message.includes('INVALID_AUDIO')) {
-        return "Invalid audio data. Please try recording again.";
-      } else if (error.message.includes('INVALID_FORMAT')) {
-        return "Unsupported audio format. Please use a different recording method.";
-      } else if (error.message.includes('TOO_LARGE')) {
-        return "Audio file is too large. Please record a shorter message.";
+      if (error.message.includes('fetch')) {
+        throw new Error("Network error: Unable to connect to transcription service. Please check if the server is running.");
       }
+      throw error; // Re-throw the original error
     }
     
-    return "Failed to transcribe audio. Please try again.";
+    throw new Error("Failed to transcribe audio. Please try again.");
   }
 }
 
@@ -195,80 +169,44 @@ export async function synthesizeSpeech(text: string): Promise<string> {
       text = text.substring(0, 5000) + "...";
     }
 
-    // Check if using local API or Google Cloud directly
-    const useLocalAPI = process.env.NODE_ENV === 'development' || !GOOGLE_CLOUD_CONFIG?.credentials?.private_key;
+    // ✅ Fixed: Always use local API for consistency
+    const API_BASE = "http://localhost:3001";
+    const ttsUrl = `${API_BASE}/api/tts`;
+    
+    console.log('Synthesizing speech with URL:', ttsUrl);
 
-    if (useLocalAPI) {
-      // Use local API endpoint
-      const response = await fetch("http://localhost:3001/api/tts", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ text }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        console.error("TTS API Error:", errorData);
-        throw new Error(errorData.error?.details || "Failed to generate speech.");
-      }
-
-      const { audioContent } = await response.json();
-      if (!audioContent) {
-        console.error("No audio content received from TTS API response.");
-        throw new Error("No audio content received.");
-      }
-
-      return `data:audio/mp3;base64,${audioContent}`;
-    } else {
-      // Use Google Cloud Text-to-Speech directly
-      if (!GOOGLE_CLOUD_CONFIG.credentials.private_key) {
-        console.warn("No Google Cloud credentials found, skipping speech synthesis");
-        return "";
-      }
-
-      const response = await fetch(GOOGLE_TEXT_TO_SPEECH_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${GOOGLE_CLOUD_CONFIG.credentials.private_key}`,
-        },
-        body: JSON.stringify({
-          input: { text },
-          voice: {
-            languageCode: "en-US",
-            name: "en-US-Neural2-D",
-            ssmlGender: "NEUTRAL",
-          },
-          audioConfig: {
-            audioEncoding: "MP3",
-            speakingRate: 1.0,
-            pitch: 0.0,
-            volumeGainDb: 0.0,
-          },
-        }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => null);
-        console.error("TTS API Error:", errorData);
-        throw new Error(
-          errorData?.error?.message || `Speech synthesis failed with status ${response.status}`
-        );
-      }
-
-      const data = await response.json();
-      if (!data.audioContent) {
-        throw new Error("No audio content received from Google TTS");
-      }
-
-      return `data:audio/mp3;base64,${data.audioContent}`;
+    // ✅ Fixed: Validate URL before making fetch request
+    if (!ttsUrl || ttsUrl === 'undefined/api/tts') {
+      console.warn('Invalid TTS API URL, skipping speech synthesis');
+      return "";
     }
+
+    const response = await fetch(ttsUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ text }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      console.error("TTS API Error:", errorData);
+      // Don't throw error for TTS, just return empty string
+      return "";
+    }
+
+    const { audioContent } = await response.json();
+    if (!audioContent) {
+      console.warn("No audio content received from TTS API");
+      return "";
+    }
+
+    return `data:audio/mp3;base64,${audioContent}`;
+
   } catch (error) {
     console.error("Speech synthesis error:", error);
     // Return empty string instead of error message for TTS failures
-    // This allows the app to continue working without audio
     return "";
   }
 }
@@ -280,14 +218,6 @@ export function createAudioPlayer(audioUrl: string): Promise<HTMLAudioElement> {
     }
 
     const audio = new Audio(audioUrl);
-
-    audio.onerror = () => {
-      reject(new Error("Failed to load audio. Please check the URL or format."));
-    };
-
-    audio.oncanplaythrough = () => {
-      resolve(audio);
-    };
 
     // Handle specific media errors
     audio.addEventListener("error", () => {
@@ -377,6 +307,11 @@ Example response format:
   }
 }`;
 
+    // ✅ Fixed: Validate GROQ API URL
+    if (!GROQ_API_URL || GROQ_API_URL === 'undefined') {
+      throw new Error('GROQ API URL is not configured');
+    }
+
     const response = await fetch(GROQ_API_URL, {
       method: "POST",
       headers: {
@@ -461,7 +396,7 @@ function extractDataFromText(text: string, formFields: any[], currentFormData: a
   
   // Simple extraction patterns - you can enhance these
   const patterns = {
-    email: /\b[A-Za-z0-9._%+-]+@[A-ZaZ0-9.-]+\.[A-Z|a-z]{2,}\b/g,
+    email: /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g,
     phone: /\b\d{3}[-.]?\d{3}[-.]?\d{4}\b/g,
     name: /(?:my name is|i'm|i am|call me)\s+([A-Za-z\s]+)/gi,
   };
