@@ -55,7 +55,7 @@ import TeamMembersModal from '../components/Team/TeamMembersModal';
 import ShareNewTemplateModal from '../components/Team/ShareNewTemplateModal';
 import SharedTemplateCard from '../components/Team/SharedTemplateCard';
 import ReviewQueueModal from '../components/Team/ReviewQueueModal';
-import StatsCard from '../components/stats/StatsCard';
+import StatsCard from '../components/Stats/StatsCard';
 import ScheduleStats from '../components/Scheduler/ScheduleStats';
 import UpcomingEvents from '../components/Scheduler/UpcomingEvents';
 import TeamTemplates from '../components/Dashboard/TeamTemplates';
