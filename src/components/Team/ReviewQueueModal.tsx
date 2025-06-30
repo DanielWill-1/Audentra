@@ -22,7 +22,8 @@ import {
   UserCheck,
   Scale,
   GraduationCap,
-  Building2
+  Building2,
+  Trash2
 } from 'lucide-react';
 import { getReviewQueue, updateTemplateReview, TemplateReview } from '../../lib/templates';
 import { useAuth } from '../../contexts/AuthContext';
