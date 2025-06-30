@@ -25,7 +25,7 @@ function Features() {
             <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"> Professional Forms</span>
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Discover how VoiceForm Pro's advanced AI technology transforms complex form completion 
+            Discover how Audentra advanced AI technology transforms complex form completion 
             into natural, efficient conversations.
           </p>
         </div>

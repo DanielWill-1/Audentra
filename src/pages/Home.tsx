@@ -53,10 +53,7 @@ function Home() {
                   <CheckCircle className="w-5 h-5 text-green-500 mr-2" />
                   No Setup Required
                 </div>
-                <div className="flex items-center">
-                  <CheckCircle className="w-5 h-5 text-green-500 mr-2" />
-                  HIPAA Compliant
-                </div>
+             
                 <div className="flex items-center">
                   <CheckCircle className="w-5 h-5 text-green-500 mr-2" />
                   Blockchain Verified
@@ -116,10 +113,6 @@ function Home() {
               <div className="text-gray-300">Accuracy Rate</div>
             </div>
             <div>
-              <div className="text-4xl font-bold text-purple-400 mb-2">50K+</div>
-              <div className="text-gray-300">Forms Processed</div>
-            </div>
-            <div>
               <div className="text-4xl font-bold text-orange-400 mb-2">24/7</div>
               <div className="text-gray-300">AI Availability</div>
             </div>
@@ -132,7 +125,7 @@ function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Why Professionals Choose VoiceForm Pro
+              Why Professionals Choose Audentra
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Experience the future of form completion with AI-powered voice technology 
@@ -238,79 +231,7 @@ function Home() {
         </div>
       </section>
 
-      {/* Testimonials */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Trusted by Industry Leaders
-            </h2>
-          </div>
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-white p-8 rounded-2xl shadow-sm border">
-              <div className="flex items-center mb-4">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />
-                ))}
-              </div>
-              <p className="text-gray-700 mb-6 italic">
-                "VoiceForm Pro has revolutionized our patient intake process. What used to take 
-                20 minutes now takes 3 minutes, and our patients love it."
-              </p>
-              <div className="flex items-center">
-                <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold mr-4">
-                  SM
-                </div>
-                <div>
-                  <div className="font-semibold text-gray-900">Dr. Sarah Martinez</div>
-                  <div className="text-gray-600 text-sm">Chief Medical Officer, Metro Health</div>
-                </div>
-              </div>
-            </div>
-            <div className="bg-white p-8 rounded-2xl shadow-sm border">
-              <div className="flex items-center mb-4">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />
-                ))}
-              </div>
-              <p className="text-gray-700 mb-6 italic">
-                "Our field inspectors can now complete safety reports while walking the site. 
-                The accuracy is incredible and the blockchain verification gives us audit confidence."
-              </p>
-              <div className="flex items-center">
-                <div className="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold mr-4">
-                  MJ
-                </div>
-                <div>
-                  <div className="font-semibold text-gray-900">Mike Johnson</div>
-                  <div className="text-gray-600 text-sm">Safety Director, BuildCorp Industries</div>
-                </div>
-              </div>
-            </div>
-            <div className="bg-white p-8 rounded-2xl shadow-sm border">
-              <div className="flex items-center mb-4">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />
-                ))}
-              </div>
-              <p className="text-gray-700 mb-6 italic">
-                "Employee onboarding is now a conversation, not a chore. New hires complete 
-                all paperwork in their first 15 minutes, and they actually enjoy the process."
-              </p>
-              <div className="flex items-center">
-                <div className="w-12 h-12 bg-emerald-500 rounded-full flex items-center justify-center text-white font-bold mr-4">
-                  LC
-                </div>
-                <div>
-                  <div className="font-semibold text-gray-900">Lisa Chen</div>
-                  <div className="text-gray-600 text-sm">VP of HR, TechFlow Solutions</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
+      {/* Testimonials Section */}
       {/* Final CTA */}
       <section className="py-20 bg-gradient-to-r from-gray-900 to-black text-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">

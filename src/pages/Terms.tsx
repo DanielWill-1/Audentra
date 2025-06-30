@@ -6,7 +6,7 @@ function Terms() {
       <div className="max-w-3xl w-full p-6 bg-white rounded-lg shadow-md">
         <h1 className="text-2xl font-bold text-gray-900 mb-4">Terms of Service</h1>
         <p className="text-gray-700 mb-4">
-          Welcome to VoiceForm Pro. By using our service, you agree to the following terms and conditions.
+          Welcome to Audentra Pro. By using our service, you agree to the following terms and conditions.
         </p>
         <p className="text-gray-700 mb-4">
           This is a placeholder for the Terms of Service. Please replace this text with your actual terms.
