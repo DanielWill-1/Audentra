@@ -287,7 +287,7 @@ function Dashboard() {
             </Link>
           </div>
           
-          <div className="grid md:grid-cols-2 gap-6 mb-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
             <div className="bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl p-6 text-white cursor-pointer hover:shadow-lg transition-shadow" 
                  onClick={handleQuickVoiceFormRedirect}>
               <div className="flex items-center justify-between mb-4">
@@ -322,7 +322,27 @@ function Dashboard() {
               </p>
               <div className="flex items-center text-sm text-gray-500">
                 <Users className="w-4 h-4 mr-1" />
-                professional templates
+                Professional templates
+              </div>
+            </div>
+
+            <div
+              className="bg-white rounded-2xl p-6 border border-gray-200 hover:shadow-lg transition-shadow cursor-pointer"
+              onClick={() => navigate('/filledtemplates')}
+            >
+              <div className="flex items-center justify-between mb-4">
+                <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mr-3">
+                  <CheckCircle className="w-6 h-6 text-purple-600" />
+                </div>
+                <ArrowRight className="w-6 h-6 text-gray-400" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">View Filled Templates</h3>
+              <p className="text-gray-600 text-sm mb-4">
+                Access and manage all your previously filled templates in one place.
+              </p>
+              <div className="flex items-center text-sm text-gray-500">
+                <FileText className="w-4 h-4 mr-1" />
+                Organized and accessible
               </div>
             </div>
           </div>
