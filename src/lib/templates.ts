@@ -68,26 +68,40 @@ export interface ShareTemplateData {
 
 // Helper function to get user info from public users table
 const getUserInfo = async (userId: string) => {
-  const { data: userData, error: userError } = await supabase
-    .from('users')
-    .select('first_name, last_name, email')
-    .eq('id', userId)
-    .single();
+  try {
+    const { data: userData, error: userError } = await supabase
+      .from('users')
+      .select('first_name, last_name, email')
+      .eq('id', userId)
+      .maybeSingle();
 
-  if (userError || !userData) {
-    // Fallback to auth user if public users table doesn't have the data
+    if (userError) {
+      console.warn('Error fetching user data from users table:', userError);
+    }
+
+    if (!userData) {
+      // Fallback to auth user if public users table doesn't have the data
+      const { data: { user } } = await supabase.auth.getUser();
+      return {
+        name: user?.email || 'Unknown User',
+        email: user?.email || ''
+      };
+    }
+
+    const name = `${userData.first_name || ''} ${userData.last_name || ''}`.trim() || userData.email || 'Unknown User';
+    return {
+      name,
+      email: userData.email
+    };
+  } catch (error) {
+    console.error('Error in getUserInfo:', error);
+    // Fallback to auth user
     const { data: { user } } = await supabase.auth.getUser();
     return {
       name: user?.email || 'Unknown User',
       email: user?.email || ''
     };
   }
-
-  const name = `${userData.first_name || ''} ${userData.last_name || ''}`.trim() || userData.email || 'Unknown User';
-  return {
-    name,
-    email: userData.email
-  };
 };
 
 // Create a new template
@@ -417,27 +431,30 @@ export const addTemplateToReviewQueue = async (templateId: string, priority: 'lo
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { data: null, error: new Error('Not authenticated') };
 
-  const userInfo = await getUserInfo(user.id);
+  try {
+    const userInfo = await getUserInfo(user.id);
 
-  const review = {
-    template_id: templateId,
-    reviewer_id: user.id,
-    reviewer_name: userInfo.name,
-    reviewer_email: userInfo.email,
-    rating: 0, // Will be set when review is completed
-    comment: '',
-    status: 'pending' as const,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
-  };
+    const review = {
+      template_id: templateId,
+      reviewer_id: user.id,
+      reviewer_name: userInfo.name,
+      reviewer_email: userInfo.email,
+      rating: 1, // Set a default rating since it's required
+      comment: 'Added to review queue',
+      status: 'pending' as const
+    };
 
-  const { data, error } = await supabase
-    .from('template_reviews')
-    .insert([review])
-    .select()
-    .single();
+    const { data, error } = await supabase
+      .from('template_reviews')
+      .insert([review])
+      .select()
+      .single();
 
-  return { data, error };
+    return { data, error };
+  } catch (error) {
+    console.error('Error adding template to review queue:', error);
+    return { data: null, error };
+  }
 };
 
 // Get templates in review queue
@@ -477,24 +494,27 @@ export const addTemplateReview = async (reviewData: {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { data: null, error: new Error('Not authenticated') };
 
-  const userInfo = await getUserInfo(user.id);
+  try {
+    const userInfo = await getUserInfo(user.id);
 
-  const review = {
-    ...reviewData,
-    reviewer_id: user.id,
-    reviewer_name: userInfo.name,
-    reviewer_email: userInfo.email,
-    created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString()
-  };
+    const review = {
+      ...reviewData,
+      reviewer_id: user.id,
+      reviewer_name: userInfo.name,
+      reviewer_email: userInfo.email
+    };
 
-  const { data, error } = await supabase
-    .from('template_reviews')
-    .insert([review])
-    .select()
-    .single();
+    const { data, error } = await supabase
+      .from('template_reviews')
+      .insert([review])
+      .select()
+      .single();
 
-  return { data, error };
+    return { data, error };
+  } catch (error) {
+    console.error('Error adding template review:', error);
+    return { data: null, error };
+  }
 };
 
 // Update template review
