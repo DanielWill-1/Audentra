@@ -26,6 +26,7 @@ import HelpCenter from './pages/HelpCenter';
 import Documentation from './pages/Documentation';
 import Terms from './pages/Terms';
 import Privacy from './pages/Privacy';
+import ActivityLog from './pages/ActivityLog';
 
 function App() {
   return (
@@ -45,6 +46,7 @@ function App() {
             <Route path="/scheduler" element={<Scheduler />} />
             <Route path="/manage-schedules" element={<ManageSchedules />} />
             <Route path="/scheduler-settings" element={<SchedulerSettings />} />
+            <Route path="/activity" element={<ActivityLog />} />
             
             {/* Main website pages with header/footer */}
             <Route path="/" element={

@@ -426,9 +426,9 @@ function Dashboard() {
         <section>
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-bold text-gray-900">Recent Activity</h2>
-            <button className="text-blue-600 hover:text-blue-700 text-sm font-medium">
+            <Link to="/activity" className="text-blue-600 hover:text-blue-700 text-sm font-medium">
               View All Activity
-            </button>
+            </Link>
           </div>
           
           <div className="bg-white rounded-2xl border border-gray-200 p-6">

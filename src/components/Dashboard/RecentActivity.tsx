@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { 
   CheckCircle, 
   FileText, 
@@ -10,7 +11,8 @@ import {
   Download, 
   Archive, 
   Loader2, 
-  RefreshCw 
+  RefreshCw,
+  ArrowRight
 } from 'lucide-react';
 import { getRecentActivity, ActivityItem, formatTimeAgo } from '../../lib/activity';
 
@@ -192,9 +194,9 @@ const RecentActivity: React.FC<RecentActivityProps> = ({
       })}
       
       {showViewAll && activities.length >= limit && (
-        <button className="w-full text-center text-blue-600 hover:text-blue-700 text-sm font-medium py-2">
-          View All Activity
-        </button>
+        <Link to="/activity" className="block text-center text-blue-600 hover:text-blue-700 text-sm font-medium py-2">
+          View All Activity <ArrowRight className="w-4 h-4 inline ml-1" />
+        </Link>
       )}
     </div>
   );

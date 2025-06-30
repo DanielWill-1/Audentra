@@ -120,6 +120,36 @@ export const addActivityItem = async (item: Omit<ActivityItem, 'id' | 'time'>): 
   }
 };
 
+// Delete an activity item
+export const deleteActivityItem = async (id: string): Promise<void> => {
+  try {
+    // Get existing activity
+    const existingActivity = localStorage.getItem(STORAGE_KEY);
+    if (!existingActivity) return;
+    
+    const parsedActivity: ActivityItem[] = JSON.parse(existingActivity);
+    
+    // Filter out the item to delete
+    const updatedActivity = parsedActivity.filter(item => item.id !== id);
+    
+    // Save to localStorage
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedActivity));
+  } catch (error) {
+    console.error('Error deleting activity item:', error);
+    throw error;
+  }
+};
+
+// Clear all activity
+export const clearAllActivity = async (): Promise<void> => {
+  try {
+    localStorage.removeItem(STORAGE_KEY);
+  } catch (error) {
+    console.error('Error clearing activity:', error);
+    throw error;
+  }
+};
+
 // Format time ago for activity items
 export const formatTimeAgo = (dateString: string): string => {
   const date = new Date(dateString);
