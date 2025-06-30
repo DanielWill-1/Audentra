@@ -117,7 +117,7 @@ function Dashboard() {
                 <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
                   <Mic className="w-6 h-6 text-white" />
                 </div>
-                <span className="text-2xl font-bold text-gray-900">VoiceForm Pro</span>
+                <span className="text-2xl font-bold text-gray-900">Audentra</span>
               </Link>
             </div>
             <div className="flex items-center space-x-4">

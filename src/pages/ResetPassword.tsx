@@ -106,7 +106,7 @@ function ResetPassword() {
             <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform">
               <Mic className="w-7 h-7 text-white" />
             </div>
-            <span className="text-2xl font-bold text-gray-900">VoiceForm Pro</span>
+            <span className="text-2xl font-bold text-gray-900">Audentra</span>
           </Link>
           
           <h1 className="text-3xl font-bold text-gray-900 mb-3">
