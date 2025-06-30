@@ -10,6 +10,10 @@ import { getUserTemplates, Template } from '../lib/templates';
 import { transcribeAudio, processWithGroq, synthesizeSpeech } from '../services/ai';
 import { supabase } from '../lib/supabaseClient'; // adjust path as needed
 
+const API_BASE = "http://localhost:3001";
+
+console.log("API_BASE:", API_BASE);
+
 interface FormField {
   id: string;
   type: 'text' | 'email' | 'number' | 'date' | 'textarea' | 'select' | 'radio' | 'checkbox';
@@ -196,7 +200,7 @@ function AIVoiceAutoFill() {
 
   const transcribeAndProcess = async () => {
     if (!audioBlob) return;
-    
+
     setIsTranscribing(true);
     setError(null);
 
@@ -204,15 +208,22 @@ function AIVoiceAutoFill() {
       // Convert blob to base64
       const reader = new FileReader();
       reader.readAsDataURL(audioBlob);
-      
+
       reader.onloadend = async () => {
         try {
-          const base64Audio = reader.result?.toString() || '';
-          
+          const base64Audio = reader.result?.toString() || "";
+
+          // Validate API URL
+          const apiUrl = `${API_BASE}/api/transcribe`;
+          if (!apiUrl) {
+            throw new Error("Invalid API URL");
+          }
+
           // Transcribe audio
           const transcribedText = await transcribeAudio({
             audio: base64Audio,
-            mimeType: audioBlob.type
+            mimeType: audioBlob.type,
+            apiUrl, // Use validated API URL
           });
 
           // Add user message
@@ -265,7 +276,6 @@ function AIVoiceAutoFill() {
         setError('Failed to read audio file.');
         setIsTranscribing(false);
       };
-
     } catch (err: any) {
       setError('Failed to process audio. Please try again.');
       console.error('Transcription error:', err);

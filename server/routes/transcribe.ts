@@ -1,13 +1,18 @@
 // api/transcribe.js
+const path = require('path');
 const { SpeechClient } = require('@google-cloud/speech');
 const express = require('express');
+const cors = require('cors'); // Import CORS middleware
 const router = express.Router();
 
-// Initialize Google Cloud Speech client
+// Initialize Google Cloud Speech client with correct service account path
 const speechClient = new SpeechClient({
-  keyFilename: process.env.GOOGLE_APPLICATION_CREDENTIALS, // Path to service account key
+  keyFilename: path.resolve(__dirname, '../../service-account.json'), // Adjust path to service account
   projectId: process.env.GOOGLE_CLOUD_PROJECT_ID,
 });
+
+// Enable CORS globally
+router.use(cors());
 
 // Helper function to get audio encoding
 function getGoogleAudioEncoding(mimeType) {
@@ -69,6 +74,10 @@ function validateAudioInput(audio, mimeType) {
     };
   }
 
+  console.log("Validating audio input...");
+  console.log("MIME type:", mimeType);
+  console.log("Base64 Audio (first 100 chars):", audio?.slice(0, 100));
+
   return { isValid: true };
 }
 
@@ -93,12 +102,14 @@ async function transcribeAudio(req, res) {
 
     const { audio, mimeType } = req.body;
 
+    console.log("Incoming MIME type:", mimeType);
+    console.log("Base64 Audio (first 100 chars):", audio?.slice(0, 100));
+
     // Validate input
     const validation = validateAudioInput(audio, mimeType);
     if (!validation.isValid) {
-      return res.status(400).json({ 
-        error: validation.error 
-      });
+      console.error("Validation error:", validation.error);
+      return res.status(400).json({ error: validation.error });
     }
 
     // Check if Google Cloud credentials are available
@@ -128,7 +139,7 @@ async function transcribeAudio(req, res) {
       },
     };
 
-    console.log('Processing transcription request:', {
+    console.log("Google Cloud Speech request:", {
       encoding: request.config.encoding,
       sampleRate: request.config.sampleRateHertz,
       audioSize: base64Audio.length,
@@ -155,9 +166,9 @@ async function transcribeAudio(req, res) {
       });
     }
 
-    console.log('Transcription successful:', {
+    console.log("Transcription successful:", {
       originalLength: transcription.length,
-      confidence: response.results[0]?.alternatives?.[0]?.confidence || 'N/A'
+      confidence: response.results[0]?.alternatives?.[0]?.confidence || 'N/A',
     });
 
     res.json({ 
