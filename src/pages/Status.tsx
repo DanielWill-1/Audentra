@@ -138,13 +138,11 @@ function Status() {
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-5xl font-bold text-gray-900 mb-6">
+          <h1 className="text-6xl font-extrabold text-gray-900 mb-8">
             System
             <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"> Status</span>
           </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-            Real-time status and performance metrics for all VoiceForm Pro services
-          </p>
+          <p className="text-3xl text-gray-500 mb-12">(Sample Page)</p>
           <div className="inline-flex items-center bg-green-100 text-green-800 px-4 py-2 rounded-full text-sm font-medium">
             <CheckCircle className="w-4 h-4 mr-2" />
             All Systems Operational
