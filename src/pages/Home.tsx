@@ -132,7 +132,7 @@ function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Why Professionals Choose Audentra
+              Why Professionals Choose VoiceForm Pro
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Experience the future of form completion with AI-powered voice technology 
@@ -254,7 +254,7 @@ function Home() {
                 ))}
               </div>
               <p className="text-gray-700 mb-6 italic">
-                "Audentra has revolutionized our patient intake process. What used to take 
+                "VoiceForm Pro has revolutionized our patient intake process. What used to take 
                 20 minutes now takes 3 minutes, and our patients love it."
               </p>
               <div className="flex items-center">

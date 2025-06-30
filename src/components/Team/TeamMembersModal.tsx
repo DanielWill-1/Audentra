@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import { 
   X, 
   Users, 
@@ -15,9 +15,6 @@ import {
   Eye,
   AlertTriangle
 } from 'lucide-react';
-import { useAuth } from '../../contexts/AuthContext';
-import { supabase } from '../../lib/supabase';
-import { addActivityItem } from '../../lib/activity';
 
 interface TeamMembersModalProps {
   isOpen: boolean;
@@ -29,7 +26,7 @@ interface TeamMember {
   id: string;
   name: string;
   email: string;
-  role: 'admin' | 'user';
+  role: 'admin' | 'editor' | 'viewer';
   status: 'active' | 'pending' | 'inactive';
   joinedAt: string;
   lastActive?: string;
@@ -39,7 +36,7 @@ interface TeamMember {
 interface PendingInvite {
   id: string;
   email: string;
-  role: 'admin' | 'user';
+  role: 'admin' | 'editor' | 'viewer';
   sentAt: string;
   sentBy: string;
   status: 'pending' | 'expired';
@@ -47,145 +44,86 @@ interface PendingInvite {
 
 const ROLE_COLORS = {
   admin: 'bg-red-100 text-red-700',
-  user: 'bg-blue-100 text-blue-700'
+  editor: 'bg-blue-100 text-blue-700',
+  viewer: 'bg-green-100 text-green-700'
 };
 
 const ROLE_ICONS = {
   admin: Crown,
-  user: Eye
-};
-
-const STORAGE_KEYS = {
-  TEAM_MEMBERS: 'teamMembers',
-  PENDING_INVITES: 'pendingInvites'
+  editor: Edit,
+  viewer: Eye
 };
 
 export default function TeamMembersModal({ isOpen, onClose, onInvite }: TeamMembersModalProps) {
-  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<'members' | 'invites'>('members');
   const [showRoleModal, setShowRoleModal] = useState<string | null>(null);
-  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
-  const [pendingInvites, setPendingInvites] = useState<PendingInvite[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
-  const membersContainerRef = useRef<HTMLDivElement>(null);
-  const invitesContainerRef = useRef<HTMLDivElement>(null);
 
-  // Load team data when modal opens
-  useEffect(() => {
-    if (isOpen && user) {
-      loadTeamData();
+  // Mock data
+  const teamMembers: TeamMember[] = [
+    {
+      id: '1',
+      name: 'Dr. Sarah Martinez',
+      email: 'sarah@voiceformpro.com',
+      role: 'admin',
+      status: 'active',
+      joinedAt: '2024-01-15',
+      lastActive: '2 minutes ago'
+    },
+    {
+      id: '2',
+      name: 'Alex Chen',
+      email: 'alex@voiceformpro.com',
+      role: 'editor',
+      status: 'active',
+      joinedAt: '2024-01-16',
+      lastActive: '1 hour ago'
+    },
+    {
+      id: '3',
+      name: 'Maria Johnson',
+      email: 'maria@voiceformpro.com',
+      role: 'editor',
+      status: 'active',
+      joinedAt: '2024-01-18',
+      lastActive: '3 hours ago'
+    },
+    {
+      id: '4',
+      name: 'David Wilson',
+      email: 'david@voiceformpro.com',
+      role: 'viewer',
+      status: 'inactive',
+      joinedAt: '2024-01-10',
+      lastActive: '2 days ago'
     }
-  }, [isOpen, user]);
+  ];
 
-  // Add scroll wheel event handlers
-  useEffect(() => {
-    const handleWheel = (e: WheelEvent) => {
-      if (membersContainerRef.current && activeTab === 'members') {
-        membersContainerRef.current.scrollTop += e.deltaY;
-        e.preventDefault();
-      }
-      if (invitesContainerRef.current && activeTab === 'invites') {
-        invitesContainerRef.current.scrollTop += e.deltaY;
-        e.preventDefault();
-      }
-    };
-
-    const membersContainer = membersContainerRef.current;
-    const invitesContainer = invitesContainerRef.current;
-
-    if (membersContainer) {
-      membersContainer.addEventListener('wheel', handleWheel, { passive: false });
+  const pendingInvites: PendingInvite[] = [
+    {
+      id: '1',
+      email: 'john@company.com',
+      role: 'editor',
+      sentAt: '2024-01-20',
+      sentBy: 'Dr. Sarah Martinez',
+      status: 'pending'
+    },
+    {
+      id: '2',
+      email: 'lisa@company.com',
+      role: 'viewer',
+      sentAt: '2024-01-19',
+      sentBy: 'Alex Chen',
+      status: 'pending'
+    },
+    {
+      id: '3',
+      email: 'expired@company.com',
+      role: 'editor',
+      sentAt: '2024-01-10',
+      sentBy: 'Dr. Sarah Martinez',
+      status: 'expired'
     }
-    if (invitesContainer) {
-      invitesContainer.addEventListener('wheel', handleWheel, { passive: false });
-    }
-
-    return () => {
-      if (membersContainer) {
-        membersContainer.removeEventListener('wheel', handleWheel);
-      }
-      if (invitesContainer) {
-        invitesContainer.removeEventListener('wheel', handleWheel);
-      }
-    };
-  }, [activeTab]);
-
-  const loadTeamData = async () => {
-    if (!user) return;
-    
-    setLoading(true);
-    setError(null);
-    
-    try {
-      // Get current user details
-      const firstName = user.user_metadata?.first_name || '';
-      const lastName = user.user_metadata?.last_name || '';
-      const userName = `${firstName} ${lastName}`.trim() || user.email?.split('@')[0] || 'User';
-      
-      // Load team members from localStorage
-      const storedMembers = localStorage.getItem(STORAGE_KEYS.TEAM_MEMBERS);
-      let members: TeamMember[] = [];
-      
-      if (storedMembers) {
-        members = JSON.parse(storedMembers);
-      } else {
-        // Create current user as admin
-        const currentUserMember: TeamMember = {
-          id: user.id,
-          name: userName,
-          email: user.email || 'user@example.com',
-          role: 'admin',
-          status: 'active',
-          joinedAt: new Date().toISOString(),
-          lastActive: '2 minutes ago'
-        };
-        
-        // Add example team members
-        const otherMembers: TeamMember[] = [
-          {
-            id: '2',
-            name: 'Alex Chen',
-            email: 'alex@audentra.com',
-            role: 'user',
-            status: 'active',
-            joinedAt: '2024-01-16',
-            lastActive: '1 hour ago'
-          },
-          {
-            id: '3',
-            name: 'Maria Johnson',
-            email: 'maria@audentra.com',
-            role: 'user',
-            status: 'active',
-            joinedAt: '2024-01-18',
-            lastActive: '3 hours ago'
-          }
-        ];
-        
-        members = [currentUserMember, ...otherMembers];
-        
-        // Save to localStorage
-        localStorage.setItem(STORAGE_KEYS.TEAM_MEMBERS, JSON.stringify(members));
-      }
-      
-      setTeamMembers(members);
-      
-      // Load pending invites from localStorage
-      const storedInvites = localStorage.getItem(STORAGE_KEYS.PENDING_INVITES);
-      if (storedInvites) {
-        setPendingInvites(JSON.parse(storedInvites));
-      } else {
-        setPendingInvites([]);
-      }
-    } catch (err) {
-      console.error('Failed to load team data:', err);
-      setError('Failed to load team data. Please try again.');
-    } finally {
-      setLoading(false);
-    }
-  };
+  ];
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -201,160 +139,25 @@ export default function TeamMembersModal({ isOpen, onClose, onInvite }: TeamMemb
     return name.split(' ').map(n => n[0]).join('').toUpperCase();
   };
 
-  const handleResendInvite = async (inviteId: string) => {
-    try {
-      // Update the invite's sent date
-      setPendingInvites(prevInvites => {
-        const updatedInvites = prevInvites.map(invite => 
-          invite.id === inviteId 
-            ? { ...invite, sentAt: new Date().toISOString() } 
-            : invite
-        );
-        
-        // Store in localStorage for persistence
-        localStorage.setItem(STORAGE_KEYS.PENDING_INVITES, JSON.stringify(updatedInvites));
-        
-        return updatedInvites;
-      });
-      
-      setSuccess('Invitation resent successfully');
-      setTimeout(() => setSuccess(null), 3000);
-      
-      // Add activity
-      await addActivityItem({
-        type: 'team_invite',
-        title: 'Invitation resent',
-        description: 'Team invitation resent',
-        user: 'You'
-      });
-    } catch (error) {
-      console.error('Failed to resend invite:', error);
-      setError('Failed to resend invitation');
-      setTimeout(() => setError(null), 3000);
-    }
+  const handleResendInvite = (inviteId: string) => {
+    console.log('Resending invite:', inviteId);
+    // Implement resend logic
   };
 
-  const handleCancelInvite = async (inviteId: string) => {
-    try {
-      // Remove the invite
-      setPendingInvites(prevInvites => {
-        const updatedInvites = prevInvites.filter(invite => invite.id !== inviteId);
-        
-        // Store in localStorage for persistence
-        localStorage.setItem(STORAGE_KEYS.PENDING_INVITES, JSON.stringify(updatedInvites));
-        
-        return updatedInvites;
-      });
-      
-      setSuccess('Invitation cancelled successfully');
-      setTimeout(() => setSuccess(null), 3000);
-      
-      // Add activity
-      await addActivityItem({
-        type: 'team_invite',
-        title: 'Invitation cancelled',
-        description: 'Team invitation cancelled',
-        user: 'You'
-      });
-    } catch (error) {
-      console.error('Failed to cancel invite:', error);
-      setError('Failed to cancel invitation');
-      setTimeout(() => setError(null), 3000);
-    }
+  const handleCancelInvite = (inviteId: string) => {
+    console.log('Canceling invite:', inviteId);
+    // Implement cancel logic
   };
 
-  const handleRemoveMember = async (memberId: string) => {
-    try {
-      // Don't allow removing the current user (admin)
-      if (memberId === user?.id) {
-        setError("You cannot remove yourself from the team.");
-        setTimeout(() => setError(null), 3000);
-        return;
-      }
-      
-      // Get member info for activity log
-      const memberToRemove = teamMembers.find(m => m.id === memberId);
-      
-      // Remove the member
-      setTeamMembers(prevMembers => {
-        const updatedMembers = prevMembers.filter(member => member.id !== memberId);
-        
-        // Store in localStorage for persistence
-        localStorage.setItem(STORAGE_KEYS.TEAM_MEMBERS, JSON.stringify(updatedMembers));
-        
-        return updatedMembers;
-      });
-      
-      setSuccess('Team member removed successfully');
-      setTimeout(() => setSuccess(null), 3000);
-      
-      // Add activity
-      if (memberToRemove) {
-        await addActivityItem({
-          type: 'team_invite',
-          title: `${memberToRemove.name} removed from team`,
-          description: 'Team member removed',
-          user: 'You'
-        });
-      }
-    } catch (error) {
-      console.error('Failed to remove member:', error);
-      setError('Failed to remove team member');
-      setTimeout(() => setError(null), 3000);
-    }
+  const handleRemoveMember = (memberId: string) => {
+    console.log('Removing member:', memberId);
+    // Implement remove logic
   };
 
-  const handleChangeRole = async (memberId: string, newRole: string) => {
-    try {
-      // Don't allow changing the current user's role
-      if (memberId === user?.id) {
-        setError("You cannot change your own role.");
-        setTimeout(() => setError(null), 3000);
-        return;
-      }
-      
-      // Get member info for activity log
-      const memberToUpdate = teamMembers.find(m => m.id === memberId);
-      
-      // Update the member's role
-      setTeamMembers(prevMembers => {
-        const updatedMembers = prevMembers.map(member => 
-          member.id === memberId 
-            ? { ...member, role: newRole as 'admin' | 'user' } 
-            : member
-        );
-        
-        // Store in localStorage for persistence
-        localStorage.setItem(STORAGE_KEYS.TEAM_MEMBERS, JSON.stringify(updatedMembers));
-        
-        return updatedMembers;
-      });
-      
-      setShowRoleModal(null);
-      setSuccess('Team member role updated successfully');
-      setTimeout(() => setSuccess(null), 3000);
-      
-      // Add activity
-      if (memberToUpdate) {
-        await addActivityItem({
-          type: 'team_invite',
-          title: `${memberToUpdate.name}'s role changed to ${newRole}`,
-          description: 'Team member role updated',
-          user: 'You'
-        });
-      }
-    } catch (error) {
-      console.error('Failed to change role:', error);
-      setError('Failed to update team member role');
-      setTimeout(() => setError(null), 3000);
-    }
-  };
-
-  const handleClose = () => {
+  const handleChangeRole = (memberId: string, newRole: string) => {
+    console.log('Changing role:', memberId, newRole);
+    // Implement role change logic
     setShowRoleModal(null);
-    setError(null);
-    setSuccess(null);
-    onClose();
   };
 
   if (!isOpen) return null;
@@ -382,7 +185,7 @@ export default function TeamMembersModal({ isOpen, onClose, onInvite }: TeamMemb
                 <UserPlus className="w-4 h-4 mr-2" />
                 Invite Member
               </button>
-              <button onClick={handleClose} className="text-gray-400 hover:text-gray-600">
+              <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
                 <X className="w-6 h-6" />
               </button>
             </div>
@@ -415,206 +218,174 @@ export default function TeamMembersModal({ isOpen, onClose, onInvite }: TeamMemb
 
         {/* Content */}
         <div className="p-6">
-          {/* Error Message */}
-          {error && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-center mb-6">
-              <AlertTriangle className="w-5 h-5 text-red-600 mr-3" />
-              <span className="text-red-800 text-sm">{error}</span>
-            </div>
-          )}
-          
-          {/* Success Message */}
-          {success && (
-            <div className="bg-green-50 border border-green-200 rounded-lg p-4 flex items-center mb-6">
-              <CheckCircle className="w-5 h-5 text-green-600 mr-3" />
-              <span className="text-green-800 text-sm">{success}</span>
-            </div>
-          )}
+          {activeTab === 'members' ? (
+            <div className="space-y-4">
+              {teamMembers.map((member) => {
+                const RoleIcon = ROLE_ICONS[member.role];
+                return (
+                  <div key={member.id} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-4">
+                        <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-semibold">
+                          {getInitials(member.name)}
+                        </div>
+                        <div>
+                          <div className="flex items-center space-x-3">
+                            <h3 className="text-lg font-semibold text-gray-900">{member.name}</h3>
+                            <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${ROLE_COLORS[member.role]}`}>
+                              <RoleIcon className="w-3 h-3 mr-1" />
+                              {member.role.charAt(0).toUpperCase() + member.role.slice(1)}
+                            </span>
+                            {getStatusIcon(member.status)}
+                          </div>
+                          <p className="text-gray-600">{member.email}</p>
+                          <div className="flex items-center space-x-4 text-sm text-gray-500 mt-1">
+                            <span>Joined {new Date(member.joinedAt).toLocaleDateString()}</span>
+                            {member.lastActive && (
+                              <span>Last active {member.lastActive}</span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center space-x-2">
+                        {member.role !== 'admin' && (
+                          <>
+                            <button
+                              onClick={() => setShowRoleModal(member.id)}
+                              className="p-2 text-gray-400 hover:text-blue-600 transition-colors"
+                              title="Change Role"
+                            >
+                              <Shield className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={() => handleRemoveMember(member.id)}
+                              className="p-2 text-gray-400 hover:text-red-600 transition-colors"
+                              title="Remove Member"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </>
+                        )}
+                        <button className="p-2 text-gray-400 hover:text-gray-600 transition-colors">
+                          <MoreHorizontal className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
 
-          {/* Loading State */}
-          {loading ? (
-            <div className="flex items-center justify-center py-12">
-              <div className="w-8 h-8 border-4 border-purple-600 border-t-transparent rounded-full animate-spin"></div>
-              <span className="ml-2 text-gray-600">Loading team data...</span>
+                    {/* Role Change Modal */}
+                    {showRoleModal === member.id && (
+                      <div className="mt-4 p-4 bg-white rounded-lg border border-gray-200">
+                        <h4 className="text-sm font-medium text-gray-900 mb-3">Change Role for {member.name}</h4>
+                        <div className="space-y-2">
+                          {Object.entries(ROLE_COLORS).map(([role, colorClass]) => {
+                            const RoleIcon = ROLE_ICONS[role as keyof typeof ROLE_ICONS];
+                            return (
+                              <button
+                                key={role}
+                                onClick={() => handleChangeRole(member.id, role)}
+                                className={`w-full text-left p-3 rounded-lg border transition-colors ${
+                                  member.role === role
+                                    ? 'border-blue-500 bg-blue-50'
+                                    : 'border-gray-200 hover:border-gray-300'
+                                }`}
+                              >
+                                <div className="flex items-center space-x-3">
+                                  <RoleIcon className="w-4 h-4" />
+                                  <span className="font-medium capitalize">{role}</span>
+                                  {member.role === role && (
+                                    <span className="text-xs text-blue-600">(Current)</span>
+                                  )}
+                                </div>
+                              </button>
+                            );
+                          })}
+                        </div>
+                        <div className="flex justify-end space-x-2 mt-4">
+                          <button
+                            onClick={() => setShowRoleModal(null)}
+                            className="px-3 py-1 text-sm text-gray-600 hover:text-gray-800"
+                          >
+                            Cancel
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           ) : (
-            <>
-              {activeTab === 'members' ? (
-                <div 
-                  className="space-y-4 max-h-[400px] overflow-y-auto pr-2" 
-                  ref={membersContainerRef}
-                >
-                  {teamMembers.map((member) => {
-                    const RoleIcon = ROLE_ICONS[member.role];
-                    return (
-                      <div key={member.id} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center space-x-4">
-                            <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-semibold">
-                              {getInitials(member.name)}
-                            </div>
-                            <div>
-                              <div className="flex items-center space-x-3">
-                                <h3 className="text-lg font-semibold text-gray-900">{member.name}</h3>
-                                <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${ROLE_COLORS[member.role]}`}>
-                                  <RoleIcon className="w-3 h-3 mr-1" />
-                                  {member.role.charAt(0).toUpperCase() + member.role.slice(1)}
-                                </span>
-                                {getStatusIcon(member.status)}
-                              </div>
-                              <p className="text-gray-600">{member.email}</p>
-                              <div className="flex items-center space-x-4 text-sm text-gray-500 mt-1">
-                                <span>Joined {new Date(member.joinedAt).toLocaleDateString()}</span>
-                                {member.lastActive && (
-                                  <span>Last active {member.lastActive}</span>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                          
-                          <div className="flex items-center space-x-2">
-                            {member.id !== user?.id && (
-                              <>
-                                <button
-                                  onClick={() => setShowRoleModal(member.id)}
-                                  className="p-2 text-gray-400 hover:text-blue-600 transition-colors"
-                                  title="Change Role"
-                                >
-                                  <Shield className="w-4 h-4" />
-                                </button>
-                                <button
-                                  onClick={() => handleRemoveMember(member.id)}
-                                  className="p-2 text-gray-400 hover:text-red-600 transition-colors"
-                                  title="Remove Member"
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                </button>
-                              </>
-                            )}
-                            <button className="p-2 text-gray-400 hover:text-gray-600 transition-colors">
-                              <MoreHorizontal className="w-4 h-4" />
-                            </button>
-                          </div>
-                        </div>
-
-                        {/* Role Change Modal */}
-                        {showRoleModal === member.id && (
-                          <div className="mt-4 p-4 bg-white rounded-lg border border-gray-200">
-                            <h4 className="text-sm font-medium text-gray-900 mb-3">Change Role for {member.name}</h4>
-                            <div className="space-y-2">
-                              {Object.entries(ROLE_COLORS).map(([role, colorClass]) => {
-                                const RoleIcon = ROLE_ICONS[role as keyof typeof ROLE_ICONS];
-                                return (
-                                  <button
-                                    key={role}
-                                    onClick={() => handleChangeRole(member.id, role)}
-                                    className={`w-full text-left p-3 rounded-lg border transition-colors ${
-                                      member.role === role
-                                        ? 'border-blue-500 bg-blue-50'
-                                        : 'border-gray-200 hover:border-gray-300'
-                                    }`}
-                                  >
-                                    <div className="flex items-center space-x-3">
-                                      <RoleIcon className="w-4 h-4" />
-                                      <span className="font-medium capitalize">{role}</span>
-                                      {member.role === role && (
-                                        <span className="text-xs text-blue-600">(Current)</span>
-                                      )}
-                                    </div>
-                                  </button>
-                                );
-                              })}
-                            </div>
-                            <div className="flex justify-end space-x-2 mt-4">
-                              <button
-                                onClick={() => setShowRoleModal(null)}
-                                className="px-3 py-1 text-sm text-gray-600 hover:text-gray-800"
-                              >
-                                Cancel
-                              </button>
-                            </div>
-                          </div>
-                        )}
+            <div className="space-y-4">
+              {pendingInvites.map((invite) => (
+                <div key={invite.id} className={`rounded-lg p-4 border ${
+                  invite.status === 'expired' 
+                    ? 'bg-red-50 border-red-200' 
+                    : 'bg-yellow-50 border-yellow-200'
+                }`}>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-4">
+                      <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
+                        <Mail className="w-5 h-5 text-gray-500" />
                       </div>
-                    );
-                  })}
-                </div>
-              ) : (
-                <div 
-                  className="space-y-4 max-h-[400px] overflow-y-auto pr-2" 
-                  ref={invitesContainerRef}
-                >
-                  {pendingInvites.length > 0 ? (
-                    pendingInvites.map((invite) => (
-                      <div key={invite.id} className={`rounded-lg p-4 border ${
-                        invite.status === 'expired' 
-                          ? 'bg-red-50 border-red-200' 
-                          : 'bg-yellow-50 border-yellow-200'
-                      }`}>
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center space-x-4">
-                            <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
-                              <Mail className="w-5 h-5 text-gray-500" />
-                            </div>
-                            <div>
-                              <div className="flex items-center space-x-3">
-                                <h3 className="text-lg font-semibold text-gray-900">{invite.email}</h3>
-                                <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${ROLE_COLORS[invite.role]}`}>
-                                  {invite.role.charAt(0).toUpperCase() + invite.role.slice(1)}
-                                </span>
-                                {getStatusIcon(invite.status)}
-                              </div>
-                              <div className="flex items-center space-x-4 text-sm text-gray-500 mt-1">
-                                <span>Sent {new Date(invite.sentAt).toLocaleDateString()}</span>
-                                <span>by {invite.sentBy}</span>
-                              </div>
-                            </div>
-                          </div>
-                          
-                          <div className="flex items-center space-x-2">
-                            {invite.status === 'pending' ? (
-                              <>
-                                <button
-                                  onClick={() => handleResendInvite(invite.id)}
-                                  className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
-                                >
-                                  Resend
-                                </button>
-                                <button
-                                  onClick={() => handleCancelInvite(invite.id)}
-                                  className="px-3 py-1 text-sm text-red-600 border border-red-300 rounded hover:bg-red-50 transition-colors"
-                                >
-                                  Cancel
-                                </button>
-                              </>
-                            ) : (
-                              <button
-                                onClick={() => handleCancelInvite(invite.id)}
-                                className="px-3 py-1 text-sm text-gray-600 border border-gray-300 rounded hover:bg-gray-50 transition-colors"
-                              >
-                                Remove
-                              </button>
-                            )}
-                          </div>
+                      <div>
+                        <div className="flex items-center space-x-3">
+                          <h3 className="text-lg font-semibold text-gray-900">{invite.email}</h3>
+                          <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${ROLE_COLORS[invite.role]}`}>
+                            {invite.role.charAt(0).toUpperCase() + invite.role.slice(1)}
+                          </span>
+                          {getStatusIcon(invite.status)}
+                        </div>
+                        <div className="flex items-center space-x-4 text-sm text-gray-500 mt-1">
+                          <span>Sent {new Date(invite.sentAt).toLocaleDateString()}</span>
+                          <span>by {invite.sentBy}</span>
                         </div>
                       </div>
-                    ))
-                  ) : (
-                    <div className="text-center py-8">
-                      <Mail className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                      <h3 className="text-lg font-medium text-gray-900 mb-2">No pending invitations</h3>
-                      <p className="text-gray-600 mb-4">All team members have joined your workspace</p>
-                      <button
-                        onClick={onInvite}
-                        className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors"
-                      >
-                        Invite New Member
-                      </button>
                     </div>
-                  )}
+                    
+                    <div className="flex items-center space-x-2">
+                      {invite.status === 'pending' ? (
+                        <>
+                          <button
+                            onClick={() => handleResendInvite(invite.id)}
+                            className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+                          >
+                            Resend
+                          </button>
+                          <button
+                            onClick={() => handleCancelInvite(invite.id)}
+                            className="px-3 py-1 text-sm text-red-600 border border-red-300 rounded hover:bg-red-50 transition-colors"
+                          >
+                            Cancel
+                          </button>
+                        </>
+                      ) : (
+                        <button
+                          onClick={() => handleCancelInvite(invite.id)}
+                          className="px-3 py-1 text-sm text-gray-600 border border-gray-300 rounded hover:bg-gray-50 transition-colors"
+                        >
+                          Remove
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+              
+              {pendingInvites.length === 0 && (
+                <div className="text-center py-8">
+                  <Mail className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">No pending invitations</h3>
+                  <p className="text-gray-600 mb-4">All team members have joined your workspace</p>
+                  <button
+                    onClick={onInvite}
+                    className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors"
+                  >
+                    Invite New Member
+                  </button>
                 </div>
               )}
-            </>
+            </div>
           )}
         </div>
 
@@ -627,7 +398,7 @@ export default function TeamMembersModal({ isOpen, onClose, onInvite }: TeamMemb
             }
           </div>
           <button
-            onClick={handleClose}
+            onClick={onClose}
             className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
           >
             Close

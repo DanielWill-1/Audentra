@@ -102,7 +102,7 @@ function Login() {
             <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform">
               <Mic className="w-7 h-7 text-white" />
             </div>
-            <span className="text-2xl font-bold text-gray-900">Audentra</span>
+            <span className="text-2xl font-bold text-gray-900">VoiceForm Pro</span>
           </Link>
           
           <h1 className="text-3xl font-bold text-gray-900 mb-3">
@@ -267,7 +267,7 @@ function Login() {
           {/* Sign Up Link */}
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
-              New to Audentra?{' '}
+              New to VoiceForm Pro?{' '}
               <Link to="/signup" className="font-medium text-blue-600 hover:text-blue-500 transition-colors">
                 Create your account
               </Link>

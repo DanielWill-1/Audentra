@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   ArrowLeft,
@@ -93,91 +93,63 @@ const COLOR_SCHEMES = [
   { id: 'indigo', name: 'Indigo', color: 'bg-indigo-500' }
 ];
 
-// Storage key for scheduler settings
-const STORAGE_KEY = 'schedulerSettings';
-
 function SchedulerSettings() {
-  const [settings, setSettings] = useState<SchedulerSettings>(() => {
-    // Try to load settings from localStorage
-    const savedSettings = localStorage.getItem(STORAGE_KEY);
-    if (savedSettings) {
-      return JSON.parse(savedSettings);
-    }
+  const [settings, setSettings] = useState<SchedulerSettings>({
+    // General Settings
+    defaultDuration: 60,
+    defaultReminderMinutes: 15,
+    workingHours: {
+      start: '09:00',
+      end: '17:00'
+    },
+    workingDays: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'],
+    timezone: 'America/New_York',
     
-    // Default settings
-    return {
-      // General Settings
-      defaultDuration: 60,
-      defaultReminderMinutes: 15,
-      workingHours: {
-        start: '09:00',
-        end: '17:00'
-      },
-      workingDays: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'],
-      timezone: 'America/New_York',
-      
-      // Notification Settings
-      emailNotifications: true,
-      pushNotifications: true,
-      reminderNotifications: true,
-      dailyDigest: false,
-      weeklyReport: true,
-      
-      // Calendar Settings
-      defaultView: 'month',
-      weekStartsOn: 1, // Monday
-      showWeekends: true,
-      showDeclinedEvents: false,
-      
-      // Privacy Settings
-      shareCalendar: false,
-      allowGuestInvites: true,
-      showBusyTime: true,
-      
-      // Appearance Settings
-      theme: 'light',
-      colorScheme: 'blue',
-      compactView: false,
-      
-      // Integration Settings
-      googleCalendarSync: false,
-      outlookSync: false,
-      slackNotifications: false,
-      teamsNotifications: false
-    };
+    // Notification Settings
+    emailNotifications: true,
+    pushNotifications: true,
+    reminderNotifications: true,
+    dailyDigest: false,
+    weeklyReport: true,
+    
+    // Calendar Settings
+    defaultView: 'month',
+    weekStartsOn: 1, // Monday
+    showWeekends: true,
+    showDeclinedEvents: false,
+    
+    // Privacy Settings
+    shareCalendar: false,
+    allowGuestInvites: true,
+    showBusyTime: true,
+    
+    // Appearance Settings
+    theme: 'light',
+    colorScheme: 'blue',
+    compactView: false,
+    
+    // Integration Settings
+    googleCalendarSync: false,
+    outlookSync: false,
+    slackNotifications: false,
+    teamsNotifications: false
   });
 
   const [activeTab, setActiveTab] = useState('general');
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  // Save settings to localStorage whenever they change
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
-  }, [settings]);
 
   const handleSave = async () => {
     setSaving(true);
-    setError(null);
     
-    try {
-      // Save settings to localStorage
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      setSaving(false);
-      setSaved(true);
-      
-      // Hide success message after 3 seconds
-      setTimeout(() => setSaved(false), 3000);
-    } catch (err) {
-      console.error('Failed to save settings:', err);
-      setError('Failed to save settings. Please try again.');
-      setSaving(false);
-    }
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    setSaving(false);
+    setSaved(true);
+    
+    // Hide success message after 3 seconds
+    setTimeout(() => setSaved(false), 3000);
   };
 
   const handleReset = () => {
@@ -239,12 +211,6 @@ function SchedulerSettings() {
               </div>
             </div>
             <div className="flex items-center space-x-4">
-              {error && (
-                <div className="flex items-center text-red-600">
-                  <AlertCircle className="w-5 h-5 mr-2" />
-                  <span className="text-sm font-medium">{error}</span>
-                </div>
-              )}
               {saved && (
                 <div className="flex items-center text-green-600">
                   <CheckCircle className="w-5 h-5 mr-2" />
