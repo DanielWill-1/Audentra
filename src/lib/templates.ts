@@ -66,6 +66,30 @@ export interface ShareTemplateData {
   message?: string;
 }
 
+// Helper function to get user info from public users table
+const getUserInfo = async (userId: string) => {
+  const { data: userData, error: userError } = await supabase
+    .from('users')
+    .select('first_name, last_name, email')
+    .eq('id', userId)
+    .single();
+
+  if (userError || !userData) {
+    // Fallback to auth user if public users table doesn't have the data
+    const { data: { user } } = await supabase.auth.getUser();
+    return {
+      name: user?.email || 'Unknown User',
+      email: user?.email || ''
+    };
+  }
+
+  const name = `${userData.first_name || ''} ${userData.last_name || ''}`.trim() || userData.email || 'Unknown User';
+  return {
+    name,
+    email: userData.email
+  };
+};
+
 // Create a new template
 export const createTemplate = async (templateData: CreateTemplateData) => {
   const { data, error } = await supabase
@@ -225,10 +249,7 @@ export const shareTemplate = async (shareData: ShareTemplateData) => {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { data: null, error: new Error('Not authenticated') };
 
-  // Get user name from user metadata instead of querying users table
-  const firstName = user.user_metadata?.first_name || '';
-  const lastName = user.user_metadata?.last_name || '';
-  const userName = `${firstName} ${lastName}`.trim() || user.email || 'Unknown User';
+  const userInfo = await getUserInfo(user.id);
 
   // Create shares for each email
   const shares = shareData.user_emails.map(email => ({
@@ -254,14 +275,11 @@ export const shareTemplatesWithTeam = async (templateIds: string[], message?: st
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { data: null, error: new Error('Not authenticated') };
 
-  // Get user name from user metadata instead of querying users table
-  const firstName = user.user_metadata?.first_name || '';
-  const lastName = user.user_metadata?.last_name || '';
-  const userName = `${firstName} ${lastName}`.trim() || user.email || 'Unknown User';
+  const userInfo = await getUserInfo(user.id);
 
   // Share with the current user's email (for demo purposes)
   // In a real app, you'd get actual team member emails from the team_members table
-  const teamEmails = [user.email || 'team@company.com']; // Use current user's email for demo
+  const teamEmails = [userInfo.email || 'team@company.com']; // Use current user's email for demo
 
   const allShares = [];
   
@@ -269,7 +287,7 @@ export const shareTemplatesWithTeam = async (templateIds: string[], message?: st
     const shares = teamEmails.map(email => ({
       template_id: templateId,
       user_email: email,
-      user_name: userName,
+      user_name: userInfo.name,
       role: 'viewer' as const,
       shared_by: user.id,
       shared_at: new Date().toISOString(),
@@ -291,7 +309,9 @@ export const getSharedTemplates = async () => {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { data: null, error: new Error('Not authenticated') };
 
-  console.log('Getting shared templates for user:', user.email);
+  const userInfo = await getUserInfo(user.id);
+
+  console.log('Getting shared templates for user:', userInfo.email);
 
   const { data, error } = await supabase
     .from('template_shares')
@@ -309,7 +329,7 @@ export const getSharedTemplates = async () => {
         updated_at
       )
     `)
-    .eq('user_email', user.email);
+    .eq('user_email', userInfo.email);
 
   console.log('Shared templates query result:', { data, error });
 
@@ -397,16 +417,13 @@ export const addTemplateToReviewQueue = async (templateId: string, priority: 'lo
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { data: null, error: new Error('Not authenticated') };
 
-  // Get user name from user metadata instead of querying users table
-  const firstName = user.user_metadata?.first_name || '';
-  const lastName = user.user_metadata?.last_name || '';
-  const userName = `${firstName} ${lastName}`.trim() || user.email || 'Unknown User';
+  const userInfo = await getUserInfo(user.id);
 
   const review = {
     template_id: templateId,
     reviewer_id: user.id,
-    reviewer_name: userName,
-    reviewer_email: user.email || '',
+    reviewer_name: userInfo.name,
+    reviewer_email: userInfo.email,
     rating: 0, // Will be set when review is completed
     comment: '',
     status: 'pending' as const,
@@ -460,16 +477,13 @@ export const addTemplateReview = async (reviewData: {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { data: null, error: new Error('Not authenticated') };
 
-  // Get user name from user metadata instead of querying users table
-  const firstName = user.user_metadata?.first_name || '';
-  const lastName = user.user_metadata?.last_name || '';
-  const userName = `${firstName} ${lastName}`.trim() || user.email || 'Unknown User';
+  const userInfo = await getUserInfo(user.id);
 
   const review = {
     ...reviewData,
     reviewer_id: user.id,
-    reviewer_name: userName,
-    reviewer_email: user.email || '',
+    reviewer_name: userInfo.name,
+    reviewer_email: userInfo.email,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString()
   };
