@@ -23,7 +23,7 @@ function Security() {
             <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"> Security</span>
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Your data security is our top priority. VoiceForm Pro employs military-grade encryption, 
+            Your data security is our top priority. Audentra employs military-grade encryption, 
             blockchain verification, and comprehensive compliance frameworks.
           </p>
         </div>
@@ -32,73 +32,40 @@ function Security() {
       {/* Blockchain Security */}
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-12 items-center mb-20">
-            <div className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl p-8 text-white">
-              <div className="flex items-center mb-6">
-                <Lock className="w-8 h-8 text-blue-400 mr-3" />
-                <h3 className="text-2xl font-bold">Blockchain Verification</h3>
-              </div>
-              <div className="space-y-4">
-                <div className="bg-gray-800 rounded-lg p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm text-gray-400">Form Hash</span>
-                    <span className="text-xs text-green-400">✓ Verified</span>
-                  </div>
-                  <code className="text-xs text-blue-300 font-mono break-all">
-                    0x7f9b2c1a8e6d4f3a2b9c8e7d6f5a4b3c2d1e9f8a7b6c5d4e3f2a1b9c8d7e6f5a
-                  </code>
+          <div className="flex flex-col items-center justify-center mb-20">
+            <h2 className="text-4xl font-bold text-gray-900 mb-6 text-center">
+              Unbreakable Security with Blockchain
+            </h2>
+            <p className="text-xl text-gray-600 mb-10 text-center max-w-2xl">
+              Every form submission is cryptographically secured and recorded on the blockchain, 
+              creating an immutable audit trail that ensures data integrity and compliance.
+            </p>
+            <div className="space-y-8 w-full max-w-2xl">
+              <div className="flex items-start justify-center">
+                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-4 mt-1">
+                  <Shield className="w-6 h-6 text-blue-600" />
                 </div>
-                <div className="bg-gray-800 rounded-lg p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm text-gray-400">Timestamp</span>
-                    <span className="text-xs text-green-400">✓ Immutable</span>
-                  </div>
-                  <span className="text-sm text-white">2024-01-15 14:32:18 UTC</span>
-                </div>
-                <div className="bg-gray-800 rounded-lg p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm text-gray-400">Block Height</span>
-                    <span className="text-xs text-green-400">✓ Confirmed</span>
-                  </div>
-                  <span className="text-sm text-white">#1,247,863</span>
+                <div>
+                  <h4 className="text-lg font-semibold text-gray-900 mb-2">Tamper-Proof Records</h4>
+                  <p className="text-gray-600">Each form creates a unique cryptographic hash that's impossible to alter without detection.</p>
                 </div>
               </div>
-            </div>
-            <div>
-              <h2 className="text-4xl font-bold text-gray-900 mb-6">
-                Unbreakable Security with Blockchain
-              </h2>
-              <p className="text-xl text-gray-600 mb-8">
-                Every form submission is cryptographically secured and recorded on the blockchain, 
-                creating an immutable audit trail that ensures data integrity and compliance.
-              </p>
-              <div className="space-y-6">
-                <div className="flex items-start">
-                  <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-4 mt-1">
-                    <Shield className="w-6 h-6 text-blue-600" />
-                  </div>
-                  <div>
-                    <h4 className="text-lg font-semibold text-gray-900 mb-2">Tamper-Proof Records</h4>
-                    <p className="text-gray-600">Each form creates a unique cryptographic hash that's impossible to alter without detection.</p>
-                  </div>
+              <div className="flex items-start justify-center">
+                <div className="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center mr-4 mt-1">
+                  <Globe className="w-6 h-6 text-emerald-600" />
                 </div>
-                <div className="flex items-start">
-                  <div className="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center mr-4 mt-1">
-                    <Globe className="w-6 h-6 text-emerald-600" />
-                  </div>
-                  <div>
-                    <h4 className="text-lg font-semibold text-gray-900 mb-2">Distributed Verification</h4>
-                    <p className="text-gray-600">Multiple nodes verify each transaction, ensuring no single point of failure.</p>
-                  </div>
+                <div>
+                  <h4 className="text-lg font-semibold text-gray-900 mb-2">Distributed Verification</h4>
+                  <p className="text-gray-600">Multiple nodes verify each transaction, ensuring no single point of failure.</p>
                 </div>
-                <div className="flex items-start">
-                  <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mr-4 mt-1">
-                    <FileText className="w-6 h-6 text-purple-600" />
-                  </div>
-                  <div>
-                    <h4 className="text-lg font-semibold text-gray-900 mb-2">Compliance Audit Trail</h4>
-                    <p className="text-gray-600">Instant proof of data integrity for regulatory audits and legal requirements.</p>
-                  </div>
+              </div>
+              <div className="flex items-start justify-center">
+                <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mr-4 mt-1">
+                  <FileText className="w-6 h-6 text-purple-600" />
+                </div>
+                <div>
+                  <h4 className="text-lg font-semibold text-gray-900 mb-2">Compliance Audit Trail</h4>
+                  <p className="text-gray-600">Instant proof of data integrity for regulatory audits and legal requirements.</p>
                 </div>
               </div>
             </div>
@@ -202,7 +169,7 @@ function Security() {
             <div className="text-center mb-12">
               <h2 className="text-4xl font-bold mb-4">Comprehensive Compliance</h2>
               <p className="text-xl text-blue-100">
-                VoiceForm Pro meets the strictest regulatory requirements across industries
+                Audentra meets the strictest regulatory requirements across industries
               </p>
             </div>
             

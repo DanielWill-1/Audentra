@@ -55,6 +55,11 @@ import TeamMembersModal from '../components/Team/TeamMembersModal';
 import ShareNewTemplateModal from '../components/Team/ShareNewTemplateModal';
 import SharedTemplateCard from '../components/Team/SharedTemplateCard';
 import ReviewQueueModal from '../components/Team/ReviewQueueModal';
+import StatsCard from '../components/stats/StatsCard';
+import ScheduleStats from '../components/Scheduler/ScheduleStats';
+import UpcomingEvents from '../components/Scheduler/UpcomingEvents';
+import TeamTemplates from '../components/Dashboard/TeamTemplates';
+import RecentActivity from '../components/Dashboard/RecentActivity';
 
 interface SharedTemplateData {
   id: string;
@@ -244,7 +249,7 @@ function Dashboard() {
   };
 
   const handleManageSchedulesRedirect = () => {
-    navigate('/ManageSchedules');
+    navigate('/manage-schedules');
   };
 
   const handleAddNewScheduleRedirect = () => {
@@ -253,6 +258,20 @@ function Dashboard() {
 
   const handleQuickVoiceFormRedirect = () => {
     navigate('/AIVoiceAutoFill');
+  };
+  
+  // Update settings and save to localStorage
+  const updateSettings = (newSettings: any) => {
+    const updatedSettings = { ...settings, ...newSettings };
+    setSettings(updatedSettings);
+    localStorage.setItem(STORAGE_KEYS.DASHBOARD_SETTINGS, JSON.stringify(updatedSettings));
+  };
+
+  const statsData = {
+    formsCompleted: 47,
+    weeklyChange: 12,
+    accuracy: "99.2%",
+    avgTime: "2:14"
   };
 
   const renderOverview = () => (
@@ -292,7 +311,7 @@ function Dashboard() {
               onClick={handleChooseTemplateRedirect}
             >
               <div className="flex items-center justify-between mb-4">
-                <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center">
+                <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center mr-3">
                   <FileText className="w-6 h-6 text-emerald-600" />
                 </div>
                 <ArrowRight className="w-6 h-6 text-gray-400" />
@@ -303,48 +322,12 @@ function Dashboard() {
               </p>
               <div className="flex items-center text-sm text-gray-500">
                 <Users className="w-4 h-4 mr-1" />
-                50+ professional templates
+                professional templates
               </div>
             </div>
           </div>
 
-          {/* External Forms Integration */}
-          <div className="bg-gradient-to-r from-orange-50 to-red-50 rounded-2xl p-6 border border-orange-200">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center">
-                <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center mr-4">
-                  <ExternalLink className="w-6 h-6 text-orange-600" />
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900">External Forms Integration</h3>
-                  <p className="text-gray-600 text-sm">Import and voice-enable your existing Google Forms, Microsoft Forms, and other platforms</p>
-                </div>
-              </div>
-              <button className="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition-colors text-sm font-medium">
-                Connect Forms
-              </button>
-            </div>
-            <div className="grid grid-cols-3 gap-4 mt-4">
-              <div className="flex items-center p-3 bg-white rounded-lg border">
-                <div className="w-8 h-8 bg-blue-100 rounded mr-3 flex items-center justify-center">
-                  <span className="text-xs font-bold text-blue-600">G</span>
-                </div>
-                <span className="text-sm text-gray-700">Google Forms</span>
-              </div>
-              <div className="flex items-center p-3 bg-white rounded-lg border">
-                <div className="w-8 h-8 bg-blue-100 rounded mr-3 flex items-center justify-center">
-                  <span className="text-xs font-bold text-blue-600">M</span>
-                </div>
-                <span className="text-sm text-gray-700">Microsoft Forms</span>
-              </div>
-              <div className="flex items-center p-3 bg-white rounded-lg border">
-                <div className="w-8 h-8 bg-purple-100 rounded mr-3 flex items-center justify-center">
-                  <span className="text-xs font-bold text-purple-600">T</span>
-                </div>
-                <span className="text-sm text-gray-700">Typeform</span>
-              </div>
-            </div>
-          </div>
+          
         </section>
 
         {/* Scheduling & Automation */}
@@ -360,34 +343,13 @@ function Dashboard() {
           </div>
           
           <div className="bg-white rounded-2xl border border-gray-200 p-6">
-            <div className="grid md:grid-cols-2 gap-6 mb-6">
-              <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-                <div className="flex items-center justify-between mb-3">
-                  <h4 className="font-medium text-gray-900">Weekly Safety Inspection</h4>
-                  <button className="text-blue-600 hover:text-blue-700">
-                    <Edit className="w-4 h-4" />
-                  </button>
-                </div>
-                <p className="text-sm text-gray-600 mb-2">Every Monday at 9:00 AM</p>
-                <div className="flex items-center text-xs text-blue-600">
-                  <Calendar className="w-4 h-4 mr-1" />
-                  Next: Tomorrow at 9:00 AM
-                </div>
-              </div>
-              
-              <div className="p-4 bg-emerald-50 rounded-lg border border-emerald-200">
-                <div className="flex items-center justify-between mb-3">
-                  <h4 className="font-medium text-gray-900">Monthly HR Review</h4>
-                  <button className="text-emerald-600 hover:text-emerald-700">
-                    <Edit className="w-4 h-4" />
-                  </button>
-                </div>
-                <p className="text-sm text-gray-600 mb-2">First Friday of each month at 2:00 PM</p>
-                <div className="flex items-center text-xs text-emerald-600">
-                  <Calendar className="w-4 h-4 mr-1" />
-                  Next: March 1st at 2:00 PM
-                </div>
-              </div>
+            {/* Schedule Stats */}
+            <ScheduleStats className="mb-6" />
+            
+            {/* Upcoming Events */}
+            <div className="mb-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Upcoming Events</h3>
+              <UpcomingEvents limit={2} showViewAll={false} />
             </div>
             
             <div className="grid md:grid-cols-2 gap-4">
@@ -398,6 +360,13 @@ function Dashboard() {
                 <Plus className="w-4 h-4 inline mr-2" />
                 Add New Schedule
               </button>
+              <Link 
+                to="/manage-schedules"
+                className="bg-gray-100 text-gray-700 py-2 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium text-center"
+              >
+                <Calendar className="w-4 h-4 inline mr-2" />
+                View All Schedules
+              </Link>
             </div>
           </div>
         </section>
@@ -406,67 +375,12 @@ function Dashboard() {
         <section>
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-bold text-gray-900">Recent Activity</h2>
-            <button className="text-blue-600 hover:text-blue-700 text-sm font-medium">
+            <Link to="/activitylog" className="text-blue-600 hover:text-blue-700 text-sm font-medium">
               View All Activity
-            </button>
+            </Link>
           </div>
-          
-          <div className="bg-white rounded-2xl border border-gray-200">
-            <div className="p-6 space-y-4">
-              <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg border border-green-200">
-                <div className="flex items-center">
-                  <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mr-4">
-                    <CheckCircle className="w-5 h-5 text-green-600" />
-                  </div>
-                  <div>
-                    <h4 className="font-medium text-gray-900">Patient Intake - John Smith</h4>
-                    <p className="text-sm text-gray-600">Completed 2 hours ago • 1:34 duration</p>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">Verified</span>
-                  <button className="text-blue-600 hover:text-blue-700 text-sm">View</button>
-                  <button className="text-gray-600 hover:text-gray-700">
-                    <Share2 className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between p-4 bg-blue-50 rounded-lg border border-blue-200">
-                <div className="flex items-center">
-                  <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
-                    <Clock className="w-5 h-5 text-blue-600" />
-                  </div>
-                  <div>
-                    <h4 className="font-medium text-gray-900">Safety Inspection Report</h4>
-                    <p className="text-sm text-gray-600">In progress • Started 30 minutes ago</p>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">Draft</span>
-                  <button className="text-blue-600 hover:text-blue-700 text-sm">Continue</button>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between p-4 hover:bg-gray-50 rounded-lg">
-                <div className="flex items-center">
-                  <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mr-4">
-                    <FileText className="w-5 h-5 text-purple-600" />
-                  </div>
-                  <div>
-                    <h4 className="font-medium text-gray-900">Employee Onboarding - Maria Garcia</h4>
-                    <p className="text-sm text-gray-600">Completed yesterday • 2:15 duration</p>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <span className="text-xs bg-gray-100 text-gray-800 px-2 py-1 rounded-full">Archived</span>
-                  <button className="text-blue-600 hover:text-blue-700 text-sm">View</button>
-                  <button className="text-gray-600 hover:text-gray-700">
-                    <Download className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-            </div>
+          <div className="bg-white rounded-2xl border border-gray-200 p-6">
+            <RecentActivity limit={3} showViewAll={true} />
           </div>
         </section>
       </div>
@@ -481,139 +395,20 @@ function Dashboard() {
               <Eye className="w-4 h-4" />
             </button>
           </div>
-          
-          <div className="bg-white rounded-2xl border border-gray-200 p-6">
-            <div className="space-y-4">
-              <div className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg cursor-pointer">
-                <div className="flex items-center">
-                  <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
-                    <FileText className="w-4 h-4 text-blue-600" />
-                  </div>
-                  <div>
-                    <h4 className="font-medium text-gray-900 text-sm">Patient Intake</h4>
-                    <p className="text-xs text-gray-500">Healthcare • Pending Review</p>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-1">
-                  <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                  <span className="text-xs text-gray-500">4.9</span>
-                  <button className="text-orange-600 hover:text-orange-700 ml-2">
-                    <AlertTriangle className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg cursor-pointer">
-                <div className="flex items-center">
-                  <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center mr-3">
-                    <FileText className="w-4 h-4 text-orange-600" />
-                  </div>
-                  <div>
-                    <h4 className="font-medium text-gray-900 text-sm">Safety Inspection</h4>
-                    <p className="text-xs text-gray-500">Field Work • Approved</p>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-1">
-                  <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                  <span className="text-xs text-gray-500">4.8</span>
-                  <CheckCircle className="w-4 h-4 text-green-500 ml-2" />
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg cursor-pointer">
-                <div className="flex items-center">
-                  <div className="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center mr-3">
-                    <FileText className="w-4 h-4 text-emerald-600" />
-                  </div>
-                  <div>
-                    <h4 className="font-medium text-gray-900 text-sm">Employee Review</h4>
-                    <p className="text-xs text-gray-500">HR • Shared with team</p>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-1">
-                  <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                  <span className="text-xs text-gray-500">4.7</span>
-                  <Share2 className="w-4 h-4 text-blue-500 ml-2" />
-                </div>
-              </div>
-            </div>
-
-            <Link to="/templates" className="w-full mt-4 text-blue-600 hover:text-blue-700 text-sm font-medium py-2 block text-center">
-              Browse All Templates
-            </Link>
-          </div>
+          <TeamTemplates limit={3} showViewAll={true} />
         </section>
 
-        {/* Quick Stats */}
+        {/* Stats Card */}
         <section>
           <h2 className="text-xl font-bold text-gray-900 mb-6">Your Stats</h2>
-          
-          <div className="bg-white rounded-2xl border border-gray-200 p-6">
-            <div className="space-y-6">
-              <div className="text-center">
-                <div className="text-3xl font-bold text-blue-600 mb-1">47</div>
-                <div className="text-sm text-gray-600">Forms Completed</div>
-                <div className="text-xs text-green-600">+12 this week</div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4 text-center">
-                <div>
-                  <div className="text-lg font-bold text-gray-900">2:14</div>
-                  <div className="text-xs text-gray-600">Avg. Time</div>
-                </div>
-                <div>
-                  <div className="text-lg font-bold text-gray-900">99.2%</div>
-                  <div className="text-xs text-gray-600">Accuracy</div>
-                </div>
-              </div>
-
-              <button className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 rounded-lg text-sm font-medium transition-colors">
-                <BarChart3 className="w-4 h-4 inline mr-2" />
-                View Detailed Analytics
-              </button>
-            </div>
-          </div>
+          <StatsCard 
+            formsCompleted={statsData.formsCompleted}
+            weeklyChange={statsData.weeklyChange}
+            accuracy={statsData.accuracy}
+            avgTime={statsData.avgTime}
+          />
         </section>
-
-        {/* Alerts & Reminders */}
-        <section>
-          <h2 className="text-xl font-bold text-gray-900 mb-6">Alerts & Reminders</h2>
-          
-          <div className="bg-white rounded-2xl border border-gray-200 p-6">
-            <div className="space-y-4">
-              <div className="flex items-start p-3 bg-yellow-50 rounded-lg border border-yellow-200">
-                <Bell className="w-5 h-5 text-yellow-600 mr-3 mt-0.5" />
-                <div className="flex-1">
-                  <h4 className="font-medium text-gray-900 text-sm">Template Review Due</h4>
-                  <p className="text-xs text-gray-600">Patient Intake template needs supervisor approval</p>
-                  <p className="text-xs text-yellow-600 mt-1">Due in 2 hours</p>
-                </div>
-              </div>
-
-              <div className="flex items-start p-3 bg-blue-50 rounded-lg border border-blue-200">
-                <Calendar className="w-5 h-5 text-blue-600 mr-3 mt-0.5" />
-                <div className="flex-1">
-                  <h4 className="font-medium text-gray-900 text-sm">Scheduled Form</h4>
-                  <p className="text-xs text-gray-600">Weekly safety inspection reminder</p>
-                  <p className="text-xs text-blue-600 mt-1">Tomorrow at 9:00 AM</p>
-                </div>
-              </div>
-
-              <div className="flex items-start p-3 bg-green-50 rounded-lg border border-green-200">
-                <CheckCircle className="w-5 h-5 text-green-600 mr-3 mt-0.5" />
-                <div className="flex-1">
-                  <h4 className="font-medium text-gray-900 text-sm">Compliance Update</h4>
-                  <p className="text-xs text-gray-600">All forms are HIPAA compliant</p>
-                  <p className="text-xs text-green-600 mt-1">Last checked: 1 hour ago</p>
-                </div>
-              </div>
-            </div>
-
-            <button className="w-full mt-4 text-blue-600 hover:text-blue-700 text-sm font-medium py-2">
-              Manage Alerts & Schedules
-            </button>
-          </div>
-        </section>
+      
       </div>
     </div>
   );
@@ -674,31 +469,20 @@ function Dashboard() {
             </div>
             <div className="text-3xl font-bold text-blue-600 mb-2">{activeMembers}</div>
             <p className="text-sm text-gray-600 mb-4">Active collaborators</p>
-            
             {/* Member Avatars */}
             <div className="flex items-center space-x-2 mb-4">
+              {/* Current user */}
               <div
                 className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white text-xs font-semibold"
                 title={user?.user_metadata?.first_name ? `${user.user_metadata.first_name} ${user.user_metadata.last_name}` : user?.email}
               >
-                {user?.user_metadata?.first_name ? 
-                  `${user.user_metadata.first_name[0]}${user.user_metadata.last_name ? user.user_metadata.last_name[0] : ''}` : 
-                  user?.email?.[0].toUpperCase() || 'U'}
+                {user?.user_metadata?.first_name
+                  ? `${user.user_metadata.first_name[0]}${user.user_metadata.last_name ? user.user_metadata.last_name[0] : ''}`
+                  : user?.email?.[0]?.toUpperCase() || 'U'}
               </div>
-              <div
-                className="w-8 h-8 bg-gradient-to-r from-green-500 to-blue-500 rounded-full flex items-center justify-center text-white text-xs font-semibold"
-                title="Alex Chen"
-              >
-                AC
-              </div>
-              <div
-                className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white text-xs font-semibold"
-                title="Maria Johnson"
-              >
-                MJ
-              </div>
+              
+              {/* Add more avatars here if needed */}
             </div>
-            
             <button 
               onClick={() => setShowTeamModal(true)}
               className="text-blue-600 hover:text-blue-700 text-sm font-medium"

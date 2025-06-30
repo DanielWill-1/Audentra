@@ -19,7 +19,7 @@ interface InviteMemberModalProps {
 
 interface InviteData {
   email: string;
-  role: 'admin' | 'editor' | 'viewer';
+  role: 'admin' | 'user';
   message?: string;
 }
 
@@ -31,23 +31,20 @@ const ROLES = [
     permissions: ['Create templates', 'Edit templates', 'Delete templates', 'Manage team', 'View analytics']
   },
   { 
-    id: 'editor', 
-    name: 'Editor', 
-    description: 'Can create and edit templates',
+    id: 'user', 
+    name: 'User', 
+    description: 'Can create and use templates',
     permissions: ['Create templates', 'Edit templates', 'View analytics']
-  },
-  { 
-    id: 'viewer', 
-    name: 'Viewer', 
-    description: 'Read-only access to templates',
-    permissions: ['View templates', 'Use templates']
   }
 ];
+
+// Storage key for pending invites
+const STORAGE_KEY = 'pendingInvites';
 
 export default function InviteMemberModal({ isOpen, onClose }: InviteMemberModalProps) {
   const { user } = useAuth();
   const [invites, setInvites] = useState<InviteData[]>([
-    { email: '', role: 'editor', message: '' }
+    { email: '', role: 'user', message: '' }
   ]);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState<string | null>(null);
@@ -76,7 +73,7 @@ export default function InviteMemberModal({ isOpen, onClose }: InviteMemberModal
   }, []);
 
   const addInvite = () => {
-    setInvites([...invites, { email: '', role: 'editor', message: '' }]);
+    setInvites([...invites, { email: '', role: 'user', message: '' }]);
   };
 
   const removeInvite = (index: number) => {
@@ -126,17 +123,38 @@ export default function InviteMemberModal({ isOpen, onClose }: InviteMemberModal
     setLoading(true);
 
     try {
+      // Get user name for the invite
+      const firstName = user?.user_metadata?.first_name || '';
+      const lastName = user?.user_metadata?.last_name || '';
+      const userName = `${firstName} ${lastName}`.trim() || user?.email?.split('@')[0] || 'User';
+      
       // In a real implementation, this would call an API to send invites
       console.log('Sending invites:', invites);
       
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Store invites in localStorage for persistence
+      const existingInvites = localStorage.getItem(STORAGE_KEY);
+      const parsedExistingInvites = existingInvites ? JSON.parse(existingInvites) : [];
+      
+      const newInvites = invites.map(invite => ({
+        id: `invite_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        email: invite.email,
+        role: invite.role,
+        sentAt: new Date().toISOString(),
+        sentBy: userName,
+        status: 'pending'
+      }));
+      
+      const updatedInvites = [...parsedExistingInvites, ...newInvites];
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedInvites));
       
       setSuccess(`Successfully sent ${invites.length} invitation${invites.length > 1 ? 's' : ''}!`);
       
       // Reset form after success
       setTimeout(() => {
-        setInvites([{ email: '', role: 'editor', message: '' }]);
+        setInvites([{ email: '', role: 'user', message: '' }]);
         setSuccess(null);
         onClose();
       }, 2000);
@@ -149,7 +167,7 @@ export default function InviteMemberModal({ isOpen, onClose }: InviteMemberModal
   };
 
   const handleClose = () => {
-    setInvites([{ email: '', role: 'editor', message: '' }]);
+    setInvites([{ email: '', role: 'user', message: '' }]);
     setError(null);
     setSuccess(null);
     onClose();
@@ -239,7 +257,7 @@ export default function InviteMemberModal({ isOpen, onClose }: InviteMemberModal
                     </label>
                     <select
                       value={invite.role}
-                      onChange={(e) => updateInvite(index, 'role', e.target.value)}
+                      onChange={(e) => updateInvite(index, 'role', e.target.value as any)}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                     >
                       {ROLES.map(role => (

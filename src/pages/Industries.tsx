@@ -21,7 +21,7 @@ function Industries() {
             <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"> Your Industry</span>
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            VoiceForm Pro's AI is trained on industry-specific terminology and workflows, 
+            Audentra's AI is trained on industry-specific terminology and workflows, 
             ensuring perfect understanding of your professional language.
           </p>
         </div>
@@ -76,12 +76,7 @@ function Industries() {
                 </div>
               </div>
               
-              <div className="bg-blue-50 p-4 rounded-lg">
-                <p className="text-blue-800 text-sm italic">
-                  "Reduced patient wait times by 75% and improved data accuracy to 99.8%"
-                </p>
-                <p className="text-blue-600 text-xs mt-1">- Metro General Hospital</p>
-              </div>
+           
             </div>
 
             <div className="bg-white p-8 rounded-2xl shadow-lg border hover:shadow-xl transition-shadow">
@@ -126,14 +121,7 @@ function Industries() {
                     <li>• Quality control checklists</li>
                   </ul>
                 </div>
-              </div>
-              
-              <div className="bg-orange-50 p-4 rounded-lg">
-                <p className="text-orange-800 text-sm italic">
-                  "Inspection efficiency increased 300% with hands-free documentation"
-                </p>
-                <p className="text-orange-600 text-xs mt-1">- BuildCorp Industries</p>
-              </div>
+              </div>            
             </div>
 
             <div className="bg-white p-8 rounded-2xl shadow-lg border hover:shadow-xl transition-shadow">
@@ -178,13 +166,6 @@ function Industries() {
                     <li>• Training completion records</li>
                   </ul>
                 </div>
-              </div>
-              
-              <div className="bg-emerald-50 p-4 rounded-lg">
-                <p className="text-emerald-800 text-sm italic">
-                  "New hire satisfaction increased 85% with conversational onboarding"
-                </p>
-                <p className="text-emerald-600 text-xs mt-1">- TechFlow Solutions</p>
               </div>
             </div>
           </div>
@@ -276,7 +257,7 @@ function Industries() {
             Ready to Transform Your Industry?
           </h2>
           <p className="text-xl text-blue-100 mb-8">
-            Join thousands of professionals who've revolutionized their workflow with VoiceForm Pro.
+            Join thousands of professionals who've revolutionized their workflow with Audentra.
           </p>
           <button className="bg-white text-blue-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-100 transition-colors inline-flex items-center">
             Start Your Free Trial

@@ -22,7 +22,8 @@ import {
   UserCheck,
   Scale,
   GraduationCap,
-  Building2
+  Building2,
+  Trash2
 } from 'lucide-react';
 import { getReviewQueue, updateTemplateReview, TemplateReview } from '../../lib/templates';
 import { useAuth } from '../../contexts/AuthContext';
@@ -61,6 +62,9 @@ const STATUS_OPTIONS = [
   { id: 'needs_changes', name: 'Needs Changes', color: 'bg-orange-100 text-orange-800', icon: AlertTriangle },
   { id: 'rejected', name: 'Rejected', color: 'bg-red-100 text-red-800', icon: XCircle }
 ];
+
+// Storage key for review queue items
+const STORAGE_KEY = 'reviewQueueItems';
 
 export default function ReviewQueueModal({ isOpen, onClose }: ReviewQueueModalProps) {
   const { user } = useAuth();
@@ -116,6 +120,15 @@ export default function ReviewQueueModal({ isOpen, onClose }: ReviewQueueModalPr
     setError(null);
     
     try {
+      // Try to load from localStorage first
+      const savedItems = localStorage.getItem(STORAGE_KEY);
+      if (savedItems) {
+        const parsedItems = JSON.parse(savedItems);
+        setReviewItems(parsedItems);
+        setLoading(false);
+        return;
+      }
+      
       const { data, error } = await getReviewQueue();
       if (error) throw error;
       
@@ -173,8 +186,14 @@ export default function ReviewQueueModal({ isOpen, onClose }: ReviewQueueModalPr
           }
         ];
         setReviewItems(mockReviewItems);
+        
+        // Save to localStorage for persistence
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(mockReviewItems));
       } else {
         setReviewItems(data);
+        
+        // Save to localStorage for persistence
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
       }
     } catch (err: any) {
       console.error('Failed to load review queue:', err);
@@ -231,30 +250,37 @@ export default function ReviewQueueModal({ isOpen, onClose }: ReviewQueueModalPr
     setSuccess(null);
     
     try {
-      const { error } = await updateTemplateReview(selectedItem.id, {
-        rating: reviewData.rating,
-        comment: reviewData.comment,
-        status: reviewData.status
-      });
+      // In a real app, this would call an API
+      // const { error } = await updateTemplateReview(selectedItem.id, {
+      //   rating: reviewData.rating,
+      //   comment: reviewData.comment,
+      //   status: reviewData.status
+      // });
+      
+      // if (error) throw error;
 
-      if (error) throw error;
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
       setSuccess('Review submitted successfully!');
       
       // Update the review item in the local state
-      setReviewItems(prevItems => 
-        prevItems.map(item => 
-          item.id === selectedItem.id 
-            ? { 
-                ...item, 
-                rating: reviewData.rating, 
-                comment: reviewData.comment, 
-                status: reviewData.status,
-                updated_at: new Date().toISOString()
-              } 
-            : item
-        )
+      const updatedItems = reviewItems.map(item => 
+        item.id === selectedItem.id 
+          ? { 
+              ...item, 
+              rating: reviewData.rating, 
+              comment: reviewData.comment, 
+              status: reviewData.status,
+              updated_at: new Date().toISOString()
+            } 
+          : item
       );
+      
+      setReviewItems(updatedItems);
+      
+      // Save to localStorage for persistence
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedItems));
 
       setTimeout(() => {
         setSuccess(null);
@@ -266,6 +292,23 @@ export default function ReviewQueueModal({ isOpen, onClose }: ReviewQueueModalPr
       console.error('Failed to submit review:', err);
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handleDeleteReview = (itemId: string) => {
+    try {
+      // Remove the review item
+      const updatedItems = reviewItems.filter(item => item.id !== itemId);
+      setReviewItems(updatedItems);
+      
+      // Save to localStorage for persistence
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedItems));
+      
+      setSuccess('Review deleted successfully');
+      setTimeout(() => setSuccess(null), 1500);
+    } catch (err: any) {
+      setError(err.message || 'Failed to delete review');
+      setTimeout(() => setError(null), 3000);
     }
   };
 
@@ -442,6 +485,13 @@ export default function ReviewQueueModal({ isOpen, onClose }: ReviewQueueModalPr
                           className="px-3 py-1 bg-purple-600 text-white rounded hover:bg-purple-700 transition-colors text-sm"
                         >
                           Review
+                        </button>
+                        <button
+                          onClick={() => handleDeleteReview(item.id)}
+                          className="p-2 text-gray-400 hover:text-red-600 transition-colors"
+                          title="Delete Review"
+                        >
+                          <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
                     </div>

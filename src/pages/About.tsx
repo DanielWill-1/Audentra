@@ -39,7 +39,7 @@ function About() {
                 to productivity or patient care.
               </p>
               <p className="text-lg text-gray-600 mb-8">
-                VoiceForm Pro was born from the frustration of watching healthcare professionals 
+                Audentra was born from the frustration of watching healthcare professionals 
                 spend more time on paperwork than with patients, field workers struggling with 
                 complex forms in challenging environments, and HR teams drowning in administrative tasks.
               </p>
@@ -54,18 +54,12 @@ function About() {
                   <div className="text-3xl font-bold text-blue-600 mb-2">95%</div>
                   <div className="text-gray-600 text-sm">Time Reduction</div>
                 </div>
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-emerald-600 mb-2">50K+</div>
-                  <div className="text-gray-600 text-sm">Forms Processed</div>
-                </div>
+               
                 <div className="text-center">
                   <div className="text-3xl font-bold text-purple-600 mb-2">99.7%</div>
                   <div className="text-gray-600 text-sm">Accuracy Rate</div>
                 </div>
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-orange-600 mb-2">500+</div>
-                  <div className="text-gray-600 text-sm">Organizations</div>
-                </div>
+                
               </div>
             </div>
           </div>
@@ -104,90 +98,9 @@ function About() {
             </div>
           </div>
 
-          {/* Team Section */}
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">Meet Our Team</h2>
-            <p className="text-xl text-gray-600">
-              A diverse group of AI researchers, healthcare professionals, and technology experts
-            </p>
-          </div>
+          
 
-          <div className="grid md:grid-cols-3 gap-8 mb-20">
-            <div className="text-center">
-              <div className="w-32 h-32 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-6">
-                <span className="text-3xl font-bold text-white">SM</span>
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Dr. Sarah Martinez</h3>
-              <p className="text-blue-600 font-medium mb-3">CEO & Co-Founder</p>
-              <p className="text-gray-600 text-sm">
-                Former Chief Medical Officer with 15 years in healthcare technology. 
-                PhD in Biomedical Informatics from Stanford.
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="w-32 h-32 bg-gradient-to-br from-emerald-500 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-6">
-                <span className="text-3xl font-bold text-white">AC</span>
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Alex Chen</h3>
-              <p className="text-blue-600 font-medium mb-3">CTO & Co-Founder</p>
-              <p className="text-gray-600 text-sm">
-                AI researcher and former Google engineer. Specializes in natural language 
-                processing and voice recognition systems.
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="w-32 h-32 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-6">
-                <span className="text-3xl font-bold text-white">MJ</span>
-              </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Maria Johnson</h3>
-              <p className="text-blue-600 font-medium mb-3">VP of Product</p>
-              <p className="text-gray-600 text-sm">
-                Former field operations manager turned product leader. Brings real-world 
-                experience to product development.
-              </p>
-            </div>
-          </div>
-
-          {/* Company Stats */}
-          <div className="bg-gradient-to-r from-gray-900 to-black rounded-3xl p-12 text-white">
-            <div className="text-center mb-12">
-              <h2 className="text-4xl font-bold mb-4">Our Impact</h2>
-              <p className="text-xl text-gray-300">
-                Transforming workflows across industries worldwide
-              </p>
-            </div>
-            
-            <div className="grid md:grid-cols-4 gap-8 text-center">
-              <div>
-                <div className="w-16 h-16 bg-blue-600 rounded-xl flex items-center justify-center mx-auto mb-4">
-                  <Users className="w-8 h-8 text-white" />
-                </div>
-                <div className="text-3xl font-bold text-blue-400 mb-2">10K+</div>
-                <div className="text-gray-300">Active Users</div>
-              </div>
-              <div>
-                <div className="w-16 h-16 bg-emerald-600 rounded-xl flex items-center justify-center mx-auto mb-4">
-                  <Globe className="w-8 h-8 text-white" />
-                </div>
-                <div className="text-3xl font-bold text-emerald-400 mb-2">25</div>
-                <div className="text-gray-300">Countries</div>
-              </div>
-              <div>
-                <div className="w-16 h-16 bg-purple-600 rounded-xl flex items-center justify-center mx-auto mb-4">
-                  <Award className="w-8 h-8 text-white" />
-                </div>
-                <div className="text-3xl font-bold text-purple-400 mb-2">5</div>
-                <div className="text-gray-300">Industry Awards</div>
-              </div>
-              <div>
-                <div className="w-16 h-16 bg-orange-600 rounded-xl flex items-center justify-center mx-auto mb-4">
-                  <Target className="w-8 h-8 text-white" />
-                </div>
-                <div className="text-3xl font-bold text-orange-400 mb-2">99.9%</div>
-                <div className="text-gray-300">Uptime</div>
-              </div>
-            </div>
-          </div>
+          
         </div>
       </section>
 
