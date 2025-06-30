@@ -126,11 +126,32 @@ export default function InviteMemberModal({ isOpen, onClose }: InviteMemberModal
     setLoading(true);
 
     try {
+      // Get user name for the invite
+      const firstName = user?.user_metadata?.first_name || '';
+      const lastName = user?.user_metadata?.last_name || '';
+      const userName = `${firstName} ${lastName}`.trim() || user?.email?.split('@')[0] || 'User';
+      
       // In a real implementation, this would call an API to send invites
       console.log('Sending invites:', invites);
       
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Store invites in localStorage for persistence
+      const existingInvites = localStorage.getItem('pendingInvites');
+      const parsedExistingInvites = existingInvites ? JSON.parse(existingInvites) : [];
+      
+      const newInvites = invites.map(invite => ({
+        id: `invite_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+        email: invite.email,
+        role: invite.role,
+        sentAt: new Date().toISOString(),
+        sentBy: userName,
+        status: 'pending'
+      }));
+      
+      const updatedInvites = [...parsedExistingInvites, ...newInvites];
+      localStorage.setItem('pendingInvites', JSON.stringify(updatedInvites));
       
       setSuccess(`Successfully sent ${invites.length} invitation${invites.length > 1 ? 's' : ''}!`);
       
@@ -239,7 +260,7 @@ export default function InviteMemberModal({ isOpen, onClose }: InviteMemberModal
                     </label>
                     <select
                       value={invite.role}
-                      onChange={(e) => updateInvite(index, 'role', e.target.value)}
+                      onChange={(e) => updateInvite(index, 'role', e.target.value as any)}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                     >
                       {ROLES.map(role => (

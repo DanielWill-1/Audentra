@@ -121,7 +121,7 @@ export default function TeamMembersModal({ isOpen, onClose, onInvite }: TeamMemb
       
       // Create current user as admin
       const currentUserMember: TeamMember = {
-        id: '1',
+        id: user.id,
         name: userName,
         email: user.email || 'user@example.com',
         role: 'admin',
@@ -130,13 +130,13 @@ export default function TeamMembersModal({ isOpen, onClose, onInvite }: TeamMemb
         lastActive: '2 minutes ago'
       };
       
-      // Fetch team members from database (in a real app)
-      // For now, we'll use some example team members
+      // Try to fetch team members from database
+      // For now, we'll use the current user and some example team members
       const otherMembers: TeamMember[] = [
         {
           id: '2',
           name: 'Alex Chen',
-          email: 'alex@voiceformpro.com',
+          email: 'alex@audentra.com',
           role: 'editor',
           status: 'active',
           joinedAt: '2024-01-16',
@@ -145,7 +145,7 @@ export default function TeamMembersModal({ isOpen, onClose, onInvite }: TeamMemb
         {
           id: '3',
           name: 'Maria Johnson',
-          email: 'maria@voiceformpro.com',
+          email: 'maria@audentra.com',
           role: 'editor',
           status: 'active',
           joinedAt: '2024-01-18',
@@ -155,26 +155,14 @@ export default function TeamMembersModal({ isOpen, onClose, onInvite }: TeamMemb
       
       setTeamMembers([currentUserMember, ...otherMembers]);
       
-      // Fetch pending invites from database (in a real app)
+      // Try to fetch pending invites from database
       // For now, we'll use some example invites
-      setPendingInvites([
-        {
-          id: '1',
-          email: 'john@company.com',
-          role: 'editor',
-          sentAt: '2024-01-20',
-          sentBy: userName,
-          status: 'pending'
-        },
-        {
-          id: '2',
-          email: 'lisa@company.com',
-          role: 'viewer',
-          sentAt: '2024-01-19',
-          sentBy: userName,
-          status: 'pending'
-        }
-      ]);
+      const storedInvites = localStorage.getItem('pendingInvites');
+      if (storedInvites) {
+        setPendingInvites(JSON.parse(storedInvites));
+      } else {
+        setPendingInvites([]);
+      }
     } catch (err) {
       console.error('Failed to load team data:', err);
       setError('Failed to load team data. Please try again.');
@@ -199,17 +187,19 @@ export default function TeamMembersModal({ isOpen, onClose, onInvite }: TeamMemb
 
   const handleResendInvite = async (inviteId: string) => {
     try {
-      // In a real implementation, this would call an API to resend the invite
-      console.log('Resending invite:', inviteId);
-      
       // Update the invite's sent date
-      setPendingInvites(prevInvites => 
-        prevInvites.map(invite => 
+      setPendingInvites(prevInvites => {
+        const updatedInvites = prevInvites.map(invite => 
           invite.id === inviteId 
             ? { ...invite, sentAt: new Date().toISOString() } 
             : invite
-        )
-      );
+        );
+        
+        // Store in localStorage for persistence
+        localStorage.setItem('pendingInvites', JSON.stringify(updatedInvites));
+        
+        return updatedInvites;
+      });
     } catch (error) {
       console.error('Failed to resend invite:', error);
     }
@@ -217,13 +207,15 @@ export default function TeamMembersModal({ isOpen, onClose, onInvite }: TeamMemb
 
   const handleCancelInvite = async (inviteId: string) => {
     try {
-      // In a real implementation, this would call an API to cancel the invite
-      console.log('Canceling invite:', inviteId);
-      
-      // Remove the invite from the UI
-      setPendingInvites(prevInvites => 
-        prevInvites.filter(invite => invite.id !== inviteId)
-      );
+      // Remove the invite
+      setPendingInvites(prevInvites => {
+        const updatedInvites = prevInvites.filter(invite => invite.id !== inviteId);
+        
+        // Store in localStorage for persistence
+        localStorage.setItem('pendingInvites', JSON.stringify(updatedInvites));
+        
+        return updatedInvites;
+      });
     } catch (error) {
       console.error('Failed to cancel invite:', error);
     }
@@ -231,10 +223,13 @@ export default function TeamMembersModal({ isOpen, onClose, onInvite }: TeamMemb
 
   const handleRemoveMember = async (memberId: string) => {
     try {
-      // In a real implementation, this would call an API to remove the member
-      console.log('Removing member:', memberId);
+      // Don't allow removing the current user (admin)
+      if (memberId === user?.id) {
+        setError("You cannot remove yourself from the team.");
+        return;
+      }
       
-      // Remove the member from the UI
+      // Remove the member
       setTeamMembers(prevMembers => 
         prevMembers.filter(member => member.id !== memberId)
       );
@@ -245,10 +240,13 @@ export default function TeamMembersModal({ isOpen, onClose, onInvite }: TeamMemb
 
   const handleChangeRole = async (memberId: string, newRole: string) => {
     try {
-      // In a real implementation, this would call an API to change the role
-      console.log('Changing role:', memberId, newRole);
+      // Don't allow changing the current user's role
+      if (memberId === user?.id) {
+        setError("You cannot change your own role.");
+        return;
+      }
       
-      // Update the member's role in the UI
+      // Update the member's role
       setTeamMembers(prevMembers => 
         prevMembers.map(member => 
           member.id === memberId 
@@ -370,7 +368,7 @@ export default function TeamMembersModal({ isOpen, onClose, onInvite }: TeamMemb
                           </div>
                           
                           <div className="flex items-center space-x-2">
-                            {member.role !== 'admin' && (
+                            {member.id !== user?.id && (
                               <>
                                 <button
                                   onClick={() => setShowRoleModal(member.id)}

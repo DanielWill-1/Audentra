@@ -59,6 +59,7 @@ import ReviewQueueModal from '../components/Team/ReviewQueueModal';
 import StatsCard from '../components/Stats/StatsCard';
 import UpcomingEvents from '../components/Scheduler/UpcomingEvents';
 import ScheduleStats from '../components/Scheduler/ScheduleStats';
+import TeamTemplates from '../components/Dashboard/TeamTemplates';
 
 interface SharedTemplateData {
   id: string;
@@ -453,66 +454,7 @@ function Dashboard() {
             </button>
           </div>
           
-          <div className="bg-white rounded-2xl border border-gray-200 p-6">
-            <div className="space-y-4">
-              <div className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg cursor-pointer">
-                <div className="flex items-center">
-                  <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
-                    <FileText className="w-4 h-4 text-blue-600" />
-                  </div>
-                  <div>
-                    <h4 className="font-medium text-gray-900 text-sm">Patient Intake</h4>
-                    <p className="text-xs text-gray-500">Healthcare • Pending Review</p>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-1">
-                  <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                  <span className="text-xs text-gray-500">4.9</span>
-                  <button className="text-orange-600 hover:text-orange-700 ml-2">
-                    <AlertTriangle className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg cursor-pointer">
-                <div className="flex items-center">
-                  <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center mr-3">
-                    <FileText className="w-4 h-4 text-orange-600" />
-                  </div>
-                  <div>
-                    <h4 className="font-medium text-gray-900 text-sm">Safety Inspection</h4>
-                    <p className="text-xs text-gray-500">Field Work • Approved</p>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-1">
-                  <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                  <span className="text-xs text-gray-500">4.8</span>
-                  <CheckCircle className="w-4 h-4 text-green-500 ml-2" />
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg cursor-pointer">
-                <div className="flex items-center">
-                  <div className="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center mr-3">
-                    <FileText className="w-4 h-4 text-emerald-600" />
-                  </div>
-                  <div>
-                    <h4 className="font-medium text-gray-900 text-sm">Employee Review</h4>
-                    <p className="text-xs text-gray-500">HR • Shared with team</p>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-1">
-                  <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                  <span className="text-xs text-gray-500">4.7</span>
-                  <Share2 className="w-4 h-4 text-blue-500 ml-2" />
-                </div>
-              </div>
-            </div>
-
-            <Link to="/templates" className="w-full mt-4 text-blue-600 hover:text-blue-700 text-sm font-medium py-2 block text-center">
-              Browse All Templates
-            </Link>
-          </div>
+          <TeamTemplates limit={3} showViewAll={true} />
         </section>
       </div>
     </div>
