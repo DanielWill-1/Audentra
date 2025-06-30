@@ -95,16 +95,16 @@ function Documentation() {
     }
   ];
 
-  const codeExample = `// Initialize VoiceForm Pro SDK
-import { VoiceForm } from '@voiceform/sdk';
+  const codeExample = `// Initialize Audentra Pro SDK
+import { Audentra } from '@Audentra/sdk';
 
-const voiceForm = new VoiceForm({
+const Audentra = new Audentra({
   apiKey: 'your-api-key',
   environment: 'production'
 });
 
 // Create a new form
-const form = await voiceForm.forms.create({
+const form = await Audentra.forms.create({
   name: 'Patient Intake Form',
   fields: [
     {
@@ -123,7 +123,7 @@ const form = await voiceForm.forms.create({
 });
 
 // Start voice session
-const session = await voiceForm.voice.startSession({
+const session = await Audentra.voice.startSession({
   formId: form.id,
   language: 'en-US'
 });`;
@@ -157,8 +157,9 @@ const session = await voiceForm.voice.startSession({
             Developer
             <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"> Documentation</span>
           </h1>
+          <p className="text-3xl text-gray-500">(Developer Sample Data)</p>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-            Complete guides, API references, and resources to integrate VoiceForm Pro into your applications
+            Complete guides, API references, and resources to integrate Audentra Pro into your applications
           </p>
           
           {/* Search Bar */}
@@ -283,7 +284,7 @@ const session = await voiceForm.voice.startSession({
                 <div className="flex items-center justify-between mb-8">
                   <div>
                     <h1 className="text-3xl font-bold text-gray-900 mb-2">Quick Start Guide</h1>
-                    <p className="text-lg text-gray-600">Get up and running with VoiceForm Pro in under 10 minutes</p>
+                    <p className="text-lg text-gray-600">Get up and running with Audentra Pro in under 10 minutes</p>
                   </div>
                   <div className="flex items-center space-x-3">
                     <button className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
@@ -299,7 +300,7 @@ const session = await voiceForm.voice.startSession({
                 <div className="prose prose-lg max-w-none">
                   <h2 className="text-2xl font-bold text-gray-900 mb-4">Installation</h2>
                   <p className="text-gray-600 mb-6">
-                    Install the VoiceForm Pro SDK using your preferred package manager:
+                    Install the Audentra Pro SDK using your preferred package manager:
                   </p>
 
                   {/* Code Block */}
@@ -315,11 +316,11 @@ const session = await voiceForm.voice.startSession({
                       </button>
                     </div>
                     <pre className="text-green-400 text-sm overflow-x-auto">
-                      <code>{`npm install @voiceform/sdk
+                      <code>{`npm install @Audentra/sdk
 # or
-yarn add @voiceform/sdk
+yarn add @Audentra/sdk
 # or
-pnpm add @voiceform/sdk`}</code>
+pnpm add @Audentra/sdk`}</code>
                     </pre>
                   </div>
 
@@ -350,7 +351,7 @@ pnpm add @voiceform/sdk`}</code>
                     <div className="bg-blue-50 p-6 rounded-lg border border-blue-200">
                       <h3 className="text-lg font-semibold text-blue-900 mb-2">Authentication</h3>
                       <p className="text-blue-700 text-sm mb-4">
-                        Learn how to securely authenticate your application with VoiceForm Pro.
+                        Learn how to securely authenticate your application with Audentra Pro.
                       </p>
                       <button className="text-blue-600 hover:text-blue-700 font-medium text-sm flex items-center">
                         Read Guide
