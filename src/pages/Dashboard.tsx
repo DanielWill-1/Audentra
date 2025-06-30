@@ -83,9 +83,18 @@ const getUserName = (user: any) => {
   return 'User';
 };
 
+// Storage keys for persistent settings
+const STORAGE_KEYS = {
+  DASHBOARD_SETTINGS: 'dashboardSettings',
+  ACTIVE_TAB: 'dashboardActiveTab'
+};
+
 function Dashboard() {
   const { user, signOut } = useAuth();
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeTab, setActiveTab] = useState(() => {
+    const savedTab = localStorage.getItem(STORAGE_KEYS.ACTIVE_TAB);
+    return savedTab || 'overview';
+  });
   const navigate = useNavigate();
 
   // Team collaboration state
@@ -100,6 +109,26 @@ function Dashboard() {
   const sharedTemplatesRef = useRef<HTMLDivElement>(null);
   const sharedByMeRef = useRef<HTMLDivElement>(null);
 
+  // Settings state
+  const [settings, setSettings] = useState(() => {
+    const savedSettings = localStorage.getItem(STORAGE_KEYS.DASHBOARD_SETTINGS);
+    return savedSettings ? JSON.parse(savedSettings) : {
+      language: 'English (US)',
+      voiceSensitivity: 7,
+      aiProcessingSpeed: 'Real-time (Recommended)',
+      industrySpecialization: 'Healthcare',
+      formCompletionAlerts: true,
+      templateReviewReminders: true,
+      teamCollaborationUpdates: false,
+      scheduledFormReminders: true,
+      securityAlerts: true,
+      notificationFrequency: 'Immediate',
+      twoFactorAuth: false,
+      sessionTimeout: '30 minutes',
+      dataRetention: '1 year'
+    };
+  });
+
   // Stats data
   const statsData = {
     formsCompleted: 47,
@@ -107,6 +136,11 @@ function Dashboard() {
     accuracy: '99.2%',
     avgTime: '2:14'
   };
+
+  // Save active tab to localStorage when it changes
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEYS.ACTIVE_TAB, activeTab);
+  }, [activeTab]);
 
   // Load team collaboration data when collaboration tab is active
   useEffect(() => {
@@ -266,6 +300,13 @@ function Dashboard() {
 
   const handleQuickVoiceFormRedirect = () => {
     navigate('/templates');
+  };
+
+  // Update settings and save to localStorage
+  const updateSettings = (newSettings: any) => {
+    const updatedSettings = { ...settings, ...newSettings };
+    setSettings(updatedSettings);
+    localStorage.setItem(STORAGE_KEYS.DASHBOARD_SETTINGS, JSON.stringify(updatedSettings));
   };
 
   const renderOverview = () => (
@@ -476,7 +517,9 @@ function Dashboard() {
   );
 
   const renderCollaboration = () => {
-    const activeMembers = 3;
+    const activeMembers = localStorage.getItem('teamMembers') 
+      ? JSON.parse(localStorage.getItem('teamMembers')!).filter((m: any) => m.status === 'active').length 
+      : 3;
     const totalSharedTemplates = sharedWithMeData.length + sharedByMeData.length;
     const templatesAwaitingApproval = 2;
     const growthPercentage = 15;
@@ -737,7 +780,11 @@ function Dashboard() {
           <div className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Language</label>
-              <select className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+              <select 
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                value={settings.language}
+                onChange={(e) => updateSettings({ language: e.target.value })}
+              >
                 <option>English (US)</option>
                 <option>English (UK)</option>
                 <option>Spanish</option>
@@ -748,7 +795,14 @@ function Dashboard() {
             
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Voice Sensitivity</label>
-              <input type="range" className="w-full" min="1" max="10" defaultValue="7" />
+              <input 
+                type="range" 
+                className="w-full" 
+                min="1" 
+                max="10" 
+                value={settings.voiceSensitivity}
+                onChange={(e) => updateSettings({ voiceSensitivity: parseInt(e.target.value) })}
+              />
               <div className="flex justify-between text-xs text-gray-500 mt-1">
                 <span>Low</span>
                 <span>High</span>
@@ -757,7 +811,11 @@ function Dashboard() {
             
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">AI Processing Speed</label>
-              <select className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+              <select 
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                value={settings.aiProcessingSpeed}
+                onChange={(e) => updateSettings({ aiProcessingSpeed: e.target.value })}
+              >
                 <option>Real-time (Recommended)</option>
                 <option>Fast</option>
                 <option>Balanced</option>
@@ -767,7 +825,11 @@ function Dashboard() {
             
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Industry Specialization</label>
-              <select className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+              <select 
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                value={settings.industrySpecialization}
+                onChange={(e) => updateSettings({ industrySpecialization: e.target.value })}
+              >
                 <option>Healthcare</option>
                 <option>Field Work & Construction</option>
                 <option>Human Resources</option>
@@ -789,7 +851,12 @@ function Dashboard() {
                 <h4 className="text-sm font-medium text-gray-900">Form completion alerts</h4>
                 <p className="text-xs text-gray-600">Get notified when forms are completed</p>
               </div>
-              <input type="checkbox" defaultChecked className="rounded text-blue-600 focus:ring-blue-500" />
+              <input 
+                type="checkbox" 
+                checked={settings.formCompletionAlerts}
+                onChange={(e) => updateSettings({ formCompletionAlerts: e.target.checked })}
+                className="rounded text-blue-600 focus:ring-blue-500" 
+              />
             </div>
             
             <div className="flex items-center justify-between">
@@ -797,7 +864,12 @@ function Dashboard() {
               <h4 className="text-sm font-medium text-gray-900">Template review reminders</h4>
                 <p className="text-xs text-gray-600">Reminders for pending template approvals</p>
               </div>
-              <input type="checkbox" defaultChecked className="rounded text-blue-600 focus:ring-blue-500" />
+              <input 
+                type="checkbox" 
+                checked={settings.templateReviewReminders}
+                onChange={(e) => updateSettings({ templateReviewReminders: e.target.checked })}
+                className="rounded text-blue-600 focus:ring-blue-500" 
+              />
             </div>
             
             <div className="flex items-center justify-between">
@@ -805,7 +877,12 @@ function Dashboard() {
                 <h4 className="text-sm font-medium text-gray-900">Team collaboration updates</h4>
                 <p className="text-xs text-gray-600">Updates when team members share templates</p>
               </div>
-              <input type="checkbox" className="rounded text-blue-600 focus:ring-blue-500" />
+              <input 
+                type="checkbox" 
+                checked={settings.teamCollaborationUpdates}
+                onChange={(e) => updateSettings({ teamCollaborationUpdates: e.target.checked })}
+                className="rounded text-blue-600 focus:ring-blue-500" 
+              />
             </div>
             
             <div className="flex items-center justify-between">
@@ -813,7 +890,12 @@ function Dashboard() {
                 <h4 className="text-sm font-medium text-gray-900">Scheduled form reminders</h4>
                 <p className="text-xs text-gray-600">Reminders for recurring forms</p>
               </div>
-              <input type="checkbox" defaultChecked className="rounded text-blue-600 focus:ring-blue-500" />
+              <input 
+                type="checkbox" 
+                checked={settings.scheduledFormReminders}
+                onChange={(e) => updateSettings({ scheduledFormReminders: e.target.checked })}
+                className="rounded text-blue-600 focus:ring-blue-500" 
+              />
             </div>
             
             <div className="flex items-center justify-between">
@@ -821,12 +903,21 @@ function Dashboard() {
                 <h4 className="text-sm font-medium text-gray-900">Security alerts</h4>
                 <p className="text-xs text-gray-600">Important security and compliance notifications</p>
               </div>
-              <input type="checkbox" defaultChecked className="rounded text-blue-600 focus:ring-blue-500" />
+              <input 
+                type="checkbox" 
+                checked={settings.securityAlerts}
+                onChange={(e) => updateSettings({ securityAlerts: e.target.checked })}
+                className="rounded text-blue-600 focus:ring-blue-500" 
+              />
             </div>
             
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Notification Frequency</label>
-              <select className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+              <select 
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                value={settings.notificationFrequency}
+                onChange={(e) => updateSettings({ notificationFrequency: e.target.value })}
+              >
                 <option>Immediate</option>
                 <option>Hourly digest</option>
                 <option>Daily digest</option>
@@ -846,8 +937,11 @@ function Dashboard() {
                 <h4 className="text-sm font-medium text-gray-900">Two-factor authentication</h4>
                 <p className="text-xs text-gray-600">Add an extra layer of security</p>
               </div>
-              <button className="text-blue-600 hover:text-blue-700 text-sm font-medium">
-                Enable
+              <button 
+                className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+                onClick={() => updateSettings({ twoFactorAuth: !settings.twoFactorAuth })}
+              >
+                {settings.twoFactorAuth ? 'Disable' : 'Enable'}
               </button>
             </div>
             
@@ -856,7 +950,11 @@ function Dashboard() {
                 <h4 className="text-sm font-medium text-gray-900">Session timeout</h4>
                 <p className="text-xs text-gray-600">Auto-logout after inactivity</p>
               </div>
-              <select className="text-sm border border-gray-300 rounded px-2 py-1">
+              <select 
+                className="text-sm border border-gray-300 rounded px-2 py-1"
+                value={settings.sessionTimeout}
+                onChange={(e) => updateSettings({ sessionTimeout: e.target.value })}
+              >
                 <option>30 minutes</option>
                 <option>1 hour</option>
                 <option>4 hours</option>
@@ -869,7 +967,11 @@ function Dashboard() {
                 <h4 className="text-sm font-medium text-gray-900">Data retention</h4>
                 <p className="text-xs text-gray-600">How long to keep completed forms</p>
               </div>
-              <select className="text-sm border border-gray-300 rounded px-2 py-1">
+              <select 
+                className="text-sm border border-gray-300 rounded px-2 py-1"
+                value={settings.dataRetention}
+                onChange={(e) => updateSettings({ dataRetention: e.target.value })}
+              >
                 <option>30 days</option>
                 <option>90 days</option>
                 <option>1 year</option>

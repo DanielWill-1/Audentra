@@ -19,7 +19,7 @@ interface InviteMemberModalProps {
 
 interface InviteData {
   email: string;
-  role: 'admin' | 'editor' | 'viewer';
+  role: 'admin' | 'user';
   message?: string;
 }
 
@@ -31,23 +31,17 @@ const ROLES = [
     permissions: ['Create templates', 'Edit templates', 'Delete templates', 'Manage team', 'View analytics']
   },
   { 
-    id: 'editor', 
-    name: 'Editor', 
-    description: 'Can create and edit templates',
+    id: 'user', 
+    name: 'User', 
+    description: 'Can create and use templates',
     permissions: ['Create templates', 'Edit templates', 'View analytics']
-  },
-  { 
-    id: 'viewer', 
-    name: 'Viewer', 
-    description: 'Read-only access to templates',
-    permissions: ['View templates', 'Use templates']
   }
 ];
 
 export default function InviteMemberModal({ isOpen, onClose }: InviteMemberModalProps) {
   const { user } = useAuth();
   const [invites, setInvites] = useState<InviteData[]>([
-    { email: '', role: 'editor', message: '' }
+    { email: '', role: 'user', message: '' }
   ]);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState<string | null>(null);
@@ -76,7 +70,7 @@ export default function InviteMemberModal({ isOpen, onClose }: InviteMemberModal
   }, []);
 
   const addInvite = () => {
-    setInvites([...invites, { email: '', role: 'editor', message: '' }]);
+    setInvites([...invites, { email: '', role: 'user', message: '' }]);
   };
 
   const removeInvite = (index: number) => {
@@ -157,7 +151,7 @@ export default function InviteMemberModal({ isOpen, onClose }: InviteMemberModal
       
       // Reset form after success
       setTimeout(() => {
-        setInvites([{ email: '', role: 'editor', message: '' }]);
+        setInvites([{ email: '', role: 'user', message: '' }]);
         setSuccess(null);
         onClose();
       }, 2000);
@@ -170,7 +164,7 @@ export default function InviteMemberModal({ isOpen, onClose }: InviteMemberModal
   };
 
   const handleClose = () => {
-    setInvites([{ email: '', role: 'editor', message: '' }]);
+    setInvites([{ email: '', role: 'user', message: '' }]);
     setError(null);
     setSuccess(null);
     onClose();

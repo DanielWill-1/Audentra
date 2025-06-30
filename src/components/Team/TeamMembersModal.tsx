@@ -28,7 +28,7 @@ interface TeamMember {
   id: string;
   name: string;
   email: string;
-  role: 'admin' | 'editor' | 'viewer';
+  role: 'admin' | 'user';
   status: 'active' | 'pending' | 'inactive';
   joinedAt: string;
   lastActive?: string;
@@ -38,7 +38,7 @@ interface TeamMember {
 interface PendingInvite {
   id: string;
   email: string;
-  role: 'admin' | 'editor' | 'viewer';
+  role: 'admin' | 'user';
   sentAt: string;
   sentBy: string;
   status: 'pending' | 'expired';
@@ -46,14 +46,17 @@ interface PendingInvite {
 
 const ROLE_COLORS = {
   admin: 'bg-red-100 text-red-700',
-  editor: 'bg-blue-100 text-blue-700',
-  viewer: 'bg-green-100 text-green-700'
+  user: 'bg-blue-100 text-blue-700'
 };
 
 const ROLE_ICONS = {
   admin: Crown,
-  editor: Edit,
-  viewer: Eye
+  user: Eye
+};
+
+const STORAGE_KEYS = {
+  TEAM_MEMBERS: 'teamMembers',
+  PENDING_INVITES: 'pendingInvites'
 };
 
 export default function TeamMembersModal({ isOpen, onClose, onInvite }: TeamMembersModalProps) {
@@ -64,6 +67,7 @@ export default function TeamMembersModal({ isOpen, onClose, onInvite }: TeamMemb
   const [pendingInvites, setPendingInvites] = useState<PendingInvite[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
   const membersContainerRef = useRef<HTMLDivElement>(null);
   const invitesContainerRef = useRef<HTMLDivElement>(null);
 
@@ -119,45 +123,56 @@ export default function TeamMembersModal({ isOpen, onClose, onInvite }: TeamMemb
       const lastName = user.user_metadata?.last_name || '';
       const userName = `${firstName} ${lastName}`.trim() || user.email?.split('@')[0] || 'User';
       
-      // Create current user as admin
-      const currentUserMember: TeamMember = {
-        id: user.id,
-        name: userName,
-        email: user.email || 'user@example.com',
-        role: 'admin',
-        status: 'active',
-        joinedAt: new Date().toISOString(),
-        lastActive: '2 minutes ago'
-      };
+      // Load team members from localStorage
+      const storedMembers = localStorage.getItem(STORAGE_KEYS.TEAM_MEMBERS);
+      let members: TeamMember[] = [];
       
-      // Try to fetch team members from database
-      // For now, we'll use the current user and some example team members
-      const otherMembers: TeamMember[] = [
-        {
-          id: '2',
-          name: 'Alex Chen',
-          email: 'alex@audentra.com',
-          role: 'editor',
+      if (storedMembers) {
+        members = JSON.parse(storedMembers);
+      } else {
+        // Create current user as admin
+        const currentUserMember: TeamMember = {
+          id: user.id,
+          name: userName,
+          email: user.email || 'user@example.com',
+          role: 'admin',
           status: 'active',
-          joinedAt: '2024-01-16',
-          lastActive: '1 hour ago'
-        },
-        {
-          id: '3',
-          name: 'Maria Johnson',
-          email: 'maria@audentra.com',
-          role: 'editor',
-          status: 'active',
-          joinedAt: '2024-01-18',
-          lastActive: '3 hours ago'
-        }
-      ];
+          joinedAt: new Date().toISOString(),
+          lastActive: '2 minutes ago'
+        };
+        
+        // Add example team members
+        const otherMembers: TeamMember[] = [
+          {
+            id: '2',
+            name: 'Alex Chen',
+            email: 'alex@audentra.com',
+            role: 'user',
+            status: 'active',
+            joinedAt: '2024-01-16',
+            lastActive: '1 hour ago'
+          },
+          {
+            id: '3',
+            name: 'Maria Johnson',
+            email: 'maria@audentra.com',
+            role: 'user',
+            status: 'active',
+            joinedAt: '2024-01-18',
+            lastActive: '3 hours ago'
+          }
+        ];
+        
+        members = [currentUserMember, ...otherMembers];
+        
+        // Save to localStorage
+        localStorage.setItem(STORAGE_KEYS.TEAM_MEMBERS, JSON.stringify(members));
+      }
       
-      setTeamMembers([currentUserMember, ...otherMembers]);
+      setTeamMembers(members);
       
-      // Try to fetch pending invites from database
-      // For now, we'll use some example invites
-      const storedInvites = localStorage.getItem('pendingInvites');
+      // Load pending invites from localStorage
+      const storedInvites = localStorage.getItem(STORAGE_KEYS.PENDING_INVITES);
       if (storedInvites) {
         setPendingInvites(JSON.parse(storedInvites));
       } else {
@@ -196,12 +211,17 @@ export default function TeamMembersModal({ isOpen, onClose, onInvite }: TeamMemb
         );
         
         // Store in localStorage for persistence
-        localStorage.setItem('pendingInvites', JSON.stringify(updatedInvites));
+        localStorage.setItem(STORAGE_KEYS.PENDING_INVITES, JSON.stringify(updatedInvites));
         
         return updatedInvites;
       });
+      
+      setSuccess('Invitation resent successfully');
+      setTimeout(() => setSuccess(null), 3000);
     } catch (error) {
       console.error('Failed to resend invite:', error);
+      setError('Failed to resend invitation');
+      setTimeout(() => setError(null), 3000);
     }
   };
 
@@ -212,12 +232,17 @@ export default function TeamMembersModal({ isOpen, onClose, onInvite }: TeamMemb
         const updatedInvites = prevInvites.filter(invite => invite.id !== inviteId);
         
         // Store in localStorage for persistence
-        localStorage.setItem('pendingInvites', JSON.stringify(updatedInvites));
+        localStorage.setItem(STORAGE_KEYS.PENDING_INVITES, JSON.stringify(updatedInvites));
         
         return updatedInvites;
       });
+      
+      setSuccess('Invitation cancelled successfully');
+      setTimeout(() => setSuccess(null), 3000);
     } catch (error) {
       console.error('Failed to cancel invite:', error);
+      setError('Failed to cancel invitation');
+      setTimeout(() => setError(null), 3000);
     }
   };
 
@@ -226,15 +251,26 @@ export default function TeamMembersModal({ isOpen, onClose, onInvite }: TeamMemb
       // Don't allow removing the current user (admin)
       if (memberId === user?.id) {
         setError("You cannot remove yourself from the team.");
+        setTimeout(() => setError(null), 3000);
         return;
       }
       
       // Remove the member
-      setTeamMembers(prevMembers => 
-        prevMembers.filter(member => member.id !== memberId)
-      );
+      setTeamMembers(prevMembers => {
+        const updatedMembers = prevMembers.filter(member => member.id !== memberId);
+        
+        // Store in localStorage for persistence
+        localStorage.setItem(STORAGE_KEYS.TEAM_MEMBERS, JSON.stringify(updatedMembers));
+        
+        return updatedMembers;
+      });
+      
+      setSuccess('Team member removed successfully');
+      setTimeout(() => setSuccess(null), 3000);
     } catch (error) {
       console.error('Failed to remove member:', error);
+      setError('Failed to remove team member');
+      setTimeout(() => setError(null), 3000);
     }
   };
 
@@ -243,21 +279,39 @@ export default function TeamMembersModal({ isOpen, onClose, onInvite }: TeamMemb
       // Don't allow changing the current user's role
       if (memberId === user?.id) {
         setError("You cannot change your own role.");
+        setTimeout(() => setError(null), 3000);
         return;
       }
       
       // Update the member's role
-      setTeamMembers(prevMembers => 
-        prevMembers.map(member => 
+      setTeamMembers(prevMembers => {
+        const updatedMembers = prevMembers.map(member => 
           member.id === memberId 
-            ? { ...member, role: newRole as 'admin' | 'editor' | 'viewer' } 
+            ? { ...member, role: newRole as 'admin' | 'user' } 
             : member
-        )
-      );
+        );
+        
+        // Store in localStorage for persistence
+        localStorage.setItem(STORAGE_KEYS.TEAM_MEMBERS, JSON.stringify(updatedMembers));
+        
+        return updatedMembers;
+      });
+      
       setShowRoleModal(null);
+      setSuccess('Team member role updated successfully');
+      setTimeout(() => setSuccess(null), 3000);
     } catch (error) {
       console.error('Failed to change role:', error);
+      setError('Failed to update team member role');
+      setTimeout(() => setError(null), 3000);
     }
+  };
+
+  const handleClose = () => {
+    setShowRoleModal(null);
+    setError(null);
+    setSuccess(null);
+    onClose();
   };
 
   if (!isOpen) return null;
@@ -285,7 +339,7 @@ export default function TeamMembersModal({ isOpen, onClose, onInvite }: TeamMemb
                 <UserPlus className="w-4 h-4 mr-2" />
                 Invite Member
               </button>
-              <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+              <button onClick={handleClose} className="text-gray-400 hover:text-gray-600">
                 <X className="w-6 h-6" />
               </button>
             </div>
@@ -323,6 +377,14 @@ export default function TeamMembersModal({ isOpen, onClose, onInvite }: TeamMemb
             <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-center mb-6">
               <AlertTriangle className="w-5 h-5 text-red-600 mr-3" />
               <span className="text-red-800 text-sm">{error}</span>
+            </div>
+          )}
+          
+          {/* Success Message */}
+          {success && (
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4 flex items-center mb-6">
+              <CheckCircle className="w-5 h-5 text-green-600 mr-3" />
+              <span className="text-green-800 text-sm">{success}</span>
             </div>
           )}
 
@@ -522,7 +584,7 @@ export default function TeamMembersModal({ isOpen, onClose, onInvite }: TeamMemb
             }
           </div>
           <button
-            onClick={onClose}
+            onClick={handleClose}
             className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
           >
             Close
