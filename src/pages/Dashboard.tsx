@@ -1,4 +1,5 @@
-import React, { useState, useContext, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { 
   Mic, 
   Plus, 
@@ -45,10 +46,10 @@ import {
   Repeat2,
   Loader2,
   RefreshCw,
-  EyeOff
+  EyeOff,
+  LogOut
 } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
-import { AuthContext } from '../contexts/AuthContext';
+import { useAuth } from '../contexts/AuthContext';
 import { getSharedTemplates, getTemplatesSharedByUser, Template } from '../lib/templates';
 import InviteMemberModal from '../components/Team/InviteMemberModal';
 import TeamMembersModal from '../components/Team/TeamMembersModal';
@@ -56,6 +57,8 @@ import ShareNewTemplateModal from '../components/Team/ShareNewTemplateModal';
 import SharedTemplateCard from '../components/Team/SharedTemplateCard';
 import ReviewQueueModal from '../components/Team/ReviewQueueModal';
 import StatsCard from '../components/Stats/StatsCard';
+import UpcomingEvents from '../components/Scheduler/UpcomingEvents';
+import ScheduleStats from '../components/Scheduler/ScheduleStats';
 
 interface SharedTemplateData {
   id: string;
@@ -69,7 +72,7 @@ interface SharedTemplateData {
 }
 
 // Get user's first name for welcome message
-const getUserName = (user) => {
+const getUserName = (user: any) => {
   if (user?.user_metadata?.first_name) {
     return user.user_metadata.first_name;
   }
@@ -80,7 +83,7 @@ const getUserName = (user) => {
 };
 
 function Dashboard() {
-  const { user, signOut } = useContext(AuthContext);
+  const { user, signOut } = useAuth();
   const [activeTab, setActiveTab] = useState('overview');
   const navigate = useNavigate();
 
@@ -253,7 +256,7 @@ function Dashboard() {
   };
 
   const handleManageSchedulesRedirect = () => {
-    navigate('/ManageSchedules');
+    navigate('/manage-schedules');
   };
 
   const handleAddNewScheduleRedirect = () => {
@@ -261,7 +264,7 @@ function Dashboard() {
   };
 
   const handleQuickVoiceFormRedirect = () => {
-    navigate('/AIVoiceAutoFill');
+    navigate('/templates');
   };
 
   const renderOverview = () => (
@@ -316,8 +319,6 @@ function Dashboard() {
               </div>
             </div>
           </div>
-
-          
         </section>
 
         {/* Scheduling & Automation */}
@@ -333,34 +334,13 @@ function Dashboard() {
           </div>
           
           <div className="bg-white rounded-2xl border border-gray-200 p-6">
-            <div className="grid md:grid-cols-2 gap-6 mb-6">
-              <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-                <div className="flex items-center justify-between mb-3">
-                  <h4 className="font-medium text-gray-900">Weekly Safety Inspection</h4>
-                  <button className="text-blue-600 hover:text-blue-700">
-                    <Edit className="w-4 h-4" />
-                  </button>
-                </div>
-                <p className="text-sm text-gray-600 mb-2">Every Monday at 9:00 AM</p>
-                <div className="flex items-center text-xs text-blue-600">
-                  <Calendar className="w-4 h-4 mr-1" />
-                  Next: Tomorrow at 9:00 AM
-                </div>
-              </div>
-              
-              <div className="p-4 bg-emerald-50 rounded-lg border border-emerald-200">
-                <div className="flex items-center justify-between mb-3">
-                  <h4 className="font-medium text-gray-900">Monthly HR Review</h4>
-                  <button className="text-emerald-600 hover:text-emerald-700">
-                    <Edit className="w-4 h-4" />
-                  </button>
-                </div>
-                <p className="text-sm text-gray-600 mb-2">First Friday of each month at 2:00 PM</p>
-                <div className="flex items-center text-xs text-emerald-600">
-                  <Calendar className="w-4 h-4 mr-1" />
-                  Next: March 1st at 2:00 PM
-                </div>
-              </div>
+            {/* Schedule Stats */}
+            <ScheduleStats className="mb-6" />
+            
+            {/* Upcoming Events */}
+            <div className="mb-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Upcoming Events</h3>
+              <UpcomingEvents limit={2} showViewAll={false} />
             </div>
             
             <div className="grid md:grid-cols-2 gap-4">
@@ -371,6 +351,13 @@ function Dashboard() {
                 <Plus className="w-4 h-4 inline mr-2" />
                 Add New Schedule
               </button>
+              <Link 
+                to="/manage-schedules"
+                className="bg-gray-100 text-gray-700 py-2 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium text-center"
+              >
+                <Calendar className="w-4 h-4 inline mr-2" />
+                View All Schedules
+              </Link>
             </div>
           </div>
         </section>
@@ -989,6 +976,7 @@ function Dashboard() {
                 onClick={handleLogout}
                 className="flex items-center text-sm text-blue-600 bg-blue-50 px-3 py-1 rounded-full hover:bg-blue-100 transition-colors"
               >
+                <LogOut className="w-4 h-4 mr-1" />
                 Logout
               </button>
             </div>
