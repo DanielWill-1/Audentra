@@ -429,4 +429,4 @@ function extractDataFromText(text: string, formFields: any[], currentFormData: a
   }
 
   return extractedData;
-}
+} 
