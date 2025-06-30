@@ -8,6 +8,7 @@ import {
 import { useAuth } from '../contexts/AuthContext';
 import { getUserTemplates, Template } from '../lib/templates';
 import { transcribeAudio, processWithGroq, synthesizeSpeech } from '../services/ai';
+import { supabase } from '../lib/supabaseClient'; // adjust path as needed
 
 interface FormField {
   id: string;
@@ -326,10 +327,24 @@ function AIVoiceAutoFill() {
 
   const submitForm = async () => {
     try {
-      // Here you would typically save the form data
-      console.log('Submitting form:', { template: selectedTemplate, data: formData });
-      
-      // Add success message
+      // Ensure formData is properly structured
+      const formattedFormData = formFields.reduce((acc, field) => {
+        acc[field.label] = formData[field.id] || '';
+        return acc;
+      }, {});
+
+      // Save to Supabase
+      const { error } = await supabase.from('filled_templates').insert([
+        {
+          user_id: user.id,
+          template_id: selectedTemplate?.id,
+          template_name: selectedTemplate?.name,
+          form_data: formattedFormData, // Save form data with labels
+        }
+      ]);
+      if (error) throw error;
+
+      // Success message and redirect
       const successMessage: ChatMessage = {
         id: Date.now().toString(),
         type: 'system',
@@ -337,12 +352,9 @@ function AIVoiceAutoFill() {
         timestamp: new Date()
       };
       setChatMessages(prev => [...prev, successMessage]);
-      
-      // Navigate back or show success state
       setTimeout(() => {
         navigate('/dashboard');
       }, 2000);
-      
     } catch (err: any) {
       setError('Failed to submit form. Please try again.');
     }
