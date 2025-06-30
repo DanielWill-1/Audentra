@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';Add commentMore actions
+import React, { useState, useContext } from 'react';
 
 import { 
   Mic, 
