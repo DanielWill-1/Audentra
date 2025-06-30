@@ -4,9 +4,10 @@
   "version": "0.0.0",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && tsc",
+    "build": "vite build && tsc && npm run copy-service-account",
     "lint": "eslint .",
     "preview": "vite preview",
+    "copy-service-account": "copy service-account.json dist\\",
     "server": "ts-node server/index.ts",
     "start": "node dist/server/index.js",
     "dev:server": "ts-node server/index.ts"
