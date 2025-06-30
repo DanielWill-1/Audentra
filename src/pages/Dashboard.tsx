@@ -50,11 +50,11 @@ import {
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext';
 import { getSharedTemplates, getTemplatesSharedByUser, Template } from '../lib/templates';
-import InviteMemberModal from '../components/Team/InviteMemberModal';
-import TeamMembersModal from '../components/Team/TeamMembersModal';
-import ShareNewTemplateModal from '../components/Team/ShareNewTemplateModal';
-import SharedTemplateCard from '../components/Team/SharedTemplateCard';
-import ReviewQueueModal from '../components/Team/ReviewQueueModal';
+import InviteMemberModal from '../components/team/InviteMemberModal';
+import TeamMembersModal from '../components/team/TeamMembersModal';
+import ShareNewTemplateModal from '../components/team/ShareNewTemplateModal';
+import SharedTemplateCard from '../components/team/SharedTemplateCard';
+import ReviewQueueModal from '../components/team/ReviewQueueModal';
 import StatsCard from '../components/stats/StatsCard';
 import ScheduleStats from '../components/Scheduler/ScheduleStats';
 import UpcomingEvents from '../components/Scheduler/UpcomingEvents';
