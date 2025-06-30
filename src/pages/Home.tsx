@@ -44,9 +44,12 @@ function Home() {
                   <Play className="w-5 h-5 mr-2" />
                   Try Voice Demo
                 </Link>
-                <button className="border-2 border-gray-300 text-gray-700 px-8 py-4 rounded-lg text-lg font-semibold hover:border-blue-600 hover:text-blue-600 transition-colors">
+                <Link 
+                  to="https://youtu.be/Vl8eiDDkbbU"
+                  className="border-2 border-gray-300 text-gray-700 px-8 py-4 rounded-lg text-lg font-semibold hover:border-blue-600 hover:text-blue-600 transition-colors"
+                >
                   Watch 2-Min Demo
-                </button>
+                </Link>
               </div>
               <div className="flex items-center space-x-6 text-sm text-gray-600">
                 <div className="flex items-center">
