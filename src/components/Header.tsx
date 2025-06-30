@@ -33,11 +33,21 @@ function Header() {
               <Mic className="w-8 h-8 text-white" />
             </div>
             <span className="text-2xl font-bold text-gray-900">Audentra</span>
-            <img
-              src="/image.png" // Reference the logo from the public folder
-              alt="Audentra Logo"
-              className="w-20 h-20 object-contain"
-            />
+            {/* Custom Bolt.new Badge */}
+            <div className="bolt-badge-container">
+              <a
+                href="https://bolt.new/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bolt-badge-link"
+              >
+                <img
+                  src="https://storage.bolt.army/white_circle_360x360.png"
+                  alt="Built with Bolt.new badge"
+                  className="w-20 h-20 object-contain"
+                />
+              </a>
+            </div>
           </Link>
           <nav className="hidden md:flex space-x-8">
             <Link 
