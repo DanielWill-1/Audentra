@@ -59,9 +59,9 @@ const UpcomingEvents: React.FC<UpcomingEventsProps> = ({
             priority: 'high',
             location: 'Construction Site A',
             status: 'scheduled',
-            createdBy: 'user-id',
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
+            created_by: 'user-id',
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
           },
           {
             id: '2',
@@ -74,9 +74,9 @@ const UpcomingEvents: React.FC<UpcomingEventsProps> = ({
             priority: 'medium',
             location: 'Conference Room B',
             status: 'scheduled',
-            createdBy: 'user-id',
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
+            created_by: 'user-id',
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
           }
         ];
         setEvents(mockEvents);
