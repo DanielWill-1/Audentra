@@ -74,6 +74,17 @@ interface SharedTemplateData {
   message: string;
 }
 
+const STORAGE_KEYS = {
+  DASHBOARD_SETTINGS: 'voiceform_dashboard_settings',
+};
+
+const DEFAULT_SETTINGS = {
+  language: 'English (US)',
+  voiceSensitivity: 7,
+  aiProcessingSpeed: 'Real-time (Recommended)',
+  industrySpecialization: 'Healthcare',
+};
+
 // Get user's first name for welcome message
 const getUserName = (user) => {
   if (user?.user_metadata?.first_name) {
@@ -99,6 +110,10 @@ function Dashboard() {
   const [sharedByMeData, setSharedByMeData] = useState<SharedTemplateData[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [settings, setSettings] = useState(() => {
+    const saved = localStorage.getItem(STORAGE_KEYS.DASHBOARD_SETTINGS);
+    return saved ? JSON.parse(saved) : DEFAULT_SETTINGS;
+  });
   const sharedTemplatesRef = useRef<HTMLDivElement>(null);
   const sharedByMeRef = useRef<HTMLDivElement>(null);
 
