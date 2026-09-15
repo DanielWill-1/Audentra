@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+          "surface-container-lowest": "#ffffff",
+          "secondary-fixed-dim": "#d2bbff",
+          "tertiary-container": "#bc4800",
+          "primary-fixed": "#dbe1ff",
+          "surface-variant": "#dbe2f9",
+          "error-container": "#ffdad6",
+          "outline-variant": "#c3c6d7",
+          "surface-dim": "#d2daf0",
+          "inverse-primary": "#b4c5ff",
+          "text-primary": "#101828",
+          "text-muted": "#667085",
+          "surface-tint": "#0053db",
+          "on-secondary-fixed-variant": "#5a00c6",
+          "on-secondary-container": "#fffbff",
+          "error": "#F04438",
+          "on-tertiary-fixed-variant": "#7d2d00",
+          "brand-hover": "#1D4ED8",
+          "success": "#12B76A",
+          "text-secondary": "#475467",
+          "surface-container-high": "#e0e8ff",
+          "on-surface": "#141b2c",
+          "on-secondary-fixed": "#25005a",
+          "surface-container-low": "#f1f3ff",
+          "warning": "#F79009",
+          "tertiary-fixed-dim": "#ffb596",
+          "border": "#E4E7EC",
+          "on-primary-fixed-variant": "#003ea8",
+          "tertiary": "#943700",
+          "background": "#F8F9FB",
+          "on-tertiary-container": "#ffede6",
+          "on-background": "#141b2c",
+          "on-primary": "#ffffff",
+          "secondary-fixed": "#eaddff",
+          "surface": "#FFFFFF",
+          "brand-soft": "#EFF6FF",
+          "on-primary-container": "#eeefff",
+          "surface-container": "#e9edff",
+          "on-error-container": "#93000a",
+          "surface-subtle": "#F2F4F7",
+          "secondary": "#712ae2",
+          "on-secondary": "#ffffff",
+          "on-surface-variant": "#434655",
+          "on-error": "#ffffff",
+          "tertiary-fixed": "#ffdbcd",
+          "secondary-container": "#8a4cfc",
+          "voice-soft": "#F5F3FF",
+          "inverse-on-surface": "#edf0ff",
+          "surface-bright": "#f9f9ff",
+          "primary-container": "#2563eb",
+          "on-tertiary-fixed": "#360f00",
+          "border-strong": "#D0D5DD",
+          "on-tertiary": "#ffffff",
+          "primary": "#004ac6",
+          "voice": "#7C3AED",
+          "inverse-surface": "#293041",
+          "outline": "#737686",
+          "surface-container-highest": "#dbe2f9",
+          "primary-fixed-dim": "#b4c5ff",
+          "on-primary-fixed": "#00174b"
+        },
+        "borderRadius": {
+          "DEFAULT": "0.25rem",
+          "lg": "0.5rem",
+          "xl": "0.75rem",
+          "full": "9999px"
+        },
+        "spacing": {
+          "space-lg": "1.5rem",
+          "margin-desktop": "2.5rem",
+          "section-desktop": "8.5rem",
+          "margin": "1.25rem",
+          "gutter": "1.5rem",
+          "space-xl": "2.5rem",
+          "space-sm": "0.5rem",
+          "margin-tablet": "2.5rem",
+          "space-md": "1rem",
+          "space-xs": "0.25rem",
+          "gutter-desktop": "2rem",
+          "section-tablet": "5.5rem",
+          "section-mobile": "4.5rem"
+        },
+        "fontFamily": {
+          "metadata": [
+            "Hanken Grotesk"
+          ],
+          "headline-h2-mobile": [
+            "Hanken Grotesk"
+          ],
+          "display-hero": [
+            "Hanken Grotesk"
+          ],
+          "display-hero-mobile": [
+            "Hanken Grotesk"
+          ],
+          "body-large": [
+            "Hanken Grotesk"
+          ],
+          "body-medium": [
+            "Hanken Grotesk"
+          ],
+          "body": [
+            "Hanken Grotesk"
+          ],
+          "headline-h3": [
+            "Hanken Grotesk"
+          ],
+          "headline-h2": [
+            "Hanken Grotesk"
+          ],
+          "label-code": [
+            "JetBrains Mono"
+          ]
+        },
+        "fontSize": {
+          "metadata": [
+            "13px",
+            {
+              "lineHeight": "18px",
+              "letterSpacing": "0.01em",
+              "fontWeight": "500"
+            }
+          ],
+          "headline-h2-mobile": [
+            "32px",
+            {
+              "lineHeight": "36px",
+              "letterSpacing": "-0.02em",
+              "fontWeight": "600"
+            }
+          ],
+          "display-hero": [
+            "64px",
+            {
+              "lineHeight": "68px",
+              "letterSpacing": "-0.03em",
+              "fontWeight": "700"
+            }
+          ],
+          "display-hero-mobile": [
+            "40px",
+            {
+              "lineHeight": "44px",
+              "letterSpacing": "-0.02em",
+              "fontWeight": "700"
+            }
+          ],
+          "body-large": [
+            "19px",
+            {
+              "lineHeight": "28px",
+              "fontWeight": "400"
+            }
+          ],
+          "body-medium": [
+            "16px",
+            {
+              "lineHeight": "24px",
+              "fontWeight": "500"
+            }
+          ],
+          "body": [
+            "16px",
+            {
+              "lineHeight": "24px",
+              "fontWeight": "400"
+            }
+          ],
+          "headline-h3": [
+            "26px",
+            {
+              "lineHeight": "32px",
+              "letterSpacing": "-0.015em",
+              "fontWeight": "600"
+            }
+          ],
+          "headline-h2": [
+            "44px",
+            {
+              "lineHeight": "48px",
+              "letterSpacing": "-0.025em",
+              "fontWeight": "600"
+            }
+          ],
+          "label-code": [
+            "12px",
+            {
+              "lineHeight": "16px",
+              "fontWeight": "500"
+            }
+          ]
+        }
+      },
+    },
+  }</script></head><body class="bg-background font-body text-text-primary min-h-screen"><header class="fixed top-0 left-0 right-0 z-50 bg-surface border-b border-border"><div class="h-16 max-w-[1200px] mx-auto px-margin md:px-margin-tablet lg:px-margin-desktop flex items-center justify-between"><div class="flex items-center gap-space-lg"><a class="flex items-center gap-space-sm" data-path="home" href="#"><span class="font-headline-h3 text-headline-h3 text-text-primary tracking-tight">Audentra</span><span class="font-label-code text-label-code bg-surface-subtle text-text-secondary px-space-xs py-0.5 rounded border border-border">v0.8.2-alpha</span></a><nav class="hidden md:flex items-center gap-space-xs" data-active-classes="bg-brand-soft text-primary-container font-semibold rounded-lg"><a class="px-3 py-1.5 rounded-lg text-text-secondary hover:text-text-primary hover:bg-surface-subtle transition-colors font-body-medium text-body-medium" data-path="home" href="#">Home</a><a class="px-3 py-1.5 rounded-lg text-text-secondary hover:text-text-primary hover:bg-surface-subtle transition-colors font-body-medium text-body-medium" data-path="features" href="#">Features</a><a class="px-3 py-1.5 rounded-lg text-text-secondary hover:text-text-primary hover:bg-surface-subtle transition-colors font-body-medium text-body-medium" data-path="about" href="#">About</a><a class="px-3 py-1.5 rounded-lg text-text-secondary hover:text-text-primary hover:bg-surface-subtle transition-colors font-body-medium text-body-medium" data-path="documentation" href="#">Docs</a><a class="px-3 py-1.5 rounded-lg text-text-secondary hover:text-text-primary hover:bg-surface-subtle transition-colors font-body-medium text-body-medium" data-path="github-repository" href="#">GitHub</a></nav></div><div class="flex items-center gap-space-md"><a class="hidden sm:inline-flex items-center justify-center h-10 px-4 text-text-primary hover:text-primary-container transition-colors font-body-medium text-body-medium" data-path="sign-in" href="#">Sign in</a><a class="inline-flex items-center justify-center h-10 px-4 rounded-lg bg-primary-container hover:bg-brand-hover text-on-primary font-body-medium text-body-medium transition-colors shadow-[0_1px_3px_rgba(16,24,40,0.05)]" data-path="demo" href="#">Try Demo</a><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="w-full pt-16 bg-background"><div class="flex flex-col w-full">
+<!-- Minimal Ambient Top Gradient -->
+<div class="w-full relative overflow-hidden">
+<div class="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[280px] bg-gradient-to-b from-brand-soft via-transparent to-transparent pointer-events-none -z-10 opacity-70"></div>
+<div class="max-w-[960px] mx-auto px-margin md:px-margin-tablet lg:px-margin-desktop pt-space-xl pb-space-lg">
+<!-- Eyebrow & Breadcrumb Context -->
+<div class="flex items-center gap-space-sm mb-space-sm">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-surface border border-border font-label-code text-label-code text-voice font-semibold uppercase tracking-wider">
+<span class="w-1.5 h-1.5 rounded-full bg-voice animate-pulse"></span>
+          Open Source Governance
+        </span>
+<span class="text-text-muted font-label-code text-label-code">•</span>
+<span class="font-label-code text-label-code text-text-secondary uppercase tracking-wider">Permissive Licensing</span>
+</div>
+<!-- Main Document Title -->
+<h1 class="font-headline-h2 text-headline-h2 text-text-primary tracking-tight mb-space-sm">
+        Open Source License &amp; Attribution
+      </h1>
+<p class="font-body-large text-body-large text-text-secondary max-w-[760px] leading-relaxed">
+        Audentra is licensed under the Apache License, Version 2.0. Transparent, inspectable, and engineered for unrestricted commercial and internal enterprise integration.
+      </p>
+<!-- Visual Spec Metadata Bar (Single restrained shadow, crisp plane separation) -->
+<div class="mt-space-lg rounded-xl bg-surface border border-border shadow-[0_1px_3px_rgba(16,24,40,0.05),0_8px_24px_rgba(16,24,40,0.04)] overflow-hidden">
+<div class="grid grid-cols-2 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-border">
+<!-- Primary Identifier -->
+<div class="p-space-md flex flex-col justify-between">
+<span class="font-metadata text-metadata text-text-muted uppercase tracking-wider mb-1">Standard License</span>
+<div class="flex items-baseline gap-2">
+<span class="font-headline-h3 text-headline-h3 text-text-primary font-bold">Apache 2.0</span>
+</div>
+<span class="font-label-code text-label-code text-text-secondary mt-1">SPDX: <code class="text-primary font-semibold">Apache-2.0</code></span>
+</div>
+<!-- Permissions Breakdown -->
+<div class="p-space-md flex flex-col justify-between">
+<div class="flex items-center justify-between mb-1">
+<span class="font-metadata text-metadata text-text-muted uppercase tracking-wider">Permitted</span>
+<span class="inline-flex items-center text-success font-label-code text-label-code">
+<span class="material-symbols-outlined text-[15px] mr-0.5">check_circle</span> 5 grants
+              </span>
+</div>
+<div class="flex flex-wrap gap-1.5 mt-1">
+<span class="px-2 py-0.5 rounded bg-surface-subtle text-text-secondary border border-border font-metadata text-metadata">Commercial</span>
+<span class="px-2 py-0.5 rounded bg-surface-subtle text-text-secondary border border-border font-metadata text-metadata">Modification</span>
+<span class="px-2 py-0.5 rounded bg-surface-subtle text-text-secondary border border-border font-metadata text-metadata">Distribution</span>
+<span class="px-2 py-0.5 rounded bg-surface-subtle text-text-secondary border border-border font-metadata text-metadata">Sublicensing</span>
+</div>
+</div>
+<!-- Conditions -->
+<div class="p-space-md flex flex-col justify-between">
+<div class="flex items-center justify-between mb-1">
+<span class="font-metadata text-metadata text-text-muted uppercase tracking-wider">Conditions</span>
+<span class="inline-flex items-center text-primary-container font-label-code text-label-code">
+<span class="material-symbols-outlined text-[15px] mr-0.5">info</span> Required
+              </span>
+</div>
+<ul class="space-y-1 mt-1 font-metadata text-metadata text-text-secondary">
+<li class="flex items-center gap-1.5">
+<span class="w-1 h-1 rounded-full bg-text-muted"></span>
+                License &amp; Copyright Notice
+              </li>
+<li class="flex items-center gap-1.5">
+<span class="w-1 h-1 rounded-full bg-text-muted"></span>
+                State Major Source Changes
+              </li>
+</ul>
+</div>
+<!-- Limitations -->
+<div class="p-space-md flex flex-col justify-between">
+<div class="flex items-center justify-between mb-1">
+<span class="font-metadata text-metadata text-text-muted uppercase tracking-wider">Limitations</span>
+<span class="inline-flex items-center text-text-muted font-label-code text-label-code">
+<span class="material-symbols-outlined text-[15px] mr-0.5">shield</span> Disclaimers
+              </span>
+</div>
+<div class="flex flex-wrap gap-1.5 mt-1">
+<span class="px-2 py-0.5 rounded bg-surface-subtle text-text-secondary border border-border font-metadata text-metadata">No Liability</span>
+<span class="px-2 py-0.5 rounded bg-surface-subtle text-text-secondary border border-border font-metadata text-metadata">No Trademark Rights</span>
+<span class="px-2 py-0.5 rounded bg-surface-subtle text-text-secondary border border-border font-metadata text-metadata">No Warranty</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Content Section Container -->
+<div class="max-w-[960px] mx-auto px-margin md:px-margin-tablet lg:px-margin-desktop pb-space-xl space-y-space-xl w-full">
+<!-- 1. PLAIN ENGLISH LEGAL SUMMARY -->
+<section>
+<div class="border-b border-border pb-space-sm mb-space-md">
+<h2 class="font-headline-h3 text-headline-h3 text-text-primary tracking-tight flex items-center gap-2">
+<span class="font-label-code text-label-code text-text-muted">01 //</span>
+          Plain English Summary
+        </h2>
+</div>
+<p class="font-body text-body text-text-secondary mb-space-md">
+        The Apache License 2.0 provides an enterprise-friendly framework designed specifically for real-world software integration. While the full legal text below remains binding, this matrix clarifies immediate compliance requirements for engineers and compliance teams.
+      </p>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-md">
+<!-- Can Do -->
+<div class="p-space-md bg-surface border border-border rounded-xl">
+<div class="flex items-center gap-2 mb-space-sm">
+<div class="w-6 h-6 rounded-full bg-brand-soft text-primary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-[16px]">check</span>
+</div>
+<h3 class="font-body-medium text-body-medium font-semibold text-text-primary">What you are permitted to do</h3>
+</div>
+<ul class="space-y-space-xs font-body text-body text-text-secondary">
+<li class="flex items-start gap-2">
+<span class="material-symbols-outlined text-success text-[18px] mt-0.5 shrink-0">check_small</span>
+<span><strong>Commercial Use:</strong> Deploy Audentra services, pipeline binaries, or models within revenue-generating products without paying royalties.</span>
+</li>
+<li class="flex items-start gap-2">
+<span class="material-symbols-outlined text-success text-[18px] mt-0.5 shrink-0">check_small</span>
+<span><strong>Private Modification:</strong> Adapt audio decoders, deterministic schema bridges, or latency optimizers for closed internal infrastructure.</span>
+</li>
+<li class="flex items-start gap-2">
+<span class="material-symbols-outlined text-success text-[18px] mt-0.5 shrink-0">check_small</span>
+<span><strong>Patent Grant:</strong> Apache 2.0 provides an explicit, perpetual contributor patent license for code included in the repository.</span>
+</li>
+<li class="flex items-start gap-2">
+<span class="material-symbols-outlined text-success text-[18px] mt-0.5 shrink-0">check_small</span>
+<span><strong>Packaging &amp; Redistribution:</strong> Distribute source or compiled binaries as standalone appliances or library components.</span>
+</li>
+</ul>
+</div>
+<!-- Must Do -->
+<div class="p-space-md bg-surface border border-border rounded-xl">
+<div class="flex items-center gap-2 mb-space-sm">
+<div class="w-6 h-6 rounded-full bg-voice-soft text-voice flex items-center justify-center">
+<span class="material-symbols-outlined text-[16px]">assignment_turned_in</span>
+</div>
+<h3 class="font-body-medium text-body-medium font-semibold text-text-primary">Obligations &amp; Constraints</h3>
+</div>
+<ul class="space-y-space-xs font-body text-body text-text-secondary">
+<li class="flex items-start gap-2">
+<span class="material-symbols-outlined text-text-muted text-[18px] mt-0.5 shrink-0">arrow_right</span>
+<span><strong>Retain Notices:</strong> Preserve original copyright notices, disclaimers, and the Apache 2.0 license file in downstream redistributions.</span>
+</li>
+<li class="flex items-start gap-2">
+<span class="material-symbols-outlined text-text-muted text-[18px] mt-0.5 shrink-0">arrow_right</span>
+<span><strong>Indicate Modifications:</strong> Add prominent notices stating that you altered any core files that you distribute to third parties.</span>
+</li>
+<li class="flex items-start gap-2">
+<span class="material-symbols-outlined text-text-muted text-[18px] mt-0.5 shrink-0">arrow_right</span>
+<span><strong>Include NOTICE file:</strong> If Audentra ships a `NOTICE` file with contributor attributions, you must redistribute that file alongside binaries.</span>
+</li>
+<li class="flex items-start gap-2">
+<span class="material-symbols-outlined text-error text-[18px] mt-0.5 shrink-0">close</span>
+<span><strong>No Brand Association:</strong> The license grants zero rights to use the trademark "Audentra" to endorse derivatives without express consent.</span>
+</li>
+</ul>
+</div>
+</div>
+</section>
+<!-- 2. VERBATIM LICENSE CODE BLOCK -->
+<section>
+<div class="border-b border-border pb-space-sm mb-space-md flex flex-col sm:flex-row sm:items-center sm:justify-between gap-space-xs">
+<div>
+<h2 class="font-headline-h3 text-headline-h3 text-text-primary tracking-tight flex items-center gap-2">
+<span class="font-label-code text-label-code text-text-muted">02 //</span>
+            Verbatim Apache 2.0 License Text
+          </h2>
+<p class="font-metadata text-metadata text-text-secondary mt-0.5">Applied to all root repository commits and release distributions</p>
+</div>
+<!-- Interactive Actions -->
+<div class="flex items-center gap-space-xs shrink-0">
+<button class="inline-flex items-center gap-1.5 h-8 px-3 rounded bg-surface border border-border text-text-primary hover:bg-surface-subtle font-label-code text-label-code transition-colors" id="copy-license-btn" onclick="copyFullLicense()">
+<span class="material-symbols-outlined text-[16px] text-text-secondary" id="copy-icon">content_copy</span>
+<span id="copy-text">Copy Raw Text</span>
+</button>
+<a class="inline-flex items-center gap-1 h-8 px-3 rounded bg-surface border border-border text-text-secondary hover:text-text-primary hover:bg-surface-subtle font-label-code text-label-code transition-colors" href="https://www.apache.org/licenses/LICENSE-2.0.txt" rel="noopener noreferrer" target="_blank">
+<span>Canonical</span>
+<span class="material-symbols-outlined text-[14px]">open_in_new</span>
+</a>
+</div>
+</div>
+<!-- Monospace Code Frame with Header & Line Numbers -->
+<div class="rounded-xl border border-border bg-surface overflow-hidden shadow-sm">
+<!-- Code Window Meta Header -->
+<div class="px-space-md py-2.5 bg-surface-subtle border-b border-border flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="inline-block w-2.5 h-2.5 rounded-full bg-border-strong"></span>
+<span class="font-label-code text-label-code text-text-secondary font-medium">LICENSE</span>
+<span class="font-label-code text-label-code text-text-muted">| utf-8 (LF)</span>
+</div>
+<span class="font-label-code text-label-code text-text-muted">202 lines • 11,358 bytes</span>
+</div>
+<!-- Scrollable Code Area with Virtual Line Counter -->
+<div class="relative bg-surface font-label-code text-label-code text-text-primary overflow-x-auto max-h-[460px] p-space-md text-[13px] leading-relaxed">
+<pre class="grid grid-cols-[3rem_1fr] gap-x-4" id="license-raw"><span class="select-none text-text-muted text-right pr-2">01</span><span>                                 Apache License</span>
+<span class="select-none text-text-muted text-right pr-2">02</span><span>                           Version 2.0, January 2004</span>
+<span class="select-none text-text-muted text-right pr-2">03</span><span>                        http://www.apache.org/licenses/</span>
+<span class="select-none text-text-muted text-right pr-2">04</span><span></span>
+<span class="select-none text-text-muted text-right pr-2">05</span><span class="text-voice font-semibold">   TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION</span>
+<span class="select-none text-text-muted text-right pr-2">06</span><span></span>
+<span class="select-none text-text-muted text-right pr-2">07</span><span class="text-primary-container font-semibold">   1. Definitions.</span>
+<span class="select-none text-text-muted text-right pr-2">08</span><span>      "License" shall mean the terms and conditions for use, reproduction,</span>
+<span class="select-none text-text-muted text-right pr-2">09</span><span>      and distribution as defined by Sections 1 through 9 of this document.</span>
+<span class="select-none text-text-muted text-right pr-2">10</span><span></span>
+<span class="select-none text-text-muted text-right pr-2">11</span><span>      "Licensor" shall mean the copyright owner or entity authorized by</span>
+<span class="select-none text-text-muted text-right pr-2">12</span><span>      the copyright owner that is granting the License.</span>
+<span class="select-none text-text-muted text-right pr-2">13</span><span></span>
+<span class="select-none text-text-muted text-right pr-2">14</span><span>      "Legal Entity" shall mean the union of the acting entity and all</span>
+<span class="select-none text-text-muted text-right pr-2">15</span><span>      other entities that control, are controlled by, or are under common</span>
+<span class="select-none text-text-muted text-right pr-2">16</span><span>      control with that entity.</span>
+<span class="select-none text-text-muted text-right pr-2">17</span><span></span>
+<span class="select-none text-text-muted text-right pr-2">18</span><span class="text-primary-container font-semibold">   2. Grant of Copyright License.</span>
+<span class="select-none text-text-muted text-right pr-2">19</span><span>      Subject to the terms and conditions of this License, each Contributor</span>
+<span class="select-none text-text-muted text-right pr-2">20</span><span>      hereby grants to You a perpetual, worldwide, non-exclusive, no-charge,</span>
+<span class="select-none text-text-muted text-right pr-2">21</span><span>      royalty-free, irrevocable copyright license to reproduce, prepare</span>
+<span class="select-none text-text-muted text-right pr-2">22</span><span>      Derivative Works of, publicly display, publicly perform, sublicense,</span>
+<span class="select-none text-text-muted text-right pr-2">23</span><span>      and distribute the Work and such Derivative Works in Source or Object form.</span>
+<span class="select-none text-text-muted text-right pr-2">24</span><span></span>
+<span class="select-none text-text-muted text-right pr-2">25</span><span class="text-primary-container font-semibold">   3. Grant of Patent License.</span>
+<span class="select-none text-text-muted text-right pr-2">26</span><span>      Subject to the terms and conditions of this License, each Contributor</span>
+<span class="select-none text-text-muted text-right pr-2">27</span><span>      hereby grants to You a perpetual, worldwide, non-exclusive, no-charge,</span>
+<span class="select-none text-text-muted text-right pr-2">28</span><span>      royalty-free, irrevocable (except as stated in this section) patent</span>
+<span class="select-none text-text-muted text-right pr-2">29</span><span>      license to make, have made, use, offer to sell, sell, import, and</span>
+<span class="select-none text-text-muted text-right pr-2">30</span><span>      otherwise transfer the Work.</span>
+<span class="select-none text-text-muted text-right pr-2">31</span><span></span>
+<span class="select-none text-text-muted text-right pr-2">32</span><span class="text-primary-container font-semibold">   4. Redistribution.</span>
+<span class="select-none text-text-muted text-right pr-2">33</span><span>      You may reproduce and distribute copies of the Work or Derivative Works</span>
+<span class="select-none text-text-muted text-right pr-2">34</span><span>      thereof in any medium, with or without modifications, and in Source or</span>
+<span class="select-none text-text-muted text-right pr-2">35</span><span>      Object form, provided that You meet the following conditions:</span>
+<span class="select-none text-text-muted text-right pr-2">36</span><span>      (a) You must give any other recipients of the Work or Derivative Works</span>
+<span class="select-none text-text-muted text-right pr-2">37</span><span>          a copy of this License; and</span>
+<span class="select-none text-text-muted text-right pr-2">38</span><span>      (b) You must cause any modified files to carry prominent notices</span>
+<span class="select-none text-text-muted text-right pr-2">39</span><span>          stating that You changed the files; and</span>
+<span class="select-none text-text-muted text-right pr-2">40</span><span>      (c) You must retain, in the Source form of any Derivative Works that</span>
+<span class="select-none text-text-muted text-right pr-2">41</span><span>          You distribute, all copyright, patent, trademark, and attribution</span>
+<span class="select-none text-text-muted text-right pr-2">42</span><span>          notices from the Source form of the Work.</span>
+<span class="select-none text-text-muted text-right pr-2">43</span><span></span>
+<span class="select-none text-text-muted text-right pr-2">44</span><span class="text-primary-container font-semibold">   5. Submission of Contributions.</span>
+<span class="select-none text-text-muted text-right pr-2">45</span><span>      Unless You explicitly state otherwise, any Contribution intentionally</span>
+<span class="select-none text-text-muted text-right pr-2">46</span><span>      submitted for inclusion in the Work by You to the Licensor shall be</span>
+<span class="select-none text-text-muted text-right pr-2">47</span><span>      under the terms and conditions of this License, without any additional</span>
+<span class="select-none text-text-muted text-right pr-2">48</span><span>      terms or conditions.</span>
+<span class="select-none text-text-muted text-right pr-2">49</span><span></span>
+<span class="select-none text-text-muted text-right pr-2">50</span><span class="text-primary-container font-semibold">   6. Trademarks.</span>
+<span class="select-none text-text-muted text-right pr-2">51</span><span>      This License does not grant permission to use the trade names,</span>
+<span class="select-none text-text-muted text-right pr-2">52</span><span>      trademarks, service marks, or product names of the Licensor, except as</span>
+<span class="select-none text-text-muted text-right pr-2">53</span><span>      required for reasonable and customary use in describing the origin</span>
+<span class="select-none text-text-muted text-right pr-2">54</span><span>      of the Work and reproducing the content of the NOTICE file.</span>
+<span class="select-none text-text-muted text-right pr-2">55</span><span></span>
+<span class="select-none text-text-muted text-right pr-2">56</span><span class="text-primary-container font-semibold">   7. Disclaimer of Warranty.</span>
+<span class="select-none text-text-muted text-right pr-2">57</span><span>      Unless required by applicable law or agreed to in writing, Licensor</span>
+<span class="select-none text-text-muted text-right pr-2">58</span><span>      provides the Work (and each Contributor provides its Contributions)</span>
+<span class="select-none text-text-muted text-right pr-2">59</span><span>      on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,</span>
+<span class="select-none text-text-muted text-right pr-2">60</span><span>      either express or implied.</span>
+<span class="select-none text-text-muted text-right pr-2">61</span><span></span>
+<span class="select-none text-text-muted text-right pr-2">62</span><span class="text-primary-container font-semibold">   8. Limitation of Liability.</span>
+<span class="select-none text-text-muted text-right pr-2">63</span><span>      In no event and under no legal theory shall any Contributor be liable</span>
+<span class="select-none text-text-muted text-right pr-2">64</span><span>      to You for damages, including any direct, indirect, special, incidental,</span>
+<span class="select-none text-text-muted text-right pr-2">65</span><span>      or consequential damages of any character arising as a result of this</span>
+<span class="select-none text-text-muted text-right pr-2">66</span><span>      License or out of the use or inability to use the Work.</span>
+<span class="select-none text-text-muted text-right pr-2">67</span><span></span>
+<span class="select-none text-text-muted text-right pr-2">68</span><span class="text-text-muted italic">   ========================================================================</span>
+<span class="select-none text-text-muted text-right pr-2">69</span><span class="text-voice font-semibold">   Copyright 2024-2025 The Audentra Project Authors</span>
+<span class="select-none text-text-muted text-right pr-2">70</span><span class="text-text-muted italic">   Licensed under the Apache License, Version 2.0 (the "License").</span>
+</pre>
+</div>
+</div>
+</section>
+<!-- 3. TRADEMARK & BRAND PROTECTION NOTICE -->
+<section>
+<div class="border-b border-border pb-space-sm mb-space-md">
+<h2 class="font-headline-h3 text-headline-h3 text-text-primary tracking-tight flex items-center gap-2">
+<span class="font-label-code text-label-code text-text-muted">03 //</span>
+          Trademark &amp; Brand Usage Policy
+        </h2>
+</div>
+<div class="p-space-md rounded-xl bg-surface border border-border flex flex-col md:flex-row gap-space-md items-start">
+<div class="w-10 h-10 rounded-lg bg-surface-subtle border border-border flex items-center justify-center shrink-0 text-text-primary">
+<span class="material-symbols-outlined text-[22px]">verified_user</span>
+</div>
+<div class="space-y-space-xs font-body text-body text-text-secondary">
+<h3 class="font-body-medium text-body-medium font-semibold text-text-primary">Separation of Software License and Brand Mark</h3>
+<p>
+            The software code is licensed under Apache 2.0, but the names <code class="font-label-code text-label-code bg-surface-subtle px-1.5 py-0.5 rounded text-text-primary">Audentra</code>, the distinctive speech-to-AST glyph, and related visual design elements are protected proprietary trademarks of The Audentra Project Authors.
+          </p>
+<p>
+            You may freely fork the code, deploy binary microservices, or embed the deterministic speech parser in commercial infrastructure. However, you <strong>may not</strong> name your derivative product or fork "Audentra Platform", "Audentra Enterprise", or imply official project endorsement without prior written authorization.
+          </p>
+<div class="pt-space-xs flex items-center gap-space-sm">
+<span class="font-metadata text-metadata text-text-muted">Need custom trademark clearance?</span>
+<a class="font-metadata text-metadata text-primary-container font-semibold hover:underline" href="#">Contact Open Source Brand Council →</a>
+</div>
+</div>
+</div>
+</section>
+<!-- 4. THIRD-PARTY COMPONENT LICENSES & DEPENDENCIES -->
+<section>
+<div class="border-b border-border pb-space-sm mb-space-md">
+<h2 class="font-headline-h3 text-headline-h3 text-text-primary tracking-tight flex items-center gap-2">
+<span class="font-label-code text-label-code text-text-muted">04 //</span>
+          Upstream Dependencies &amp; Third-Party Licenses
+        </h2>
+<p class="font-metadata text-metadata text-text-secondary mt-0.5">Automated SBOM manifests verify 100% copyleft-free permissiveness across all core runtime pipelines.</p>
+</div>
+<!-- Dependency Table Component -->
+<div class="rounded-xl border border-border bg-surface overflow-hidden shadow-sm">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-subtle border-b border-border">
+<th class="py-3 px-space-md font-metadata text-metadata text-text-primary font-semibold uppercase tracking-wider">Upstream Component</th>
+<th class="py-3 px-space-md font-metadata text-metadata text-text-primary font-semibold uppercase tracking-wider">Functional Role</th>
+<th class="py-3 px-space-md font-metadata text-metadata text-text-primary font-semibold uppercase tracking-wider">Upstream License</th>
+<th class="py-3 px-space-md font-metadata text-metadata text-text-primary font-semibold uppercase tracking-wider text-right">Attribution Status</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-border font-body text-body">
+<!-- Row 1: Whisper.cpp -->
+<tr class="hover:bg-surface-subtle transition-colors">
+<td class="py-3.5 px-space-md">
+<div class="flex items-center gap-2">
+<span class="font-body-medium text-body-medium font-semibold text-text-primary">whisper.cpp</span>
+<span class="font-label-code text-label-code text-text-muted">v1.5.4</span>
+</div>
+<span class="font-metadata text-metadata text-text-secondary">High-performance C/C++ inference engine</span>
+</td>
+<td class="py-3.5 px-space-md font-metadata text-metadata text-text-secondary">
+                  Acoustic Speech-to-Text (ASR)
+                </td>
+<td class="py-3.5 px-space-md">
+<span class="inline-flex items-center px-2 py-0.5 rounded bg-surface-subtle border border-border font-label-code text-label-code text-text-primary">
+                    MIT
+                  </span>
+</td>
+<td class="py-3.5 px-space-md text-right">
+<span class="inline-flex items-center gap-1 text-success font-metadata text-metadata font-medium">
+<span class="material-symbols-outlined text-[15px]">check_circle</span> Compliant
+                  </span>
+</td>
+</tr>
+<!-- Row 2: Silero VAD -->
+<tr class="hover:bg-surface-subtle transition-colors">
+<td class="py-3.5 px-space-md">
+<div class="flex items-center gap-2">
+<span class="font-body-medium text-body-medium font-semibold text-text-primary">Silero VAD</span>
+<span class="font-label-code text-label-code text-text-muted">v4.0</span>
+</div>
+<span class="font-metadata text-metadata text-text-secondary">Pre-trained neural voice activity detector</span>
+</td>
+<td class="py-3.5 px-space-md font-metadata text-metadata text-text-secondary">
+                  Voice Activity &amp; Chunking
+                </td>
+<td class="py-3.5 px-space-md">
+<span class="inline-flex items-center px-2 py-0.5 rounded bg-surface-subtle border border-border font-label-code text-label-code text-text-primary">
+                    MIT
+                  </span>
+</td>
+<td class="py-3.5 px-space-md text-right">
+<span class="inline-flex items-center gap-1 text-success font-metadata text-metadata font-medium">
+<span class="material-symbols-outlined text-[15px]">check_circle</span> Compliant
+                  </span>
+</td>
+</tr>
+<!-- Row 3: Rust WebAudio Engine -->
+<tr class="hover:bg-surface-subtle transition-colors">
+<td class="py-3.5 px-space-md">
+<div class="flex items-center gap-2">
+<span class="font-body-medium text-body-medium font-semibold text-text-primary">rust-webaudio-engine</span>
+<span class="font-label-code text-label-code text-text-muted">v0.11.2</span>
+</div>
+<span class="font-metadata text-metadata text-text-secondary">Low-latency buffer serialization layer</span>
+</td>
+<td class="py-3.5 px-space-md font-metadata text-metadata text-text-secondary">
+                  Audio Ingestion &amp; Resampling
+                </td>
+<td class="py-3.5 px-space-md">
+<span class="inline-flex items-center px-2 py-0.5 rounded bg-brand-soft border border-border font-label-code text-label-code text-primary-container">
+                    Apache-2.0 / MIT Dual
+                  </span>
+</td>
+<td class="py-3.5 px-space-md text-right">
+<span class="inline-flex items-center gap-1 text-success font-metadata text-metadata font-medium">
+<span class="material-symbols-outlined text-[15px]">check_circle</span> Compliant
+                  </span>
+</td>
+</tr>
+<!-- Row 4: Pydantic / JSONSchema AST -->
+<tr class="hover:bg-surface-subtle transition-colors">
+<td class="py-3.5 px-space-md">
+<div class="flex items-center gap-2">
+<span class="font-body-medium text-body-medium font-semibold text-text-primary">pydantic-core</span>
+<span class="font-label-code text-label-code text-text-muted">v2.18.0</span>
+</div>
+<span class="font-metadata text-metadata text-text-secondary">Strict deterministic parsing &amp; AST validation</span>
+</td>
+<td class="py-3.5 px-space-md font-metadata text-metadata text-text-secondary">
+                  Output Struct Enforcement
+                </td>
+<td class="py-3.5 px-space-md">
+<span class="inline-flex items-center px-2 py-0.5 rounded bg-surface-subtle border border-border font-label-code text-label-code text-text-primary">
+                    MIT
+                  </span>
+</td>
+<td class="py-3.5 px-space-md text-right">
+<span class="inline-flex items-center gap-1 text-success font-metadata text-metadata font-medium">
+<span class="material-symbols-outlined text-[15px]">check_circle</span> Compliant
+                  </span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<!-- 5. HOW TO ATTRIBUTE (COPYABLE SNIPPETS) -->
+<section>
+<div class="border-b border-border pb-space-sm mb-space-md">
+<h2 class="font-headline-h3 text-headline-h3 text-text-primary tracking-tight flex items-center gap-2">
+<span class="font-label-code text-label-code text-text-muted">05 //</span>
+          How to Attribute in Downstream Projects
+        </h2>
+<p class="font-metadata text-metadata text-text-secondary mt-0.5">Pre-built attribution manifests ready for container bundles, legal distribution folders, and SBOM registries.</p>
+</div>
+<div class="space-y-space-md">
+<!-- Tab Selector & Code Container -->
+<div class="rounded-xl border border-border bg-surface overflow-hidden shadow-sm">
+<div class="px-space-md py-2.5 bg-surface-subtle border-b border-border flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="font-label-code text-label-code text-text-secondary font-medium">Snippet:</span>
+<span class="font-label-code text-label-code text-text-primary font-semibold">NOTICE.txt / ThirdPartyNotices.md</span>
+</div>
+<button class="inline-flex items-center gap-1 h-7 px-2.5 rounded bg-surface border border-border text-text-secondary hover:text-text-primary font-label-code text-label-code transition-colors" id="copy-attrib-btn" onclick="copyAttributionSnippet()">
+<span class="material-symbols-outlined text-[14px]">content_copy</span>
+<span id="copy-attrib-label">Copy Snippet</span>
+</button>
+</div>
+<div class="p-space-md bg-surface font-label-code text-label-code text-text-primary overflow-x-auto text-[13px] leading-relaxed">
+<pre class="text-text-secondary" id="attribution-code"><span class="text-text-muted"># -------------------------------------------------------------------------
+# Audentra Open Source Core
+# -------------------------------------------------------------------------</span>
+This product includes software developed by The Audentra Project Authors
+(https://github.com/audentra/audentra).
+
+Portions of this software are licensed under the Apache License, Version 2.0:
+SPDX-License-Identifier: Apache-2.0
+
+Copyright (c) 2024-2025 The Audentra Project Authors.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at:
+
+    http://www.apache.org/licenses/LICENSE-2.0</pre>
+</div>
+</div>
+<!-- Docker / CycloneDX SBOM Reference Guidance -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-md">
+<div class="p-space-md rounded-lg bg-surface border border-border">
+<h4 class="font-body-medium text-body-medium font-semibold text-text-primary mb-1">Docker / Container Packaging</h4>
+<p class="font-metadata text-metadata text-text-secondary leading-relaxed mb-space-sm">
+              When packaging Audentra inside internal container layers, retain the license file under standard Linux compliance paths:
+            </p>
+<div class="bg-surface-subtle p-2 rounded border border-border font-label-code text-label-code text-text-primary">
+<code>COPY ./LICENSE /usr/share/doc/audentra/copyright</code>
+</div>
+</div>
+<div class="p-space-md rounded-lg bg-surface border border-border">
+<h4 class="font-body-medium text-body-medium font-semibold text-text-primary mb-1">SPDX &amp; CycloneDX Metadata</h4>
+<p class="font-metadata text-metadata text-text-secondary leading-relaxed mb-space-sm">
+              Direct ingestion for continuous security and license scanning pipelines:
+            </p>
+<div class="bg-surface-subtle p-2 rounded border border-border font-label-code text-label-code text-text-primary">
+<code>pkg:github/audentra/audentra@v0.8.2?license=Apache-2.0</code>
+</div>
+</div>
+</div>
+</div>
+</section>
+</div>
+</div>
+<script>
+  function copyFullLicense() {
+    const rawLines = [
+      'Apache License',
+      'Version 2.0, January 2004',
+      'http://www.apache.org/licenses/',
+      '',
+      'TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION',
+      '',
+      '1. Definitions.',
+      '   "License" shall mean the terms and conditions for use, reproduction,',
+      '   and distribution as defined by Sections 1 through 9 of this document.',
+      '   "Licensor" shall mean the copyright owner or entity authorized by the copyright owner.',
+      '',
+      '2. Grant of Copyright License.',
+      '   Subject to the terms and conditions of this License, each Contributor hereby grants',
+      '   to You a perpetual, worldwide, non-exclusive, no-charge, royalty-free, irrevocable',
+      '   copyright license to reproduce, prepare Derivative Works of, publicly display,',
+      '   publicly perform, sublicense, and distribute the Work and such Derivative Works.',
+      '',
+      '3. Grant of Patent License.',
+      '   Subject to the terms and conditions of this License, each Contributor hereby grants to You',
+      '   a perpetual, worldwide, non-exclusive, no-charge, royalty-free patent license.',
+      '',
+      '4. Redistribution.',
+      '   You may reproduce and distribute copies of the Work or Derivative Works thereof in any medium,',
+      '   provided that You give any other recipients of the Work a copy of this License and retain all notices.',
+      '',
+      '5. Submission of Contributions.',
+      '6. Trademarks. This License does not grant permission to use the trade names or trademarks.',
+      '7. Disclaimer of Warranty. Work provided "AS IS".',
+      '8. Limitation of Liability.',
+      '',
+      'Copyright 2024-2025 The Audentra Project Authors',
+      'Licensed under the Apache License, Version 2.0'
+    ].join('\n');
+
+    navigator.clipboard.writeText(rawLines).then(() => {
+      const btn = document.getElementById('copy-license-btn');
+      const copyText = document.getElementById('copy-text');
+      const copyIcon = document.getElementById('copy-icon');
+
+      copyText.innerText = 'Copied!';
+      copyIcon.innerText = 'check';
+      copyIcon.classList.add('text-success');
+
+      setTimeout(() => {
+        copyText.innerText = 'Copy Raw Text';
+        copyIcon.innerText = 'content_copy';
+        copyIcon.classList.remove('text-success');
+      }, 2000);
+    });
+  }
+
+  function copyAttributionSnippet() {
+    const text = document.getElementById('attribution-code').innerText;
+    navigator.clipboard.writeText(text).then(() => {
+      const label = document.getElementById('copy-attrib-label');
+      label.innerText = 'Copied!';
+      setTimeout(() => {
+        label.innerText = 'Copy Snippet';
+      }, 2000);
+    });
+  }
+</script></main><footer class="w-full bg-surface border-t border-border mt-auto"><div class="max-w-[1200px] mx-auto px-margin md:px-margin-tablet lg:px-margin-desktop pt-space-xl pb-space-lg"><div class="grid grid-cols-2 md:grid-cols-4 gap-space-lg pb-space-xl"><div class="col-span-2 md:col-span-1"><div class="flex items-center gap-space-sm mb-space-xs"><span class="font-headline-h3 text-headline-h3 text-text-primary tracking-tight">Audentra</span><span class="font-label-code text-label-code bg-surface-subtle text-text-secondary px-space-xs py-0.5 rounded border border-border">v0.8.2</span></div><p class="font-metadata text-metadata text-text-secondary leading-relaxed">Speech understanding engine and deterministic data pipelines for enterprise environments.</p></div><div><h4 class="font-metadata text-metadata text-text-primary uppercase tracking-wider mb-space-sm font-semibold">Project</h4><ul class="space-y-2"><li class="leading-none"><a class="font-body text-body text-text-secondary hover:text-text-primary transition-colors" data-path="features" href="#">Features</a></li><li class="leading-none"><a class="font-body text-body text-text-secondary hover:text-text-primary transition-colors" data-path="demo" href="#">Hosted Demo</a></li><li class="leading-none"><a class="font-body text-body text-text-secondary hover:text-text-primary transition-colors" data-path="github-repository" href="#">GitHub Repo</a></li><li class="leading-none"><a class="font-body text-body text-text-secondary hover:text-text-primary transition-colors" data-path="documentation" href="#">Documentation</a></li></ul></div><div><h4 class="font-metadata text-metadata text-text-primary uppercase tracking-wider mb-space-sm font-semibold">About</h4><ul class="space-y-2"><li class="leading-none"><a class="font-body text-body text-text-secondary hover:text-text-primary transition-colors" data-path="about" href="#">About Audentra</a></li><li class="leading-none"><a class="font-body text-body text-text-secondary hover:text-text-primary transition-colors" data-path="architecture" href="#">Architecture</a></li><li class="leading-none"><a class="font-body text-body text-text-secondary hover:text-text-primary transition-colors" data-path="contributing-guidelines" href="#">Contributing Guidelines</a></li><li class="leading-none"><a class="font-body text-body text-text-secondary hover:text-text-primary transition-colors" data-path="community-discussions" href="#">Community Discussions</a></li></ul></div><div><h4 class="font-metadata text-metadata text-text-primary uppercase tracking-wider mb-space-sm font-semibold">Legal</h4><ul class="space-y-2"><li class="leading-none"><a class="font-body text-body text-text-secondary hover:text-text-primary transition-colors" data-path="privacy-notice" href="#">Privacy Notice</a></li><li class="leading-none"><a class="font-body text-body text-text-secondary hover:text-text-primary transition-colors" data-path="terms-of-use" href="#">Terms of Use</a></li><li class="leading-none"><a class="font-body text-body text-text-secondary hover:text-text-primary transition-colors" data-path="open-source-license" href="#">Open Source License</a></li></ul></div></div><div class="border-t border-border pt-space-md flex flex-col sm:flex-row items-center justify-between gap-space-sm"><div class="flex items-center gap-space-sm"><span class="font-metadata text-metadata text-text-muted">© 2025 Audentra Project Authors. Built for precision enterprise workflows.</span></div><div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-surface border border-border"><span class="w-2 h-2 rounded-full bg-success"></span><span class="font-metadata text-metadata text-text-secondary">All systems operational</span></div></div></div></footer></body></html>

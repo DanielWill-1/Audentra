@@ -11,8 +11,8 @@
     "server": "ts-node server/index.ts",
     "start": "node dist/server/index.js",
     "dev:server": "ts-node server/index.ts",
-    "screenshots": "node screenshot.js",
-    "screenshots:existing": "node screenshot.js --existing"
+    "screenshots": "node scripts/screenshot.js",
+        "screenshots:existing": "node scripts/screenshot.js --existing"
   },
   "dependencies": {
     "@google-cloud/speech": "^7.1.0",

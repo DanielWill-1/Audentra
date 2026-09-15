@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,300..900;1,300..900&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"on-primary":"#ffffff","border-strong":"#D0D5DD","on-background":"#141b2c","on-tertiary-fixed-variant":"#7d2d00","outline":"#737686","primary-container":"#2563eb","background":"#F8F9FB","on-tertiary":"#ffffff","surface-subtle":"#F2F4F7","on-tertiary-container":"#ffede6","error-container":"#ffdad6","secondary-container":"#8a4cfc","on-primary-fixed":"#00174b","on-secondary":"#ffffff","primary-fixed-dim":"#b4c5ff","surface-dim":"#d2daf0","text-muted":"#667085","text-primary":"#101828","outline-variant":"#c3c6d7","success":"#12B76A","tertiary":"#943700","on-surface":"#141b2c","on-secondary-fixed":"#25005a","brand-hover":"#1D4ED8","on-tertiary-fixed":"#360f00","inverse-on-surface":"#edf0ff","on-surface-variant":"#434655","surface-container-lowest":"#ffffff","secondary-fixed-dim":"#d2bbff","surface-container-high":"#e0e8ff","tertiary-fixed":"#ffdbcd","brand-soft":"#EFF6FF","surface-container-low":"#f1f3ff","surface":"#FFFFFF","tertiary-fixed-dim":"#ffb596","surface-variant":"#dbe2f9","surface-bright":"#f9f9ff","tertiary-container":"#bc4800","surface-tint":"#0053db","on-error-container":"#93000a","voice-soft":"#F5F3FF","primary-fixed":"#dbe1ff","inverse-primary":"#b4c5ff","on-primary-container":"#eeefff","error":"#F04438","text-secondary":"#475467","surface-container-highest":"#dbe2f9","on-primary-fixed-variant":"#003ea8","on-error":"#ffffff","secondary":"#712ae2","border":"#E4E7EC","primary":"#004ac6","on-secondary-container":"#fffbff","secondary-fixed":"#eaddff","warning":"#F79009","surface-container":"#e9edff","voice":"#7C3AED","inverse-surface":"#293041","on-secondary-fixed-variant":"#5a00c6"},borderRadius:{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},spacing:{"section-desktop":"8.5rem","section-tablet":"5.5rem","margin":"1.25rem","space-xs":"0.25rem","gutter":"1.5rem","space-lg":"1.5rem","section-mobile":"4.5rem","margin-desktop":"2.5rem","margin-tablet":"2.5rem","space-xl":"2.5rem","gutter-desktop":"2rem","space-md":"1rem","space-sm":"0.5rem"},fontFamily:{"body-large":["Hanken Grotesk"],"body-medium":["Hanken Grotesk"],"headline-h3":["Hanken Grotesk"],"display-hero":["Hanken Grotesk"],"body":["Hanken Grotesk"],"headline-h2-mobile":["Hanken Grotesk"],"label-code":["JetBrains Mono"],"display-hero-mobile":["Hanken Grotesk"],"headline-h2":["Hanken Grotesk"],"metadata":["Hanken Grotesk"]},fontSize:{"body-large":["19px",{lineHeight:"28px",fontWeight:"400"}],"body-medium":["16px",{lineHeight:"24px",fontWeight:"500"}],"headline-h3":["26px",{lineHeight:"32px",letterSpacing:"-0.015em",fontWeight:"600"}],"display-hero":["64px",{lineHeight:"68px",letterSpacing:"-0.03em",fontWeight:"700"}],"body":["16px",{lineHeight:"24px",fontWeight:"400"}],"headline-h2-mobile":["32px",{lineHeight:"36px",letterSpacing:"-0.02em",fontWeight:"600"}],"label-code":["12px",{lineHeight:"16px",fontWeight:"500"}],"display-hero-mobile":["40px",{lineHeight:"44px",letterSpacing:"-0.02em",fontWeight:"700"}],"headline-h2":["44px",{lineHeight:"48px",letterSpacing:"-0.025em",fontWeight:"600"}],"metadata":["13px",{lineHeight:"18px",letterSpacing:"0.01em",fontWeight:"500"}]}}}}</script></head><body class="bg-background font-body text-body text-text-primary antialiased selection:bg-brand-soft selection:text-primary"><header class="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-b border-border"><div class="h-16 max-w-[1200px] mx-auto px-margin md:px-margin-desktop flex items-center justify-between"><div class="flex items-center gap-3"><a class="flex items-center gap-2 group text-text-primary" data-path="product" href="#"><div class="flex items-center gap-[2px] h-4 py-0.5"><span class="w-[2.5px] h-2 bg-primary group-hover:h-3.5 transition-all duration-150 rounded-full"></span><span class="w-[2.5px] h-3.5 bg-voice group-hover:h-2 transition-all duration-150 rounded-full"></span><span class="w-[2.5px] h-4 bg-primary group-hover:h-4.5 transition-all duration-150 rounded-full"></span><span class="w-[2.5px] h-2.5 bg-voice group-hover:h-3 transition-all duration-150 rounded-full"></span><span class="w-[2.5px] h-1.5 bg-primary group-hover:h-2 transition-all duration-150 rounded-full"></span></div><span class="font-headline-h3 text-headline-h3 tracking-tight text-text-primary">Audentra</span></a><span class="font-label-code text-[11px] text-text-muted bg-surface-subtle border border-border px-2 py-0.5 rounded font-medium">v0.8.2-alpha</span></div><nav class="hidden md:flex items-center gap-space-lg"><a class="font-body-medium text-body-medium text-text-secondary hover:text-text-primary transition-colors" href="#features">Features</a><a class="font-body-medium text-body-medium text-text-secondary hover:text-text-primary transition-colors" href="#about">About</a><a class="font-body-medium text-body-medium text-text-secondary hover:text-text-primary transition-colors flex items-center gap-1.5" href="https://github.com/audentra/audentra" rel="noopener noreferrer" target="_blank"><svg aria-hidden="true" class="w-4 h-4 fill-current" viewbox="0 0 24 24"><path clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" fill-rule="evenodd"></path></svg><span>GitHub</span><span class="material-symbols-outlined text-[14px] text-text-muted">north_east</span></a></nav><div class="flex items-center gap-space-md"><a class="font-body-medium text-body-medium text-text-secondary hover:text-text-primary px-space-sm py-2 transition-colors" data-path="login" href="#">Sign in</a><a class="inline-flex items-center justify-center font-body-medium text-body-medium bg-[#2563eb] hover:bg-brand-hover text-on-primary px-4 h-10 rounded-lg transition-colors duration-150" href="#demo">Try Demo</a></div></div></header><main class="w-full pt-16 bg-background"><div class="flex flex-col w-full">
+<!-- 1. HERO SECTION (Asymmetric 2-column layout, generous spacing) -->
+<section class="w-full max-w-[1200px] mx-auto px-margin md:px-margin-desktop pt-8 pb-16 md:pt-14 md:pb-28">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-y-12 lg:gap-x-gutter-desktop items-start">
+<!-- Left Column: Editorial & Narrative -->
+<div class="lg:col-span-6 flex flex-col justify-center lg:pr-4">
+<!-- Eyebrow -->
+<div class="inline-flex items-center gap-2 mb-4">
+<span class="w-2 h-2 rounded-full bg-voice animate-pulse"></span>
+<span class="font-label-code text-label-code uppercase tracking-widest text-text-muted">OPEN SOURCE • VOICE → STRUCTURED DATA</span>
+</div>
+<!-- Headline -->
+<h1 class="font-display-hero text-[48px] md:text-display-hero leading-[1.08] text-text-primary tracking-tight font-bold mb-6">
+          Speak.<br/>
+          Audentra handles<br/>
+          the paperwork.
+        </h1>
+<!-- Supporting Body -->
+<p class="font-body-large text-body-large text-text-secondary max-w-xl leading-relaxed mb-8">
+          Audentra is an open-source voice-first form automation project that turns natural conversations into structured, usable data.
+        </p>
+<!-- CTA Row -->
+<div class="flex flex-wrap items-center gap-4 mb-8">
+<a class="inline-flex items-center justify-center font-body-medium text-body-medium bg-[#2563eb] hover:bg-brand-hover text-white px-6 py-3 rounded-lg transition-colors duration-150 cursor-pointer" href="#demo">
+            Try Demo
+          </a>
+<a class="inline-flex items-center gap-2 font-body-medium text-body-medium bg-surface hover:bg-surface-subtle text-text-primary border border-border-strong px-5 py-3 rounded-lg transition-colors duration-150 cursor-pointer" href="https://github.com/audentra/audentra" rel="noopener noreferrer" target="_blank">
+<svg aria-hidden="true" class="w-4 h-4 fill-current" viewbox="0 0 24 24"><path clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" fill-rule="evenodd"></path></svg>
+<span>View on GitHub</span>
+</a>
+</div>
+<!-- Technical Metadata Line -->
+<div class="flex flex-wrap items-center gap-x-6 gap-y-2 pt-4 text-text-muted font-metadata text-metadata">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-success">check</span>
+<span class="">Open source (Apache 2.0 / MIT)</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-success">check</span>
+<span class="">Self-hostable</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-success">check</span>
+<span class="">Built for extensibility</span>
+</div>
+</div>
+</div>
+<!-- Right Column: High-fidelity Product UI Panel -->
+<div class="lg:col-span-6" id="demo">
+<div class="bg-surface rounded-xl border border-border shadow-sm overflow-hidden relative">
+<!-- Window Header Bar -->
+<div class="bg-surface-subtle border-b border-border px-5 py-3.5 flex items-center justify-between">
+<div class="flex items-center gap-2.5">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-voice-soft text-voice font-label-code text-label-code font-medium">
+<span class="w-2 h-2 rounded-full bg-voice animate-ping"></span>
+                Voice session active
+              </span>
+<span class="font-metadata text-metadata text-text-muted hidden sm:inline">Encrypted stream</span>
+</div>
+<!-- SVG Audio Waveform Indicator -->
+<div class="flex items-center gap-[3px] h-5" id="hero-waveform">
+<span class="w-[3px] h-3 bg-voice/40 rounded-full transition-all duration-300" style="height: 17px;"></span>
+<span class="w-[3px] h-5 bg-voice rounded-full transition-all duration-300" style="height: 22px;"></span>
+<span class="w-[3px] h-2 bg-voice/60 rounded-full transition-all duration-300" style="height: 9px;"></span>
+<span class="w-[3px] h-4 bg-voice rounded-full transition-all duration-300" style="height: 15px;"></span>
+<span class="w-[3px] h-6 bg-voice rounded-full transition-all duration-300" style="height: 6px;"></span>
+<span class="w-[3px] h-3 bg-voice/80 rounded-full transition-all duration-300" style="height: 7px;"></span>
+<span class="w-[3px] h-5 bg-voice rounded-full transition-all duration-300" style="height: 25px;"></span>
+<span class="w-[3px] h-2 bg-voice/30 rounded-full transition-all duration-300" style="height: 20px;"></span>
+</div>
+</div>
+<!-- Product Window Inner -->
+<div class="p-5 md:p-6 flex flex-col gap-5">
+<!-- Transcript Stream Panel -->
+<div class="bg-surface-subtle p-3.5 rounded-lg border border-border">
+<div class="flex items-center justify-between mb-2">
+<span class="font-label-code text-label-code uppercase tracking-wider text-text-muted">Live Acoustic Stream</span>
+<span class="font-label-code text-[11px] text-text-muted">00:14.2 s</span>
+</div>
+<p class="font-body text-[14px] leading-relaxed text-text-secondary italic">
+                “Patient: John Smith, born March 15th 1985. I’ve had pain in my right shoulder for about a week after playing tennis.”
+              </p>
+</div>
+<!-- Extracted Form Fields -->
+<div>
+<div class="flex items-center justify-between mb-3">
+<span class="font-metadata text-metadata uppercase tracking-wider text-text-muted font-semibold">Form Target: Patient Intake [EHR-04]</span>
+<span class="font-metadata text-metadata text-success flex items-center gap-1 font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-success"></span> All entities mapped
+                </span>
+</div>
+<div class="space-y-3">
+<!-- Field 1 & 2 -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+<div class="space-y-1">
+<label class="font-metadata text-metadata text-text-secondary">Full Name</label>
+<div class="flex items-center justify-between h-10 px-3 bg-surface border border-border rounded-lg">
+<span class="font-body-medium text-body text-text-primary">John Smith</span>
+<span class="px-2 py-0.5 rounded bg-success/10 text-success font-label-code text-label-code font-medium">99.8% ✓</span>
+</div>
+</div>
+<div class="space-y-1">
+<label class="font-metadata text-metadata text-text-secondary">Date of Birth</label>
+<div class="flex items-center justify-between h-10 px-3 bg-surface border border-border rounded-lg">
+<span class="font-body-medium text-body text-text-primary">15 Mar 1985</span>
+<span class="px-2 py-0.5 rounded bg-success/10 text-success font-label-code text-label-code font-medium">Verified ✓</span>
+</div>
+</div>
+</div>
+<!-- Field 3 -->
+<div class="space-y-1">
+<label class="font-metadata text-metadata text-text-secondary">Chief Complaint</label>
+<div class="flex items-center justify-between h-10 px-3 bg-surface border border-border rounded-lg">
+<span class="font-body-medium text-body text-text-primary">Right shoulder pain</span>
+<span class="px-2 py-0.5 rounded bg-voice-soft text-voice font-label-code text-label-code font-medium">Extracted</span>
+</div>
+</div>
+<!-- Field 4 & 5 -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+<div class="space-y-1">
+<label class="font-metadata text-metadata text-text-secondary">Duration</label>
+<div class="flex items-center justify-between h-10 px-3 bg-surface border border-border rounded-lg">
+<span class="font-body-medium text-body text-text-primary">1 week (7 days)</span>
+<span class="px-2 py-0.5 rounded bg-voice-soft text-voice font-label-code text-label-code font-medium">Extracted</span>
+</div>
+</div>
+<div class="space-y-1">
+<label class="font-metadata text-metadata text-text-secondary">Clinical Context</label>
+<div class="flex items-center justify-between h-10 px-3 bg-surface border border-border rounded-lg">
+<span class="font-body-medium text-body text-text-primary truncate">Sports activity (Tennis)</span>
+<span class="px-2 py-0.5 rounded bg-voice-soft text-voice font-label-code text-label-code font-medium">Extracted</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Tactile Interactive Audio Wavebar Control -->
+<div class="pt-3 border-t border-border flex items-center justify-between">
+<div class="flex items-center gap-3">
+<button aria-label="Microphone" class="w-9 h-9 rounded-full bg-voice flex items-center justify-center text-on-primary hover:opacity-90 transition-opacity" type="button">
+<span class="material-symbols-outlined text-[18px]">mic</span>
+</button>
+<div class="flex flex-col">
+<span class="font-metadata text-metadata font-medium text-text-primary">Acoustic Parser Active</span>
+<span class="font-label-code text-[11px] text-text-muted">48kHz lossless • Low latency</span>
+</div>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="font-label-code text-label-code text-text-muted">Sampling</span>
+<div class="w-2 h-2 rounded-full bg-success"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 2. TECHNICAL PROJECT HIGHLIGHTS STRIP -->
+<section class="w-full border-y border-border bg-surface-subtle/50 py-10" id="features">
+<div class="max-w-[1200px] mx-auto px-margin md:px-margin-desktop">
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-border">
+<!-- Highlight 1 -->
+<div class="py-4 sm:py-0 sm:px-6 first:pl-0 space-y-1.5">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">code</span>
+<span class="font-label-code text-label-code font-bold uppercase tracking-wider text-text-primary">OPEN SOURCE</span>
+</div>
+<div class="font-metadata text-metadata text-text-secondary">Source available on GitHub under permissive licenses.</div>
+</div>
+<!-- Highlight 2 -->
+<div class="py-4 sm:py-0 sm:px-6 space-y-1.5">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">terminal</span>
+<span class="font-label-code text-label-code font-bold uppercase tracking-wider text-text-primary">SELF-HOSTABLE</span>
+</div>
+<div class="font-metadata text-metadata text-text-secondary">Run your own instance via Docker &amp; Kubernetes.</div>
+</div>
+<!-- Highlight 3 -->
+<div class="py-4 sm:py-0 sm:px-6 space-y-1.5">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">graphic_eq</span>
+<span class="font-label-code text-label-code font-bold uppercase tracking-wider text-text-primary">VOICE FIRST</span>
+</div>
+<div class="font-metadata text-metadata text-text-secondary">Streaming 48kHz natural speech parsing pipeline.</div>
+</div>
+<!-- Highlight 4 -->
+<div class="py-4 sm:py-0 sm:px-6 last:pr-0 space-y-1.5">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">schema</span>
+<span class="font-label-code text-label-code font-bold uppercase tracking-wider text-text-primary">EXTENSIBLE</span>
+</div>
+<div class="font-metadata text-metadata text-text-secondary">Custom JSON &amp; Pydantic form schemas for any domain.</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 3. HOW IT WORKS (Continuous 4-step timeline) -->
+<section class="w-full max-w-[1200px] mx-auto px-margin md:px-margin-desktop py-16 md:py-28" id="how-it-works">
+<div class="max-w-2xl mb-14">
+<span class="font-label-code text-label-code uppercase tracking-widest text-text-muted block mb-3">Architecture &amp; Flow</span>
+<h2 class="font-headline-h2 text-headline-h2 text-text-primary font-semibold tracking-tight mb-4">
+        From conversation to completed form.
+      </h2>
+<p class="font-body-large text-body-large text-text-secondary">
+        A single continuous pipeline designed to eliminate manual data entry in high-stakes documentation.
+      </p>
+</div>
+<!-- 4-step progressive timeline -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-8 relative">
+<div class="hidden md:block absolute top-4 left-[10%] right-[10%] h-[1px] bg-border -z-0"></div>
+<!-- Step 01 -->
+<div class="relative bg-background pt-2 md:pt-0">
+<div class="w-8 h-8 rounded-full bg-surface border border-border flex items-center justify-center font-label-code text-label-code font-bold text-text-primary mb-4 z-10">
+          01
+        </div>
+<h3 class="font-headline-h3 text-[18px] text-text-primary mb-2 font-semibold">Speak naturally</h3>
+<p class="font-body text-body text-text-secondary leading-relaxed">
+          User talks normally. No rigid commands or robotic dictation formats.
+        </p>
+</div>
+<!-- Step 02 -->
+<div class="relative bg-background pt-2 md:pt-0">
+<div class="w-8 h-8 rounded-full bg-surface border border-border flex items-center justify-center font-label-code text-label-code font-bold text-text-primary mb-4 z-10">
+          02
+        </div>
+<h3 class="font-headline-h3 text-[18px] text-text-primary mb-2 font-semibold">Audentra understands</h3>
+<p class="font-body text-body text-text-secondary leading-relaxed">
+          The engine extracts entities, context, and structural relationships.
+        </p>
+</div>
+<!-- Step 03 -->
+<div class="relative bg-background pt-2 md:pt-0">
+<div class="w-8 h-8 rounded-full bg-surface border border-border flex items-center justify-center font-label-code text-label-code font-bold text-text-primary mb-4 z-10">
+          03
+        </div>
+<h3 class="font-headline-h3 text-[18px] text-text-primary mb-2 font-semibold">Review structured data</h3>
+<p class="font-body text-body text-text-secondary leading-relaxed">
+          Information maps cleanly into designated schema fields for instant operator sign-off.
+        </p>
+</div>
+<!-- Step 04 -->
+<div class="relative bg-background pt-2 md:pt-0">
+<div class="w-8 h-8 rounded-full bg-surface border border-border flex items-center justify-center font-label-code text-label-code font-bold text-text-primary mb-4 z-10">
+          04
+        </div>
+<h3 class="font-headline-h3 text-[18px] text-text-primary mb-2 font-semibold">Submit &amp; Sync</h3>
+<p class="font-body text-body text-text-secondary leading-relaxed">
+          Instant payload dispatch into target database, EHR, or custom webhook endpoints.
+        </p>
+</div>
+</div>
+</section>
+<!-- 4. PRODUCT INTELLIGENCE / DETAIL (Deep contextual extraction) -->
+<section class="w-full bg-surface py-16 md:py-28 border-y border-border">
+<div class="max-w-[1200px] mx-auto px-margin md:px-margin-desktop">
+<div class="max-w-2xl mb-12">
+<span class="font-label-code text-label-code uppercase tracking-widest text-text-muted block mb-2">Contextual Intelligence</span>
+<h2 class="font-headline-h2 text-headline-h2 text-text-primary font-semibold tracking-tight mb-4">
+          It doesn’t just transcribe. It understands.
+        </h2>
+<p class="font-body-large text-body-large text-text-secondary">
+          Generic transcription dumps unorganized text. Audentra isolates anatomical terms, timing anchors, triggers, and negative findings simultaneously.
+        </p>
+</div>
+<!-- Side-by-side Comparison Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+<!-- Left: Spoken Transcript with annotated spans -->
+<div class="lg:col-span-6 bg-surface-subtle p-6 md:p-8 rounded-xl border border-border flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between pb-4 mb-4 border-b border-border">
+<span class="font-metadata text-metadata uppercase tracking-wider text-text-muted font-semibold">Raw Spoken Speech</span>
+<span class="font-label-code text-label-code text-voice bg-voice-soft px-2 py-0.5 rounded">Acoustic Input</span>
+</div>
+<p class="font-body-large text-body-large text-text-primary leading-relaxed">
+              “Patient says the 
+              <span class="bg-primary/10 text-primary px-1.5 py-0.5 rounded font-medium border-b border-primary" title="Anatomical location">shoulder</span> 
+              started hurting after tennis 
+              <span class="bg-voice/10 text-voice px-1.5 py-0.5 rounded font-medium border-b border-voice" title="Temporal onset">last Tuesday</span>. 
+              <span class="bg-error/10 text-error px-1.5 py-0.5 rounded font-medium border-b border-error" title="Negative finding">No swelling</span>. 
+              Pain is around a 
+              <span class="bg-warning/15 text-text-primary px-1.5 py-0.5 rounded font-medium border-b border-warning" title="Severity scale">six</span> 
+              when lifting the arm.”
+            </p>
+</div>
+<!-- Color Annotation Legend -->
+<div class="mt-8 pt-4 border-t border-border flex flex-wrap items-center gap-3">
+<span class="inline-flex items-center gap-1.5 font-label-code text-[11px] text-text-secondary">
+<span class="w-2 h-2 rounded bg-primary"></span> Location
+            </span>
+<span class="inline-flex items-center gap-1.5 font-label-code text-[11px] text-text-secondary">
+<span class="w-2 h-2 rounded bg-voice"></span> Onset
+            </span>
+<span class="inline-flex items-center gap-1.5 font-label-code text-[11px] text-text-secondary">
+<span class="w-2 h-2 rounded bg-error"></span> Negative Finding
+            </span>
+<span class="inline-flex items-center gap-1.5 font-label-code text-[11px] text-text-secondary">
+<span class="w-2 h-2 rounded bg-warning"></span> Severity
+            </span>
+</div>
+</div>
+<!-- Right: Structured Key-Value Inspector -->
+<div class="lg:col-span-6 bg-surface p-6 md:p-8 rounded-xl border border-border flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between pb-4 mb-4 border-b border-border">
+<span class="font-metadata text-metadata uppercase tracking-wider text-text-muted font-semibold">Audentra Structured Extraction</span>
+<span class="font-label-code text-label-code text-success bg-success/10 px-2 py-0.5 rounded">Parsed JSON Schema</span>
+</div>
+<div class="space-y-3 font-body text-body">
+<div class="flex items-start justify-between py-2 border-b border-border/70">
+<span class="font-metadata text-metadata text-text-muted">Location</span>
+<span class="font-body-medium text-text-primary text-right font-medium">Right shoulder (Anatomical)</span>
+</div>
+<div class="flex items-start justify-between py-2 border-b border-border/70">
+<span class="font-metadata text-metadata text-text-muted">Onset</span>
+<span class="font-body-medium text-text-primary text-right font-medium">Last Tuesday (5 days prior)</span>
+</div>
+<div class="flex items-start justify-between py-2 border-b border-border/70">
+<span class="font-metadata text-metadata text-text-muted">Activity Trigger</span>
+<span class="font-body-medium text-text-primary text-right font-medium">Sports activity (Tennis)</span>
+</div>
+<div class="flex items-start justify-between py-2 border-b border-border/70">
+<span class="font-metadata text-metadata text-text-muted">Edema / Swelling</span>
+<span class="font-body-medium text-error text-right font-medium flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">close</span> None reported [Negative flag]
+                </span>
+</div>
+<div class="flex items-start justify-between py-2">
+<span class="font-metadata text-metadata text-text-muted">Pain Severity</span>
+<span class="font-body-medium text-text-primary text-right font-medium">6 / 10 (Moderate to Severe)</span>
+</div>
+</div>
+</div>
+<div class="mt-6 pt-4 border-t border-border flex items-center justify-between">
+<span class="font-label-code text-[11px] text-text-muted">Confidence Score: 0.994</span>
+<span class="font-metadata text-metadata text-primary font-medium flex items-center gap-1">
+              Field mapping verified ✓
+            </span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 5. USE CASES / EXAMPLE SCHEMAS ("One interface. Different workflows.") -->
+<section class="w-full max-w-[1200px] mx-auto px-margin md:px-margin-desktop py-16 md:py-28">
+<div class="max-w-2xl mb-14">
+<span class="font-label-code text-label-code uppercase tracking-widest text-text-muted block mb-2">Example Schemas &amp; Use Cases</span>
+<h2 class="font-headline-h2 text-headline-h2 text-text-primary font-semibold tracking-tight mb-4">
+        One interface. Different workflows.
+      </h2>
+<p class="font-body-large text-body-large text-text-secondary">
+        Adapt Audentra to any structured workflow by defining declarative schemas. Here are three common open-source schema configurations.
+      </p>
+</div>
+<!-- 3 Distinct Horizontal Rows -->
+<div class="space-y-6">
+<!-- Row 1: Healthcare -->
+<div class="bg-surface rounded-xl border border-border p-6 md:p-8 flex flex-col lg:flex-row lg:items-center justify-between gap-8 hover:border-border-strong transition-colors">
+<div class="lg:max-w-md">
+<div class="inline-flex items-center gap-2 mb-3">
+<span class="material-symbols-outlined text-primary text-[22px]">local_hospital</span>
+<span class="font-headline-h3 text-headline-h3 text-text-primary font-semibold">01 Healthcare</span>
+</div>
+<p class="font-body text-body text-text-secondary leading-relaxed mb-4">
+            Patient intake, clinical SOAP notes, and structured symptom reporting generated directly from clinician-patient dialogue.
+          </p>
+<div class="flex flex-wrap gap-2">
+<span class="font-metadata text-[12px] bg-surface-subtle text-text-secondary px-2.5 py-1 rounded font-label-code">schemas/patient_intake.json</span>
+<span class="font-metadata text-[12px] bg-surface-subtle text-text-secondary px-2.5 py-1 rounded">FHIR Standard</span>
+<span class="font-metadata text-[12px] bg-surface-subtle text-text-secondary px-2.5 py-1 rounded">SOAP Notes</span>
+</div>
+</div>
+<!-- Micro-preview of clinical SOAP note -->
+<div class="lg:w-[480px] bg-surface-subtle rounded-lg border border-border p-4 font-label-code text-[12px] text-text-secondary">
+<div class="flex items-center justify-between pb-2 mb-2 border-b border-border text-text-muted uppercase text-[10px]">
+<span class="">SOAP Document [Clinical Note]</span>
+<span class="text-success">Validated Schema</span>
+</div>
+<div class="space-y-1.5">
+<div class=""><span class="text-text-primary font-medium">S:</span> “Reports localized dull pain in right shoulder since Tuesday.”</div>
+<div class=""><span class="text-text-primary font-medium">O:</span> Range of motion restricted past 70 degrees elevation. No edema.</div>
+<div class=""><span class="text-text-primary font-medium">A:</span> Acute rotator cuff strain (ICD-10: S46.011A).</div>
+<div class=""><span class="text-text-primary font-medium">P:</span> Physical therapy referral, rest protocol 14 days.</div>
+</div>
+</div>
+</div>
+<!-- Row 2: Field Work & Safety -->
+<div class="bg-surface rounded-xl border border-border p-6 md:p-8 flex flex-col lg:flex-row lg:items-center justify-between gap-8 hover:border-border-strong transition-colors">
+<div class="lg:max-w-md">
+<div class="inline-flex items-center gap-2 mb-3">
+<span class="material-symbols-outlined text-warning text-[22px]">engineering</span>
+<span class="font-headline-h3 text-headline-h3 text-text-primary font-semibold">02 Field Work &amp; Safety</span>
+</div>
+<p class="font-body text-body text-text-secondary leading-relaxed mb-4">
+            Hands-free site audits, safety checklists, equipment inspection logs, and offline voice capture for field engineers operating without a keyboard.
+          </p>
+<div class="flex flex-wrap gap-2">
+<span class="font-metadata text-[12px] bg-surface-subtle text-text-secondary px-2.5 py-1 rounded font-label-code">schemas/site_inspection.json</span>
+<span class="font-metadata text-[12px] bg-surface-subtle text-text-secondary px-2.5 py-1 rounded">Offline Queuing</span>
+<span class="font-metadata text-[12px] bg-surface-subtle text-text-secondary px-2.5 py-1 rounded">GPS Geo-tagging</span>
+</div>
+</div>
+<!-- Micro-preview of equipment inspection checklist -->
+<div class="lg:w-[480px] bg-surface-subtle rounded-lg border border-border p-4 font-label-code text-[12px] text-text-secondary">
+<div class="flex items-center justify-between pb-2 mb-2 border-b border-border text-text-muted uppercase text-[10px]">
+<span class="">Asset Audit: Turbine Pump #14-B</span>
+<span class="text-primary font-medium">Validated Schema</span>
+</div>
+<div class="space-y-2">
+<div class="flex items-center justify-between">
+<span class="">Pressure Gauge Status:</span>
+<span class="text-success font-medium">32.4 PSI (Nominal)</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="">Vibration Tolerance:</span>
+<span class="text-success font-medium">Within safe range (&lt;1.8 mm/s)</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="">Casing Seal Integrity:</span>
+<span class="text-warning font-medium">Micro-wear noted [Re-inspect]</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Row 3: Human Resources & Operations -->
+<div class="bg-surface rounded-xl border border-border p-6 md:p-8 flex flex-col lg:flex-row lg:items-center justify-between gap-8 hover:border-border-strong transition-colors">
+<div class="lg:max-w-md">
+<div class="inline-flex items-center gap-2 mb-3">
+<span class="material-symbols-outlined text-voice text-[22px]">corporate_fare</span>
+<span class="font-headline-h3 text-headline-h3 text-text-primary font-semibold">03 Human Resources &amp; Ops</span>
+</div>
+<p class="font-body text-body text-text-secondary leading-relaxed mb-4">
+            Structured exit interviews, candidate assessment rubrics, onboarding records, and performance debriefs without administrative lag.
+          </p>
+<div class="flex flex-wrap gap-2">
+<span class="font-metadata text-[12px] bg-surface-subtle text-text-secondary px-2.5 py-1 rounded font-label-code">schemas/interview_debrief.json</span>
+<span class="font-metadata text-[12px] bg-surface-subtle text-text-secondary px-2.5 py-1 rounded">Webhook Export</span>
+<span class="font-metadata text-[12px] bg-surface-subtle text-text-secondary px-2.5 py-1 rounded">JSON Output</span>
+</div>
+</div>
+<!-- Micro-preview of candidate evaluation matrix -->
+<div class="lg:w-[480px] bg-surface-subtle rounded-lg border border-border p-4 font-label-code text-[12px] text-text-secondary">
+<div class="flex items-center justify-between pb-2 mb-2 border-b border-border text-text-muted uppercase text-[10px]">
+<span class="">Debrief Matrix: Senior Infrastructure Eng</span>
+<span class="text-text-muted">Validated Schema</span>
+</div>
+<div class="space-y-2">
+<div class="flex items-center justify-between">
+<span class="">Distributed Architecture:</span>
+<span class="text-primary font-medium">Exceeds (Tier 4)</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="">Cross-Functional Communication:</span>
+<span class="text-primary font-medium">Strong (4.5 / 5)</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="">Recommendation Signal:</span>
+<span class="text-success font-medium">Proceed to Final Panel ✓</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 6. NEW OPEN SOURCE SECTION ("Built in the open") -->
+<section class="w-full bg-surface py-16 md:py-28 border-y border-border" id="about">
+<div class="max-w-[1200px] mx-auto px-margin md:px-margin-desktop">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+<div class="lg:col-span-5">
+<span class="font-label-code text-label-code uppercase tracking-widest text-text-muted block mb-2">Community &amp; Code</span>
+<h2 class="font-headline-h2 text-headline-h2 text-text-primary font-semibold tracking-tight mb-4">
+          Built in the open.
+        </h2>
+<p class="font-body-large text-body-large text-text-secondary leading-relaxed mb-8">
+          Audentra is an open-source project designed to make voice-driven structured data collection accessible, inspectable, and extensible.
+        </p>
+<div class="space-y-3 font-body-medium text-body-medium">
+<div>
+<a class="inline-flex items-center gap-1.5 text-text-primary hover:text-primary transition-colors group" href="https://github.com/audentra/audentra" rel="noopener noreferrer" target="_blank">
+              View source <span class="group-hover:translate-x-1 transition-transform">→</span>
+</a>
+</div>
+<div>
+<a class="inline-flex items-center gap-1.5 text-text-primary hover:text-primary transition-colors group" href="#" rel="noopener noreferrer" target="_blank">
+              Read documentation <span class="group-hover:translate-x-1 transition-transform">→</span>
+</a>
+</div>
+<div>
+<a class="inline-flex items-center gap-1.5 text-text-primary hover:text-primary transition-colors group" href="https://github.com/audentra/audentra/issues" rel="noopener noreferrer" target="_blank">
+              Report an issue <span class="group-hover:translate-x-1 transition-transform">→</span>
+</a>
+</div>
+<div>
+<a class="inline-flex items-center gap-1.5 text-text-primary hover:text-primary transition-colors group" href="https://github.com/audentra/audentra/blob/main/CONTRIBUTING.md" rel="noopener noreferrer" target="_blank">
+              Contribute <span class="group-hover:translate-x-1 transition-transform">→</span>
+</a>
+</div>
+</div>
+</div>
+<!-- Clean Terminal / Architecture Container -->
+<div class="lg:col-span-7">
+<div class="bg-[#111827] text-[#f3f4f6] rounded-xl border border-[#1f2937] shadow-sm overflow-hidden">
+<div class="bg-[#1f2937]/70 px-4 py-3 border-b border-[#374151] flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-3 h-3 rounded-full bg-[#ef4444]/80 inline-block"></span>
+<span class="w-3 h-3 rounded-full bg-[#f59e0b]/80 inline-block"></span>
+<span class="w-3 h-3 rounded-full bg-[#10b981]/80 inline-block"></span>
+<span class="font-label-code text-[12px] text-gray-400 ml-2">bash — quickstart</span>
+</div>
+<span class="font-label-code text-[11px] text-gray-400">Docker v26.0+</span>
+</div>
+<div class="p-5 font-label-code text-[13px] leading-relaxed space-y-3 overflow-x-auto text-gray-300">
+<div>
+<span class="text-gray-500"># 1. Clone repository</span><br/>
+<span class="text-[#38bdf8]">$</span> git clone https://github.com/audentra/audentra.git<br/>
+<span class="text-[#38bdf8]">$</span> cd audentra
+</div>
+<div>
+<span class="text-gray-500"># 2. Launch container stack</span><br/>
+<span class="text-[#38bdf8]">$</span> docker compose up -d
+</div>
+<div class="pt-2 border-t border-[#374151]/60 text-gray-400 text-[12px] space-y-1">
+<div class="text-[#10b981]">✔ Container audentra-core Started</div>
+<div class="text-[#10b981]">✔ Container audentra-ui Started</div>
+<div class="text-[#10b981]">✔ Container acoustic-parser Started</div>
+<div class="pt-1.5 text-gray-300">
+                    → Local UI instance running at <span class="text-[#60a5fa] underline">http://localhost:3000</span><br/>
+                    → Speech websocket endpoint active on <span class="text-[#60a5fa]">ws://localhost:8080/stream</span><br/>
+                    → Custom schema loader mounted at <span class="text-amber-300">/schemas/intake.json</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 7. PRIVACY & ARCHITECTURE SPECIFICATIONS -->
+<section class="w-full bg-surface-subtle py-16 md:py-28 border-b border-border">
+<div class="max-w-[1200px] mx-auto px-margin md:px-margin-desktop">
+<div class="max-w-2xl mb-14">
+<span class="font-label-code text-label-code uppercase tracking-widest text-text-muted block mb-2">Architecture &amp; Privacy</span>
+<h2 class="font-headline-h2 text-headline-h2 text-text-primary font-semibold tracking-tight mb-4">
+          Designed with sensitive data in mind.
+        </h2>
+<p class="font-body-large text-body-large text-text-secondary">
+          Engineered for local deployment and complete data sovereignty without proprietary cloud lock-in.
+        </p>
+</div>
+<!-- Technical Restrained Grid of Architecture Specifications -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<!-- Spec Card 1 -->
+<div class="bg-surface p-6 rounded-xl border border-border flex flex-col justify-between">
+<div>
+<div class="w-10 h-10 rounded-lg bg-surface-subtle border border-border flex items-center justify-center text-text-primary mb-4">
+<span class="material-symbols-outlined text-[20px]">terminal</span>
+</div>
+<h3 class="font-headline-h3 text-[18px] text-text-primary font-semibold mb-2">Self-Hosting &amp; Local Execution</h3>
+<p class="font-body text-body text-text-secondary leading-relaxed">
+              Deploy on bare metal, air-gapped VPCs, or edge devices with full source access and zero forced network calls.
+            </p>
+</div>
+<span class="font-label-code text-[11px] text-text-muted mt-6 block">Air-Gap Capable</span>
+</div>
+<!-- Spec Card 2 -->
+<div class="bg-surface p-6 rounded-xl border border-border flex flex-col justify-between">
+<div>
+<div class="w-10 h-10 rounded-lg bg-surface-subtle border border-border flex items-center justify-center text-text-primary mb-4">
+<span class="material-symbols-outlined text-[20px]">delete_sweep</span>
+</div>
+<h3 class="font-headline-h3 text-[18px] text-text-primary font-semibold mb-2">Configurable Storage &amp; Zero-Retention</h3>
+<p class="font-body text-body text-text-secondary leading-relaxed">
+              Audio buffers flush immediately post-extraction; cryptographic wipe on session close. Raw audio is never permanently stored.
+            </p>
+</div>
+<span class="font-label-code text-[11px] text-text-muted mt-6 block">Stateless Inference Pipelines</span>
+</div>
+<!-- Spec Card 3 -->
+<div class="bg-surface p-6 rounded-xl border border-border flex flex-col justify-between">
+<div>
+<div class="w-10 h-10 rounded-lg bg-surface-subtle border border-border flex items-center justify-center text-text-primary mb-4">
+<span class="material-symbols-outlined text-[20px]">lock</span>
+</div>
+<h3 class="font-headline-h3 text-[18px] text-text-primary font-semibold mb-2">End-to-End Encryption</h3>
+<p class="font-body text-body text-text-secondary leading-relaxed">
+              TLS 1.3 in-transit, AES-256 at rest, and client-managed cryptographic key pairs (BYOK) supported out of the box.
+            </p>
+</div>
+<span class="font-label-code text-[11px] text-text-muted mt-6 block">Open Cryptographic Standards</span>
+</div>
+<!-- Spec Card 4 -->
+<div class="bg-surface p-6 rounded-xl border border-border flex flex-col justify-between">
+<div>
+<div class="w-10 h-10 rounded-lg bg-surface-subtle border border-border flex items-center justify-center text-text-primary mb-4">
+<span class="material-symbols-outlined text-[20px]">memory</span>
+</div>
+<h3 class="font-headline-h3 text-[18px] text-text-primary font-semibold mb-2">Minimal Data Footprint</h3>
+<p class="font-body text-body text-text-secondary leading-relaxed">
+              Strict ephemeral processing pipelines without third-party model retraining. You own 100% of your telemetry and data models.
+            </p>
+</div>
+<span class="font-label-code text-[11px] text-text-muted mt-6 block">Zero External Model Training</span>
+</div>
+<!-- Spec Card 5 -->
+<div class="bg-surface p-6 rounded-xl border border-border flex flex-col justify-between">
+<div>
+<div class="w-10 h-10 rounded-lg bg-surface-subtle border border-border flex items-center justify-center text-text-primary mb-4">
+<span class="material-symbols-outlined text-[20px]">shield_person</span>
+</div>
+<h3 class="font-headline-h3 text-[18px] text-text-primary font-semibold mb-2">Pluggable Auth &amp; RBAC</h3>
+<p class="font-body text-body text-text-secondary leading-relaxed">
+              OpenID Connect, SAML, and mTLS token verification to map permissions and protect sensitive fields across distributed teams.
+            </p>
+</div>
+<span class="font-label-code text-[11px] text-text-muted mt-6 block">OpenID Connect &amp; SAML</span>
+</div>
+<!-- Spec Card 6 -->
+<div class="bg-surface p-6 rounded-xl border border-border flex flex-col justify-between">
+<div>
+<div class="w-10 h-10 rounded-lg bg-surface-subtle border border-border flex items-center justify-center text-text-primary mb-4">
+<span class="material-symbols-outlined text-[20px]">history_edu</span>
+</div>
+<h3 class="font-headline-h3 text-[18px] text-text-primary font-semibold mb-2">Tamper-Evident Audit Trails</h3>
+<p class="font-body text-body text-text-secondary leading-relaxed">
+              Local immutable JSON append-only logs for verification. Every transcription, schema mapping, and operator edit is traceably hashed.
+            </p>
+</div>
+<span class="font-label-code text-[11px] text-text-muted mt-6 block">Structured JSON Audit Log</span>
+</div>
+</div>
+</div>
+</section>
+<!-- 8. FINAL HIGH-IMPACT CTA -->
+<section class="w-full max-w-[1200px] mx-auto px-margin md:px-margin-desktop py-20 md:py-32">
+<div class="bg-surface rounded-2xl border border-border p-8 md:p-16 text-center flex flex-col items-center justify-center relative overflow-hidden">
+<span class="font-label-code text-label-code uppercase tracking-widest text-text-muted mb-4 block">
+        Get Started
+      </span>
+<h2 class="font-headline-h2 text-headline-h2 text-text-primary font-bold tracking-tight max-w-2xl mb-4">
+        Want to see it work?
+      </h2>
+<p class="font-body-large text-body-large text-text-secondary max-w-xl mb-8">
+        Try Audentra using the hosted demo, or explore the source and run it yourself.
+      </p>
+<div class="flex flex-wrap items-center justify-center gap-4 mb-8">
+<a class="inline-flex items-center justify-center font-body-medium text-body-medium bg-[#2563eb] hover:bg-brand-hover text-white px-7 py-3 rounded-lg transition-colors duration-150 cursor-pointer" href="#demo">
+          Try Demo
+        </a>
+<a class="inline-flex items-center gap-2 font-body-medium text-body-medium bg-surface hover:bg-surface-subtle text-text-primary border border-border-strong px-6 py-3 rounded-lg transition-colors duration-150 cursor-pointer" href="https://github.com/audentra/audentra" rel="noopener noreferrer" target="_blank">
+<svg aria-hidden="true" class="w-4 h-4 fill-current" viewbox="0 0 24 24"><path clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" fill-rule="evenodd"></path></svg>
+<span>View on GitHub</span>
+</a>
+</div>
+<!-- Subtle Animated Voice Waveform Graphic -->
+<div class="flex items-center justify-center gap-1.5 h-8 opacity-70">
+<span class="w-[2px] h-2 bg-voice rounded-full"></span>
+<span class="w-[2px] h-4 bg-primary rounded-full"></span>
+<span class="w-[2px] h-6 bg-voice rounded-full"></span>
+<span class="w-[2px] h-3 bg-primary rounded-full"></span>
+<span class="w-[2px] h-8 bg-voice rounded-full"></span>
+<span class="w-[2px] h-5 bg-primary rounded-full"></span>
+<span class="w-[2px] h-7 bg-voice rounded-full"></span>
+<span class="w-[2px] h-4 bg-primary rounded-full"></span>
+<span class="w-[2px] h-6 bg-voice rounded-full"></span>
+<span class="w-[2px] h-2 bg-primary rounded-full"></span>
+<span class="w-[2px] h-5 bg-voice rounded-full"></span>
+<span class="w-[2px] h-3 bg-primary rounded-full"></span>
+</div>
+<p class="font-metadata text-metadata text-text-muted mt-4">
+        Open source • Self-hostable • Contributions welcome
+      </p>
+</div>
+</section>
+<!-- Dynamic micro-interaction script for waveform modulation -->
+<script>
+    (function() {
+      const heroWave = document.getElementById('hero-waveform');
+      if (heroWave) {
+        const bars = heroWave.querySelectorAll('span');
+        setInterval(() => {
+          bars.forEach(bar => {
+            const h = Math.floor(Math.random() * 20) + 6;
+            bar.style.height = h + 'px';
+          });
+        }, 350);
+      }
+    })();
+  </script>
+</div></main><footer class="w-full bg-background border-t border-border mt-section-desktop"><div class="max-w-[1200px] mx-auto px-margin md:px-margin-desktop pt-space-xl pb-space-lg"><div class="grid grid-cols-1 md:grid-cols-12 gap-y-space-xl md:gap-x-gutter-desktop"><div class="md:col-span-5 pr-space-md"><div class="flex items-center gap-2 mb-space-sm"><div class="flex items-center gap-[2px] h-3.5"><span class="w-[2px] h-2 bg-primary rounded-full"></span><span class="w-[2px] h-3 bg-voice rounded-full"></span><span class="w-[2px] h-3.5 bg-primary rounded-full"></span><span class="w-[2px] h-2 bg-voice rounded-full"></span><span class="w-[2px] h-1 bg-primary rounded-full"></span></div><span class="font-headline-h3 text-headline-h3 text-text-primary tracking-tight">Audentra</span></div><p class="font-body text-body text-text-secondary max-w-sm leading-relaxed mb-2">Open-source voice-to-structured-data automation.</p><p class="font-metadata text-metadata text-text-muted">Released under the Apache 2.0 License.</p></div><div class="md:col-span-2 md:col-start-7"><h4 class="font-metadata text-metadata uppercase tracking-wider text-text-muted mb-space-md font-semibold">Project</h4><ul class="space-y-space-sm font-body text-body text-text-secondary"><li class=""><a class="hover:text-text-primary transition-colors" href="#features">Features</a></li><li class=""><a class="hover:text-text-primary transition-colors" href="#demo">Hosted Demo</a></li><li class=""><a class="hover:text-text-primary transition-colors" href="https://github.com/audentra/audentra" rel="noopener noreferrer" target="_blank">GitHub Repo</a></li><li class=""><a class="hover:text-text-primary transition-colors" href="#">Documentation</a></li><li class=""><a class="hover:text-text-primary transition-colors" href="#">Release Notes</a></li></ul></div><div class="md:col-span-2"><h4 class="font-metadata text-metadata uppercase tracking-wider text-text-muted mb-space-md font-semibold">About</h4><ul class="space-y-space-sm font-body text-body text-text-secondary"><li class=""><a class="hover:text-text-primary transition-colors" href="#about">About Audentra</a></li><li class=""><a class="hover:text-text-primary transition-colors" href="#how-it-works">Architecture</a></li><li class=""><a class="hover:text-text-primary transition-colors" href="https://github.com/audentra/audentra/blob/main/CONTRIBUTING.md" rel="noopener noreferrer" target="_blank">Contributing Guidelines</a></li><li class=""><a class="hover:text-text-primary transition-colors" href="https://github.com/audentra/audentra/discussions" rel="noopener noreferrer" target="_blank">Community Discussions</a></li></ul></div><div class="md:col-span-2"><h4 class="font-metadata text-metadata uppercase tracking-wider text-text-muted mb-space-md font-semibold">Legal</h4><ul class="space-y-space-sm font-body text-body text-text-secondary"><li class=""><a class="hover:text-text-primary transition-colors" data-path="privacy-policy" href="#">Privacy Notice</a></li><li class=""><a class="hover:text-text-primary transition-colors" data-path="terms-of-service" href="#">Terms of Use</a></li><li class=""><a class="hover:text-text-primary transition-colors" href="https://github.com/audentra/audentra/blob/main/LICENSE" rel="noopener noreferrer" target="_blank">Open Source License</a></li></ul></div></div><div class="border-t border-border mt-space-xl pt-space-lg flex flex-col md:flex-row items-center justify-between gap-space-sm font-metadata text-metadata text-text-muted"><p class="">© 2025 Audentra. Open source project contributors.</p><div class="flex items-center gap-space-lg"><a class="hover:text-text-primary transition-colors" data-path="privacy-policy" href="#">Privacy Notice</a><a class="hover:text-text-primary transition-colors" data-path="terms-of-service" href="#">Terms of Use</a><a class="hover:text-text-primary transition-colors" href="https://github.com/audentra/audentra" rel="noopener noreferrer" target="_blank">GitHub</a></div></div></div></footer>
+</body></html>

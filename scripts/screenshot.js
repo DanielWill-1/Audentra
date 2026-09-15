@@ -4,8 +4,8 @@ const path = require('path');
 const net = require('net');
 const { spawn } = require('child_process');
 
-const APP_TSX = path.join(__dirname, 'src', 'App.tsx');
-const OUT_DIR = path.join(__dirname, 'page-screenshots');
+const APP_TSX = path.join(__dirname, '..', 'src', 'App.tsx');
+const OUT_DIR = path.join(__dirname, '..', 'page-screenshots');
 const BASE_URL = (process.env.BASE_URL || 'http://localhost:5173').replace(/\/+$/, '');
 const USE_EXISTING = process.argv.includes('--existing');
 

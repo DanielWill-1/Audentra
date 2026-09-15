@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"brand-hover":"#1D4ED8","surface-tint":"#0053db","border":"#E4E7EC","secondary-container":"#8a4cfc","on-error":"#ffffff","on-primary":"#ffffff","surface-variant":"#dbe2f9","text-primary":"#101828","text-muted":"#667085","on-secondary-fixed-variant":"#5a00c6","surface-subtle":"#F2F4F7","brand-soft":"#EFF6FF","background":"#F8F9FB","success":"#12B76A","error-container":"#ffdad6","primary":"#004ac6","tertiary-fixed":"#ffdbcd","surface-dim":"#d2daf0","on-error-container":"#93000a","secondary":"#712ae2","outline-variant":"#c3c6d7","surface-container-high":"#e0e8ff","border-strong":"#D0D5DD","on-surface-variant":"#434655","surface-container":"#e9edff","on-surface":"#141b2c","surface":"#FFFFFF","on-tertiary":"#ffffff","secondary-fixed-dim":"#d2bbff","warning":"#F79009","on-tertiary-container":"#ffede6","on-primary-fixed-variant":"#003ea8","text-secondary":"#475467","tertiary":"#943700","primary-container":"#2563eb","surface-container-highest":"#dbe2f9","on-secondary":"#ffffff","on-tertiary-fixed-variant":"#7d2d00","on-primary-fixed":"#00174b","outline":"#737686","primary-fixed":"#dbe1ff","surface-bright":"#f9f9ff","inverse-primary":"#b4c5ff","on-secondary-container":"#fffbff","tertiary-container":"#bc4800","on-tertiary-fixed":"#360f00","on-primary-container":"#eeefff","surface-container-low":"#f1f3ff","inverse-on-surface":"#edf0ff","error":"#F04438","voice":"#7C3AED","voice-soft":"#F5F3FF","secondary-fixed":"#eaddff","surface-container-lowest":"#ffffff","tertiary-fixed-dim":"#ffb596","primary-fixed-dim":"#b4c5ff","on-background":"#141b2c","on-secondary-fixed":"#25005a","inverse-surface":"#293041"},borderRadius:{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},spacing:{"space-lg":"1.5rem","margin":"1.25rem","space-xs":"0.25rem","section-desktop":"8.5rem","margin-tablet":"2.5rem","gutter-desktop":"2rem","space-sm":"0.5rem","space-md":"1rem","gutter":"1.5rem","margin-desktop":"2.5rem","section-mobile":"4.5rem","section-tablet":"5.5rem","space-xl":"2.5rem"},fontFamily:{"label-code":["JetBrains Mono"],"display-hero-mobile":["Hanken Grotesk"],"metadata":["Hanken Grotesk"],"headline-h3":["Hanken Grotesk"],"headline-h2-mobile":["Hanken Grotesk"],"body":["Hanken Grotesk"],"body-medium":["Hanken Grotesk"],"display-hero":["Hanken Grotesk"],"headline-h2":["Hanken Grotesk"],"body-large":["Hanken Grotesk"]},fontSize:{"label-code":["12px",{"lineHeight":"16px","fontWeight":"500"}],"display-hero-mobile":["40px",{"lineHeight":"44px","letterSpacing":"-0.02em","fontWeight":"700"}],"metadata":["13px",{"lineHeight":"18px","letterSpacing":"0.01em","fontWeight":"500"}],"headline-h3":["26px",{"lineHeight":"32px","letterSpacing":"-0.015em","fontWeight":"600"}],"headline-h2-mobile":["32px",{"lineHeight":"36px","letterSpacing":"-0.02em","fontWeight":"600"}],"body":["16px",{"lineHeight":"24px","fontWeight":"400"}],"body-medium":["16px",{"lineHeight":"24px","fontWeight":"500"}],"display-hero":["64px",{"lineHeight":"68px","letterSpacing":"-0.03em","fontWeight":"700"}],"headline-h2":["44px",{"lineHeight":"48px","letterSpacing":"-0.025em","fontWeight":"600"}],"body-large":["19px",{"lineHeight":"28px","fontWeight":"400"}]}}}}</script></head><body class="bg-background font-body text-body text-text-primary min-h-screen flex items-center justify-center"><main class="w-full"><div class="flex flex-col w-full items-center justify-center px-4 py-12">
+<div class="w-full max-w-md bg-surface border border-border rounded-xl shadow-sm p-8 sm:p-10 transition-all">
+<div class="flex items-center justify-between mb-8 pb-6 border-b border-border">
+<div class="flex items-center space-x-2.5">
+<div class="w-8 h-8 rounded-lg bg-surface-container-low flex items-center justify-center text-voice border border-border">
+<span class="material-symbols-outlined text-[20px]">graphic_eq</span>
+</div>
+<span class="font-headline-h3 text-[20px] leading-tight font-semibold tracking-tight text-text-primary">Audentra</span>
+</div>
+<div class="flex items-center space-x-1.5 px-2 py-0.5 rounded bg-surface-subtle border border-border font-label-code text-label-code text-text-muted">
+<span class="w-1.5 h-1.5 rounded-full bg-success"></span>
+<span>v0.8.2-alpha</span>
+</div>
+</div>
+<div class="mb-6">
+<h1 class="font-headline-h3 text-headline-h3 text-text-primary tracking-tight">Welcome back</h1>
+<p class="font-body text-metadata text-text-secondary mt-1">Sign in to access the hosted Audentra demo environment.</p>
+</div>
+<form class="space-y-4" id="login-form" onsubmit="event.preventDefault(); handleSignIn();">
+<div class="space-y-1.5">
+<label class="block font-body-medium text-metadata text-text-primary" for="email-field">
+          Email address
+        </label>
+<div class="relative">
+<input autocomplete="email" class="w-full h-10 px-3.5 bg-surface border border-border rounded-lg font-body text-[15px] text-text-primary placeholder:text-text-muted focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-brand-soft transition-colors" id="email-field" placeholder="operator@organization.org" required="" type="email"/>
+</div>
+</div>
+<div class="space-y-1.5">
+<div class="flex items-center justify-between">
+<label class="block font-body-medium text-metadata text-text-primary" for="password-field">
+            Password
+          </label>
+<a class="font-metadata text-metadata text-text-muted hover:text-primary-container transition-colors" href="#">
+            Forgot password?
+          </a>
+</div>
+<div class="relative">
+<input autocomplete="current-password" class="w-full h-10 px-3.5 bg-surface border border-border rounded-lg font-body text-[15px] text-text-primary placeholder:text-text-muted focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-brand-soft transition-colors tracking-widest placeholder:tracking-normal" id="password-field" placeholder="••••••••••••" required="" type="password"/>
+</div>
+</div>
+<div class="pt-2">
+<button class="w-full h-10 bg-primary-container hover:bg-brand-hover text-on-primary font-body-medium text-metadata rounded-lg transition-colors flex items-center justify-center shadow-sm cursor-pointer" id="submit-btn" type="submit">
+          Sign in
+        </button>
+</div>
+</form>
+<div class="relative my-6 text-center">
+<div class="absolute inset-0 flex items-center">
+<div class="w-full border-t border-border"></div>
+</div>
+<div class="relative inline-block px-3 bg-surface text-label-code font-label-code text-text-muted uppercase tracking-wider">
+        or
+      </div>
+</div>
+<div>
+<button class="w-full h-10 bg-surface hover:bg-surface-subtle text-text-primary border border-border-strong font-body-medium text-metadata rounded-lg transition-colors flex items-center justify-center space-x-2 cursor-pointer" id="sandbox-btn" onclick="launchSandbox()" type="button">
+<span class="material-symbols-outlined text-[18px] text-voice">electric_bolt</span>
+<span>Launch instant guest sandbox</span>
+</button>
+<div class="flex items-center justify-center space-x-1.5 mt-2">
+<span class="inline-block w-1.5 h-1.5 rounded-full bg-voice"></span>
+<span class="font-label-code text-label-code text-text-muted">Ephemeral 60-min instance with synthetic records</span>
+</div>
+</div>
+<div class="mt-8 pt-6 border-t border-border text-center">
+<p class="font-body text-metadata text-text-secondary">
+        Need an account for team testing? 
+        <a class="font-body-medium text-primary-container hover:text-brand-hover inline-flex items-center transition-colors" href="#">
+          Create account
+        </a>
+</p>
+</div>
+</div>
+<div class="w-full max-w-md mt-6 p-4 rounded-lg bg-surface-subtle/70 border border-border text-center">
+<p class="font-body text-metadata text-text-secondary">
+      Looking for the source? Run your own private instance without an account.
+    </p>
+<div class="mt-2">
+<a class="inline-flex items-center space-x-1.5 font-label-code text-label-code text-text-primary hover:text-primary-container transition-colors" href="https://github.com" rel="noopener noreferrer" target="_blank">
+<svg aria-hidden="true" class="w-3.5 h-3.5 fill-current" viewbox="0 0 24 24">
+<path clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" fill-rule="evenodd"></path>
+</svg>
+<span>View Audentra on GitHub</span>
+<span>→</span>
+</a>
+</div>
+</div>
+<script>
+    function launchSandbox() {
+      const emailInput = document.getElementById('email-field');
+      const passInput = document.getElementById('password-field');
+      const submitBtn = document.getElementById('submit-btn');
+
+      emailInput.value = 'guest.operator@sandbox.audentra.local';
+      passInput.value = 'ephemeral-session-demo';
+
+      emailInput.classList.add('bg-voice-soft');
+      passInput.classList.add('bg-voice-soft');
+
+      submitBtn.innerHTML = `
+        <span class="material-symbols-outlined text-[18px] animate-spin mr-2">progress_activity</span>
+        <span>Initializing guest node...</span>
+      `;
+
+      setTimeout(() => {
+        submitBtn.innerHTML = `
+          <span class="material-symbols-outlined text-[18px] mr-1.5">check</span>
+          <span>Redirecting to workspace...</span>
+        `;
+        submitBtn.classList.remove('bg-primary-container');
+        submitBtn.classList.add('bg-success');
+      }, 900);
+    }
+
+    function handleSignIn() {
+      const submitBtn = document.getElementById('submit-btn');
+      submitBtn.innerHTML = `
+        <span class="material-symbols-outlined text-[18px] animate-spin mr-2">progress_activity</span>
+        <span>Authenticating credentials...</span>
+      `;
+      setTimeout(() => {
+        submitBtn.innerHTML = `
+          <span class="material-symbols-outlined text-[18px] mr-1.5">check</span>
+          <span>Authenticated</span>
+        `;
+        submitBtn.classList.remove('bg-primary-container');
+        submitBtn.classList.add('bg-success');
+      }, 750);
+    }
+  </script>
+</div></main></body></html>

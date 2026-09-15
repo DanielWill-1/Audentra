@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+          "surface-container-lowest": "#ffffff",
+          "secondary-fixed-dim": "#d2bbff",
+          "tertiary-container": "#bc4800",
+          "primary-fixed": "#dbe1ff",
+          "surface-variant": "#dbe2f9",
+          "error-container": "#ffdad6",
+          "outline-variant": "#c3c6d7",
+          "surface-dim": "#d2daf0",
+          "inverse-primary": "#b4c5ff",
+          "text-primary": "#101828",
+          "text-muted": "#667085",
+          "surface-tint": "#0053db",
+          "on-secondary-fixed-variant": "#5a00c6",
+          "on-secondary-container": "#fffbff",
+          "error": "#F04438",
+          "on-tertiary-fixed-variant": "#7d2d00",
+          "brand-hover": "#1D4ED8",
+          "success": "#12B76A",
+          "text-secondary": "#475467",
+          "surface-container-high": "#e0e8ff",
+          "on-surface": "#141b2c",
+          "on-secondary-fixed": "#25005a",
+          "surface-container-low": "#f1f3ff",
+          "warning": "#F79009",
+          "tertiary-fixed-dim": "#ffb596",
+          "border": "#E4E7EC",
+          "on-primary-fixed-variant": "#003ea8",
+          "tertiary": "#943700",
+          "background": "#F8F9FB",
+          "on-tertiary-container": "#ffede6",
+          "on-background": "#141b2c",
+          "on-primary": "#ffffff",
+          "secondary-fixed": "#eaddff",
+          "surface": "#FFFFFF",
+          "brand-soft": "#EFF6FF",
+          "on-primary-container": "#eeefff",
+          "surface-container": "#e9edff",
+          "on-error-container": "#93000a",
+          "surface-subtle": "#F2F4F7",
+          "secondary": "#712ae2",
+          "on-secondary": "#ffffff",
+          "on-surface-variant": "#434655",
+          "on-error": "#ffffff",
+          "tertiary-fixed": "#ffdbcd",
+          "secondary-container": "#8a4cfc",
+          "voice-soft": "#F5F3FF",
+          "inverse-on-surface": "#edf0ff",
+          "surface-bright": "#f9f9ff",
+          "primary-container": "#2563eb",
+          "on-tertiary-fixed": "#360f00",
+          "border-strong": "#D0D5DD",
+          "on-tertiary": "#ffffff",
+          "primary": "#004ac6",
+          "voice": "#7C3AED",
+          "inverse-surface": "#293041",
+          "outline": "#737686",
+          "surface-container-highest": "#dbe2f9",
+          "primary-fixed-dim": "#b4c5ff",
+          "on-primary-fixed": "#00174b"
+        },
+        "borderRadius": {
+          "DEFAULT": "0.25rem",
+          "lg": "0.5rem",
+          "xl": "0.75rem",
+          "full": "9999px"
+        },
+        "spacing": {
+          "space-lg": "1.5rem",
+          "margin-desktop": "2.5rem",
+          "section-desktop": "8.5rem",
+          "margin": "1.25rem",
+          "gutter": "1.5rem",
+          "space-xl": "2.5rem",
+          "space-sm": "0.5rem",
+          "margin-tablet": "2.5rem",
+          "space-md": "1rem",
+          "space-xs": "0.25rem",
+          "gutter-desktop": "2rem",
+          "section-tablet": "5.5rem",
+          "section-mobile": "4.5rem"
+        },
+        "fontFamily": {
+          "metadata": [
+            "Hanken Grotesk"
+          ],
+          "headline-h2-mobile": [
+            "Hanken Grotesk"
+          ],
+          "display-hero": [
+            "Hanken Grotesk"
+          ],
+          "display-hero-mobile": [
+            "Hanken Grotesk"
+          ],
+          "body-large": [
+            "Hanken Grotesk"
+          ],
+          "body-medium": [
+            "Hanken Grotesk"
+          ],
+          "body": [
+            "Hanken Grotesk"
+          ],
+          "headline-h3": [
+            "Hanken Grotesk"
+          ],
+          "headline-h2": [
+            "Hanken Grotesk"
+          ],
+          "label-code": [
+            "JetBrains Mono"
+          ]
+        },
+        "fontSize": {
+          "metadata": [
+            "13px",
+            {
+              "lineHeight": "18px",
+              "letterSpacing": "0.01em",
+              "fontWeight": "500"
+            }
+          ],
+          "headline-h2-mobile": [
+            "32px",
+            {
+              "lineHeight": "36px",
+              "letterSpacing": "-0.02em",
+              "fontWeight": "600"
+            }
+          ],
+          "display-hero": [
+            "64px",
+            {
+              "lineHeight": "68px",
+              "letterSpacing": "-0.03em",
+              "fontWeight": "700"
+            }
+          ],
+          "display-hero-mobile": [
+            "40px",
+            {
+              "lineHeight": "44px",
+              "letterSpacing": "-0.02em",
+              "fontWeight": "700"
+            }
+          ],
+          "body-large": [
+            "19px",
+            {
+              "lineHeight": "28px",
+              "fontWeight": "400"
+            }
+          ],
+          "body-medium": [
+            "16px",
+            {
+              "lineHeight": "24px",
+              "fontWeight": "500"
+            }
+          ],
+          "body": [
+            "16px",
+            {
+              "lineHeight": "24px",
+              "fontWeight": "400"
+            }
+          ],
+          "headline-h3": [
+            "26px",
+            {
+              "lineHeight": "32px",
+              "letterSpacing": "-0.015em",
+              "fontWeight": "600"
+            }
+          ],
+          "headline-h2": [
+            "44px",
+            {
+              "lineHeight": "48px",
+              "letterSpacing": "-0.025em",
+              "fontWeight": "600"
+            }
+          ],
+          "label-code": [
+            "12px",
+            {
+              "lineHeight": "16px",
+              "fontWeight": "500"
+            }
+          ]
+        }
+      },
+    },
+  }</script></head><body class="bg-background font-body text-text-primary min-h-screen"><header class="fixed top-0 left-0 right-0 z-50 bg-surface border-b border-border"><div class="h-16 max-w-[1200px] mx-auto px-margin md:px-margin-tablet lg:px-margin-desktop flex items-center justify-between"><div class="flex items-center gap-space-lg"><a class="flex items-center gap-space-sm" data-path="home" href="#"><span class="font-headline-h3 text-headline-h3 text-text-primary tracking-tight">Audentra</span><span class="font-label-code text-label-code bg-surface-subtle text-text-secondary px-space-xs py-0.5 rounded border border-border">v0.8.2-alpha</span></a><nav class="hidden md:flex items-center gap-space-xs" data-active-classes="bg-brand-soft text-primary-container font-semibold rounded-lg"><a class="px-3 py-1.5 rounded-lg text-text-secondary hover:text-text-primary hover:bg-surface-subtle transition-colors font-body-medium text-body-medium" data-path="home" href="#">Home</a><a class="px-3 py-1.5 rounded-lg text-text-secondary hover:text-text-primary hover:bg-surface-subtle transition-colors font-body-medium text-body-medium" data-path="features" href="#">Features</a><a class="px-3 py-1.5 rounded-lg text-text-secondary hover:text-text-primary hover:bg-surface-subtle transition-colors font-body-medium text-body-medium" data-path="about" href="#">About</a><a class="px-3 py-1.5 rounded-lg text-text-secondary hover:text-text-primary hover:bg-surface-subtle transition-colors font-body-medium text-body-medium" data-path="documentation" href="#">Docs</a><a class="px-3 py-1.5 rounded-lg text-text-secondary hover:text-text-primary hover:bg-surface-subtle transition-colors font-body-medium text-body-medium" data-path="github-repository" href="#">GitHub</a></nav></div><div class="flex items-center gap-space-md"><a class="hidden sm:inline-flex items-center justify-center h-10 px-4 text-text-primary hover:text-primary-container transition-colors font-body-medium text-body-medium" data-path="sign-in" href="#">Sign in</a><a class="inline-flex items-center justify-center h-10 px-4 rounded-lg bg-primary-container hover:bg-brand-hover text-on-primary font-body-medium text-body-medium transition-colors shadow-[0_1px_3px_rgba(16,24,40,0.05)]" data-path="demo" href="#">Try Demo</a><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="w-full pt-16 bg-background"><div class="flex flex-col w-full">
+<div class="w-full bg-background py-space-xl md:py-space-xl">
+<div class="max-w-[1200px] mx-auto px-margin md:px-margin-tablet lg:px-margin-desktop">
+<!-- Document Masthead / Header (No double H1 branding) -->
+<div class="max-w-[880px] mx-auto mb-space-xl">
+<div class="flex items-center gap-space-xs mb-space-sm">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-brand-soft text-primary font-label-code text-label-code font-semibold tracking-wider uppercase">
+            LEGAL &amp; GOVERNANCE
+          </span>
+<span class="text-text-muted font-label-code text-label-code">/</span>
+<span class="text-text-muted font-label-code text-label-code">DOC-REF: TOU-2025-V2.1</span>
+</div>
+<h1 class="font-headline-h2 text-headline-h2 text-text-primary tracking-tight mb-space-sm">
+          Terms of Use
+        </h1>
+<div class="flex flex-wrap items-center gap-x-space-md gap-y-2 text-text-muted font-metadata text-metadata pb-space-lg border-b border-border">
+<span class="flex items-center gap-1.5 text-text-secondary font-medium">
+<span class="material-symbols-outlined text-base">calendar_today</span>
+            Effective Date: January 1, 2025
+          </span>
+<span class="text-border-strong">•</span>
+<span>Revision 2.1</span>
+<span class="text-border-strong">•</span>
+<span class="text-text-secondary">Audentra Open-Source Project &amp; Evaluator Sandbox</span>
+<span class="text-border-strong">•</span>
+<button class="inline-flex items-center gap-1 text-primary hover:text-brand-hover transition-colors ml-auto font-body-medium text-metadata" id="printBtn">
+<span class="material-symbols-outlined text-base">print</span>
+            Export Document
+          </button>
+</div>
+</div>
+<!-- Main Layout: Sticky Sidebar Index + Reading Canvas -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter-desktop items-start max-w-[1100px] mx-auto">
+<!-- Left Table of Contents Sidebar -->
+<aside class="hidden lg:block lg:col-span-4 sticky top-24">
+<div class="bg-surface rounded-xl border border-border p-space-md shadow-sm">
+<div class="flex items-center justify-between pb-space-xs mb-space-xs border-b border-border">
+<span class="font-metadata text-metadata uppercase tracking-wider font-semibold text-text-muted">Contents</span>
+<span class="font-label-code text-label-code text-voice bg-voice-soft px-1.5 py-0.5 rounded">9 Sections</span>
+</div>
+<nav class="space-y-1" id="termsNav">
+<a class="toc-link flex items-center justify-between px-2.5 py-2 rounded-lg text-text-secondary hover:bg-surface-subtle transition-all font-body text-metadata group" href="#section-1">
+<span class="truncate">1. Acceptance of Terms</span>
+<span class="text-text-muted font-label-code text-xs opacity-0 group-hover:opacity-100 transition-opacity">01</span>
+</a>
+<a class="toc-link flex items-center justify-between px-2.5 py-2 rounded-lg text-text-secondary hover:bg-surface-subtle transition-all font-body text-metadata group" href="#section-2">
+<span class="truncate">2. Open Source vs. Hosted Demo</span>
+<span class="text-text-muted font-label-code text-xs opacity-0 group-hover:opacity-100 transition-opacity">02</span>
+</a>
+<a class="toc-link flex items-center justify-between px-2.5 py-2 rounded-lg text-text-secondary hover:bg-surface-subtle transition-all font-body text-metadata group" href="#section-3">
+<span class="truncate">3. Acceptable Use of Demo</span>
+<span class="text-text-muted font-label-code text-xs opacity-0 group-hover:opacity-100 transition-opacity">03</span>
+</a>
+<a class="toc-link flex items-center justify-between px-2.5 py-2 rounded-lg text-text-secondary hover:bg-surface-subtle transition-all font-body text-metadata group" href="#section-4">
+<span class="truncate">4. No Clinical / Professional Warranty</span>
+<span class="text-text-muted font-label-code text-xs opacity-0 group-hover:opacity-100 transition-opacity">04</span>
+</a>
+<a class="toc-link flex items-center justify-between px-2.5 py-2 rounded-lg text-text-secondary hover:bg-surface-subtle transition-all font-body text-metadata group" href="#section-5">
+<span class="truncate">5. Account &amp; Sandbox Access</span>
+<span class="text-text-muted font-label-code text-xs opacity-0 group-hover:opacity-100 transition-opacity">05</span>
+</a>
+<a class="toc-link flex items-center justify-between px-2.5 py-2 rounded-lg text-text-secondary hover:bg-surface-subtle transition-all font-body text-metadata group" href="#section-6">
+<span class="truncate">6. Intellectual Property &amp; Code</span>
+<span class="text-text-muted font-label-code text-xs opacity-0 group-hover:opacity-100 transition-opacity">06</span>
+</a>
+<a class="toc-link flex items-center justify-between px-2.5 py-2 rounded-lg text-text-secondary hover:bg-surface-subtle transition-all font-body text-metadata group" href="#section-7">
+<span class="truncate">7. Limitation of Liability &amp; "As-Is"</span>
+<span class="text-text-muted font-label-code text-xs opacity-0 group-hover:opacity-100 transition-opacity">07</span>
+</a>
+<a class="toc-link flex items-center justify-between px-2.5 py-2 rounded-lg text-text-secondary hover:bg-surface-subtle transition-all font-body text-metadata group" href="#section-8">
+<span class="truncate">8. Modifications &amp; Termination</span>
+<span class="text-text-muted font-label-code text-xs opacity-0 group-hover:opacity-100 transition-opacity">08</span>
+</a>
+<a class="toc-link flex items-center justify-between px-2.5 py-2 rounded-lg text-text-secondary hover:bg-surface-subtle transition-all font-body text-metadata group" href="#section-9">
+<span class="truncate">9. Contact &amp; Governance</span>
+<span class="text-text-muted font-label-code text-xs opacity-0 group-hover:opacity-100 transition-opacity">09</span>
+</a>
+</nav>
+<!-- Quick Status Box -->
+<div class="mt-space-md pt-space-md border-t border-border">
+<div class="flex items-center gap-2 mb-1.5">
+<span class="inline-block w-2 h-2 rounded-full bg-success"></span>
+<span class="font-metadata text-metadata font-semibold text-text-primary">License Architecture</span>
+</div>
+<p class="font-metadata text-metadata text-text-muted leading-relaxed mb-3">
+                Core Engine is distributed under Apache 2.0. Hosted demo is a shared public rate-limited sandbox.
+              </p>
+<a class="inline-flex items-center gap-1 font-body-medium text-metadata text-primary hover:text-brand-hover font-semibold" data-path="open-source-license" href="#">
+                Inspect Apache 2.0 Text <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</a>
+</div>
+</div>
+</aside>
+<!-- Right Side: Editorial Container Canvas (max-width 880px) -->
+<article class="lg:col-span-8 bg-surface border border-border rounded-xl p-6 sm:p-10 md:p-12 shadow-sm">
+<!-- Legal Notice Banner -->
+<div class="p-4 rounded-lg bg-surface-subtle border border-border mb-space-lg">
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-voice mt-0.5">verified_user</span>
+<div>
+<h4 class="font-headline-h3 text-body-medium font-semibold text-text-primary mb-1">Notice to Evaluators &amp; Developers</h4>
+<p class="font-body text-metadata text-text-secondary leading-relaxed">
+                  These Terms of Use govern access to our official website (audentra.org), public documentation, code repositories, and our hosted demonstration web services. By querying or testing speech-to-schema workloads on our hosted clusters, you affirm agreement with the conditions set forth herein.
+                </p>
+</div>
+</div>
+</div>
+<!-- Section 1 -->
+<section class="scroll-mt-24 mb-space-xl" id="section-1">
+<div class="flex items-center gap-2 mb-space-xs">
+<span class="font-label-code text-label-code text-voice font-semibold">01</span>
+<h2 class="font-headline-h3 text-headline-h3 text-text-primary tracking-tight">1. Acceptance of Terms</h2>
+</div>
+<div class="space-y-3 font-body text-body text-text-secondary leading-relaxed">
+<p>
+                By accessing, browsing, evaluating, or interacting with any endpoint associated with the <strong class="text-text-primary font-semibold">Audentra Open-Source Project</strong> ("Audentra", "we", "us", or "the Project"), you acknowledge that you have read, understood, and agree to be bound by these Terms of Use ("Terms").
+              </p>
+<p>
+                If you are entering into these Terms on behalf of an enterprise entity, academic institution, or commercial healthcare infrastructure organization, you represent that you hold the legal authority to bind such entity. If you lack such authority or dissent from any provision detailed in this document, you must immediately terminate use of the hosted services and associated web portals.
+              </p>
+</div>
+</section>
+<!-- Section 2 -->
+<section class="scroll-mt-24 mb-space-xl pt-space-md border-t border-border" id="section-2">
+<div class="flex items-center gap-2 mb-space-xs">
+<span class="font-label-code text-label-code text-voice font-semibold">02</span>
+<h2 class="font-headline-h3 text-headline-h3 text-text-primary tracking-tight">2. Open Source Software vs. Hosted Demo Services</h2>
+</div>
+<div class="space-y-3 font-body text-body text-text-secondary leading-relaxed">
+<p>
+                Audentra operates with a distinct jurisdictional bifurcation between software codebases and remote hosted evaluative compute clusters:
+              </p>
+<!-- Distinction Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 my-space-md">
+<div class="p-4 rounded-lg bg-surface-subtle border border-border">
+<div class="flex items-center gap-2 text-primary font-semibold font-metadata text-metadata mb-1.5">
+<span class="material-symbols-outlined text-base">code</span>
+                    Self-Hosted Source Code
+                  </div>
+<p class="font-metadata text-metadata text-text-secondary leading-relaxed">
+                    Governed entirely and without exception by the <strong>Apache License, Version 2.0</strong>. You maintain unfettered operational sovereignty, private telemetry control, and offline air-gapped deployment rights under its explicit terms.
+                  </p>
+</div>
+<div class="p-4 rounded-lg bg-surface-subtle border border-border">
+<div class="flex items-center gap-2 text-voice font-semibold font-metadata text-metadata mb-1.5">
+<span class="material-symbols-outlined text-base">cloud_done</span>
+                    Public Hosted Sandbox
+                  </div>
+<p class="font-metadata text-metadata text-text-secondary leading-relaxed">
+                    Provided strictly as an experimental, resource-capped convenience for evaluating deterministic voice ingestion, waveform alignment, and real-time schema extraction. Governed by these Terms of Use.
+                  </p>
+</div>
+</div>
+<p>
+                Nothing in these Terms shall be construed as modifying, overriding, or restricting rights conveyed under the Apache 2.0 license regarding self-compiled binaries, locally containerized models, or downstream repository forks.
+              </p>
+</div>
+</section>
+<!-- Section 3 -->
+<section class="scroll-mt-24 mb-space-xl pt-space-md border-t border-border" id="section-3">
+<div class="flex items-center gap-2 mb-space-xs">
+<span class="font-label-code text-label-code text-voice font-semibold">03</span>
+<h2 class="font-headline-h3 text-headline-h3 text-text-primary tracking-tight">3. Acceptable Use of the Hosted Demo</h2>
+</div>
+<div class="space-y-3 font-body text-body text-text-secondary leading-relaxed">
+<p>
+                The public hosted demo sandbox is a shared communal infrastructure asset designed to display real-time speech parser capabilities. To preserve reliability and regulatory safety, the following conditions are strictly enforced:
+              </p>
+<!-- Prohibition Alert -->
+<div class="p-4 rounded-lg bg-surface-subtle border border-error/30 text-text-primary">
+<div class="flex items-start gap-2.5">
+<span class="material-symbols-outlined text-error mt-0.5">gpp_maybe</span>
+<div>
+<span class="font-semibold text-body-medium block mb-1 text-text-primary">Strict Prohibition of Protected Health Information (PHI) &amp; Classified Data</span>
+<p class="font-metadata text-metadata text-text-secondary leading-relaxed">
+                      You are expressly forbidden from transmitting live patient audio, Protected Health Information (PHI) under HIPAA, Personally Identifiable Information (PII) under GDPR, or classified defense telemetry through the public hosted evaluation cluster. Users managing regulated clinical streams must instantiate private, HIPAA-compliant on-premises instances using our open-source containers.
+                    </p>
+</div>
+</div>
+</div>
+<p>Additionally, users agree not to engage in:</p>
+<ul class="space-y-2.5 font-body text-body text-text-secondary pl-2">
+<li class="flex items-start gap-2.5">
+<span class="material-symbols-outlined text-text-muted text-base mt-1">block</span>
+<span><strong class="text-text-primary font-medium">Infrastructure Exhaustion:</strong> Automated denial-of-service, rapid sequential scraping, or bypassing client-side token bucket rate limiters.</span>
+</li>
+<li class="flex items-start gap-2.5">
+<span class="material-symbols-outlined text-text-muted text-base mt-1">block</span>
+<span><strong class="text-text-primary font-medium">GPU Quota Subversion:</strong> Deploying bot networks to monopolize shared inference GPUs allocated for speech phoneme parsing and transcription pipelines.</span>
+</li>
+<li class="flex items-start gap-2.5">
+<span class="material-symbols-outlined text-text-muted text-base mt-1">block</span>
+<span><strong class="text-text-primary font-medium">Adversarial Probing:</strong> Reverse engineering the demo server control plane, executing unauthorized penetration testing against cluster nodes, or injecting malicious audio binary payloads.</span>
+</li>
+</ul>
+</div>
+</section>
+<!-- Section 4 -->
+<section class="scroll-mt-24 mb-space-xl pt-space-md border-t border-border" id="section-4">
+<div class="flex items-center gap-2 mb-space-xs">
+<span class="font-label-code text-label-code text-voice font-semibold">04</span>
+<h2 class="font-headline-h3 text-headline-h3 text-text-primary tracking-tight">4. No Professional Advice or Clinical Warranty</h2>
+</div>
+<div class="space-y-3 font-body text-body text-text-secondary leading-relaxed">
+<p>
+<strong class="text-text-primary font-semibold">Audentra is experimental acoustic-linguistic middleware.</strong> It is not a certified medical device, statutory legal counsel, or financial auditor. The transcription results, entity extraction bindings, and confidence probability indexes generated by our engine are deterministic computational projections.
+              </p>
+<div class="p-4 rounded-lg bg-surface-subtle border border-border">
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-warning mt-0.5">health_and_safety</span>
+<div>
+<h5 class="font-metadata text-metadata font-semibold text-text-primary mb-1">Requirement for Human-in-the-Loop Validation</h5>
+<p class="font-metadata text-metadata text-text-secondary leading-relaxed">
+                      All structured schemas, medication names, numerical quantities, operational directives, and semantic parameters output by Audentra must undergo qualified human operator inspection prior to execution in critical patient-care, avionics, industrial control, or mission-critical transactions.
+                    </p>
+</div>
+</div>
+</div>
+<p>
+                The Project contributors and maintainers assume zero legal, regulatory, or civil liability resulting from automated actions or omissions executed on the basis of unverified schema data.
+              </p>
+</div>
+</section>
+<!-- Section 5 -->
+<section class="scroll-mt-24 mb-space-xl pt-space-md border-t border-border" id="section-5">
+<div class="flex items-center gap-2 mb-space-xs">
+<span class="font-label-code text-label-code text-voice font-semibold">05</span>
+<h2 class="font-headline-h3 text-headline-h3 text-text-primary tracking-tight">5. Account Credentials &amp; Sandbox Access</h2>
+</div>
+<div class="space-y-3 font-body text-body text-text-secondary leading-relaxed">
+<p>
+                Where access to extended hosted developer preview sandboxes requires credential registration or token generation:
+              </p>
+<ul class="space-y-2 font-body text-body text-text-secondary list-disc pl-5">
+<li>You are solely responsible for maintaining the confidentiality of any issued API keys, session tokens, or login identifiers.</li>
+<li>API keys must not be hardcoded into public repositories or distributed via unencrypted client-side code packages.</li>
+<li>We reserve the unilateral discretion to throttle, invalidate, or terminate API credentials exhibiting abnormal latency degradation or suspicious concurrency bursts.</li>
+</ul>
+</div>
+</section>
+<!-- Section 6 -->
+<section class="scroll-mt-24 mb-space-xl pt-space-md border-t border-border" id="section-6">
+<div class="flex items-center gap-2 mb-space-xs">
+<span class="font-label-code text-label-code text-voice font-semibold">06</span>
+<h2 class="font-headline-h3 text-headline-h3 text-text-primary tracking-tight">6. Intellectual Property &amp; Code Licensing</h2>
+</div>
+<div class="space-y-3 font-body text-body text-text-secondary leading-relaxed">
+<p>
+                The Audentra wordmark, design system specifications, interface schemas, and technical brand assets remain the collective property of the Audentra Project Steering Committee.
+              </p>
+<p>
+                Source code repository contents are licensed under the Apache License, Version 2.0. When contributing pull requests, bug fixes, or documentation revisions back to the core project, you do so subject to the terms of the Project Contributor License Agreement (CLA) or Developer Certificate of Origin (DCO 1.1).
+              </p>
+<p>
+                You retain all rights, ownership, and provenance in any custom business schemas, JSON schemas, or acoustic recording samples you create or evaluate within your private deployments.
+              </p>
+</div>
+</section>
+<!-- Section 7 -->
+<section class="scroll-mt-24 mb-space-xl pt-space-md border-t border-border" id="section-7">
+<div class="flex items-center gap-2 mb-space-xs">
+<span class="font-label-code text-label-code text-voice font-semibold">07</span>
+<h2 class="font-headline-h3 text-headline-h3 text-text-primary tracking-tight">7. Limitation of Liability &amp; "As-Is" Disclaimer</h2>
+</div>
+<div class="space-y-3 font-body text-body text-text-secondary leading-relaxed">
+<div class="p-4 rounded-lg bg-surface-subtle border border-border font-label-code text-label-code text-text-secondary leading-relaxed uppercase">
+                THE HOSTED SANDBOX, WEBSITE, SAMPLES, AND PRE-COMPILED LIBRARIES ARE PROVIDED "AS IS" AND "AS AVAILABLE", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, TITLE, AND NON-INFRINGEMENT. IN NO EVENT SHALL THE AUTHORS, MAINTAINERS, OR STEERING COMMITTEE MEMBERS BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM, OUT OF, OR IN CONNECTION WITH THE USE OR OTHER DEALINGS IN THE SOFTWARE OR DEMO SERVICES.
+              </div>
+<p>
+                Because local jurisdictions may not permit the full exclusion or limitation of consequential or incidental damages, our liability in such regions shall be bounded to the maximum extent legally permissible.
+              </p>
+</div>
+</section>
+<!-- Section 8 -->
+<section class="scroll-mt-24 mb-space-xl pt-space-md border-t border-border" id="section-8">
+<div class="flex items-center gap-2 mb-space-xs">
+<span class="font-label-code text-label-code text-voice font-semibold">08</span>
+<h2 class="font-headline-h3 text-headline-h3 text-text-primary tracking-tight">8. Modifications &amp; Termination</h2>
+</div>
+<div class="space-y-3 font-body text-body text-text-secondary leading-relaxed">
+<p>
+                We reserve the right to revise or replace these Terms at any time. Changes take immediate effect upon publishing to this repository address with an updated revision date. Your continued utilization of the hosted demo or project properties constitutes binding acceptance of modified terms.
+              </p>
+<p>
+                We maintain the explicit prerogative to suspend, degrade, or deprecate public evaluator endpoints or hosted model clusters at our sole discretion without prior notification or service level obligation.
+              </p>
+</div>
+</section>
+<!-- Section 9 -->
+<section class="scroll-mt-24 pt-space-md border-t border-border" id="section-9">
+<div class="flex items-center gap-2 mb-space-xs">
+<span class="font-label-code text-label-code text-voice font-semibold">09</span>
+<h2 class="font-headline-h3 text-headline-h3 text-text-primary tracking-tight">9. Contact &amp; Governance</h2>
+</div>
+<div class="space-y-3 font-body text-body text-text-secondary leading-relaxed mb-space-lg">
+<p>
+                The Audentra Open-Source Project operates under open governance protocols administered by the Core Maintainers and Steering Committee. Questions concerning legal compliance, hosted cluster abuse reporting, or commercial certification inquiries should be directed to the designated project liaisons:
+              </p>
+<div class="p-4 rounded-lg bg-surface-subtle border border-border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+<div>
+<span class="font-metadata text-metadata font-semibold text-text-primary block">Legal &amp; Security Working Group</span>
+<span class="font-label-code text-label-code text-text-secondary">governance@audentra.org</span>
+<p class="font-metadata text-metadata text-text-muted mt-0.5">PGP Key fingerprint: 4A89 98C1 2F41 E09D 79E3</p>
+</div>
+<a class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-primary-container text-on-primary hover:bg-brand-hover transition-colors font-body-medium text-metadata shrink-0" href="mailto:governance@audentra.org">
+<span class="material-symbols-outlined text-base">mail</span>
+                  Contact Maintainers
+                </a>
+</div>
+</div>
+<!-- Bottom Acknowledgement Checkbox Component -->
+<div class="p-4 rounded-lg bg-surface border border-border">
+<label class="flex items-center gap-3 cursor-pointer select-none">
+<input class="w-4 h-4 rounded text-primary border-border-strong focus:ring-primary" id="acknowledgeCheckbox" type="checkbox"/>
+<span class="font-metadata text-metadata text-text-secondary">
+                  I acknowledge having reviewed the Terms of Use and understand the distinction between the self-hosted Apache 2.0 codebase and the public hosted evaluation demo.
+                </span>
+</label>
+<div class="hidden mt-2 pt-2 border-t border-border text-success font-metadata text-metadata flex items-center gap-1.5" id="ackNotice">
+<span class="material-symbols-outlined text-base">check_circle</span>
+                Acknowledgement recorded locally for this browser session.
+              </div>
+</div>
+</section>
+</article>
+</div>
+</div>
+</div>
+</div>
+<script>
+  (function() {
+    // Print / Export interaction
+    const printBtn = document.getElementById('printBtn');
+    if (printBtn) {
+      printBtn.addEventListener('click', () => {
+        window.print();
+      });
+    }
+
+    // Interactive Table of Contents highlight on scroll
+    const tocLinks = document.querySelectorAll('.toc-link');
+    const sections = document.querySelectorAll('section[id^="section-"]');
+
+    function updateActiveToc() {
+      let currentSectionId = '';
+      const scrollPos = window.scrollY + 120;
+
+      sections.forEach(sec => {
+        const top = sec.offsetTop;
+        const height = sec.offsetHeight;
+        if (scrollPos >= top && scrollPos < top + height) {
+          currentSectionId = sec.getAttribute('id');
+        }
+      });
+
+      tocLinks.forEach(link => {
+        const href = link.getAttribute('href').replace('#', '');
+        if (href === currentSectionId) {
+          link.classList.add('bg-brand-soft', 'text-primary', 'font-semibold');
+          link.classList.remove('text-text-secondary');
+        } else {
+          link.classList.remove('bg-brand-soft', 'text-primary', 'font-semibold');
+          link.classList.add('text-text-secondary');
+        }
+      });
+    }
+
+    window.addEventListener('scroll', updateActiveToc, { passive: true });
+    updateActiveToc();
+
+    // Checkbox interaction
+    const ackBox = document.getElementById('acknowledgeCheckbox');
+    const ackNotice = document.getElementById('ackNotice');
+    if (ackBox && ackNotice) {
+      ackBox.addEventListener('change', (e) => {
+        if (e.target.checked) {
+          ackNotice.classList.remove('hidden');
+        } else {
+          ackNotice.classList.add('hidden');
+        }
+      });
+    }
+  })();
+</script></main><footer class="w-full bg-surface border-t border-border mt-auto"><div class="max-w-[1200px] mx-auto px-margin md:px-margin-tablet lg:px-margin-desktop pt-space-xl pb-space-lg"><div class="grid grid-cols-2 md:grid-cols-4 gap-space-lg pb-space-xl"><div class="col-span-2 md:col-span-1"><div class="flex items-center gap-space-sm mb-space-xs"><span class="font-headline-h3 text-headline-h3 text-text-primary tracking-tight">Audentra</span><span class="font-label-code text-label-code bg-surface-subtle text-text-secondary px-space-xs py-0.5 rounded border border-border">v0.8.2</span></div><p class="font-metadata text-metadata text-text-secondary leading-relaxed">Speech understanding engine and deterministic data pipelines for enterprise environments.</p></div><div><h4 class="font-metadata text-metadata text-text-primary uppercase tracking-wider mb-space-sm font-semibold">Project</h4><ul class="space-y-2"><li class="leading-none"><a class="font-body text-body text-text-secondary hover:text-text-primary transition-colors" data-path="features" href="#">Features</a></li><li class="leading-none"><a class="font-body text-body text-text-secondary hover:text-text-primary transition-colors" data-path="demo" href="#">Hosted Demo</a></li><li class="leading-none"><a class="font-body text-body text-text-secondary hover:text-text-primary transition-colors" data-path="github-repository" href="#">GitHub Repo</a></li><li class="leading-none"><a class="font-body text-body text-text-secondary hover:text-text-primary transition-colors" data-path="documentation" href="#">Documentation</a></li></ul></div><div><h4 class="font-metadata text-metadata text-text-primary uppercase tracking-wider mb-space-sm font-semibold">About</h4><ul class="space-y-2"><li class="leading-none"><a class="font-body text-body text-text-secondary hover:text-text-primary transition-colors" data-path="about" href="#">About Audentra</a></li><li class="leading-none"><a class="font-body text-body text-text-secondary hover:text-text-primary transition-colors" data-path="architecture" href="#">Architecture</a></li><li class="leading-none"><a class="font-body text-body text-text-secondary hover:text-text-primary transition-colors" data-path="contributing-guidelines" href="#">Contributing Guidelines</a></li><li class="leading-none"><a class="font-body text-body text-text-secondary hover:text-text-primary transition-colors" data-path="community-discussions" href="#">Community Discussions</a></li></ul></div><div><h4 class="font-metadata text-metadata text-text-primary uppercase tracking-wider mb-space-sm font-semibold">Legal</h4><ul class="space-y-2"><li class="leading-none"><a class="font-body text-body text-text-secondary hover:text-text-primary transition-colors" data-path="privacy-notice" href="#">Privacy Notice</a></li><li class="leading-none"><a class="font-body text-body text-text-secondary hover:text-text-primary transition-colors" data-path="terms-of-use" href="#">Terms of Use</a></li><li class="leading-none"><a class="font-body text-body text-text-secondary hover:text-text-primary transition-colors" data-path="open-source-license" href="#">Open Source License</a></li></ul></div></div><div class="border-t border-border pt-space-md flex flex-col sm:flex-row items-center justify-between gap-space-sm"><div class="flex items-center gap-space-sm"><span class="font-metadata text-metadata text-text-muted">© 2025 Audentra Project Authors. Built for precision enterprise workflows.</span></div><div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-surface border border-border"><span class="w-2 h-2 rounded-full bg-success"></span><span class="font-metadata text-metadata text-text-secondary">All systems operational</span></div></div></div></footer></body></html>
