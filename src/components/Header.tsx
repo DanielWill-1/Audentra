@@ -1,126 +1,73 @@
-import React from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Mic, LogOut } from 'lucide-react';
+import { Link, useLocation } from 'react-router-dom';
+import { Github, ArrowUpRight } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+
+const GITHUB_REPO = 'https://github.com/DanielWill-1/Audentra';
 
 function Header() {
   const location = useLocation();
-  const navigate = useNavigate();
-  const { user, signOut } = useAuth();
+  const { user } = useAuth();
 
-  const isActive = (path: string) => {
-    return location.pathname === path;
-  };
-
-  const handleSignOut = async () => {
-    try {
-      await signOut();
-      // Redirect to home page after successful sign out
-      navigate('/');
-    } catch (error) {
-      console.error('Sign out failed:', error);
-      // Still redirect even if there's an error
-      navigate('/');
-    }
-  };
+  const navLink = (path: string) =>
+    location.pathname === path ? 'text-text-primary' : 'text-text-secondary hover:text-text-primary';
 
   return (
-    <header className="bg-white border-b border-gray-100 sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center py-4">
-          <Link to="/" className="flex items-center space-x-4">
-            <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-              <Mic className="w-8 h-8 text-white" />
-            </div>
-            <span className="text-2xl font-bold text-gray-900">Audentra</span>
-            {/* Custom Bolt.new Badge */}
-            <div className="bolt-badge-container">
-              <a
-                href="https://bolt.new/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="bolt-badge-link"
-              >
-                <img
-                  src="https://storage.bolt.army/white_circle_360x360.png"
-                  alt="Built with Bolt.new badge"
-                  className="w-20 h-20 object-contain"
-                />
-              </a>
-            </div>
+    <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-md border-b border-border">
+      <div className="h-16 max-w-[1200px] mx-auto px-margin md:px-margin-desktop flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <Link to="/" className="flex items-center gap-2 group text-text-primary">
+            <span className="flex items-center gap-[2px] h-4 py-0.5" aria-hidden="true">
+              <span className="w-[2.5px] h-2 bg-primary group-hover:h-3.5 transition-all duration-150 rounded-full" />
+              <span className="w-[2.5px] h-3.5 bg-voice group-hover:h-2 transition-all duration-150 rounded-full" />
+              <span className="w-[2.5px] h-4 bg-primary group-hover:h-[18px] transition-all duration-150 rounded-full" />
+              <span className="w-[2.5px] h-2.5 bg-voice group-hover:h-3 transition-all duration-150 rounded-full" />
+              <span className="w-[2.5px] h-1.5 bg-primary group-hover:h-2 transition-all duration-150 rounded-full" />
+            </span>
+            <span className="font-headline-h3 text-headline-h3 tracking-tight text-text-primary">Audentra</span>
           </Link>
-          <nav className="hidden md:flex space-x-8">
-            <Link 
-              to="/features" 
-              className={`transition-colors ${isActive('/features') ? 'text-blue-600' : 'text-gray-700 hover:text-blue-600'}`}
+        </div>
+
+        <nav className="hidden md:flex items-center gap-space-lg">
+          <Link to="/features" className={`font-body-medium text-body-medium transition-colors ${navLink('/features')}`}>
+            Features
+          </Link>
+          <Link to="/about" className={`font-body-medium text-body-medium transition-colors ${navLink('/about')}`}>
+            About
+          </Link>
+          <a
+            href={GITHUB_REPO}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-body-medium text-body-medium text-text-secondary hover:text-text-primary transition-colors flex items-center gap-1.5"
+          >
+            <Github className="w-4 h-4" aria-hidden="true" />
+            <span>GitHub</span>
+            <ArrowUpRight className="w-3.5 h-3.5 text-text-muted" aria-hidden="true" />
+          </a>
+        </nav>
+
+        <div className="flex items-center gap-space-md">
+          {user ? (
+            <Link
+              to="/dashboard"
+              className="font-body-medium text-body-medium text-text-secondary hover:text-text-primary px-space-sm py-2 transition-colors"
             >
-              Features
+              Dashboard
             </Link>
-            <Link 
-              to="/industries" 
-              className={`transition-colors ${isActive('/industries') ? 'text-blue-600' : 'text-gray-700 hover:text-blue-600'}`}
+          ) : (
+            <Link
+              to="/login"
+              className="font-body-medium text-body-medium text-text-secondary hover:text-text-primary px-space-sm py-2 transition-colors"
             >
-              Industries
+              Sign in
             </Link>
-            <Link 
-              to="/security" 
-              className={`transition-colors ${isActive('/security') ? 'text-blue-600' : 'text-gray-700 hover:text-blue-600'}`}
-            >
-              Security
-            </Link>
-            <Link 
-              to="/pricing" 
-              className={`transition-colors ${isActive('/pricing') ? 'text-blue-600' : 'text-gray-700 hover:text-blue-600'}`}
-            >
-              Pricing
-            </Link>
-            <Link 
-              to="/about" 
-              className={`transition-colors ${isActive('/about') ? 'text-blue-600' : 'text-gray-700 hover:text-blue-600'}`}
-            >
-              About
-            </Link>
-            <Link 
-              to="/contact" 
-              className={`transition-colors ${isActive('/contact') ? 'text-blue-600' : 'text-gray-700 hover:text-blue-600'}`}
-            >
-              Contact
-            </Link>
-          </nav>
-          <div className="flex items-center space-x-4">
-            {user ? (
-              <>
-                <Link 
-                  to="/dashboard"
-                  className="text-gray-700 hover:text-blue-600 transition-colors"
-                >
-                  Dashboard
-                </Link>
-                <button
-                  onClick={handleSignOut}
-                  className="flex items-center text-gray-700 hover:text-blue-600 transition-colors"
-                >
-                  <LogOut className="w-4 h-4 mr-1" />
-                  Sign Out
-                </button>
-              </>
-            ) : (
-              <>
-                <Link 
-                  to="/login"
-                  className="text-gray-700 hover:text-blue-600 transition-colors"
-                >
-                  Sign In
-                </Link>
-                <Link 
-                  to="/signup"
-                  className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-                >
-                  Start Free Trial
-                </Link>
-              </>
-            )}
-          </div>
+          )}
+          <Link
+            to="/dashboard"
+            className="inline-flex items-center justify-center font-body-medium text-body-medium bg-[#2563eb] hover:bg-brand-hover text-on-primary px-4 h-10 rounded-lg transition-colors duration-150"
+          >
+            Try Demo
+          </Link>
         </div>
       </div>
     </header>

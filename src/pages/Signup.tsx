@@ -1,23 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { 
-  Mic, 
-  Mail, 
-  Lock, 
-  Eye, 
-  EyeOff, 
-  Shield, 
-  CheckCircle, 
-  AlertCircle,
-  ArrowRight,
-  Chrome,
-  Loader2,
-  User,
-  Building2,
-  Check
-} from 'lucide-react';
+import { Eye, EyeOff, AlertCircle, Loader2, Check } from 'lucide-react';
 import { signUpWithEmail, signInWithOAuth } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
+
+const GITHUB_REPO = 'https://github.com/DanielWill-1/Audentra';
 
 function Signup() {
   const [showPassword, setShowPassword] = useState(false);
@@ -36,7 +23,7 @@ function Signup() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
-  
+
   const navigate = useNavigate();
   const { user } = useAuth();
 
@@ -88,7 +75,7 @@ function Signup() {
 
     try {
       const { error } = await signUpWithEmail(
-        formData.email, 
+        formData.email,
         formData.password,
         {
           first_name: formData.firstName,
@@ -97,7 +84,7 @@ function Signup() {
           industry: formData.industry
         }
       );
-      
+
       if (error) {
         setError(error.message);
       } else {
@@ -115,19 +102,14 @@ function Signup() {
     setError(null);
 
     try {
-      console.log(`Attempting ${provider} OAuth signup...`);
       const { error } = await signInWithOAuth(provider);
-      
+
       if (error) {
-        console.error(`${provider} OAuth error:`, error);
         setError(`${provider} authentication failed: ${error.message}`);
         setOauthLoading(null);
-      } else {
-        console.log(`${provider} OAuth initiated successfully`);
-        // Success will be handled by the auth state change or redirect
       }
+      // Success is handled by the auth state change or redirect
     } catch (err) {
-      console.error(`${provider} OAuth exception:`, err);
       setError(`${provider} authentication failed. Please try again.`);
       setOauthLoading(null);
     }
@@ -136,20 +118,20 @@ function Signup() {
   const passwordStrength = () => {
     const password = formData.password;
     let strength = 0;
-    
+
     if (password.length >= 8) strength++;
     if (/[A-Z]/.test(password)) strength++;
     if (/[a-z]/.test(password)) strength++;
     if (/[0-9]/.test(password)) strength++;
     if (/[^A-Za-z0-9]/.test(password)) strength++;
-    
+
     return strength;
   };
 
   const getStrengthColor = (strength: number) => {
-    if (strength < 2) return 'bg-red-500';
-    if (strength < 4) return 'bg-yellow-500';
-    return 'bg-green-500';
+    if (strength < 2) return 'bg-error';
+    if (strength < 4) return 'bg-warning';
+    return 'bg-success';
   };
 
   const getStrengthText = (strength: number) => {
@@ -158,98 +140,110 @@ function Signup() {
     return 'Strong';
   };
 
+  const inputClass =
+    'block w-full h-10 px-3 border border-border rounded-lg bg-surface text-text-primary placeholder-text-muted focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:border-primary transition-colors';
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        {/* Header */}
-        <div className="text-center">
-          <Link to="/" className="flex items-center justify-center space-x-3 mb-8 group">
-            <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform">
-              <Mic className="w-7 h-7 text-white" />
-            </div>
-            <span className="text-2xl font-bold text-gray-900">Audentra</span>
-          </Link>
-          
-          <h1 className="text-3xl font-bold text-gray-900 mb-3">
-            Create Your Account
-          </h1>
-          <p className="text-lg text-gray-600 mb-8">
-            Join thousands of professionals transforming their workflow with voice-powered forms.
-          </p>
-        </div>
+    <div className="min-h-screen bg-background flex items-center justify-center py-12 px-margin">
+      <div className="w-full max-w-[400px]">
+        {/* Logo */}
+        <Link to="/" className="flex items-center justify-center gap-2 mb-8 group">
+          <span className="flex items-center gap-[2px] h-4 py-0.5" aria-hidden="true">
+            <span className="w-[2.5px] h-2 bg-primary group-hover:h-3.5 transition-all duration-150 rounded-full" />
+            <span className="w-[2.5px] h-3.5 bg-voice group-hover:h-2 transition-all duration-150 rounded-full" />
+            <span className="w-[2.5px] h-4 bg-primary group-hover:h-[18px] transition-all duration-150 rounded-full" />
+            <span className="w-[2.5px] h-2.5 bg-voice group-hover:h-3 transition-all duration-150 rounded-full" />
+            <span className="w-[2.5px] h-1.5 bg-primary group-hover:h-2 transition-all duration-150 rounded-full" />
+          </span>
+          <span className="font-headline-h3 text-headline-h3 tracking-tight text-text-primary">Audentra</span>
+        </Link>
 
-        {/* Error/Success Messages */}
+        <h1 className="font-headline-h2 text-[32px] text-text-primary font-semibold tracking-tight text-center mb-2">
+          Create your account
+        </h1>
+        <p className="font-body text-body text-text-secondary text-center mb-8">
+          Use the hosted Audentra demo.
+        </p>
+
+        {/* Error / Success */}
         {error && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-center">
-            <AlertCircle className="w-5 h-5 text-red-600 mr-3" />
-            <span className="text-red-800 text-sm">{error}</span>
+          <div className="mb-6 rounded-lg border border-error/30 bg-error/10 px-4 py-3 flex items-start gap-2">
+            <AlertCircle className="w-4 h-4 text-error mt-0.5 shrink-0" aria-hidden="true" />
+            <span className="font-body text-body text-error text-sm">{error}</span>
           </div>
         )}
-
         {success && (
-          <div className="bg-green-50 border border-green-200 rounded-lg p-4 flex items-center">
-            <CheckCircle className="w-5 h-5 text-green-600 mr-3" />
-            <span className="text-green-800 text-sm">{success}</span>
+          <div className="mb-6 rounded-lg border border-success/30 bg-success/10 px-4 py-3">
+            <span className="font-body text-body text-success text-sm">{success}</span>
           </div>
         )}
 
-        {/* OAuth Buttons */}
-        <div className="space-y-3">
+        {/* Card */}
+        <div className="bg-surface rounded-xl border border-border p-6">
+          {/* OAuth */}
           <button
             onClick={() => handleOAuthSignup('google')}
             disabled={!!oauthLoading}
-            className="w-full flex items-center justify-center px-4 py-3 border border-gray-300 rounded-lg shadow-sm bg-white text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full flex items-center justify-center h-10 px-4 rounded-lg border border-border bg-surface text-text-primary hover:bg-surface-subtle focus:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             {oauthLoading === 'google' ? (
-              <Loader2 className="w-5 h-5 animate-spin mr-3" />
+              <Loader2 className="w-4 h-4 animate-spin mr-2" aria-hidden="true" />
             ) : (
-              <Chrome className="w-5 h-5 mr-3" />
+              <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24" aria-hidden="true">
+                <path
+                  fill="#4285F4"
+                  d="M23.49 12.27c0-.79-.07-1.54-.19-2.27H12v4.51h6.47c-.29 1.48-1.14 2.73-2.4 3.58v3h3.86c2.26-2.09 3.56-5.17 3.56-8.82z"
+                />
+                <path
+                  fill="#34A853"
+                  d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.86-3c-1.08.72-2.45 1.16-4.07 1.16-3.13 0-5.78-2.11-6.73-4.96H1.29v3.09C3.26 21.3 7.31 24 12 24z"
+                />
+                <path
+                  fill="#FBBC05"
+                  d="M5.27 14.29c-.25-.72-.38-1.49-.38-2.29s.14-1.57.38-2.29V6.62H1.29C.47 8.24 0 10.06 0 12s.47 3.76 1.29 5.38l3.98-3.09z"
+                />
+                <path
+                  fill="#EA4335"
+                  d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.26 2.7 1.29 6.62l3.98 3.09C6.22 6.86 8.87 4.75 12 4.75z"
+                />
+              </svg>
             )}
-            <span className="font-medium">Continue with Google</span>
+            <span className="font-body-medium text-body-medium">Continue with Google</span>
           </button>
-        </div>
 
-        {/* Divider */}
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-gray-300" />
+          {/* Divider */}
+          <div className="relative my-5">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-border" />
+            </div>
+            <div className="relative flex justify-center">
+              <span className="px-3 bg-surface font-label-code text-label-code text-text-muted">
+                or create account with email
+              </span>
+            </div>
           </div>
-          <div className="relative flex justify-center text-sm">
-            <span className="px-4 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 text-gray-500">
-              Or create account with email
-            </span>
-          </div>
-        </div>
 
-        {/* Email Signup Form */}
-        <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
-          <form onSubmit={handleEmailSignup} className="space-y-6">
-            {/* Name Fields */}
-            <div className="grid grid-cols-2 gap-4">
+          {/* Email form */}
+          <form onSubmit={handleEmailSignup} className="space-y-4">
+            <div className="grid grid-cols-2 gap-3">
               <div>
-                <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-2">
-                  First Name *
+                <label htmlFor="firstName" className="block font-body-medium text-body-medium text-text-primary mb-1.5">
+                  First name
                 </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <User className="h-5 w-5 text-gray-400" />
-                  </div>
-                  <input
-                    id="firstName"
-                    name="firstName"
-                    type="text"
-                    required
-                    value={formData.firstName}
-                    onChange={handleInputChange}
-                    className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400 transition-all"
-                    placeholder="John"
-                  />
-                </div>
+                <input
+                  id="firstName"
+                  name="firstName"
+                  type="text"
+                  required
+                  value={formData.firstName}
+                  onChange={handleInputChange}
+                  className={inputClass}
+                  placeholder="John"
+                />
               </div>
-
               <div>
-                <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-2">
-                  Last Name *
+                <label htmlFor="lastName" className="block font-body-medium text-body-medium text-text-primary mb-1.5">
+                  Last name
                 </label>
                 <input
                   id="lastName"
@@ -258,44 +252,34 @@ function Signup() {
                   required
                   value={formData.lastName}
                   onChange={handleInputChange}
-                  className="block w-full px-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400 transition-all"
+                  className={inputClass}
                   placeholder="Smith"
                 />
               </div>
             </div>
 
-            {/* Email */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                Work Email *
+              <label htmlFor="email" className="block font-body-medium text-body-medium text-text-primary mb-1.5">
+                Email
               </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Mail className="h-5 w-5 text-gray-400" />
-                </div>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400 transition-all"
-                  placeholder="john@company.com"
-                />
-              </div>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                autoComplete="email"
+                required
+                value={formData.email}
+                onChange={handleInputChange}
+                className={inputClass}
+                placeholder="you@example.com"
+              />
             </div>
 
-            {/* Password */}
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-                Password *
+              <label htmlFor="password" className="block font-body-medium text-body-medium text-text-primary mb-1.5">
+                Password
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-gray-400" />
-                </div>
                 <input
                   id="password"
                   name="password"
@@ -303,47 +287,37 @@ function Signup() {
                   required
                   value={formData.password}
                   onChange={handleInputChange}
-                  className="block w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400 transition-all"
-                  placeholder="Create a strong password"
+                  className={`${inputClass} pr-10`}
+                  placeholder="Create a password"
                 />
                 <button
                   type="button"
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
                   onClick={() => setShowPassword(!showPassword)}
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-text-muted hover:text-text-primary transition-colors"
                 >
-                  {showPassword ? (
-                    <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600 transition-colors" />
-                  ) : (
-                    <Eye className="h-5 w-5 text-gray-400 hover:text-gray-600 transition-colors" />
-                  )}
+                  {showPassword ? <EyeOff className="w-4 h-4" aria-hidden="true" /> : <Eye className="w-4 h-4" aria-hidden="true" />}
                 </button>
               </div>
-              
-              {/* Password Strength Indicator */}
+
               {formData.password && (
-                <div className="mt-2">
-                  <div className="flex items-center space-x-2">
-                    <div className="flex-1 bg-gray-200 rounded-full h-2">
-                      <div 
-                        className={`h-2 rounded-full transition-all ${getStrengthColor(passwordStrength())}`}
-                        style={{ width: `${(passwordStrength() / 5) * 100}%` }}
-                      />
-                    </div>
-                    <span className="text-xs text-gray-600">{getStrengthText(passwordStrength())}</span>
+                <div className="mt-2 flex items-center gap-2">
+                  <div className="flex-1 bg-surface-subtle rounded-full h-1.5">
+                    <div
+                      className={`h-1.5 rounded-full transition-all ${getStrengthColor(passwordStrength())}`}
+                      style={{ width: `${(passwordStrength() / 5) * 100}%` }}
+                    />
                   </div>
+                  <span className="font-label-code text-label-code text-text-muted">{getStrengthText(passwordStrength())}</span>
                 </div>
               )}
             </div>
 
-            {/* Confirm Password */}
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2">
-                Confirm Password *
+              <label htmlFor="confirmPassword" className="block font-body-medium text-body-medium text-text-primary mb-1.5">
+                Confirm password
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-gray-400" />
-                </div>
                 <input
                   id="confirmPassword"
                   name="confirmPassword"
@@ -351,113 +325,84 @@ function Signup() {
                   required
                   value={formData.confirmPassword}
                   onChange={handleInputChange}
-                  className="block w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-400 transition-all"
+                  className={`${inputClass} pr-10`}
                   placeholder="Confirm your password"
                 />
                 <button
                   type="button"
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-text-muted hover:text-text-primary transition-colors"
                 >
-                  {showConfirmPassword ? (
-                    <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600 transition-colors" />
-                  ) : (
-                    <Eye className="h-5 w-5 text-gray-400 hover:text-gray-600 transition-colors" />
-                  )}
+                  {showConfirmPassword ? <EyeOff className="w-4 h-4" aria-hidden="true" /> : <Eye className="w-4 h-4" aria-hidden="true" />}
                 </button>
               </div>
-              
-              {/* Password Match Indicator */}
+
               {formData.confirmPassword && (
                 <div className="mt-2 flex items-center">
                   {formData.password === formData.confirmPassword ? (
-                    <div className="flex items-center text-green-600">
-                      <Check className="w-4 h-4 mr-1" />
-                      <span className="text-xs">Passwords match</span>
+                    <div className="flex items-center text-success">
+                      <Check className="w-4 h-4 mr-1" aria-hidden="true" />
+                      <span className="font-label-code text-label-code">Passwords match</span>
                     </div>
                   ) : (
-                    <div className="flex items-center text-red-600">
-                      <AlertCircle className="w-4 h-4 mr-1" />
-                      <span className="text-xs">Passwords don't match</span>
+                    <div className="flex items-center text-error">
+                      <AlertCircle className="w-4 h-4 mr-1" aria-hidden="true" />
+                      <span className="font-label-code text-label-code">Passwords don’t match</span>
                     </div>
                   )}
                 </div>
               )}
             </div>
 
-            {/* Terms and Conditions */}
-            <div className="flex items-start">
+            <label className="flex items-start gap-2 cursor-pointer">
               <input
                 id="acceptedTerms"
                 name="acceptedTerms"
                 type="checkbox"
                 checked={acceptedTerms}
                 onChange={(e) => setAcceptedTerms(e.target.checked)}
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded mt-1 transition-colors"
+                className="h-4 w-4 rounded border-border text-primary focus:ring-primary mt-0.5"
               />
-              <label htmlFor="acceptedTerms" className="ml-3 block text-sm text-gray-700">
+              <span className="font-body text-body text-text-secondary text-sm">
                 I agree to the{' '}
-                <Link to="/terms" className="text-blue-600 hover:text-blue-500 transition-colors">
+                <Link to="/terms" className="text-primary hover:text-brand-hover transition-colors">
                   Terms of Service
                 </Link>{' '}
                 and{' '}
-                <Link to="/privacy" className="text-blue-600 hover:text-blue-500 transition-colors">
+                <Link to="/privacy" className="text-primary hover:text-brand-hover transition-colors">
                   Privacy Policy
                 </Link>
-              </label>
-            </div>
+              </span>
+            </label>
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full flex justify-center items-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full flex items-center justify-center h-10 px-4 rounded-lg bg-[#2563eb] hover:bg-brand-hover text-white font-body-medium text-body-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-              {loading ? (
-                <Loader2 className="w-5 h-5 animate-spin mr-2" />
-              ) : (
-                <ArrowRight className="w-5 h-5 mr-2" />
-              )}
-              {loading ? 'Creating account...' : 'Create your account'}
+              {loading && <Loader2 className="w-4 h-4 animate-spin mr-2" aria-hidden="true" />}
+              {loading ? 'Creating account…' : 'Create account'}
             </button>
           </form>
-
-          {/* Security Notice */}
-          <div className="mt-6 p-4 bg-green-50 rounded-lg border border-green-200">
-            <div className="flex items-center">
-              <Shield className="w-5 h-5 text-green-600 mr-2" />
-              <p className="text-sm text-green-800">
-                Your account is secured with enterprise-grade encryption and blockchain verification.
-              </p>
-            </div>
-          </div>
-
-          {/* Sign In Link */}
-          <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600">
-              Already have an account?{' '}
-              <Link to="/login" className="font-medium text-blue-600 hover:text-blue-500 transition-colors">
-                Sign in here
-              </Link>
-            </p>
-          </div>
         </div>
 
-        {/* Trust Indicators */}
-        <div className="text-center">
-          <div className="flex items-center justify-center space-x-6 text-xs text-gray-500">
-            <div className="flex items-center">
-              <CheckCircle className="w-4 h-4 text-green-500 mr-1" />
-              HIPAA Compliant
-            </div>
-            <div className="flex items-center">
-              <CheckCircle className="w-4 h-4 text-green-500 mr-1" />
-              SOC 2 Certified
-            </div>
-            <div className="flex items-center">
-              <CheckCircle className="w-4 h-4 text-green-500 mr-1" />
-              Blockchain Verified
-            </div>
-          </div>
+        <p className="font-body text-body text-text-secondary text-center mt-6">
+          Already have an account?{' '}
+          <Link to="/login" className="text-primary hover:text-brand-hover font-medium transition-colors">
+            Sign in
+          </Link>
+        </p>
+
+        <div className="mt-8 text-center">
+          <a
+            href={GITHUB_REPO}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 font-metadata text-metadata text-text-muted hover:text-text-primary transition-colors"
+          >
+            View source on GitHub →
+          </a>
         </div>
       </div>
     </div>

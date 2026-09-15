@@ -26,6 +26,7 @@ import HelpCenter from './pages/HelpCenter';
 import Documentation from './pages/Documentation';
 import Terms from './pages/Terms';
 import Privacy from './pages/Privacy';
+import Open from './pages/Open';
 import ActivityLog from './pages/ActivityLog';
 import FilledTemplates from './pages/FilledTemplates';
 
@@ -143,8 +144,33 @@ function App() {
                 <Footer />
               </>
             } />
-            <Route path="/terms" element={<Terms />} />
-            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/terms" element={
+              <>
+                <Header />
+                <main>
+                  <Terms />
+                </main>
+                <Footer />
+              </>
+            } />
+            <Route path="/privacy" element={
+              <>
+                <Header />
+                <main>
+                  <Privacy />
+                </main>
+                <Footer />
+              </>
+            } />
+            <Route path="/open" element={
+              <>
+                <Header />
+                <main>
+                  <Open />
+                </main>
+                <Footer />
+              </>
+            } />
             <Route path="/activitylog" element={<ActivityLog />} />
           </Routes>
         </div>

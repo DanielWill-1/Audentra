@@ -1,389 +1,400 @@
-import React, { useState } from 'react';
-import { 
-  Book, 
-  Code, 
-  Terminal, 
-  FileText, 
-  ArrowRight,
-  ChevronRight,
-  ChevronDown,
-  Copy,
-  ExternalLink,
+import { useState } from 'react';
+import {
+  Terminal,
   Download,
-  Search,
-  Bookmark,
-  GitBranch,
-  Zap,
-  Shield,
-  Settings,
-  Users,
-  Database,
-  Globe
+  ArrowRight,
+  Github,
+  MessageSquare,
+  CheckCircle2,
+  Cpu,
+  Braces,
+  Network,
+  ShieldCheck,
+  Mic,
+  Webhook,
+  Server,
+  Check,
+  Copy,
 } from 'lucide-react';
 
-function Documentation() {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedSection, setSelectedSection] = useState('getting-started');
-  const [expandedSections, setExpandedSections] = useState(['getting-started', 'api']);
+const GITHUB_REPO = 'https://github.com/DanielWill-1/Audentra';
 
-  const sections = [
-    {
-      id: 'getting-started',
-      title: 'Getting Started',
-      icon: Zap,
-      items: [
-        { id: 'quick-start', title: 'Quick Start Guide', type: 'guide' },
-        { id: 'installation', title: 'Installation & Setup', type: 'guide' },
-        { id: 'first-form', title: 'Creating Your First Form', type: 'tutorial' },
-        { id: 'authentication', title: 'Authentication', type: 'guide' }
-      ]
+const QUICKSTART_CODE = `# Clone repository and execute detached production stack
+git clone https://github.com/audentra/audentra.git && cd audentra
+docker compose up -d --build
+✓ Model weights loaded: whisper-large-v3-turbo.gguf [1.6GB]
+✓ Deterministic Schema Parser listening at 127.0.0.1:8080
+# Live logs stream ready: docker compose logs -f pipeline`;
+
+const SCHEMA_CODE = `{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ClinicalPatientIntake",
+  "type": "object",
+  "required": ["patient_id", "systolic_bp", "heart_rate", "triage_category"],
+  "properties": {
+    "patient_id": {
+      "type": "string",
+      "pattern": "^MED-[0-9]{6}$"
     },
-    {
-      id: 'api',
-      title: 'API Reference',
-      icon: Code,
-      items: [
-        { id: 'api-overview', title: 'API Overview', type: 'reference' },
-        { id: 'authentication-api', title: 'Authentication', type: 'reference' },
-        { id: 'forms-api', title: 'Forms API', type: 'reference' },
-        { id: 'voice-api', title: 'Voice Processing API', type: 'reference' },
-        { id: 'webhooks', title: 'Webhooks', type: 'reference' }
-      ]
+    "systolic_bp": {
+      "type": "integer",
+      "minimum": 50,
+      "maximum": 260
     },
-    {
-      id: 'voice-features',
-      title: 'Voice Features',
-      icon: FileText,
-      items: [
-        { id: 'voice-training', title: 'Voice Training & Accuracy', type: 'guide' },
-        { id: 'custom-vocabulary', title: 'Custom Vocabulary', type: 'guide' },
-        { id: 'voice-summaries', title: 'Voice Summaries', type: 'feature' },
-        { id: 'multi-language', title: 'Multi-language Support', type: 'guide' }
-      ]
+    "heart_rate": {
+      "type": "integer",
+      "minimum": 30,
+      "maximum": 220
     },
-    {
-      id: 'security',
-      title: 'Security & Compliance',
-      icon: Shield,
-      items: [
-        { id: 'security-overview', title: 'Security Overview', type: 'guide' },
-        { id: 'hipaa-compliance', title: 'HIPAA Compliance', type: 'compliance' },
-        { id: 'gdpr-compliance', title: 'GDPR Compliance', type: 'compliance' },
-        { id: 'blockchain-verification', title: 'Blockchain Verification', type: 'feature' }
-      ]
+    "triage_category": {
+      "type": "string",
+      "enum": ["EMERGENT", "URGENT", "NON_URGENT"]
     },
-    {
-      id: 'integrations',
-      title: 'Integrations',
-      icon: Globe,
-      items: [
-        { id: 'google-forms', title: 'Google Forms Integration', type: 'integration' },
-        { id: 'salesforce', title: 'Salesforce Integration', type: 'integration' },
-        { id: 'zapier', title: 'Zapier Integration', type: 'integration' },
-        { id: 'custom-integrations', title: 'Custom Integrations', type: 'guide' }
-      ]
-    },
-    {
-      id: 'team-management',
-      title: 'Team Management',
-      icon: Users,
-      items: [
-        { id: 'user-roles', title: 'User Roles & Permissions', type: 'guide' },
-        { id: 'team-settings', title: 'Team Settings', type: 'guide' },
-        { id: 'billing-management', title: 'Billing & Subscriptions', type: 'guide' }
-      ]
+    "chief_complaint_transcript": {
+      "type": "string",
+      "maxLength": 500
     }
-  ];
+  }
+}`;
 
-  const codeExample = `// Initialize Audentra Pro SDK
-import { Audentra } from '@Audentra/sdk';
+const SIDEBAR = [
+  {
+    id: 'quickstart',
+    title: 'Quickstart & Overview',
+    items: [],
+  },
+  {
+    id: 'pipeline',
+    title: 'Fundamentals',
+    items: [
+      { label: 'Core Architecture', anchor: 'pipeline' },
+      { label: 'Schema Specifications', anchor: 'schema-engine' },
+      { label: 'Installation & Models', anchor: 'quickstart' },
+    ],
+  },
+  {
+    id: 'guides',
+    title: 'Integration',
+    items: [
+      { label: 'Audio Ingestion (WebAudio)', anchor: 'guides' },
+      { label: 'Egress & Webhooks', anchor: 'guides' },
+      { label: 'Air-gapped Deployment', anchor: 'guides' },
+      { label: 'WebSocket & REST APIs', anchor: 'pipeline' },
+    ],
+  },
+];
 
-const Audentra = new Audentra({
-  apiKey: 'your-api-key',
-  environment: 'production'
-});
+const CHUNK_LINES = ['Segmenting chunks [1024 frames]', 'Whisper.cpp local · 48kHz PCM'];
 
-// Create a new form
-const form = await Audentra.forms.create({
-  name: 'Patient Intake Form',
-  fields: [
-    {
-      name: 'fullName',
-      type: 'text',
-      required: true,
-      voicePrompt: 'What is your full name?'
-    },
-    {
-      name: 'dateOfBirth',
-      type: 'date',
-      required: true,
-      voicePrompt: 'What is your date of birth?'
-    }
-  ]
-});
+const STAGES = [
+  {
+    stage: 'STAGE 01',
+    title: 'Ingest Stream',
+    detail: '48kHz uncompressed raw PCM stream via bidirectional WebSockets with frame-level chunking.',
+    meta: 'BUFFER: 256ms',
+    icon: Network,
+  },
+  {
+    stage: 'STAGE 02',
+    title: 'Acoustic Parser',
+    detail: 'Quantized whisper.cpp engine generates raw phonetic tokens with millisecond timestamp markers.',
+    meta: 'ENGINE: C++ NATIVE',
+    icon: Cpu,
+  },
+  {
+    stage: 'STAGE 03',
+    title: 'Semantic AST',
+    detail: 'Deterministic context parser matches slot entities without open-ended speculative hallucinations.',
+    meta: 'GRAMMAR: EBNF',
+    icon: Braces,
+  },
+  {
+    stage: 'STAGE 04',
+    title: 'Schema Coercion',
+    detail: 'Strict runtime type validation against your compiled JSON Schema or Pydantic definitions.',
+    meta: 'VALIDATION: PASS (100%)',
+    icon: ShieldCheck,
+  },
+];
 
-// Start voice session
-const session = await Audentra.voice.startSession({
-  formId: form.id,
-  language: 'en-US'
-});`;
+const GUIDES = [
+  {
+    title: 'Air-gapped Deployment',
+    tag: 'SETUP TIME: 15 MIN',
+    icon: Server,
+    text: 'Run fully isolated speech recognition pipelines on on-premise CUDA or Apple Silicon instances without external network egress.',
+  },
+  {
+    title: 'Custom Schema Authoring',
+    tag: 'SPECIFICATION',
+    icon: Braces,
+    text: 'Techniques for writing strict regex patterns, numeric tolerances, and contextual slot extraction logic with zero model re-training.',
+  },
+  {
+    title: 'WebAudio Zero-Latency Capture',
+    tag: 'FRONTEND SDK',
+    icon: Mic,
+    text: 'Setting up client-side AudioWorkletNode streaming to pipe clean 16-bit PCM voice fragments straight into backend workers.',
+  },
+  {
+    title: 'Webhook & FHIR/HL7 Dispatch',
+    tag: 'INTEGRATION',
+    icon: Webhook,
+    text: 'Automatically pipe validated JSON records into internal PostgreSQL instances, operational data warehouses, or FHIR servers.',
+  },
+];
 
-  const toggleSection = (sectionId) => {
-    setExpandedSections(prev => 
-      prev.includes(sectionId) 
-        ? prev.filter(id => id !== sectionId)
-        : [...prev, sectionId]
-    );
-  };
+function CodeBlock({ label, code }: { label: string; code: string }) {
+  const [copied, setCopied] = useState(false);
 
-  const getTypeColor = (type) => {
-    switch (type) {
-      case 'guide': return 'bg-blue-100 text-blue-700';
-      case 'tutorial': return 'bg-green-100 text-green-700';
-      case 'reference': return 'bg-purple-100 text-purple-700';
-      case 'feature': return 'bg-orange-100 text-orange-700';
-      case 'compliance': return 'bg-red-100 text-red-700';
-      case 'integration': return 'bg-emerald-100 text-emerald-700';
-      default: return 'bg-gray-100 text-gray-700';
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(code);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
     }
   };
 
   return (
-    <div className="py-20">
-      {/* Hero Section */}
-      <section className="bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-5xl font-bold text-gray-900 mb-6">
-            Developer
-            <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"> Documentation</span>
-          </h1>
-          <p className="text-3xl text-gray-500">(Developer Sample Data)</p>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-            Complete guides, API references, and resources to integrate Audentra Pro into your applications
-          </p>
-          
-          {/* Search Bar */}
-          <div className="max-w-2xl mx-auto mb-8">
-            <div className="relative">
-              <Search className="w-6 h-6 text-gray-400 absolute left-4 top-1/2 transform -translate-y-1/2" />
-              <input
-                type="text"
-                placeholder="Search documentation..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-4 py-4 text-lg border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm"
-              />
-            </div>
-          </div>
+    <div className="bg-[#0F172A] rounded-xl overflow-hidden mb-8">
+      <div className="flex items-center justify-between px-4 py-2.5 border-b border-white/10">
+        <span className="flex items-center gap-2 font-label-code text-label-code text-slate-400">
+          <Terminal className="w-4 h-4" aria-hidden="true" /> {label}
+        </span>
+        <button
+          onClick={copy}
+          className="inline-flex items-center gap-1.5 font-label-code text-label-code text-slate-400 hover:text-white transition-colors"
+        >
+          {copied ? <Check className="w-3.5 h-3.5" aria-hidden="true" /> : <Copy className="w-3.5 h-3.5" aria-hidden="true" />}
+          {copied ? 'Copied' : 'Copy'}
+        </button>
+      </div>
+      <pre className="p-4 overflow-x-auto font-label-code text-label-code leading-relaxed text-slate-200">
+        <code>{code}</code>
+      </pre>
+    </div>
+  );
+}
 
-          {/* Quick Links */}
-          <div className="flex flex-wrap justify-center gap-4">
-            <button className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center">
-              <Zap className="w-5 h-5 mr-2" />
-              Quick Start
-            </button>
-            <button className="bg-white text-gray-700 px-6 py-3 rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors flex items-center">
-              <Code className="w-5 h-5 mr-2" />
-              API Reference
-            </button>
-            <button className="bg-white text-gray-700 px-6 py-3 rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors flex items-center">
-              <Download className="w-5 h-5 mr-2" />
-              SDK Download
-            </button>
-          </div>
-        </div>
-      </section>
-
-      {/* Main Documentation */}
-      <section className="py-12 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex gap-8">
-            {/* Sidebar Navigation */}
-            <div className="w-80 flex-shrink-0">
-              <div className="bg-white rounded-2xl border border-gray-200 p-6 sticky top-8">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Documentation</h3>
-                
-                <div className="space-y-2">
-                  {sections.map(section => (
-                    <div key={section.id}>
-                      <button
-                        onClick={() => toggleSection(section.id)}
-                        className="w-full flex items-center justify-between p-3 rounded-lg text-left hover:bg-gray-50 transition-colors"
-                      >
-                        <div className="flex items-center">
-                          <section.icon className="w-4 h-4 mr-3 text-gray-600" />
-                          <span className="font-medium text-gray-900">{section.title}</span>
-                        </div>
-                        {expandedSections.includes(section.id) ? (
-                          <ChevronDown className="w-4 h-4 text-gray-400" />
-                        ) : (
-                          <ChevronRight className="w-4 h-4 text-gray-400" />
-                        )}
-                      </button>
-                      
-                      {expandedSections.includes(section.id) && (
-                        <div className="ml-7 mt-2 space-y-1">
-                          {section.items.map(item => (
-                            <button
-                              key={item.id}
-                              onClick={() => setSelectedSection(item.id)}
-                              className={`w-full text-left p-2 rounded text-sm transition-colors ${
-                                selectedSection === item.id
-                                  ? 'bg-blue-50 text-blue-700'
-                                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
-                              }`}
+function Documentation() {
+  return (
+    <div className="bg-background">
+      <section className="w-full max-w-[1200px] mx-auto px-margin md:px-margin-desktop pt-8 pb-16 md:pt-14 md:pb-28">
+        <div className="flex flex-col lg:flex-row gap-10">
+          {/* Sidebar / TOC */}
+          <aside className="hidden lg:block w-64 shrink-0">
+            <div className="sticky top-24 space-y-5">
+              <div>
+                <p className="font-label-code text-label-code uppercase tracking-widest text-text-muted mb-3">
+                  Docs Index
+                </p>
+              </div>
+              {SIDEBAR.map((group) => (
+                <div key={group.id}>
+                  {group.items.length > 0 ? (
+                    <>
+                      <p className="font-metadata text-metadata uppercase tracking-wider text-text-muted mb-2 font-semibold">
+                        {group.title}
+                      </p>
+                      <ul className="space-y-1 border-l border-border pl-3">
+                        {group.items.map((item) => (
+                          <li key={item.label}>
+                            <a
+                              href={`#${item.anchor}`}
+                              className="font-body text-body text-text-secondary hover:text-text-primary transition-colors"
                             >
-                              <div className="flex items-center justify-between">
-                                <span>{item.title}</span>
-                                <span className={`text-xs px-2 py-1 rounded ${getTypeColor(item.type)}`}>
-                                  {item.type}
-                                </span>
-                              </div>
-                            </button>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  ))}
+                              {item.label}
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    </>
+                  ) : (
+                    <a
+                      href={`#${group.id}`}
+                      className="font-body-medium text-body-medium text-text-secondary hover:text-text-primary transition-colors"
+                    >
+                      {group.title}
+                    </a>
+                  )}
                 </div>
-
-                {/* Quick Actions */}
-                <div className="mt-8 pt-6 border-t border-gray-200">
-                  <h4 className="text-sm font-semibold text-gray-900 mb-3">Quick Actions</h4>
-                  <div className="space-y-2">
-                    <button className="w-full flex items-center p-2 text-left text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded transition-colors">
-                      <Download className="w-4 h-4 mr-2" />
-                      Download SDK
-                    </button>
-                    <button className="w-full flex items-center p-2 text-left text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded transition-colors">
-                      <GitBranch className="w-4 h-4 mr-2" />
-                      GitHub Repository
-                    </button>
-                    <button className="w-full flex items-center p-2 text-left text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded transition-colors">
-                      <ExternalLink className="w-4 h-4 mr-2" />
-                      API Playground
-                    </button>
-                  </div>
-                </div>
+              ))}
+              <div className="pt-4 border-t border-border">
+                <span className="inline-flex items-center gap-1.5 font-label-code text-label-code text-success">
+                  <CheckCircle2 className="w-4 h-4" aria-hidden="true" /> Deterministic VAD
+                </span>
+                <p className="font-body text-body text-text-secondary text-[14px] mt-1 leading-snug">
+                  Zero hallucination guarantee enabled by strict token matching.
+                </p>
               </div>
             </div>
+          </aside>
 
-            {/* Main Content */}
-            <div className="flex-1">
-              <div className="bg-white rounded-2xl border border-gray-200 p-8">
-                {/* Breadcrumb */}
-                <div className="flex items-center text-sm text-gray-600 mb-6">
-                  <span>Documentation</span>
-                  <ChevronRight className="w-4 h-4 mx-2" />
-                  <span>Getting Started</span>
-                  <ChevronRight className="w-4 h-4 mx-2" />
-                  <span className="text-gray-900">Quick Start Guide</span>
-                </div>
-
-                {/* Content Header */}
-                <div className="flex items-center justify-between mb-8">
-                  <div>
-                    <h1 className="text-3xl font-bold text-gray-900 mb-2">Quick Start Guide</h1>
-                    <p className="text-lg text-gray-600">Get up and running with Audentra Pro in under 10 minutes</p>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <button className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
-                      <Bookmark className="w-5 h-5" />
-                    </button>
-                    <button className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
-                      <ExternalLink className="w-5 h-5" />
-                    </button>
-                  </div>
-                </div>
-
-                {/* Content */}
-                <div className="prose prose-lg max-w-none">
-                  <h2 className="text-2xl font-bold text-gray-900 mb-4">Installation</h2>
-                  <p className="text-gray-600 mb-6">
-                    Install the Audentra Pro SDK using your preferred package manager:
-                  </p>
-
-                  {/* Code Block */}
-                  <div className="bg-gray-900 rounded-lg p-6 mb-8">
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center space-x-2">
-                        <Terminal className="w-4 h-4 text-gray-400" />
-                        <span className="text-sm text-gray-400">Terminal</span>
-                      </div>
-                      <button className="flex items-center text-sm text-gray-400 hover:text-white transition-colors">
-                        <Copy className="w-4 h-4 mr-1" />
-                        Copy
-                      </button>
-                    </div>
-                    <pre className="text-green-400 text-sm overflow-x-auto">
-                      <code>{`npm install @Audentra/sdk
-# or
-yarn add @Audentra/sdk
-# or
-pnpm add @Audentra/sdk`}</code>
-                    </pre>
-                  </div>
-
-                  <h2 className="text-2xl font-bold text-gray-900 mb-4">Basic Usage</h2>
-                  <p className="text-gray-600 mb-6">
-                    Here's a simple example to get you started with creating and processing voice forms:
-                  </p>
-
-                  {/* Code Example */}
-                  <div className="bg-gray-900 rounded-lg p-6 mb-8">
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center space-x-2">
-                        <Code className="w-4 h-4 text-gray-400" />
-                        <span className="text-sm text-gray-400">JavaScript</span>
-                      </div>
-                      <button className="flex items-center text-sm text-gray-400 hover:text-white transition-colors">
-                        <Copy className="w-4 h-4 mr-1" />
-                        Copy
-                      </button>
-                    </div>
-                    <pre className="text-sm overflow-x-auto">
-                      <code className="text-gray-300">{codeExample}</code>
-                    </pre>
-                  </div>
-
-                  <h2 className="text-2xl font-bold text-gray-900 mb-4">Next Steps</h2>
-                  <div className="grid md:grid-cols-2 gap-6 mb-8">
-                    <div className="bg-blue-50 p-6 rounded-lg border border-blue-200">
-                      <h3 className="text-lg font-semibold text-blue-900 mb-2">Authentication</h3>
-                      <p className="text-blue-700 text-sm mb-4">
-                        Learn how to securely authenticate your application with Audentra Pro.
-                      </p>
-                      <button className="text-blue-600 hover:text-blue-700 font-medium text-sm flex items-center">
-                        Read Guide
-                        <ArrowRight className="w-4 h-4 ml-1" />
-                      </button>
-                    </div>
-                    <div className="bg-emerald-50 p-6 rounded-lg border border-emerald-200">
-                      <h3 className="text-lg font-semibold text-emerald-900 mb-2">API Reference</h3>
-                      <p className="text-emerald-700 text-sm mb-4">
-                        Explore the complete API documentation with examples and parameters.
-                      </p>
-                      <button className="text-emerald-600 hover:text-emerald-700 font-medium text-sm flex items-center">
-                        View API Docs
-                        <ArrowRight className="w-4 h-4 ml-1" />
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Navigation */}
-                  <div className="flex items-center justify-between pt-8 border-t border-gray-200">
-                    <button className="flex items-center text-gray-600 hover:text-gray-900 transition-colors">
-                      <ArrowRight className="w-4 h-4 mr-2 rotate-180" />
-                      Previous: Overview
-                    </button>
-                    <button className="flex items-center text-gray-600 hover:text-gray-900 transition-colors">
-                      Next: Installation & Setup
-                      <ArrowRight className="w-4 h-4 ml-2" />
-                    </button>
-                  </div>
-                </div>
-              </div>
+          {/* Main content */}
+          <div className="min-w-0 flex-1">
+            <div className="lg:hidden flex flex-wrap gap-2 mb-8">
+              {['quickstart', 'pipeline', 'schema-engine', 'guides'].map((anchor) => (
+                <a
+                  key={anchor}
+                  href={`#${anchor}`}
+                  className="font-metadata text-metadata text-text-secondary hover:text-text-primary border border-border rounded-full px-3 py-1.5 transition-colors"
+                >
+                  {anchor.replace('-', ' ')}
+                </a>
+              ))}
             </div>
+
+            <p className="font-label-code text-label-code uppercase tracking-widest text-text-muted mb-3">
+              Documentation · Official Guides
+            </p>
+            <h1 className="font-headline-h2 text-headline-h2 text-text-primary font-semibold tracking-tight mb-4">
+              Documentation & Architecture Guide
+            </h1>
+            <p className="font-body-large text-body-large text-text-secondary max-w-2xl leading-relaxed mb-10">
+              Technical guides, schema authoring standards, and execution architecture for transforming physical
+              conversational audio streams into deterministic, validated enterprise payloads.
+            </p>
+
+            {/* Telemetry panel */}
+            <div className="bg-[#0F172A] rounded-xl border border-white/10 p-6 mb-12">
+              <div className="flex items-center justify-between mb-5">
+                <div>
+                  <p className="font-label-code text-label-code text-slate-400 uppercase tracking-wider">Live Stream Ingest Telemetry</p>
+                  <p className="font-body text-body text-slate-300">Real-time Buffer Transduction</p>
+                </div>
+                <span className="font-label-code text-label-code text-slate-300">LATENCY: 42ms</span>
+              </div>
+              <div className="font-label-code text-label-code text-slate-500 mb-3">
+                WebAudio 48kHz PCM · 00:00.000
+              </div>
+              <div className="space-y-1.5">
+                {CHUNK_LINES.map((line) => (
+                  <div key={line} className="font-label-code text-label-code text-slate-300">
+                    {line}
+                  </div>
+                ))}
+              </div>
+              <div className="font-label-code text-label-code text-slate-500 mt-2">00:04.280</div>
+            </div>
+
+            {/* § 1 Quickstart */}
+            <section id="quickstart" className="scroll-mt-24 mb-14">
+              <span className="font-label-code text-label-code text-text-muted block mb-2">1</span>
+              <h2 className="font-headline-h3 text-headline-h3 text-text-primary font-semibold mb-3">
+                Quickstart Deployment
+              </h2>
+              <p className="font-body text-body text-text-secondary leading-relaxed mb-5 max-w-2xl">
+                Spin up the complete inference stack including the local Whisper C++ runner, schema extraction daemon,
+                and the WebSocket ingestion proxy in seconds via Docker.
+              </p>
+              <CodeBlock label="bash — audentra-init" code={QUICKSTART_CODE} />
+            </section>
+
+            {/* § 2 Pipeline */}
+            <section id="pipeline" className="scroll-mt-24 mb-14">
+              <span className="font-label-code text-label-code text-text-muted block mb-2">2</span>
+              <h2 className="font-headline-h3 text-headline-h3 text-text-primary font-semibold mb-3">
+                The 4-Stage Extraction Pipeline
+              </h2>
+              <p className="font-body text-body text-text-secondary leading-relaxed mb-6 max-w-2xl">
+                Unlike standard LLM-based voice workflows, Audentra decouples speech recognition from structured
+                extraction, passing abstract syntax trees directly into strict JSON schema validators.
+              </p>
+              <div className="grid sm:grid-cols-2 gap-4">
+                {STAGES.map((s) => (
+                  <div key={s.stage} className="bg-surface rounded-xl border border-border p-5">
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="font-label-code text-label-code text-primary">{s.stage}</span>
+                      <s.icon className="w-4 h-4 text-text-muted" aria-hidden="true" />
+                    </div>
+                    <h3 className="font-body-medium text-body-medium text-text-primary mb-1">{s.title}</h3>
+                    <p className="font-body text-body text-text-secondary text-[14px] leading-relaxed mb-3">{s.detail}</p>
+                    <span className="font-label-code text-label-code text-text-muted">{s.meta}</span>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* § 3 Schema */}
+            <section id="schema-engine" className="scroll-mt-24 mb-14">
+              <span className="font-label-code text-label-code text-text-muted block mb-2">3</span>
+              <h2 className="font-headline-h3 text-headline-h3 text-text-primary font-semibold mb-3">
+                Declarative Schema Contracts
+              </h2>
+              <p className="font-body text-body text-text-secondary leading-relaxed mb-5 max-w-2xl">
+                Define your expected payload once. The ingestion worker parses audio directly into this contract,
+                rejecting out-of-boundary variables prior to downstream database storage.
+              </p>
+              <CodeBlock label="patient_intake.schema.json · Draft-07" code={SCHEMA_CODE} />
+              <div className="flex flex-wrap items-center gap-3 mb-2">
+                <span className="inline-flex items-center gap-1.5 font-label-code text-label-code text-success">
+                  <CheckCircle2 className="w-4 h-4" aria-hidden="true" />
+                  Schema compile check passed: 0 warnings, 0 ambiguous entities.
+                </span>
+              </div>
+              <button className="inline-flex items-center gap-2 font-body-medium text-body-medium text-primary hover:text-brand-hover transition-colors">
+                <Download className="w-4 h-4" aria-hidden="true" /> Download full template →
+              </button>
+            </section>
+
+            {/* § Core guides */}
+            <section id="guides" className="scroll-mt-24 mb-14">
+              <p className="font-label-code text-label-code text-text-muted uppercase tracking-wider mb-2">
+                Production Blueprints
+              </p>
+              <div className="flex items-center justify-between mb-5">
+                <h2 className="font-headline-h3 text-headline-h3 text-text-primary font-semibold">
+                  Core Implementation Guides
+                </h2>
+              </div>
+              <div className="grid sm:grid-cols-2 gap-4">
+                {GUIDES.map((g) => (
+                  <div key={g.title} className="bg-surface rounded-xl border border-border p-5 flex flex-col">
+                    <g.icon className="w-5 h-5 text-primary mb-3" aria-hidden="true" />
+                    <h3 className="font-body-medium text-body-medium text-text-primary mb-1">{g.title}</h3>
+                    <p className="font-body text-body text-text-secondary text-[14px] leading-relaxed mb-4">{g.text}</p>
+                    <span className="inline-block mb-4 font-label-code text-label-code text-text-muted">{g.tag}</span>
+                    <span className="mt-auto inline-flex items-center gap-1.5 font-metadata text-metadata text-primary">
+                      Read Guide <ArrowRight className="w-4 h-4" aria-hidden="true" />
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            {/* Open source infra */}
+            <section className="bg-surface rounded-xl border border-border p-6 md:p-8">
+              <p className="font-label-code text-label-code text-text-muted uppercase tracking-wider mb-2">
+                Open Source Infrastructure
+              </p>
+              <h2 className="font-headline-h3 text-headline-h3 text-text-primary font-semibold mb-2">
+                Need architectural assistance?
+              </h2>
+              <p className="font-body text-body text-text-secondary leading-relaxed mb-5 max-w-xl">
+                Our core maintainers are available on GitHub Discussions for latency benchmarking, custom hardware
+                acceleration questions, and custom schema audits.
+              </p>
+              <div className="flex flex-wrap gap-3">
+                <a
+                  href={`${GITHUB_REPO}/issues`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-4 h-10 rounded-lg bg-[#2563eb] hover:bg-brand-hover text-white font-body-medium text-body-medium transition-colors"
+                >
+                  <Github className="w-4 h-4" aria-hidden="true" /> Open Issue
+                </a>
+                <a
+                  href={`${GITHUB_REPO}/discussions`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-4 h-10 rounded-lg border border-border font-body-medium text-body-medium text-text-primary hover:bg-surface-subtle transition-colors"
+                >
+                  <MessageSquare className="w-4 h-4" aria-hidden="true" /> Join Discussions
+                </a>
+              </div>
+            </section>
           </div>
         </div>
       </section>

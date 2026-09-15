@@ -1,50 +1,60 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
-import { Mic } from 'lucide-react';
+
+const GITHUB_REPO = 'https://github.com/DanielWill-1/Audentra';
 
 function Footer() {
   return (
-    <footer className="bg-white border-t border-gray-200 py-12">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid md:grid-cols-4 gap-8">
+    <footer className="w-full bg-background border-t border-border mt-section-desktop">
+      <div className="max-w-[1200px] mx-auto px-margin md:px-margin-desktop pt-space-xl pb-space-lg">
+        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-10">
+          {/* Brand */}
           <div>
-            <Link to="/" className="flex items-center space-x-2 mb-4">
-              <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-                <Mic className="w-5 h-5 text-white" />
-              </div>
-              <span className="text-xl font-bold text-gray-900">Audentra</span>
-            </Link>
-            <p className="text-gray-600 text-sm">
-              Revolutionary AI-powered voice technology for professional form completion.
+            <div className="flex items-center gap-2 mb-space-sm">
+              <span className="flex items-center gap-[2px] h-3.5" aria-hidden="true">
+                <span className="w-[2px] h-2 bg-primary rounded-full" />
+                <span className="w-[2px] h-3 bg-voice rounded-full" />
+                <span className="w-[2px] h-3.5 bg-primary rounded-full" />
+                <span className="w-[2px] h-2 bg-voice rounded-full" />
+                <span className="w-[2px] h-1 bg-primary rounded-full" />
+              </span>
+              <span className="font-headline-h3 text-headline-h3 text-text-primary tracking-tight">Audentra</span>
+            </div>
+            <p className="font-body text-body text-text-secondary max-w-xs leading-relaxed">
+              Open-source voice-to-structured-data automation.
             </p>
           </div>
-          <div>
-            <h4 className="font-semibold text-gray-900 mb-4">Product</h4>
-            <ul className="space-y-2 text-sm text-gray-600">
-              <li><Link to="/features" className="hover:text-blue-600">Features</Link></li>
-              <li><Link to="/industries" className="hover:text-blue-600">Industries</Link></li>
-              <li><Link to="/security" className="hover:text-blue-600">Security</Link></li>
-              <li><Link to="/pricing" className="hover:text-blue-600">Pricing</Link></li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="font-semibold text-gray-900 mb-4">Company</h4>
-            <ul className="space-y-2 text-sm text-gray-600">
-              <li><Link to="/about" className="hover:text-blue-600">About</Link></li>
-              <li><Link to="/contact" className="hover:text-blue-600">Contact</Link></li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="font-semibold text-gray-900 mb-4">Support</h4>
-            <ul className="space-y-2 text-sm text-gray-600">
-              <li><Link to="/help-center" className="hover:text-blue-600">Help Center</Link></li>
-              <li><Link to="/documentation" className="hover:text-blue-600">Documentation</Link></li>
-              <li><Link to="/status" className="hover:text-blue-600">Status</Link></li>
-            </ul>
+
+          {/* Columns */}
+          <div className="flex gap-16 md:gap-20">
+            <div>
+              <h4 className="font-metadata text-metadata uppercase tracking-wider text-text-muted mb-space-md font-semibold">
+                Project
+              </h4>
+              <ul className="space-y-space-sm font-body text-body text-text-secondary">
+                <li><Link to="/features" className="hover:text-text-primary transition-colors">Features</Link></li>
+                <li><Link to="/dashboard" className="hover:text-text-primary transition-colors">Hosted Demo</Link></li>
+                <li><a href={GITHUB_REPO} target="_blank" rel="noopener noreferrer" className="hover:text-text-primary transition-colors">GitHub Repo</a></li>
+                <li><Link to="/documentation" className="hover:text-text-primary transition-colors">Documentation</Link></li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="font-metadata text-metadata uppercase tracking-wider text-text-muted mb-space-md font-semibold">
+                Legal
+              </h4>
+              <ul className="space-y-space-sm font-body text-body text-text-secondary">
+                <li><Link to="/privacy" className="hover:text-text-primary transition-colors">Privacy Notice</Link></li>
+                <li><Link to="/terms" className="hover:text-text-primary transition-colors">Terms of Use</Link></li>
+                <li><Link to="/open" className="hover:text-text-primary transition-colors">Open Source License</Link></li>
+              </ul>
+            </div>
           </div>
         </div>
-        <div className="border-t border-gray-200 mt-8 pt-8 text-center text-sm text-gray-600">
-          <p>&copy; 2024 Audentra. All rights reserved. HIPAA Compliant • SOC 2 Certified • Blockchain Verified</p>
+
+        <div className="border-t border-border mt-space-xl pt-space-lg">
+          <p className="font-metadata text-metadata text-text-muted">
+            © 2025 Audentra. Open source project contributors.
+          </p>
         </div>
       </div>
     </footer>
