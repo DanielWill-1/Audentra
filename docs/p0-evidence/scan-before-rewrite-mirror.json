@@ -1,0 +1,68 @@
+[
+  {
+    "blobs_scanned": 414,
+    "bytes_scanned": 16762682,
+    "finding_count": 6,
+    "findings": {
+      "google_private_key_block": [
+        {
+          "blob": "57cba5d1c194",
+          "occurrences": 1,
+          "paths": [
+            "<unreachable-or-unnamed>"
+          ],
+          "size": 2399
+        }
+      ],
+      "google_private_key_id": [
+        {
+          "blob": "57cba5d1c194",
+          "occurrences": 1,
+          "paths": [
+            "<unreachable-or-unnamed>"
+          ],
+          "size": 2399
+        }
+      ],
+      "google_service_account_json": [
+        {
+          "blob": "57cba5d1c194",
+          "occurrences": 1,
+          "paths": [
+            "<unreachable-or-unnamed>"
+          ],
+          "size": 2399
+        }
+      ],
+      "groq_api_key": [
+        {
+          "blob": "43395b6f9b04",
+          "occurrences": 1,
+          "paths": [
+            "<unreachable-or-unnamed>"
+          ],
+          "size": 50
+        },
+        {
+          "blob": "6ec59a302a3e",
+          "occurrences": 1,
+          "paths": [
+            "<unreachable-or-unnamed>"
+          ],
+          "size": 50
+        }
+      ],
+      "private_key_pem_body": [
+        {
+          "blob": "57cba5d1c194",
+          "occurrences": 1,
+          "paths": [
+            "<unreachable-or-unnamed>"
+          ],
+          "size": 2399
+        }
+      ]
+    },
+    "mode": "objects"
+  }
+]

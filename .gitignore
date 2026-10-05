@@ -56,4 +56,6 @@ _p0_scan_*.json
 .p0-buildtmp/
 .p0-build.log
 .p0-build.err.log
+__pycache__/
+*.pyc
 

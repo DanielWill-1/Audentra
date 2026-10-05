@@ -1,0 +1,10 @@
+[
+  {
+    "blobs_scanned": 403,
+    "bytes_scanned": 16146512,
+    "finding_count": 0,
+    "findings": {},
+    "mode": "history",
+    "objects_enumerated": 990
+  }
+]
