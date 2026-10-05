@@ -25,3 +25,35 @@ dist-ssr
 .env
 
 .commandcode/taste/taste.md
+
+# --- P0 security remediation: never track credential or data-export artefacts ---
+# Google Cloud service-account key (committed by mistake; see docs/security-remediation.md)
+service-account.json
+**/service-account.json
+*service-account*.json
+
+# Database dumps / cluster backups / archives
+*.backup
+*.backup.gz
+*.dump
+*.sql.gz
+*.pgdump
+backups/
+**/db_cluster-*
+
+# Generic secret material
+*.pem
+*.key
+*.p12
+*.pfx
+secrets/
+.secrets/
+
+# Local P0 evidence scratch (machine-readable scan output is kept under docs/p0-evidence/)
+_p0_scan_*.json
+.p0-pgdata/
+.p0-scratch/
+.p0-buildtmp/
+.p0-build.log
+.p0-build.err.log
+

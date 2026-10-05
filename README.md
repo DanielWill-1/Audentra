@@ -97,6 +97,7 @@ The backend runs on `http://localhost:3001`.
 | `npm run lint` | ESLint |
 | `npm run preview` | Preview the production build |
 | `npm run screenshots` | Capture page screenshots (Playwright) |
+| `npm run secret-scan` | Offline secret scan (history + working tree) |
 
 ---
 
@@ -107,17 +108,21 @@ Create a `.env` file in the project root. Required for auth/data and for real (n
 ```
 VITE_SUPABASE_URL=
 VITE_SUPABASE_ANON_KEY=
-VITE_GROQ_API_KEY=
-VITE_GROQ_API_URL=
-VITE_LLAMA_API_KEY=
-VITE_LLAMA_API_URL=
-VITE_API_URL=
 ```
 
 Notes:
 - Without `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY`, Supabase auth and data calls will fail.
-- Without the Groq/Llama/ElevenLabs keys, the voice workflow falls back to mock services (used for local development).
-- A Google service-account file (`service-account.json`) is expected by the backend for Google Cloud STT/TTS; it is copied into `dist/` on build (`npm run copy-service-account`).
+- **Never use a `VITE_`-prefixed variable for a secret.** Vite inlines every `VITE_` value into
+  the shipped client bundle, which makes it public. A `VITE_GROQ_API_KEY` was previously
+  configured here and had to be rotated for exactly this reason — see
+  [docs/security-remediation.md](docs/security-remediation.md).
+- **Google Cloud credentials are server-side only.** The backend expects a Google
+  service-account JSON file referenced by path, kept outside git (`service-account.json` is
+  gitignored), or supplied via `GOOGLE_APPLICATION_CREDENTIALS`. It is deliberately **not**
+  copied into the build output any more.
+- Groq access moves server-side in P3 of
+  [docs/python-migration-plan.md](docs/python-migration-plan.md); until then the voice
+  assistant uses its existing mock fallback when no key is present.
 
 > **Known issue:** the Supabase project reference currently configured in `.env` (`aajgkpzuffhuuffaneqi.supabase.co`) does not resolve in DNS and fails with `ERR_NAME_NOT_RESOLVED`. This is a backend/provisioning issue — restore the project or update `VITE_SUPABASE_URL` (and anon key) to the current project ref.
 

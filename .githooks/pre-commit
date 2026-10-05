@@ -1,0 +1,26 @@
+#!/bin/sh
+# P0 secret-scan gate (narrow scope: secret detection only).
+#
+# Enable once per clone:
+#     git config core.hooksPath .githooks
+#
+# Scans the git INDEX -- exactly the content about to be committed -- so gitignored
+# local files (.env, service-account.json) do not raise false alarms.
+# Exits non-zero (blocking the commit) when a secret pattern is found.
+#
+# Companion tool: scripts/secret_scan.py. See docs/security-remediation.md.
+
+set -e
+
+if command -v python >/dev/null 2>&1; then
+    PY=python
+elif command -v python3 >/dev/null 2>&1; then
+    PY=python3
+elif command -v py >/dev/null 2>&1; then
+    PY=py
+else
+    echo "secret-scan: no python interpreter found; skipping (install Python to enable this gate)" >&2
+    exit 0
+fi
+
+exec "$PY" scripts/secret_scan.py --mode tracked

@@ -4,15 +4,15 @@
   "version": "0.0.0",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && tsc && npm run copy-service-account",
+    "build": "vite build && tsc",
     "lint": "eslint .",
     "preview": "vite preview",
-    "copy-service-account": "cp service-account.json dist/",
     "server": "ts-node server/index.ts",
     "start": "node dist/server/index.js",
     "dev:server": "ts-node server/index.ts",
     "screenshots": "node scripts/screenshot.js",
-        "screenshots:existing": "node scripts/screenshot.js --existing"
+        "screenshots:existing": "node scripts/screenshot.js --existing",
+    "secret-scan": "python scripts/secret_scan.py --mode both"
   },
   "dependencies": {
     "@google-cloud/speech": "^7.1.0",
