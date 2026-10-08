@@ -99,6 +99,7 @@ The backend runs on `http://localhost:3001`.
 | `npm run screenshots` | Capture page screenshots (Playwright) |
 | `npm run secret-scan` | Offline secret scan (history + working tree) |
 
+
 ---
 
 ## Environment variables
@@ -123,6 +124,7 @@ Notes:
 - Groq access moves server-side in P3 of
   [docs/python-migration-plan.md](docs/python-migration-plan.md); until then the voice
   assistant uses its existing mock fallback when no key is present.
+
 
 > **Known issue:** the Supabase project reference currently configured in `.env` (`aajgkpzuffhuuffaneqi.supabase.co`) does not resolve in DNS and fails with `ERR_NAME_NOT_RESOLVED`. This is a backend/provisioning issue — restore the project or update `VITE_SUPABASE_URL` (and anon key) to the current project ref.
 
