@@ -1,0 +1,21 @@
+<!doctype html>
+{% load static %}
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="htmx-config" content='{"historyCacheSize":0,"allowEval":false,"responseHandling":[{"code":"204","swap":false},{"code":"[23]..","swap":true},{"code":"[45]..","swap":true,"error":true}]}'>
+  <script src="{% static 'vendor/htmx-2.0.8.min.js' %}" defer></script>
+  <title>{% block title %}Audentra{% endblock %}</title>
+  <style>
+    body{font:16px/1.5 system-ui,sans-serif;background:#f4f6fb;color:#172033;margin:0;padding:3rem 1rem}
+    main{max-width:34rem;margin:auto;background:#fff;padding:2rem;border-radius:1rem;box-shadow:0 12px 40px #17203312}
+    h1{font-size:1.7rem;margin-top:0}label{display:block;margin:.9rem 0 .25rem;font-weight:600}
+    input{box-sizing:border-box;width:100%;padding:.7rem;border:1px solid #aeb7c7;border-radius:.4rem;font:inherit}
+    input[type=checkbox]{width:auto}button,.button{display:inline-block;margin-top:1rem;padding:.7rem 1rem;border:0;border-radius:.4rem;background:#3449ce;color:#fff;font:inherit;text-decoration:none;cursor:pointer}
+    .error{color:#9c2020;background:#fff0f0;padding:.65rem;border-radius:.35rem}.help{color:#526077}
+    ul.errorlist{color:#9c2020;padding-left:1.2rem}a{color:#3449ce}nav{display:flex;gap:1rem;flex-wrap:wrap;margin-top:1.2rem}
+  </style>
+</head>
+<body hx-boost="true" hx-target="#auth-main" hx-select="#auth-main" hx-swap="outerHTML" hx-history="false"><main id="auth-main">{% block content %}{% endblock %}</main></body>
+</html>

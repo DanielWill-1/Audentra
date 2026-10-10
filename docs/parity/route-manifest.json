@@ -1,0 +1,379 @@
+{
+  "schema_version": 1,
+  "status": "accepted",
+  "acceptance": {
+    "level": "owner-accepted-with-exceptions",
+    "record": "docs/parity/P1_ACCEPTANCE.md",
+    "full_state_matrix_verified": false
+  },
+  "source": {
+    "router": "src/App.tsx",
+    "historical_capture": "scripts/screenshot.js",
+    "route_count_at_creation": 25
+  },
+  "decisions": {
+    "Q21": {
+      "status": "accepted",
+      "decision": "Retain /activitylog as a future product feature. Keep the current route and dashboard feed in the 25-route baseline; P1 records the current localStorage/example behavior and does not implement the real backend."
+    },
+    "Q18": {
+      "status": "manual-reference-review-accepted",
+      "visual_threshold": {
+        "max_changed_pixel_ratio": 0.01,
+        "channel_delta": 24
+      },
+      "masks": [],
+      "note": "Owner accepts the existing screenshots for manual reference review on 2026-10-10. Numeric tolerance and masks remain proposals for later automated comparison; no complete desktop/mobile state matrix has passed."
+    }
+  },
+  "environment": {
+    "required": "owner-confirmed hosted development/testing Supabase project referenced by .env; Docker is not required",
+    "target_confirmation": "Owner confirmed on 2026-10-10 that the current project is testing only and there is no production deployment.",
+    "catalog_review": "Reachable through CLI Management API; zero public app tables and zero Storage buckets on 2026-10-10.",
+    "production_allowed": false,
+    "plain_postgres_allowed_for_parity": false
+  },
+  "viewports": [
+    {
+      "name": "desktop",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "name": "mobile",
+      "width": 390,
+      "height": 844
+    }
+  ],
+  "global_states": [
+    "anonymous-public",
+    "anonymous-authentication",
+    "anonymous-application",
+    "authenticated-application"
+  ],
+  "optional_states": [
+    {
+      "name": "valid-password-reset",
+      "route": "/reset-password",
+      "status": "requires-ephemeral-test-user-and-recovery-token"
+    }
+  ],
+  "routes": [
+    {
+      "path": "/",
+      "source": "src/App.tsx",
+      "page_heading": {
+        "selector": "h1",
+        "contains": "Speak. Audentra handles the paperwork."
+      },
+      "category": "public",
+      "states": [
+        "anonymous-public"
+      ]
+    },
+    {
+      "path": "/features",
+      "source": "src/App.tsx",
+      "page_heading": {
+        "selector": "h1",
+        "contains": "Voice in. Structured data out."
+      },
+      "category": "public",
+      "states": [
+        "anonymous-public"
+      ]
+    },
+    {
+      "path": "/industries",
+      "source": "src/App.tsx",
+      "page_heading": {
+        "selector": "h1",
+        "contains": "Specialized for Your Industry"
+      },
+      "category": "public",
+      "states": [
+        "anonymous-public"
+      ]
+    },
+    {
+      "path": "/security",
+      "source": "src/App.tsx",
+      "page_heading": {
+        "selector": "h1",
+        "contains": "Enterprise-Grade Security"
+      },
+      "category": "public",
+      "states": [
+        "anonymous-public"
+      ]
+    },
+    {
+      "path": "/pricing",
+      "source": "src/App.tsx",
+      "page_heading": {
+        "selector": "h1",
+        "contains": "Simple, Transparent Pricing"
+      },
+      "category": "public",
+      "states": [
+        "anonymous-public"
+      ]
+    },
+    {
+      "path": "/about",
+      "source": "src/App.tsx",
+      "page_heading": {
+        "selector": "h1",
+        "contains": "Forms shouldn’t require this much typing."
+      },
+      "category": "public",
+      "states": [
+        "anonymous-public"
+      ]
+    },
+    {
+      "path": "/contact",
+      "source": "src/App.tsx",
+      "page_heading": {
+        "selector": "h1",
+        "contains": "Get in Touch"
+      },
+      "category": "public",
+      "states": [
+        "anonymous-public"
+      ]
+    },
+    {
+      "path": "/status",
+      "source": "src/App.tsx",
+      "page_heading": {
+        "selector": "h1",
+        "contains": "System Status"
+      },
+      "category": "public",
+      "states": [
+        "anonymous-public"
+      ]
+    },
+    {
+      "path": "/help-center",
+      "source": "src/App.tsx",
+      "page_heading": {
+        "selector": "h1",
+        "contains": "Help Center (Sample Data)"
+      },
+      "category": "public",
+      "states": [
+        "anonymous-public"
+      ]
+    },
+    {
+      "path": "/documentation",
+      "source": "src/App.tsx",
+      "page_heading": {
+        "selector": "h1",
+        "contains": "Documentation & Architecture Guide"
+      },
+      "category": "public",
+      "states": [
+        "anonymous-public"
+      ]
+    },
+    {
+      "path": "/terms",
+      "source": "src/App.tsx",
+      "page_heading": {
+        "selector": "h1",
+        "contains": "Terms of Use"
+      },
+      "category": "public",
+      "states": [
+        "anonymous-public"
+      ]
+    },
+    {
+      "path": "/privacy",
+      "source": "src/App.tsx",
+      "page_heading": {
+        "selector": "h1",
+        "contains": "Privacy Notice"
+      },
+      "category": "public",
+      "states": [
+        "anonymous-public"
+      ]
+    },
+    {
+      "path": "/open",
+      "source": "src/App.tsx",
+      "page_heading": {
+        "selector": "h1",
+        "contains": "Open Source License & Attribution"
+      },
+      "category": "public",
+      "states": [
+        "anonymous-public"
+      ]
+    },
+    {
+      "path": "/login",
+      "source": "src/App.tsx",
+      "page_heading": {
+        "selector": "h1",
+        "contains": "Welcome back"
+      },
+      "category": "authentication",
+      "states": [
+        "anonymous-authentication"
+      ]
+    },
+    {
+      "path": "/signup",
+      "source": "src/App.tsx",
+      "page_heading": {
+        "selector": "h1",
+        "contains": "Create your account"
+      },
+      "category": "authentication",
+      "states": [
+        "anonymous-authentication"
+      ]
+    },
+    {
+      "path": "/forgot-password",
+      "source": "src/App.tsx",
+      "page_heading": {
+        "selector": "h1",
+        "contains": "Reset Your Password"
+      },
+      "category": "authentication",
+      "states": [
+        "anonymous-authentication"
+      ]
+    },
+    {
+      "path": "/reset-password",
+      "source": "src/App.tsx",
+      "page_heading": {
+        "selector": "h1",
+        "contains": "Reset Your Password"
+      },
+      "category": "authentication",
+      "states": [
+        "anonymous-authentication"
+      ]
+    },
+    {
+      "path": "/dashboard",
+      "source": "src/App.tsx",
+      "page_heading": {
+        "selector": "h1",
+        "contains": "What would you like to work on?"
+      },
+      "category": "application",
+      "states": [
+        "anonymous-application",
+        "authenticated-application"
+      ],
+      "anonymous_behavior": "observe-and-record"
+    },
+    {
+      "path": "/templates",
+      "source": "src/App.tsx",
+      "page_heading": {
+        "selector": "h1",
+        "contains": "Templates"
+      },
+      "category": "application",
+      "states": [
+        "anonymous-application",
+        "authenticated-application"
+      ],
+      "anonymous_behavior": "observe-and-record"
+    },
+    {
+      "path": "/scheduler",
+      "source": "src/App.tsx",
+      "page_heading": {
+        "selector": "h1",
+        "contains": "Scheduler"
+      },
+      "category": "application",
+      "states": [
+        "anonymous-application",
+        "authenticated-application"
+      ],
+      "anonymous_behavior": "observe-and-record"
+    },
+    {
+      "path": "/manage-schedules",
+      "source": "src/App.tsx",
+      "page_heading": {
+        "selector": "h1",
+        "contains": "Manage All Schedules"
+      },
+      "category": "application",
+      "states": [
+        "anonymous-application",
+        "authenticated-application"
+      ],
+      "anonymous_behavior": "observe-and-record"
+    },
+    {
+      "path": "/scheduler-settings",
+      "source": "src/App.tsx",
+      "page_heading": {
+        "selector": "h1",
+        "contains": "Scheduler Settings"
+      },
+      "category": "application",
+      "states": [
+        "anonymous-application",
+        "authenticated-application"
+      ],
+      "anonymous_behavior": "observe-and-record"
+    },
+    {
+      "path": "/filledtemplates",
+      "source": "src/App.tsx",
+      "page_heading": {
+        "selector": "h1",
+        "contains": "Your Filled Templates"
+      },
+      "category": "application",
+      "states": [
+        "anonymous-application",
+        "authenticated-application"
+      ],
+      "anonymous_behavior": "observe-and-record"
+    },
+    {
+      "path": "/AIVoiceAutoFill",
+      "source": "src/App.tsx",
+      "page_heading": {
+        "selector": "h1",
+        "contains": "AI Voice Auto-Fill"
+      },
+      "category": "application",
+      "states": [
+        "anonymous-application",
+        "authenticated-application"
+      ],
+      "anonymous_behavior": "observe-and-record"
+    },
+    {
+      "path": "/activitylog",
+      "source": "src/App.tsx",
+      "page_heading": {
+        "selector": "h1",
+        "contains": "Activity Log"
+      },
+      "category": "application",
+      "states": [
+        "anonymous-application",
+        "authenticated-application"
+      ],
+      "anonymous_behavior": "observe-and-record"
+    }
+  ]
+}

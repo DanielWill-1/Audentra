@@ -1,0 +1,26 @@
+{
+  "checks": [
+    "development_confirmation_disabled_public_key_verified",
+    "fresh_signup_server_session_protected_page",
+    "logout_removes_session_and_protected_access",
+    "password_login",
+    "hosted_refresh_rotation_postgres_session",
+    "hosted_identity_api_csrf_and_anonymous_rejection_with_mock_speech",
+    "csrf_password_change_old_password_rejected_new_password_accepted",
+    "forgotten_password_limitation_is_explicit",
+    "hosted_logout_revokes_refresh_token",
+    "real_browser_htmx_login_validation_navigation_logout"
+  ],
+  "accounts_created": 1,
+  "emails_sent": 0,
+  "browser": {
+    "status": "passed",
+    "http_only_cookie": true,
+    "same_site": "Lax",
+    "local_storage_empty": true,
+    "htmx_version": "2.0.8"
+  },
+  "status": "passed",
+  "generated_account_deleted": true,
+  "tracked_sessions_deleted": true
+}

@@ -1,0 +1,143 @@
+
+name: P1 parity tooling
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Offline route and visual checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v7.0.1
+      - name: Set up Node
+        uses: actions/setup-node@v7.1.0
+        with:
+          node-version: 22.12.0
+          cache: npm
+      - name: Set up Python
+        uses: actions/setup-python@v7.0.0
+        with:
+          python-version: 3.12
+          cache: pip
+          cache-dependency-path: migration/parity/requirements.txt
+      - name: Install Python parity tools
+        id: python-deps
+        run: python -m pip install -r migration/parity/requirements.txt
+      - name: Install Chromium
+        id: browser
+        run: python -m playwright install --with-deps chromium
+      - name: Install legacy dependencies
+        id: node-deps
+        run: npm ci
+      - name: Check legacy lint
+        id: lint
+        if: steps.node-deps.outcome == 'success'
+        continue-on-error: true
+        run: npm run lint
+      - name: Build legacy app
+        id: build
+        if: steps.node-deps.outcome == 'success'
+        continue-on-error: true
+        run: npm run build
+      - name: Run P1 offline and local browser tests
+        id: parity-tests
+        if: steps.python-deps.outcome == 'success' && steps.browser.outcome == 'success' && steps.node-deps.outcome == 'success'
+        continue-on-error: true
+        env:
+          PARITY_RUN_BROWSER_SMOKE: "1"
+        run: python -m pytest migration/parity/tests/e2e -q
+      - name: Record capture gate
+        if: always()
+        env:
+          NODE_DEPS_OUTCOME: ${{ steps.node-deps.outcome }}
+          PYTHON_DEPS_OUTCOME: ${{ steps.python-deps.outcome }}
+          BROWSER_OUTCOME: ${{ steps.browser.outcome }}
+          LINT_OUTCOME: ${{ steps.lint.outcome }}
+          BUILD_OUTCOME: ${{ steps.build.outcome }}
+          PARITY_TESTS_OUTCOME: ${{ steps.parity-tests.outcome }}
+        run: |
+          {
+            echo "### P1 parity status"
+            echo "Install results: Node=$NODE_DEPS_OUTCOME, Python=$PYTHON_DEPS_OUTCOME, Chromium=$BROWSER_OUTCOME."
+            echo "Legacy lint=$LINT_OUTCOME; build=$BUILD_OUTCOME; P1 checks=$PARITY_TESTS_OUTCOME."
+            echo "A green validation job does not mean the authenticated Supabase matrix or P1 exit criteria passed."
+            echo "P1 is owner-accepted with documented exceptions; full parity evidence remains deferred."
+            echo "Run the protected manual capture job after configuring the synthetic account, schema and reviewed matrix goldens."
+          } >> "$GITHUB_STEP_SUMMARY"
+          if [[ "$NODE_DEPS_OUTCOME" != "success" || "$PYTHON_DEPS_OUTCOME" != "success" || "$BROWSER_OUTCOME" != "success" || "$LINT_OUTCOME" != "success" || "$BUILD_OUTCOME" != "success" || "$PARITY_TESTS_OUTCOME" != "success" ]]; then
+            exit 1
+          fi
+
+  capture:
+    name: Full Supabase capture (deferred parity evidence)
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    environment: parity-test
+    env:
+      PARITY_TARGET_KIND: ${{ vars.PARITY_TARGET_KIND }}
+      PARITY_ALLOWED_SUPABASE_HOSTS: ${{ vars.PARITY_ALLOWED_SUPABASE_HOSTS }}
+      PARITY_SUPABASE_URL: ${{ vars.PARITY_SUPABASE_URL }}
+      PARITY_SUPABASE_ANON_KEY: ${{ secrets.PARITY_SUPABASE_ANON_KEY }}
+      PARITY_SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.PARITY_SUPABASE_SERVICE_ROLE_KEY }}
+      PARITY_TEST_USER_ID: ${{ secrets.PARITY_TEST_USER_ID }}
+      PARITY_TEST_EMAIL: ${{ secrets.PARITY_TEST_EMAIL }}
+      PARITY_TEST_PASSWORD: ${{ secrets.PARITY_TEST_PASSWORD }}
+      PARITY_RUN_ID: ${{ github.run_id }}
+      VITE_SUPABASE_URL: ${{ vars.PARITY_SUPABASE_URL }}
+      VITE_SUPABASE_ANON_KEY: ${{ secrets.PARITY_SUPABASE_ANON_KEY }}
+      PARITY_ALLOW_FIXTURE_WRITES: I_CONFIRM_ISOLATED_TEST_DATA
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v7.0.1
+      - name: Set up Node
+        uses: actions/setup-node@v7.1.0
+        with:
+          node-version: 22.12.0
+          cache: npm
+      - name: Set up Python
+        uses: actions/setup-python@v7.0.0
+        with:
+          python-version: 3.12
+      - name: Install tooling
+        run: |
+          python -m pip install -r migration/parity/requirements.txt
+          python -m playwright install --with-deps chromium
+          npm ci
+      - name: Verify the approved target and fixture schema
+        run: python migration/parity/scripts/seed_parity.py --check
+      - name: Seed only synthetic parity fixtures
+        id: seed
+        run: python migration/parity/scripts/seed_parity.py --apply
+      - name: Run route, login and fixture checks
+        env:
+          PARITY_RUN_BROWSER_SMOKE: "1"
+        run: python -m pytest migration/parity/tests/e2e -q
+      - name: Capture the full route and viewport matrix
+        id: capture
+        run: python migration/parity/scripts/capture_baseline.py --run-id "$PARITY_RUN_ID"
+      - name: Compare against reviewed route and viewport baselines
+        if: steps.capture.outcome == 'success'
+        run: >-
+          python migration/parity/scripts/compare_screenshots.py
+          docs/parity/baseline
+          "docs/parity/reports/$PARITY_RUN_ID/screenshots"
+          --diff "docs/parity/reports/$PARITY_RUN_ID/diffs"
+      - name: Upload sanitized run report
+        if: always()
+        uses: actions/upload-artifact@v7.0.2
+        with:
+          name: p1-parity-report
+          path: docs/parity/reports/${{ github.run_id }}/
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Remove only fixtures recorded by this run
+        if: always() && steps.seed.outcome == 'success'
+        run: python migration/parity/scripts/seed_parity.py --cleanup

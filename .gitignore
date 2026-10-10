@@ -30,6 +30,19 @@ dist-ssr
 # Google Cloud service-account key (committed by mistake; see docs/security-remediation.md)
 service-account.json
 **/service-account.json
+
+# P2 Django foundation: local interpreters, credentials, builds and bootstrap state.
+migration/django/.venv/
+migration/django/.venv-p2/
+migration/django/.pytest_cache/
+migration/django/.ruff_cache/
+migration/django/.mypy_cache/
+migration/django/.uv-cache/
+migration/django/.python/
+migration/django/.state/
+migration/django/.env
+migration/django/staticfiles/
+migration/django/static/css/app.css
 *service-account*.json
 
 # Database dumps / cluster backups / archives
@@ -59,3 +72,15 @@ _p0_scan_*.json
 __pycache__/
 *.pyc
 
+# P1 parity run state: contains synthetic fixture IDs and unreviewed screenshots.
+migration/parity/.state/
+migration/parity/.venv/
+migration/parity/.pytest_cache/
+migration/parity/**/__pycache__/
+migration/parity/**/*.pyc
+docs/parity/reports/*
+!docs/parity/reports/release-candidates/
+!docs/parity/reports/release-candidates/**
+
+*\service-account.json
+service-account.json

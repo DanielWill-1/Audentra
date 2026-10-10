@@ -1,0 +1,4 @@
+{
+  "fixture_kind": "synthetic Groq response, not a live provider capture",
+  "choices": [{"message": {"content": "{\"response\":\"I recorded your email.\",\"extractedData\":{\"email\":\"ada@example.test\"}}"}}]
+}

@@ -1,0 +1,20 @@
+<!doctype html>
+{% load static %}
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Audentra foundation</title>
+    <link rel="stylesheet" href="{% static 'css/app.css' %}">
+  </head>
+  <body class="min-h-screen bg-background font-body text-on-surface">
+    <main class="mx-auto max-w-7xl px-margin py-section-mobile md:py-section-tablet lg:py-section-desktop">
+      <div class="rounded-2xl bg-surface p-8 shadow-sm">
+        <p class="font-metadata text-text-muted">Foundation token fixture</p>
+        <h1 class="mt-4 font-display-hero text-display-hero text-primary">Audentra</h1>
+        <p class="mt-4 font-body-large text-text-secondary">The Django runtime is being built alongside the existing site.</p>
+        <a class="mt-6 inline-flex rounded-lg bg-primary px-6 py-3 font-body-medium text-on-primary hover:bg-brand-hover" href="/healthz">Check foundation</a>
+      </div>
+    </main>
+  </body>
+</html>

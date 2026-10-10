@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "synthetic_only": true,
+  "local_storage": {
+    "recentActivity": [
+      {
+        "id": "parity-activity-1",
+        "type": "template_created",
+        "title": "P1 Synthetic Template",
+        "description": "Synthetic baseline activity.",
+        "time": "2026-10-10T10:00:00Z",
+        "user": "P1 Synthetic User"
+      },
+      {
+        "id": "parity-activity-2",
+        "type": "form_completed",
+        "title": "P1 Synthetic Form",
+        "description": "Synthetic baseline completion.",
+        "time": "2026-10-10T09:00:00Z",
+        "user": "P1 Synthetic User"
+      }
+    ],
+    "voiceform_dashboard_settings": {
+      "language": "English (US)",
+      "voiceSensitivity": 7,
+      "aiProcessingSpeed": "Real-time (Recommended)",
+      "industrySpecialization": "Healthcare"
+    }
+  },
+  "supabase_rows": [
+    "templates",
+    "template_shares",
+    "template_reviews",
+    "scheduled_events",
+    "filled_templates"
+  ],
+  "storage_objects": [
+    {
+      "bucket": "template-files",
+      "path_pattern": "parity/<run-id>/fixture.txt",
+      "content": "Synthetic P1 storage fixture. No personal data."
+    }
+  ],
+  "notes": [
+    "localStorage records are synthetic browser-only capture data; they do not prove database persistence.",
+    "Supabase rows and the Storage object are created only by explicit --apply against an allowlisted local/staging target.",
+    "The seeder probes actual exposed columns first and refuses any incomplete schema. It creates no DDL and no Auth user."
+  ]
+}

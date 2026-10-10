@@ -4,6 +4,14 @@ Open-source, voice-first structured-data automation. Speak naturally and Audentr
 
 This repository is a Vite + React + TypeScript single-page application (SPA) with a Node/Express backend and Supabase for auth and data.
 
+## Migration folder policy
+
+New migration work is additive: P1 tooling goes in `migration/parity/`, Django work in `migration/django/`, and comparison evidence in `docs/parity/`. P1 is finalized with [accepted exceptions](docs/parity/P1_ACCEPTANCE.md); `/activitylog` remains a future feature. P2 is complete and [reviewed](docs/foundation/P2_REVIEW.md). Its pre-P5 catalog was empty; P5 has since created the reviewed application schema and private Storage bucket. P3 code findings are corrected, with live speech evidence still pending. P4 development authentication passed fresh hosted and PostgreSQL concurrency checks; see [P4_REPORT.md](docs/auth/P4_REPORT.md). P5 Django data services and hosted direct-connection checks pass, but P5 remains partial until the hosted transaction-pooler/user-switch check passes; see [P5_REPORT.md](docs/data/P5_REPORT.md).
+
+Keep the existing `src/`, `server/`, `scripts/`, `public/`, `new pages/`, `page-screenshots/` and Node/Vite configuration in their original locations and runnable until full migration parity, deployment verification and the accepted soak are complete. Revisit these originals for behaviour/content/design comparisons throughout migration. Copy reference content into the new implementation rather than relocating or replacing the original folders.
+
+Old runtime cleanup belongs to the final P11 gate with a documented recovery reference. Keep design references, historical screenshots, schema history, documentation and parity evidence after retirement. See [MIGRATION_PLAN.md](MIGRATION_PLAN.md#separate-folders-and-preservation), the archived [P2 scope](docs/foundation/P2_IMPLEMENTATION_PROMPT.md) and the [P2 report](docs/foundation/P2_REPORT.md).
+
 ---
 
 ## What Audentra is

@@ -1,0 +1,9 @@
+{
+  "fixture_kind": "synthetic source-derived request, not recorded speech",
+  "audio_data_url": "data:audio/webm;base64,YWJj",
+  "mime_type": "audio/webm",
+  "expected_encoding": "WEBM_OPUS",
+  "expected_sample_rate_hertz": 48000,
+  "expected_language_code": "en-US",
+  "expected_automatic_punctuation": true
+}

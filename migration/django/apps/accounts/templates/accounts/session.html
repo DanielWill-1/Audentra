@@ -1,0 +1,9 @@
+{% extends "accounts/base.html" %}
+{% block title %}Signed-in session · Audentra{% endblock %}
+{% block content %}
+<h1>Signed in</h1>
+<p>This page confirms the Django session is authenticated.</p>
+{% if user.email %}<p>Email: {{ user.email }}</p>{% endif %}
+<nav><a href="{% url 'change-password' %}">Change password</a></nav>
+<form method="post" action="{% url 'logout' %}">{% csrf_token %}<button type="submit">Sign out of this session</button></form>
+{% endblock %}

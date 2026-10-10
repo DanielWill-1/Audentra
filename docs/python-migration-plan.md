@@ -1,8 +1,12 @@
 # Python Migration Plan — Audentra / VoiceForm
 
-**Status:** DRAFT **v0.2** — planning only. No production code has been changed.
+**Status:** Architecture reference with historical v0.2/v0.3 audit; current execution is governed by the consolidated plan and phase brief.
+> **Current execution note (2026-10-11):** P5a schema/Storage and P5b Django data services are implemented. The baseline and guarded migrations are applied to the existing development project; native baseline/idempotence/RLS checks and the hosted direct-connection probe pass. P5 remains partial because hosted shared-transaction-pooler user-switch proof has not run. See [P5_REPORT.md](data/P5_REPORT.md), [P5_VERIFICATION.md](data/P5_VERIFICATION.md) and the current [root prompt.md](../prompt.md). This consolidated execution state supersedes future-oriented P5 gates and older “not started” wording below. [P4_REPORT.md](auth/P4_REPORT.md) retains Auth evidence; credential retirement still needs separate approval, email recovery remains unavailable, and confirmation must be reconsidered before production. No Docker, SMTP, legacy identity migration/testing or React Auth compatibility requirement returns through this reference.
+
 **Scope:** Migrate this application from React 18 + TypeScript + Vite + Express to a primarily Python-owned stack (Django + Django templates/Jinja + HTMX + Tailwind CSS + minimal Alpine.js/vanilla JS).
-**Authority:** This document is a proposal. Nothing in it is approved. See [§11 Open questions](#11-open-questions-and-decisions-requiring-human-approval) for the four decisions that block implementation.
+**Authority:** This document supplies architectural and porting reference. Latest user instructions, [MIGRATION_PLAN.md](../MIGRATION_PLAN.md) and the current phase brief supersede conflicting historical gates. P1 is accepted with exceptions; P2 is complete; P3 code findings are closed while live speech checks remain open; P4 development Auth is verified; P5 services are implemented with the pooler gate still open; [the P5 brief](../prompt.md) defines the active bounded handoff.
+
+> Current user instruction supersedes the older folder layout: create new work in `migration/parity/` (P1) and `migration/django/` (P2 onward), with comparison evidence in `docs/parity/`. Keep existing source, scripts, designs, screenshots and legacy configuration in place until full parity/deployment verification and soak finish. Retain design/documentation evidence after P11. See [the folder policy](../MIGRATION_PLAN.md#separate-folders-and-preservation), [the active P5 scope](../prompt.md) and [P3 review](services/P3_REVIEW.md).
 
 ### Revision history
 
@@ -863,98 +867,125 @@ If instead strict localStorage parity is chosen for preferences (Decision A reje
 
 ## 3. End-state folder tree
 
+### Additive layout during migration
+
+The latest user instruction requires new migration folders and preservation of the existing folders until the entire migration is finished and verified. This replaces earlier proposals to move React into legacy/ or rename the design folders to design_reference/.
+
+P1 owns migration/parity/. P2 and later phases own migration/django/. New comparison evidence belongs to docs/parity/. All application-relative Python paths used elsewhere in this document resolve under migration/django/ unless a phase explicitly names a shared repository path; P1 scripts, dependencies, tests and fixtures resolve under migration/parity/.
+
+Keep the existing React/Express folders, Node configuration and design/screenshot references at their current paths and runnable through P9 and the accepted P10 soak. Copy reference content into the new application and record original source paths/revisions for repeated comparisons. Each phase may make only its documented minimal compatibility/configuration edits; replacement implementation goes in the new folders.
+
+The tree is a plan, not authorization to create all of it during P1. P11 runtime retirement is a separate completion-gated task. Design references, historical screenshots, schema history and comparison documentation remain retained. Completed P0 sensitive-material removal is unaffected.
+
 ```
 audentra/
-├── manage.py
-├── pyproject.toml                    # uv/hatch; single source of deps
-├── uv.lock
-├── .env.example                      # no secrets, no VITE_ prefix
-├── .gitignore                        # includes service-account.json, *.backup, dist/
-├── Makefile                          # css, dev, test, migrate, e2e targets
-├── README.md
-├── LICENSE                           # Apache 2.0 (currently missing; see README:171)
-├── Dockerfile
-├── docker-compose.yml                # web + tailwind watcher (dev)
-├── config/                           # Django project
-│   ├── settings/
-│   │   ├── base.py
-│   │   ├── dev.py
-│   │   └── prod.py
-│   ├── urls.py                       # mirrors the 25 legacy routes exactly
-│   └── asgi.py  wsgi.py
-│   # NOTE: there is deliberately no config/middleware/ package.
-│   #       Session hydration lives in apps/accounts/middleware.py (principal only).
-│   #       Token refresh lives in apps/accounts/services/tokens.py.
-│   #       RLS claims live in apps/db/rls.py, inside the query transaction — never in middleware.
-├── apps/
-│   ├── db/                            # RLS access layer — the security-critical module
-│   │   ├── rls.py                     # rls_context(), require_rls_context(), RLSQueryGuard
-│   │   ├── admin_ops.py               # the ONLY service-role path; never imported by views
-│   │   ├── router.py                  # alias separation: default (django schema) vs supabase (public)
-│   │   └── connections.py             # DatabaseWrapper / guard wiring
-│   ├── api/
-│   │   └── auth.py                    # dual credential check: Django session OR Supabase bearer (P3→P11)
-│   ├── accounts/                      # auth orchestration (GoTrue client, no user model)
-│   │   ├── services/gotrue.py         # GoTrue HTTP calls (password, signup, OAuth/PKCE, verify, recover)
-│   │   ├── services/tokens.py         # THE ONLY holder of access/refresh tokens (server-side session store)
-│   │   ├── principals.py              # SupabaseUser / AnonymousSupabaseUser — identity ONLY, no tokens
-│   │   ├── middleware.py              # hydrates request.user (principal) from the session; no DB, no tokens
-│   │   ├── selectors.py               # user preferences (§2.12 Decision A)
-│   │   ├── views.py  urls.py  forms.py
-│   │   └── templates/accounts/{login,signup,forgot_password,reset_password,confirm_email}.html
-│   ├── core/                          # public marketing pages, base template, icons, health
-│   │   ├── views.py  urls.py
-│   │   └── templates/core/{home,features,industries,security,pricing,about,
-│   │                       contact,status,help_center,documentation,
-│   │                       terms,privacy,open}.html
-│   ├── templates_app/                 # 'templates' is a Django keyword-adjacent name; keep the
-│   │   ├── models.py                  #   URL path /templates/ but name the app distinctly
-│   │   ├── selectors.py               # reads (ported from lib/templates.ts)
-│   │   ├── services.py                # writes
-│   │   ├── schemas.py                 # Pydantic: FormDefinition, TemplateIn, ShareIn, ReviewIn
-│   │   ├── forms.py
-│   │   ├── views.py  urls.py
-│   │   └── templates/templates_app/
-│   │       ├── list.html  card.html  detail.html
-│   │       ├── partials/{builder_modal,review_modal,share_modal,card}.html
-│   │       └── shared_list.html
-│   ├── scheduler/
-│   │   ├── models.py  selectors.py  services.py  forms.py  views.py  urls.py
-│   │   └── templates/scheduler/{list,manage,settings,partials/*}.html
-│   ├── dashboard/
-│   │   ├── selectors.py               # the 5 dashboard queries, one place
-│   │   ├── views.py  urls.py
-│   │   └── templates/dashboard/{home,partials/*}.html
-│   ├── voice/                         # AIVoiceAutoFill: capture → STT → extract → fill → save
-│   │   ├── views.py  urls.py  services.py
-│   │   └── templates/voice/{autofill,filled_list,partials/*}.html
-│   ├── speech/                        # Google STT + TTS
-│   │   ├── services.py  backends/{google.py,mock.py}  views.py  urls.py
-│   ├── ai/                            # Groq extraction
-│   │   ├── services.py  schemas.py  backends/{groq.py,mock.py}
-│   ├── activity/                      # activity feed (see §11 Q6 for scope)
-│   │   ├── services.py  views.py  urls.py
-│   └── storage/                       # Supabase Storage upload/download proxy
-│       ├── services.py                # user-JWT scoped, RLS respected
-│       └── views.py
-├── templates/                         # cross-app shell
-│   ├── base.html                      # <title>, fonts, css, htmx, alpine, icons sprite
-│   ├── base_public.html               # Header + Footer shell (13 public routes)
-│   ├── base_app.html                  # sidebar app shell (11 app routes)
-│   └── partials/
-│       ├── header.html  footer.html  sidebar.html  mobile_nav.html
-│       ├── messages.html  modal.html  pager.html
-│       └── icons/sprite.svg
-├── static/
-│   ├── css/{input.css,dist.css}       # tailwind entry + built output (dist.css gitignored)
-│   ├── js/
-│   │   ├── voice-recorder.js          # THE audio bridge (§2.9) — the one substantial module
-│   │   ├── clipboard.js               # ~10 lines, 3 buttons
-│   │   └── vendor/{htmx.min.js,alpine.min.js}
-│   ├── img/{favicon.svg,image.png}
-│   └── data/pgp-key.asc               # Privacy page key, currently an inline TS constant
+├── src/                              # existing React source; retained in place
+├── server/                           # existing Express backend; retained in place
+├── scripts/                          # existing screenshot/security scripts; retained in place
+├── public/                           # existing assets; retained in place
+├── new pages/                        # original HTML design/content references; retained
+├── page-screenshots/                 # original screenshots; retained without overwrite
+├── package.json  package-lock.json   # existing legacy dependencies; retained
+├── vite.config.ts  tsconfig*.json    # existing legacy configuration; retained
+├── tailwind.config.js               # existing legacy design tokens/configuration; retained
+├── index.html  eslint.config.js  postcss.config.cjs
+├── migration/
+│   ├── parity/                       # P1 only: new baseline harness
+│   │   ├── requirements.txt          # pinned capture/check dependencies
+│   │   ├── scripts/{capture_baseline,compare_screenshots,seed_parity}.py
+│   │   ├── tests/e2e/{conftest,test_route_matrix,test_legacy_smoke,test_visual_parity}.py
+│   │   └── fixtures/                 # synthetic test data and fixture documentation
+│   └── django/                       # P2+ only: replacement application
+│       ├── manage.py
+│       ├── pyproject.toml                    # uv/hatch; single source of deps
+│       ├── uv.lock
+│       ├── .env.example                      # no secrets, no VITE_ prefix
+│       ├── Makefile                          # css, dev, test, migrate, e2e targets
+│       ├── tailwind.config.js               # separate Python-side config; preserve legacy root config
+│       ├── Dockerfile
+│       ├── docker-compose.yml                # web + tailwind watcher (dev)
+│       ├── config/                           # Django project
+│       │   ├── settings/
+│       │   │   ├── base.py
+│       │   │   ├── dev.py
+│       │   │   └── prod.py
+│       │   ├── urls.py                       # mirrors the 25 legacy routes exactly
+│       │   └── asgi.py  wsgi.py
+│       │   # NOTE: there is deliberately no config/middleware/ package.
+│       │   #       Session hydration lives in apps/accounts/middleware.py (principal only).
+│       │   #       Token refresh lives in apps/accounts/services/tokens.py.
+│       │   #       RLS claims live in apps/db/rls.py, inside the query transaction — never in middleware.
+│       ├── apps/
+│       │   ├── db/                            # RLS access layer — the security-critical module
+│       │   │   ├── rls.py                     # rls_context(), require_rls_context(), RLSQueryGuard
+│       │   │   ├── admin_ops.py               # the ONLY service-role path; never imported by views
+│       │   │   ├── router.py                  # alias separation: default (django schema) vs supabase (public)
+│       │   │   └── connections.py             # DatabaseWrapper / guard wiring
+│       │   ├── api/
+│       │   │   └── auth.py                    # dual credential check: Django session OR Supabase bearer (P3→P11)
+│       │   ├── accounts/                      # auth orchestration (GoTrue client, no user model)
+│       │   │   ├── services/gotrue.py         # GoTrue HTTP calls (password, signup, OAuth/PKCE, verify, recover)
+│       │   │   ├── services/tokens.py         # THE ONLY holder of access/refresh tokens (server-side session store)
+│       │   │   ├── principals.py              # SupabaseUser / AnonymousSupabaseUser — identity ONLY, no tokens
+│       │   │   ├── middleware.py              # hydrates request.user (principal) from the session; no DB, no tokens
+│       │   │   ├── selectors.py               # user preferences (§2.12 Decision A)
+│       │   │   ├── views.py  urls.py  forms.py
+│       │   │   └── templates/accounts/{login,signup,forgot_password,reset_password,confirm_email}.html
+│       │   ├── core/                          # public marketing pages, base template, icons, health
+│       │   │   ├── views.py  urls.py
+│       │   │   └── templates/core/{home,features,industries,security,pricing,about,
+│       │   │                       contact,status,help_center,documentation,
+│       │   │                       terms,privacy,open}.html
+│       │   ├── templates_app/                 # 'templates' is a Django keyword-adjacent name; keep the
+│       │   │   ├── models.py                  #   URL path /templates/ but name the app distinctly
+│       │   │   ├── selectors.py               # reads (ported from lib/templates.ts)
+│       │   │   ├── services.py                # writes
+│       │   │   ├── schemas.py                 # Pydantic: FormDefinition, TemplateIn, ShareIn, ReviewIn
+│       │   │   ├── forms.py
+│       │   │   ├── views.py  urls.py
+│       │   │   └── templates/templates_app/
+│       │   │       ├── list.html  card.html  detail.html
+│       │   │       ├── partials/{builder_modal,review_modal,share_modal,card}.html
+│       │   │       └── shared_list.html
+│       │   ├── scheduler/
+│       │   │   ├── models.py  selectors.py  services.py  forms.py  views.py  urls.py
+│       │   │   └── templates/scheduler/{list,manage,settings,partials/*}.html
+│       │   ├── dashboard/
+│       │   │   ├── selectors.py               # the 5 dashboard queries, one place
+│       │   │   ├── views.py  urls.py
+│       │   │   └── templates/dashboard/{home,partials/*}.html
+│       │   ├── voice/                         # AIVoiceAutoFill: capture → STT → extract → fill → save
+│       │   │   ├── views.py  urls.py  services.py
+│       │   │   └── templates/voice/{autofill,filled_list,partials/*}.html
+│       │   ├── speech/                        # Google STT + TTS
+│       │   │   ├── services.py  backends/{google.py,mock.py}  views.py  urls.py
+│       │   ├── ai/                            # Groq extraction
+│       │   │   ├── services.py  schemas.py  backends/{groq.py,mock.py}
+│       │   ├── activity/                      # activity feed (see §11 Q6 for scope)
+│       │   │   ├── services.py  views.py  urls.py
+│       │   └── storage/                       # Supabase Storage upload/download proxy
+│       │       ├── services.py                # user-JWT scoped, RLS respected
+│       │       └── views.py
+│       ├── templates/                         # cross-app shell
+│       │   ├── base.html                      # <title>, fonts, css, htmx, alpine, icons sprite
+│       │   ├── base_public.html               # Header + Footer shell (13 public routes)
+│       │   ├── base_app.html                  # sidebar app shell; route count follows accepted manifest
+│       │   └── partials/
+│       │       ├── header.html  footer.html  sidebar.html  mobile_nav.html
+│       │       ├── messages.html  modal.html  pager.html
+│       │       └── icons/sprite.svg
+│       ├── static/
+│       │   ├── css/{input.css,dist.css}       # tailwind entry + built output (dist.css gitignored)
+│       │   ├── js/
+│       │   │   ├── voice-recorder.js          # THE audio bridge (§2.9) — the one substantial module
+│       │   │   ├── clipboard.js               # ~10 lines, 3 buttons
+│       │   │   └── vendor/{htmx.min.js,alpine.min.js}
+│       │   ├── img/{favicon.svg,image.png}
+│       │   └── data/pgp-key.asc               # Privacy page key, currently an inline TS constant
+│       ├── scripts/schema_diff.py            # P5a only
+│       └── tests/{unit,rls,contract,views}/    # Python application tests; P1 tests are separate
 ├── supabase/
-│   ├── migrations/                    # existing 7 files: UNCHANGED, append-only
+│   ├── migrations/                    # existing history, including P0: preserved, append-only
 │   │   ├── 20250612153114_spring_water.sql
 │   │   ├── 20250612154531_dry_lantern.sql
 │   │   ├── 20250612155158_humble_fire.sql
@@ -962,6 +993,7 @@ audentra/
 │   │   ├── 20250628064052_twilight_disk.sql
 │   │   ├── 20250628064557_aged_tree.sql
 │   │   ├── 20250628065741_precious_brook.sql
+│   │   ├── 20261005181500_security_hardening.sql
 │   │   └── <ts>_reconcile_<name>.sql   # NEW (P5a): guarded, idempotent, ADDITIVE only
 │   ├── baseline/
 │   │   └── 00000000000000_baseline.sql # NEW (P5a): intended end state for FRESH environments only
@@ -979,31 +1011,16 @@ audentra/
 │   ├── django-owned-state.md          # NEW (P2): the Q19 decision, recorded
 │   ├── security-remediation.md         # NEW (P0): rotations, incidents, transitional controls
 │   └── parity/{baseline,reports}/
-├── scripts/
-│   ├── schema_diff.py                 # NEW (P5a): normalise + diff two pg_dump outputs
-│   ├── capture_baseline.py            # Playwright: authenticated state matrix
-│   └── compare_screenshots.py
-├── tests/
-│   ├── conftest.py                    # RLS-impersonating fixtures
-│   ├── unit/                          # services, selectors, schemas, field matching
-│   ├── rls/                           # per-policy allow/deny matrix + fail-closed guard tests
-│   ├── contract/                      # legacy base64-JSON vs multipart contract tests
-│   ├── views/                         # Django test client, per route
-│   ├── e2e/                           # Playwright-for-Python, the state matrix
-│   └── fixtures/{groq,google_stt,google_tts}/*.json
-├── design_reference/                  # renamed from 'new pages/' + 'page-screenshots/'
-│   ├── html/*.html
-│   └── screenshots/*.png
-└── legacy/                            # TEMPORARY, deleted in P11
-    ├── src/                           # the current React app, frozen
-    ├── server/
-    ├── scripts/
-    ├── package.json  package-lock.json
-    ├── vite.config.ts  tsconfig*.json  eslint.config.js  postcss.config.cjs
-    └── README-legacy.md
+├── .github/workflows/parity.yml      # new P1 CI integration
+├── .gitignore                        # preserve user edits; bounded generated-output additions
+├── .env.example                      # preserve legacy settings; placeholders only
+├── README.md
+└── LICENSE                           # shared project licensing, not a P1 implementation task
 ```
 
-**Naming notes.** The Django app that owns the `templates` table is called `templates_app` here to avoid confusion with Django's own template machinery, while **URL paths remain unchanged** (`/templates`, `/templates/<id>/`). Django's `TEMPLATES` setting and `templates/` directories are unrelated to the data concept; the collision is only cosmetic and worth avoiding in code.
+**Naming notes.** The Django app owning the templates table remains templates_app; URL paths remain unchanged. Its TEMPLATES setting and template directories are unrelated to the stored form-definition concept. Add a separate Tailwind configuration inside migration/django/ rather than replacing the legacy root configuration.
+
+**Verification and cleanup.** Phase reports map originals to new implementation/capture paths and record the comparison result. Completing a route wave does not authorize deleting its old page. Preserve the original source folders until full parity, deployment verification and soak are accepted and P11 cleanup/recovery is documented; keep design, screenshot and documentation references after runtime retirement.
 
 ---
 
@@ -1080,7 +1097,7 @@ Thirteen phases: P0–P11, with P5 split into **P5a** (schema reconciliation) an
 | **P8** | Browser audio/media bridge | The one substantial JS module; browser switches to multipart | **M** | ⚠️ needs P3, P7 |
 | **P9** | Testing & parity verification | Automated parity gate; every phase re-verified | **L** | ✅ continuous |
 | **P10** | Deployment transition | Django deployed; legacy stack retired from production | **M** | ⚠️ needs P7, P9 |
-| **P11** | Removal of React/TS/Express | `legacy/` deleted; legacy API contracts and the Supabase-bearer path deleted | **S** | ⚠️ needs P10 + soak |
+| **P11** | Removal of React/TS/Express | Original runtime files retired only after full verification/soak; reference artifacts retained; transitional contracts closed | **S** | ⚠️ needs P10 + soak |
 
 Relative sizes are indicative only — see [§9](#9-estimated-relative-difficulty-per-phase) for the effort split.
 
@@ -1149,17 +1166,22 @@ Relative sizes are indicative only — see [§9](#9-estimated-relative-difficult
 
 **Objective.** Build the measurement apparatus that makes every later phase verifiable. Because the repository has **zero tests, no CI and no deployment config**, this phase creates them from scratch.
 
-**Prerequisites.** **P0, and Q21 answered** (activity log: make it real or delete it). Q21 must precede this phase because deleting `/activitylog` and the dashboard feed changes the route manifest from 25 routes to 24, and the manifest is the source of truth for the baseline, the proxy allowlist and the URLconf — capturing a baseline before that decision means re-capturing it afterwards. Q5/Q6 are **not** required here (they affect the W4 implementation, not the baseline of what exists today), but the baseline should note the current localStorage behaviour so the eventual change is measurable.
+**Current owner decision (2026-10-10).** Q21 is answered: retain `/activitylog` as a future feature. Keep the 25-route manifest and record the current localStorage/example behavior; the real backend is later scoped work.
 
-Note also that the screenshot harness must be able to authenticate, which needs a test account — the legacy Supabase sign-in works in P1, and P4 later adds a Django path without invalidating it.
+**P1 acceptance update.** The owner accepted the existing screenshots and progression to P2. All 24 historical desktop PNGs were reviewed; /open/mobile and successful authenticated states remain incomplete. CLI metadata inspection confirms a reachable, empty hosted testing database with zero public app tables and Storage buckets. No database/Auth/Storage writes occurred. Read [P1_ACCEPTANCE.md](parity/P1_ACCEPTANCE.md) for final results (27 passed, two browser skips), known legacy lint/type/build failures and carryovers.
+
+The remaining P1 specification below describes the original full verification target. It is preserved as reference, not a blocking prerequisite for P2 after this accepted exception. Current native hosted development does not require Docker. Auth goes to P4, schema/Storage to P5a, RLS/fixtures to P5b and current/full captures to route waves/P9. Do not fabricate missing schema or passing captures.
+
+Q5/Q6 are **not** required here (they affect the W4 implementation, not the baseline of what exists today), but the baseline should note the current localStorage behaviour so the eventual change is measurable.
 
 **Existing files affected.** `scripts/screenshot.js` (read and reimplemented, not modified), `src/App.tsx` (the route source of truth), `page-screenshots/` (kept as a historical record; a new baseline supersedes it).
 
 **New files.**
-- `scripts/capture_baseline.py` — Playwright-for-Python.
-- `tests/e2e/test_route_matrix.py` — asserts the Django URLconf covers exactly the 25 React routes (+ any deliberate additions).
-- `tests/e2e/test_visual_parity.py` — screenshot comparison with a pixel tolerance.
-- `tests/fixtures/` — a **seeded test user with representative data** (templates with `form_data`, shares, reviews, events, filled templates, an uploaded file).
+- `migration/parity/scripts/capture_baseline.py` — Playwright-for-Python; companion comparison/seeding scripts live beside it.
+- `migration/parity/tests/e2e/test_route_matrix.py` — checks the shared manifest against actual React routes; Django/proxy coverage checks wait for P2/P6.
+- `migration/parity/tests/e2e/test_visual_parity.py` — screenshot comparison with a pixel tolerance; boot/login checks live in `test_legacy_smoke.py`.
+- `migration/parity/fixtures/` — synthetic representative data (templates with `form_data`, shares, reviews, events, filled templates, an uploaded file) in an isolated Supabase environment.
+- `migration/parity/requirements.txt` — pinned P1 dependencies, separate from the future Django project.
 - `docs/parity/baseline/*.png` — the golden set, committed.
 - `docs/parity/README.md` — how to re-capture and how to interpret diffs.
 - `.github/workflows/` (or equivalent CI) — lint, pytest, and an E2E job.
@@ -1212,58 +1234,52 @@ Note also that the screenshot harness must be able to authenticate, which needs 
 
 ### P2 — Django foundation
 
-**Objective.** Stand up Django beside the existing app, serving nothing user-facing. Prove the toolchain, settings layout, database connectivity, static pipeline and deployment shape before any behaviour moves.
+**Current bounded brief and status:** [the archived P2 brief](foundation/P2_IMPLEMENTATION_PROMPT.md) records the executed scope. P2 is complete/reviewed; see [P2_REPORT.md](foundation/P2_REPORT.md), [P2_REVIEW.md](foundation/P2_REVIEW.md) and [Django-owned state](foundation/django-owned-state.md). It supersedes historical root-level/Docker/preexisting-table requirements. Root [prompt.md](../prompt.md) now specifies P5a/P5b; P4 development Auth is accepted; [P3_REVIEW.md](services/P3_REVIEW.md) records corrections and pending evidence.
 
-**Prerequisites.** P1 (baseline exists). **Q19 answered** — where Django's own state lives (§2.4) — because it determines settings, database aliases and the migration story from this phase forward. Note that **P2 only needs `SELECT 1` against the database**: the full schema picture is not required until P5a.
+**Objective.** Stand up Django beside the legacy application, proving native startup, settings, restricted connectivity, migrations for Django-owned state and a compatible static build. No user-facing pages move during P2.
 
-**Existing files affected.** None. The legacy app keeps running untouched. `.gitignore` gains Python entries.
+**Prerequisites and result.** P1 is finalized with owner-accepted exceptions. The owner approved the current hosted .env project for development/testing; it is reachable through CLI Management API without Docker and its public app schema is empty. P2 generated private credentials for both restricted runtime roles and verified psycopg connectivity. API/anon keys are not database passwords. Do not reopen target authorization or use an elevated runtime role.
 
-**New files.** `manage.py`, `pyproject.toml`, `uv.lock`, `config/settings/{base,dev,prod}.py`, `config/urls.py`, `config/{wsgi,asgi}.py`, `apps/db/{router.py,connections.py}`, `supabase/bootstrap/django_app_role.sql` (idempotent: creates the `django` schema + the least-privilege `django_app` role; touches nothing in `public`), `templates/base.html`, `apps/core/` (stubbed; real content in P6), `Makefile`, `Dockerfile`, `docker-compose.yml`, `tests/conftest.py`, `.env.example` (rewritten, no `VITE_`), `docs/django-owned-state.md`.
+**Brief defaults.** Python 3.12 and a supported Django LTS (verify official compatibility when implementing); dedicated django-schema database sessions; no Django account models, admin or AuthenticationMiddleware; standalone Tailwind compatible with legacy major version/tokens. These are bounded defaults, not separate historical owner answers to Q12/Q19/Q20.
 
-**Dependencies.** All of §4.1. A decision on where Tailwind builds (§11 Q12). `psycopg` and, if Redis-backed sessions are chosen, `django-redis`.
+**Files.** All Django project, dependencies/uv lockfile, settings, templates, tests, scripts and private environment/example belong under migration/django/. Shared supabase/bootstrap/django_app_role.sql creates only restricted connection roles and Django-owned schema. Reports belong in docs/foundation/django-owned-state.md and P2_REPORT.md. Existing .gitignore/current handoff docs can receive additive updates. Preserve root Node/Vite/TypeScript/style/env files and original app/reference folders.
 
-**Data-flow change.** None to the application. Django is configured with **two database aliases** from day one (§2.5):
+**Dependencies.** Only foundation requirements: Django, psycopg, necessary settings/static helpers and focused lint/type/test tooling. Do not install the full speech/AI/HTMX/Redis dependency list or create Docker files.
 
-| Alias | Target | Role | Contents |
+| Alias | Target | Runtime role | P2 contents/capability |
 |---|---|---|---|
-| `default` | `django` schema (`search_path=django`) | **`django_app` — a dedicated least-privilege login role** (see below) | `django_session`, `django_migrations` — Django's own bookkeeping only |
-| `supabase` | `public` schema | `authenticated`, **only** inside an RLS context (P5b) | Application tables, `managed = False` |
+| default | django schema | django_app | django_session and django_migrations only |
+| supabase | public schema | django_data | SELECT 1 and metadata queries; no application data/table or Django-schema privileges |
 
-**The `default` alias must not use `service_role`.** Supabase documents that `service_role` carries **`BYPASSRLS`** and full elevated access across the project. Using it for ordinary session and migration traffic would undermine the two-alias isolation this design depends on: a bug that misroutes a query, or a future contributor who "just adds" a read to the `default` alias, would silently bypass RLS for application tables. The requirement is therefore:
+Both roles are NOSUPERUSER, NOCREATEDB, NOCREATEROLE, NOINHERIT and NOBYPASSRLS. Runtime roles are never postgres, supabase_admin or service_role. django_data receives no authenticated-role membership in P2; P5b owns reviewed claims/transaction/role-context capability. No public models are invented while the verified public schema is empty. Future public models remain managed=False and wait for reconciled P5a contracts.
 
-- **`django_app`** is a login role whose grants are limited to the `django` schema: `USAGE` on the schema, and `SELECT/INSERT/UPDATE/DELETE` on Django's own tables. It has **no privileges on any `public` application table** and **no `BYPASSRLS`**.
-- `service_role` exists in exactly one place: `apps/db/admin_ops.py`, for management commands, backfills and P5a's verification runs. It is never a request-path connection — the `supabase` alias never uses it either (that alias impersonates `authenticated`).
-- The role is created by an explicit, reviewed, **idempotent bootstrap SQL step** in **P2** (`supabase/bootstrap/django_app_role.sql`, operator-run once per environment, documented in `docs/django-owned-state.md`). It creates the `django` schema and the `django_app` role and grants, and **touches nothing in `public`** — which is what keeps it out of P5a's remit. Its grants are asserted by a test.
+**Bootstrap.** P2 used the existing approved hosted CLI target for reviewed idempotent role/schema setup. Keep role passwords and administrative SQL input private and ignored; verify the PostgreSQL direct/pooler endpoint against the target. No public application DDL, global PUBLIC grant changes, bucket/policy/Auth changes or historical migration rewrites were made. The report records that the public application catalog remained unchanged.
 
-`/healthz` runs `SELECT 1` on each alias and asserts the identity of the connection (`current_user`, `current_schema()`, and that `current_user` is **not** `service_role` on `default`), so the split is verified rather than assumed.
+**Routing/state.** Django migration/session writes route only to default. No account/content-type/admin tables. Data alias access cannot read sessions or create schema objects. /healthz is the only endpoint; it performs actual probes on both aliases and verifies expected identity/schema/privilege flags. Return sanitized 503 for invalid boundaries or unreachable connections and 200 only when verified. No blank 25-route URLconf placeholders, API/proxy/Auth handlers or legacy cutover.
 
-**Risks.** Connecting Django and the legacy app to the same database concurrently is safe for reads but means schema changes must be coordinated from here on. Mitigation: **no schema change to `public`** is made by P2 at all — the only DDL Django runs is its own bookkeeping, and it lives in the dedicated `django` schema (§2.4), so it cannot collide with or shadow any Supabase object. All other schema work is scheduled in P0 (hardening) and P5a (reconciliation), each as a committed migration.
-`managed = False` is mandatory for **every** model mapped to a `public` table, so Django can never generate DDL for one. **This is a hard rule from P2 onward**, enforced by a test that inspects `Model._meta.managed` for every model in the `supabase` alias.
-
-**Blockers.** None, provided the database is reachable. If it is not, use the **local Supabase stack** (§P1) — not a plain Postgres instance, because Django must be developed against the real `anon`/`authenticated`/`service_role` roles and GoTrue for P3/P4 to be meaningful. The committed dump in `backups/` may be used to seed *data* into that local stack, which is a legitimate reason to keep a private copy before purging it in P0.
-
-**Rollback.** Delete the new files. Nothing depends on them; the legacy app never talks to Django.
+**Static pipeline.** Provide a base template and isolated token fixture for compile/static checks. Preserve primary #004ac6, Hanken Grotesk and existing responsive/style tokens. Downloaded CLI binaries/build products are ignored. Native Windows startup and compatible standalone CSS compilation replace the old Docker acceptance requirement.
 
 **Acceptance criteria.**
-- `uv run manage.py check` and `migrate` succeed.
-- `/healthz` returns 200 and executes one query against each alias.
-- `manage.py inspectdb` reproduces the four tables the client can already reach; the generated models are marked `managed = False`.
-- Django's own tables exist **only** in the `django` schema: `SELECT tablename FROM pg_tables WHERE schemaname='public'` shows **no** Django-created table, and a test asserts it.
-- The `default` connection authenticates as **`django_app`**, and a test asserts `current_user != 'service_role'` and that `django_app` has **no** privileges on any `public` application table (`has_table_privilege('django_app','public.templates','SELECT')` is false).
-- A query against `django_session` through the `supabase` alias fails (wrong schema/role), proving the split.
-- Tailwind builds from `templates/**/*.html` using the **standalone CLI**, with the existing tokens and no Node.
-- `ruff` and `mypy` run clean; `pytest` runs (with one trivial test).
-- Docker image builds and starts.
 
-**Tests.** A connectivity test, a `check --deploy` run against prod settings, and a Tailwind build assertion (the compiled CSS contains `--color-primary`/`#004ac6` and the token classes the baseline uses).
+- Locked native startup, manage.py check and appropriately configured deploy checks succeed.
+- Django-only migrations run under django_app; session/migration tables exist solely in django, with no public-schema changes.
+- Real runtime probes verify both restricted aliases, expected roles/schemas and absence of elevated flags or unintended grants.
+- Router/session/data-denial checks prove the alias split; P2 does not claim application RLS verification.
+- /healthz has verified success and sanitized failure behavior; it creates no public pages.
+- Standalone Tailwind, token checks and collectstatic pass using isolated assets.
+- Focused ruff/mypy/tests pass. Unit test databases are disposable and explicitly labeled; pytest must never create/drop/flush the hosted application project.
+- docs/foundation/P2_REPORT.md records exact checks, environment boundaries, provenance and any blocked gate. Offline checks cannot replace live connection/migration evidence.
+- Existing source/design/screenshot/config folders remain in place.
 
-**Must remain untouched.** Every legacy file. No route may be served by Django yet.
+**Recovery.** Stop only the new development process and correct new code/configuration. Do not drop hosted schemas/roles, reset the project or delete legacy files as routine rollback.
 
-**Difficulty.** **S** — days.
+**Limits.** P2 did not include P3 speech/AI, P4 Auth, P5a public schema/Storage, P5b user queries/RLS, P6 proxy/shared page shells or P7 page ports. It did not fix unrelated legacy lint/type/build debt. The report records the bounded P2 gates as complete and its known limitations.
 
 ---
 
 ### P3 — Python service layer
+
+> Current source/sequence corrections are in [the archived P3 brief](services/P3_IMPLEMENTATION_PROMPT.md): browser Groq is disabled by P0, transport is opt-in, TTS metadata is preserved and the limit counts base64 characters. The three P3 code findings in [P3_REVIEW.md](services/P3_REVIEW.md) were corrected and regression-tested during P4. Groq `openai/gpt-oss-120b` remains selected; mocked contracts do not establish live parity.
 
 **Objective.** Move speech, TTS, AI extraction and validation into Python **without moving any user-facing page, and without breaking the running React client**. Django exposes parallel endpoints that are **contract-compatible with the legacy ones first**, so the React app can be pointed at them by changing a base URL and nothing else.
 
@@ -1348,6 +1364,8 @@ Differential testing in P3 therefore compares **like for like**: the same record
 
 ### P4 — Auth and session migration (parallel, not cut-over)
 
+> **Current P4 disposition:** Development-only Django + HTMX + Supabase Python SDK Auth is implemented and accepted by the owner. Fresh hosted account flows, HTMX browser checks, PostgreSQL concurrency and regression evidence pass. [P4_REPORT.md](auth/P4_REPORT.md) and the [archived P4 brief](auth/P4_IMPLEMENTATION_PROMPT.md) supersede the historical parallel React, SMTP and old-account gates below. Profile/schema/Storage was assigned to P5 and is now implemented. Exposed-key retirement remains separately approval-dependent; email recovery remains unavailable.
+
 **Objective.** **Build and validate Django-owned authentication in parallel with the legacy Supabase browser session** — not replace it. At the end of P4, Django-rendered routes authenticate via a Django session cookie, **while the still-React routes continue to authenticate exactly as they do today** via `supabase-js` and the browser Supabase session.
 
 **What this phase explicitly does *not* do.** It does not remove the browser's Supabase session. v0.1 of this plan claimed both, which is impossible: between P4 and the end of P7, `Dashboard`, `Templates`, `Scheduler`, `ManageSchedules`, `SchedulerSettings`, `FilledTemplates`, `AIVoiceAutoFill` and `ActivityLog` are **still React components driven by `AuthContext` + `supabase-js`**. They need the browser session to function. Removing it in P4 would break every protected route that has not migrated yet.
@@ -1422,6 +1440,8 @@ Differential testing in P3 therefore compares **like for like**: the same record
 ---
 
 ### P5a — Schema reconciliation (mandatory before any data-access work)
+
+> **As-built status:** New-development baseline and forward migrations are applied to the verified development target. The native baseline + Storage policy path and empty-target remediation path produce identical normalized catalogs; repeat-application and policy checks pass. The target had no application schema to restore; the isolated empty-target equivalent used minimal Auth/Storage stubs. This is not a full Supabase restore or a current hosted SQL dump. See [schema reconciliation](schema-reconciliation.md) and [P5 verification](data/P5_VERIFICATION.md).
 
 **Objective.** Establish **what the database actually is**, and produce two *separate*, correctly-scoped artefacts: a baseline that can build a fresh environment, and a set of additive changes that are safe against the live one. **Never guess the live DDL, and never run a historical `CREATE TABLE` against a table that may already exist.**
 
@@ -1501,6 +1521,8 @@ v0.1 of this plan proposed a single migration with `CREATE TABLE` statements for
 
 ### P5b — Supabase and data-access migration
 
+> **As-built status:** Profile, template, sharing, review, scheduler, filled-form and private Storage services are implemented. Hosted direct-connection checks pass; the shared transaction-pooler/user-switch proof remains open. Keep P5 partial until that check passes. See [P5 report](data/P5_REPORT.md).
+
 **Objective.** Move all 38 data call-sites (plus the 6 nested PostgREST embeds) behind Django while keeping **every RLS policy in force**.
 
 **Prerequisites.** **P5a complete.** P4. P0's policy fixes applied. A staging/local Supabase environment (not plain Postgres — §P1).
@@ -1568,7 +1590,7 @@ v0.1 of this plan proposed a single migration with `CREATE TABLE` statements for
 
 **Existing files affected (reference only).** `src/App.tsx` (the shell classification), `src/components/Header.tsx`, `src/components/Footer.tsx`, `src/pages/Dashboard.tsx:430-560` (the sidebar markup), `tailwind.config.js` (tokens — **copied verbatim**), `src/index.css`, `index.html` (title/meta/fonts), `new pages/*.html` (the design source of truth for public pages).
 
-**New files.** `templates/base.html`, `templates/base_public.html`, `templates/base_app.html`, `templates/partials/{header,footer,sidebar,mobile_nav,messages,modal,pager}.html`, `templates/partials/icons/sprite.svg`, `static/js/clipboard.js`, `static/css/input.css`, `tailwind.config.js` (root, content globs updated), `apps/core/views.py::legacy_proxy`, `Makefile` targets `css`, `docs/parity/README.md`.
+**New files.** Under `migration/django/`: `templates/base.html`, `templates/base_public.html`, `templates/base_app.html`, `templates/partials/{header,footer,sidebar,mobile_nav,messages,modal,pager}.html`, `templates/partials/icons/sprite.svg`, `static/js/clipboard.js`, `static/css/input.css`, a separate `tailwind.config.js`, `apps/core/views.py::legacy_proxy`, and `Makefile` targets `css`. Comparison documentation remains `docs/parity/README.md` at the repository root. Preserve the existing root Tailwind configuration and legacy folders.
 
 **Dependencies.** `htmx.min.js`, `alpine.min.js`, Tailwind standalone CLI.
 
@@ -1630,7 +1652,7 @@ v0.1 of this plan proposed a single migration with `CREATE TABLE` statements for
 | **W6** | `/scheduler`, `/manage-schedules`, `/scheduler-settings` | ~2,500 | W5 | Largest and most intricate (calendar grids, filters, bulk actions, timezone math). Settings move server-side per §2.12 Decision A. |
 | **W7** | `/AIVoiceAutoFill`, `/filledtemplates`, `/activitylog` | ~1,265 | P8, W6 | The product's core loop, migrated last when everything else is proven. **After W7 there is no React route left, so the legacy SPA's Supabase session is no longer needed by any route** — the P7/P10 gate in §2.4. |
 
-**Existing files affected.** The page files listed in §1.4 become read-only references inside `legacy/src/pages/` (moved in P2/P6 or at the start of W1). Each wave's components in §1.5 are archived as they are superseded.
+**Existing files affected.** The page files listed in §1.4 remain references at their original `src/pages/` paths. Existing components remain in place after each wave. Build replacement pages in `migration/django/`, record the original source paths/revisions and comparisons, and retain the full legacy stack through final verification and soak. No relocation into `legacy/` or per-wave archive/deletion occurs.
 
 **New files per wave.** For each route: `apps/<app>/views.py` entry, `urls.py` entry, `templates/<app>/<page>.html`, plus `partials/` for every modal/list/form, and a view test. W4 adds `apps/dashboard/`; W5 adds `apps/templates_app/` templates; W6 adds `apps/scheduler/` templates; W7 adds `apps/voice/` and `apps/activity/`.
 
@@ -1823,7 +1845,7 @@ v0.1 of this plan proposed a single migration with `CREATE TABLE` statements for
 
 ### P11 — Removal of React, TypeScript and Express, and closure of the transitional surfaces
 
-**Objective.** Delete the legacy stack **only after sustained production parity**, and close every transitional mechanism introduced for the dual-stack period. This is the phase that makes the repository Python-owned **and** removes the temporary bridges.
+**Objective.** Retire the original legacy runtime **only after the entire migration is complete, verified and accepted through P9 and the P10 soak**, and close the transitional mechanisms. Keep the old folders in their original locations until this gate; retain design/documentation/comparison references after runtime cleanup.
 
 **Prerequisites.** P10 green for a full soak period (recommend ≥2 weeks of production traffic with no rollback).
 
@@ -1850,7 +1872,7 @@ v0.1 of this plan proposed a single migration with `CREATE TABLE` statements for
 - **Deleting the reference implementation** removes the ability to answer "how did this behave before?". Mitigation: the git tag from P10 preserves it forever; the deletion commit message must reference the tag; `docs/parity/` keeps the baseline.
 - **A migration not actually complete** (a route still proxied, a feature only reachable from the SPA). Mitigation: the proxy is disabled **before** deletion, and P11's gate is "the proxy has logged zero forwards for the soak period".
 - 🟠 **Deleting the legacy input contract while a cached client bundle still uses it.** Mitigation: **do not delete on schedule — delete on evidence.** The P8 request logging must show **zero** legacy-contract requests for the soak period before the path is removed.
-- **Losing useful artefacts** — `new pages/*.html` (design source of truth), `page-screenshots/`, `docs/tables.md`. Mitigation: these move to `design_reference/` and are explicitly **not** deleted.
+- **Losing useful artefacts** — `new pages/*.html` (design source of truth), `page-screenshots/`, `docs/tables.md`. Mitigation: retain them in their original locations with `docs/parity/`; no rename into `design_reference/` or deletion is required.
 - **The committed database dump** (`backups/`) — deleted in P0 from git; if a private copy is retained for local restore, it stays out of the repo.
 
 **Blockers.** B8: soak-period agreement. Plus the evidence gate above.
@@ -1865,12 +1887,12 @@ v0.1 of this plan proposed a single migration with `CREATE TABLE` statements for
 - `INTERNAL_API_TOKEN` no longer exists in settings or code.
 - **No Supabase key or token is present in anything served to the browser** (static scan of the built assets).
 - The repository builds, tests and deploys with **no Node**.
-- `docs/parity/` and `design_reference/` are intact.
+- `docs/parity/`, `migration/parity/`, `new pages/`, `page-screenshots/` and historical documentation are intact; the recorded clean recovery reference can restore retired runtime code.
 - README describes only the Python stack, and a LICENSE file exists.
 
 **Tests.** The full P9 suite runs green against a checkout without `node_modules` and without Node installed; negative tests for each removed transitional surface (bearer rejected, legacy contract rejected, proxy 404s).
 
-**Must remain untouched.** `supabase/migrations/*` (all of them, forever — including the P5a reconciliation and the baseline), `design_reference/`, `docs/tables.md`, and the Supabase project itself.
+**Must remain untouched.** Existing `supabase/migrations/*` history (all of it, including the P5a reconciliation and the baseline), `new pages/`, `page-screenshots/`, retained parity evidence/tooling, `docs/tables.md` and the Supabase project itself. New schema changes remain append-only and separately scoped.
 
 **Difficulty.** **S** — days of mechanical deletion, gated by a long prerequisite and an evidence check.
 
@@ -1956,7 +1978,9 @@ Ordered by severity. Items 1–6 are **P0 blockers**; the schema items (7, 8, 11
 
 Five of the committed screenshots are **byte-identical in size** to `login.png` (208,612 B): `login.png`, `AIVoiceAutoFill.png`, `manage-schedules.png`, `scheduler.png`, `scheduler-settings.png`. That is the signature of a logged-out visit to a guarded route, which renders a blank page (§1.3 — `if (!user) return null`). Consequently **the current `page-screenshots/` set captures none of the authenticated application.** Any plan that treats it as a golden set would "verify" a blank page.
 
-P1's first deliverable is therefore an **authenticated capture harness with seeded data**, on a **real Supabase environment** (staging project or the local Supabase stack — never plain Postgres, which reproduces none of GoTrue, `auth.uid()`, the Supabase roles or Storage RLS).
+The original P1 full-verification target is an **authenticated capture harness with seeded data**, on a **real Supabase environment** (staging project or the local Supabase stack — never plain Postgres, which reproduces none of GoTrue, `auth.uid()`, the Supabase roles or Storage RLS).
+
+Current exception: historical references are manually accepted for P2 handoff; live seeded/Auth captures remain required by their assigned route-wave/P9 gates. The approved hosted testing project replaces the old Docker fallback requirement.
 
 ### 8.2 The seven layers
 
@@ -2081,13 +2105,13 @@ P0 Security ──► P1 Baseline ──► P2 Django foundation
 
 | Gate | Blocks | Owner |
 |---|---|---|
-| **G0 Q21 answered — activity log: make it real, or delete it** | **P1** (it changes the route manifest) | Human (product) |
-| **G1 Live database access, or a written decision that it is gone** | **P5a** (and therefore P5b and P7 W4+) | Human with DB access |
-| **G2 `supabase/baseline/` + `supabase/config.toml` permitted; the `django_app` bootstrap role approved** | P5a, P2 | Human |
-| **G3 RLS context spike passes** — `SET LOCAL ROLE authenticated`, `set_config`, the fail-closed guard, and pooler survival | **P5b** | Engineer |
+| **G0 Q21 answered — retain `/activitylog` as a future feature** | **P1 manifest** (keep 25 current routes; future real backend is later scoped work) | **Answered by owner, 2026-10-10** |
+| **G1 Live database access, or a written decision that it is gone** | **P5a** (and therefore P5b and P7 W4+) | Satisfied for the linked development project; historical source status remains unknown |
+| **G2 `supabase/baseline/` + `supabase/config.toml` permitted; the `django_app` bootstrap role approved** | P5a, P2 | Satisfied by the executed P2/P5 briefs for this development project |
+| **G3 RLS context spike passes** — `SET LOCAL ROLE authenticated`, `set_config`, the fail-closed guard, and pooler survival | **P5b** | Direct-host context/user-switch checks pass; hosted pooler survival remains open |
 | G4 Supabase email-template (`TokenHash`) + redirect-URL edit; PKCE enabled | P4 | Human with dashboard access |
-| G5 Supabase staging environment (project or local stack) + seeded test user | P1, P4, P5a, P5b, P9 | Human |
-| **G6 Django-owned state decided** (dedicated `django` schema vs Redis sessions; admin yes/no) | P2, P4 | Human |
+| G5 Hosted testing Supabase target confirmed; synthetic identity/fixtures still pending | Native P2 connectivity; identity P4; schema/fixtures P5a/P5b; full evidence P9 | Target, P4 identity and P5 synthetic fixtures verified; full parity remains P9 |
+| **G6 Django-owned state** | P2 brief selects dedicated django schema, restricted state/data roles and no admin | Bounded brief defaults; prove boundaries in P2 |
 | **G7 §2.12 Decisions A and B signed off** | P7 W4 (and the JS estimate) | Human (product) |
 | G8 Deployment target + domain + rollback window | P10 | Human |
 | G9 Timezone question answered (Q13) | P7 W6 | Human |
@@ -2104,7 +2128,7 @@ Each of these blocks or shapes work. None can be answered from the repository. R
 |---|---|---|---|
 | **Q1** | **Is this application deployed anywhere today, and where?** No deployment config exists at all. Is there a live URL, and who visits it? | Decides P10 entirely, and whether a cutover affects real users | Answer before P10; keep the legacy host for rollback |
 | **Q2** | **Is the Supabase project `aajgkpzuffhuuffaneqi` still alive?** `README.md:122` says DNS fails | Determines whether real data and real identities exist at all | Verify first, before P1 |
-| **Q3** ⛔ | **Can we get read access to the live database, or is it gone?** This is a *different* question from "can we guess the schema". `template_shares`, `template_reviews` and `filled_templates` have no DDL in the repo | **Hard blocker for P5a, and therefore for the whole migration from P7 W4 onward.** If access is impossible, the three options are (a) treat the `backups/` dump as the reference — labelled as possibly stale, (b) rebuild the tables from the client contract **with written approval for the data-loss risk**, or (c) stop | `pg_dump --schema-only` committed under `supabase/schema_dump/`, then the full [P5a](#p5a--schema-reconciliation-mandatory-before-any-data-access-work) reconciliation |
+| **Q3** | The linked development project was reachable and had no public app schema before P5. Historic source-project/schema provenance is still unknown; absent objects were implemented as explicitly labelled new development contracts, with no historical-row import/deletion | Resolved for this development P5 scope; do not claim historical schema recovery or generalize the result to another project | [P5_DECISIONS.md](data/P5_DECISIONS.md), [schema-reconciliation.md](schema-reconciliation.md), and [P5_TARGET_INVENTORY.json](data/P5_TARGET_INVENTORY.json) |
 | **Q4** | **Is the GitHub repository public?** | Determines the urgency of P0 and whether the committed keys are already public | Treat as public; rotate regardless |
 | **Q5** ⛔ | **Preferences: per-browser or per-user?** Dashboard + scheduler settings live in localStorage and are **not per-user** | It is a genuine behaviour change (settings would follow the user), and it decides whether a JS island is needed at all | **[§2.12 Decision A](#212-application-state-ownership--resolving-the-localstoragemock-contradiction): move them to Postgres.** The maintainability goal is not served by preserving per-browser state. **Requires product sign-off before P7 W4.** |
 | **Q6** ⛔ | **Mocks: port them, implement them, or delete them?** Team/invites (real tables exist, zero client usage, seeds 2 fake members), review queue (shadows `template_reviews`), activity log (**no table at all**) | The largest scope ambiguity in the plan, and it decides the JS estimate and whether new schema is needed | **[§2.12 Decision B](#212-application-state-ownership--resolving-the-localstoragemock-contradiction): implement team + review queue against the existing tables; decide the activity log explicitly** (add a table, or remove `/activitylog` and the dashboard feed — which drops the route count to 24 and must be settled before P1 captures the baseline). **Do not recreate the mocks for parity's sake.** |
@@ -2113,16 +2137,16 @@ Each of these blocks or shapes work. None can be answered from the repository. R
 | **Q9** | **When does validation become strict?** P3–P9 run log-only | Strict validation could reject payloads the old app accepted | Keep log-only until after P10's soak; then flip deliberately |
 | **Q10** | **May the speech and AI endpoints require authentication?** They are open today (localhost only) | Security fix, but a behaviour change if anything external calls them | Yes — mandatory from **P4** (session or Supabase bearer), bearer path removed in P11; verify nothing else calls them |
 | **Q11** | **Is a one-time forced re-login acceptable — and for whom?** Django-rendered routes require a Django sign-in; the legacy SPA needs its own session during the dual-stack period | Users may be asked to sign in to the new routes while already signed in to the old ones | Yes; announce it. GoTrue identities and passwords are unchanged. **This replaces v0.1's claim that existing sessions are simply invalidated.** |
-| **Q12** | **Is a Node-free build required, or is `django-tailwind` + npm acceptable?** | Determines whether Node survives the migration | Node-free via the standalone Tailwind CLI (§4.4) |
+| **Q12** | Standalone Tailwind, compatible with existing major version/tokens | P2 build; Node retirement only P11 | Bounded P2 brief default, not a separate historical owner answer |
 | **Q13** | **Timezone correctness in the scheduler: preserve the current mixed date handling, or fix it?** `toISOString().split('T')[0]` vs `toDateString()` is a latent bug | A parity port would faithfully reproduce a bug; a fix changes behaviour | **Fix it**, and list it as an intentional difference — but decide before W6 starts |
 | **Q14** | **Are the dead component files wanted as templates?** In particular the dead `ScheduleStats`, `UpcomingEvents`, `RecentActivity`, `TeamTemplates` markup | They may contain markup the pages lack | Reviewed at P6; port markup (not files) only where the live page is missing something |
 | **Q15** | **Who owns the production secrets store?** | P0 and P10 both depend on it | Decide before P0 completes |
 | **Q16** | **Should the `/templates/shared/<id>` share link be made to work?** It is generated but unrouted | Currently a dead feature users may have been given | Restore it (a small, useful fix) or remove the generator |
 | **Q17** | **Is the product "Audentra" or "VoiceForm"?** The UI says Audentra; the repo/package say VoiceForm | Affects domains, email templates, copy and the deploy target | Decide before P10; the plan uses "audentra" as the project name |
-| **Q18** | **Is Playwright-driven visual parity an acceptable gate, or is manual review preferred?** | Automated pixel diffing has real maintenance cost | Automated with a tolerance and masks, plus a manual checklist for flows |
-| **Q19** ⛔ | **Where does Django's own state live, and what is `request.user`?** Database-backed sessions need `django_session`; `django.contrib.admin` would add `auth_user`, `auth_permission` and `django_content_type` | **This is one of the five decisions gating implementation.** It determines settings, database aliases, whether `django.contrib.auth` is usable at all, and how P2's `migrate` behaves against a Supabase-managed database | **[§2.4](#24-auth-and-session-design): a dedicated `django` Postgres schema** for `django_session` + `django_migrations`, owned by a least-privilege **`django_app`** role (**never** `service_role`); **no `django.contrib.admin` initially**; `request.user` is a `SupabaseUser` principal (**not** a Django model, and **carrying no tokens**); `django.contrib.auth.login()` is not used. `public` is never touched by Django DDL. Redis sessions are the preferred alternative if Redis is available. **Decide before P2.** |
-| **Q20** | **Do we want operational admin at all?** | Enabling `django.contrib.admin` drags in a Django user model and its tables, which conflicts with GoTrue-owned identity (GoTrue holds the passwords) | **No admin initially.** If needed later, a Django-owned staff table in the `django` schema, populated separately — an explicit, separate decision |
-| **Q21** ⛔ | **Is the activity log a product feature or an artefact?** It is localStorage + hardcoded fake items with **no table** | Decides whether a new table is added (real feature) or `/activitylog` and the dashboard feed are deleted (route count 25 → 24) | Decide **before P1**, because it changes the route manifest and therefore the baseline — see [P1's prerequisites](#p1--behaviourui-baseline-and-test-capture) |
+| **Q18** | Historical desktop screenshots accepted for manual reference | Fresh/full/mobile captures and numeric thresholds remain deferred to affected waves/P9 | Owner manual acceptance, 2026-10-10 |
+| **Q19** | P2 brief chooses dedicated django-schema sessions and restricted django_app/django_data aliases; no tokens/principal implementation yet | State/connectivity P2; SupabaseUser hydration/Auth P4; authenticated query context P5b | Bounded P2 default; prove role/schema isolation |
+| **Q20** | No operational admin or Django account models in P2 | Future admin needs separate scope | Bounded P2 default |
+| **Q21 — answered 2026-10-10** | **Retain `/activitylog` as a future product feature.** Current P1 behavior remains localStorage/example data, with no activity table added | Keep the current 25 routes in the P1 manifest. Define the real backend in a later scoped phase | Owner decision recorded; P1 captures existing behavior |
 | **Q22** | **What happens to the transitional surfaces if the migration is paused?** The dual-auth bearer path, `INTERNAL_API_TOKEN`, the legacy input contract and the proxy are all temporary by design | An abandoned migration would leave four transitional mechanisms permanently in place | Each is recorded with an owning phase and a removal phase; if the migration stops, removing them is a defined cleanup task |
 
 ---
@@ -2283,13 +2307,12 @@ P0  ──►  decide Q21  ──►  P1  ──►  P2  ──►  P6  ──�
                                         P5b-proven waves → W7 → P8
 ```
 
-1. **Execute P0 now.** It does not depend on this document being approved, and it closes live credential exposure. Days of console work plus a few small code changes.
-2. **Decide Q21 before P1** — make the activity log real or delete it. It changes the route manifest (25 → 24), and the manifest drives the baseline, the proxy allowlist and the URLconf.
-3. **Execute P1** on a real Supabase environment (staging project or the local stack) to produce the authenticated state matrix.
-4. **Build P2, then P6, and immediately migrate W1/W2.** These static routes need only P6 and exist precisely to prove the Django rendering pipeline, the design system and the **allowlisted proxy rollback** before any authenticated route moves. **This is the ordering the plan intends: W1/W2 do not wait for P4, P5a or P5b.**
-5. **In parallel with step 4**, run P3, then P4, and P5a → P5b once database access exists. **Q19** must be settled before P2, **Q3** before P5a, and **Q5/Q6** before W4.
-6. **W3 waits for P4.** W4 and everything after it wait for **P5a and P5b**. W7 waits for P8.
-7. **Do not block W1/W2 on the authenticated work** — the whole point of migrating the static pages first is that they can land while the harder phases are still in flight.
+1. **P0 is accepted per owner report.** Preserve the historical remediation evidence; do not restart recovery in this P2 handoff.
+2. **Q21 is answered:** retain /activitylog as a future feature; keep all 25 routes.
+3. **P1 is finalized with accepted exceptions:** preserve the reviewed references/tooling and explicit carryovers. The hosted testing target is confirmed and empty; no Docker is needed.
+4. **P2 is complete/reviewed; P3 code findings corrected; P4 local implementation complete but phase incomplete.** Native work stays under migration/django/. [P3_REVIEW.md](services/P3_REVIEW.md) and [P4_REPORT.md](auth/P4_REPORT.md) record checks and remaining gates. The owner deferred hosted account flows; live P3 provider evidence remains pending.
+5. **Keep P4, P5a/P5b and P6 separately scoped.** W1/W2 can follow P6 without Auth/data phases; protected/data waves require proven dependencies. Fresh reference evidence is required before affected cutovers. Q3 schema reference/rebuild disposition remains P5a work.
+6. **Complete P9 and P10 soak before P11 cleanup.** P1 exceptions are not waivers of final parity, live RLS or legacy-preservation gates.
 
 **What is explicitly *not* approved by this document:** anything in [§11](#11-open-questions-and-decisions-requiring-human-approval) marked **⛔**, the intentional behaviour changes enumerated in [§8.4](#84-what-parity-explicitly-does-not-cover), and every security item in [§7](#7-security-checklist--must-fix-before-migration-begins) that has not yet been actioned.
 

@@ -1,0 +1,38 @@
+﻿{
+    "captured_at_utc":  "2026-10-10T18:44:48.1704418Z",
+    "email_confirmation_required_before":  false,
+    "email_confirmation_required":  false,
+    "email_enabled":  true,
+    "smtp_configured":  false,
+    "site_url":  "http://127.0.0.1:8000",
+    "uri_allow_list":  "",
+    "google_enabled":  false,
+    "azure_enabled":  false,
+    "key_metadata":  [
+                         {
+                             "id":  "anon",
+                             "name":  "anon",
+                             "type":  "legacy"
+                         },
+                         {
+                             "id":  "service_role",
+                             "name":  "service_role",
+                             "type":  "legacy"
+                         },
+                         {
+                             "id":  "46dfcb0f-efc3-4d43-a35e-2c96fe6fa204",
+                             "name":  "default",
+                             "type":  "publishable"
+                         },
+                         {
+                             "id":  "32e75ca8-3768-4795-a534-6ac2d6cb75c9",
+                             "name":  "default",
+                             "type":  "secret"
+                         },
+                         {
+                             "id":  "12ef31c3-bb35-4cab-bc96-7b243cd2df49",
+                             "name":  "p4_development_admin",
+                             "type":  "secret"
+                         }
+                     ]
+}

@@ -1,0 +1,1334 @@
+{
+  "captured_at": "2026-10-11",
+  "project": "Audentra development project",
+  "project_ref": "pgtttjmqibxufvwehkyj",
+  "selection": "Existing linked project; CLI target and private runtime target were matched without exposing credentials.",
+  "database": {
+    "name": "postgres",
+    "server_version": "17.6",
+    "migration_history_relation": null,
+    "public_application_objects": [
+      {
+        "name": "filled_templates",
+        "kind": "r",
+        "rls_enabled": true,
+        "rls_forced": false
+      },
+      {
+        "name": "scheduled_events",
+        "kind": "r",
+        "rls_enabled": true,
+        "rls_forced": false
+      },
+      {
+        "name": "template_reviews",
+        "kind": "r",
+        "rls_enabled": true,
+        "rls_forced": false
+      },
+      {
+        "name": "template_shares",
+        "kind": "r",
+        "rls_enabled": true,
+        "rls_forced": false
+      },
+      {
+        "name": "templates",
+        "kind": "r",
+        "rls_enabled": true,
+        "rls_forced": false
+      },
+      {
+        "name": "users",
+        "kind": "r",
+        "rls_enabled": true,
+        "rls_forced": false
+      }
+    ],
+    "django_relations": [
+      "django_migrations",
+      "django_session"
+    ],
+    "public_columns": [
+      {
+        "table": "filled_templates",
+        "name": "id",
+        "type": "uuid",
+        "nullable": false,
+        "default": "gen_random_uuid()"
+      },
+      {
+        "table": "filled_templates",
+        "name": "user_id",
+        "type": "uuid",
+        "nullable": false,
+        "default": null
+      },
+      {
+        "table": "filled_templates",
+        "name": "template_id",
+        "type": "uuid",
+        "nullable": true,
+        "default": null
+      },
+      {
+        "table": "filled_templates",
+        "name": "template_name",
+        "type": "text",
+        "nullable": false,
+        "default": null
+      },
+      {
+        "table": "filled_templates",
+        "name": "form_data",
+        "type": "jsonb",
+        "nullable": false,
+        "default": null
+      },
+      {
+        "table": "filled_templates",
+        "name": "created_at",
+        "type": "timestamp with time zone",
+        "nullable": false,
+        "default": "now()"
+      },
+      {
+        "table": "scheduled_events",
+        "name": "id",
+        "type": "uuid",
+        "nullable": false,
+        "default": "gen_random_uuid()"
+      },
+      {
+        "table": "scheduled_events",
+        "name": "title",
+        "type": "text",
+        "nullable": false,
+        "default": null
+      },
+      {
+        "table": "scheduled_events",
+        "name": "description",
+        "type": "text",
+        "nullable": false,
+        "default": "''::text"
+      },
+      {
+        "table": "scheduled_events",
+        "name": "date",
+        "type": "date",
+        "nullable": false,
+        "default": null
+      },
+      {
+        "table": "scheduled_events",
+        "name": "time",
+        "type": "time without time zone",
+        "nullable": false,
+        "default": null
+      },
+      {
+        "table": "scheduled_events",
+        "name": "duration",
+        "type": "integer",
+        "nullable": false,
+        "default": "60"
+      },
+      {
+        "table": "scheduled_events",
+        "name": "type",
+        "type": "text",
+        "nullable": false,
+        "default": "'other'::text"
+      },
+      {
+        "table": "scheduled_events",
+        "name": "priority",
+        "type": "text",
+        "nullable": false,
+        "default": "'medium'::text"
+      },
+      {
+        "table": "scheduled_events",
+        "name": "attendees",
+        "type": "jsonb",
+        "nullable": false,
+        "default": "'[]'::jsonb"
+      },
+      {
+        "table": "scheduled_events",
+        "name": "location",
+        "type": "text",
+        "nullable": false,
+        "default": "''::text"
+      },
+      {
+        "table": "scheduled_events",
+        "name": "form_id",
+        "type": "uuid",
+        "nullable": true,
+        "default": null
+      },
+      {
+        "table": "scheduled_events",
+        "name": "reminder_minutes",
+        "type": "integer",
+        "nullable": false,
+        "default": "15"
+      },
+      {
+        "table": "scheduled_events",
+        "name": "status",
+        "type": "text",
+        "nullable": false,
+        "default": "'scheduled'::text"
+      },
+      {
+        "table": "scheduled_events",
+        "name": "created_by",
+        "type": "uuid",
+        "nullable": false,
+        "default": null
+      },
+      {
+        "table": "scheduled_events",
+        "name": "created_at",
+        "type": "timestamp with time zone",
+        "nullable": false,
+        "default": "now()"
+      },
+      {
+        "table": "scheduled_events",
+        "name": "updated_at",
+        "type": "timestamp with time zone",
+        "nullable": false,
+        "default": "now()"
+      },
+      {
+        "table": "template_reviews",
+        "name": "id",
+        "type": "uuid",
+        "nullable": false,
+        "default": "gen_random_uuid()"
+      },
+      {
+        "table": "template_reviews",
+        "name": "template_id",
+        "type": "uuid",
+        "nullable": false,
+        "default": null
+      },
+      {
+        "table": "template_reviews",
+        "name": "reviewer_id",
+        "type": "uuid",
+        "nullable": false,
+        "default": null
+      },
+      {
+        "table": "template_reviews",
+        "name": "reviewer_name",
+        "type": "text",
+        "nullable": false,
+        "default": "''::text"
+      },
+      {
+        "table": "template_reviews",
+        "name": "rating",
+        "type": "smallint",
+        "nullable": false,
+        "default": "0"
+      },
+      {
+        "table": "template_reviews",
+        "name": "comment",
+        "type": "text",
+        "nullable": false,
+        "default": "''::text"
+      },
+      {
+        "table": "template_reviews",
+        "name": "status",
+        "type": "text",
+        "nullable": false,
+        "default": "'pending'::text"
+      },
+      {
+        "table": "template_reviews",
+        "name": "created_at",
+        "type": "timestamp with time zone",
+        "nullable": false,
+        "default": "now()"
+      },
+      {
+        "table": "template_reviews",
+        "name": "updated_at",
+        "type": "timestamp with time zone",
+        "nullable": false,
+        "default": "now()"
+      },
+      {
+        "table": "template_shares",
+        "name": "id",
+        "type": "uuid",
+        "nullable": false,
+        "default": "gen_random_uuid()"
+      },
+      {
+        "table": "template_shares",
+        "name": "template_id",
+        "type": "uuid",
+        "nullable": false,
+        "default": null
+      },
+      {
+        "table": "template_shares",
+        "name": "recipient_id",
+        "type": "uuid",
+        "nullable": false,
+        "default": null
+      },
+      {
+        "table": "template_shares",
+        "name": "role",
+        "type": "text",
+        "nullable": false,
+        "default": null
+      },
+      {
+        "table": "template_shares",
+        "name": "shared_by",
+        "type": "uuid",
+        "nullable": false,
+        "default": null
+      },
+      {
+        "table": "template_shares",
+        "name": "shared_at",
+        "type": "timestamp with time zone",
+        "nullable": false,
+        "default": "now()"
+      },
+      {
+        "table": "template_shares",
+        "name": "message",
+        "type": "text",
+        "nullable": false,
+        "default": "''::text"
+      },
+      {
+        "table": "template_shares",
+        "name": "is_hidden",
+        "type": "boolean",
+        "nullable": false,
+        "default": "false"
+      },
+      {
+        "table": "template_shares",
+        "name": "updated_at",
+        "type": "timestamp with time zone",
+        "nullable": false,
+        "default": "now()"
+      },
+      {
+        "table": "templates",
+        "name": "id",
+        "type": "uuid",
+        "nullable": false,
+        "default": "gen_random_uuid()"
+      },
+      {
+        "table": "templates",
+        "name": "name",
+        "type": "text",
+        "nullable": false,
+        "default": null
+      },
+      {
+        "table": "templates",
+        "name": "category",
+        "type": "text",
+        "nullable": false,
+        "default": null
+      },
+      {
+        "table": "templates",
+        "name": "description",
+        "type": "text",
+        "nullable": true,
+        "default": null
+      },
+      {
+        "table": "templates",
+        "name": "form_data",
+        "type": "jsonb",
+        "nullable": true,
+        "default": null
+      },
+      {
+        "table": "templates",
+        "name": "uploaded_file",
+        "type": "text",
+        "nullable": true,
+        "default": null
+      },
+      {
+        "table": "templates",
+        "name": "visibility",
+        "type": "text",
+        "nullable": false,
+        "default": "'visible'::text"
+      },
+      {
+        "table": "templates",
+        "name": "created_by",
+        "type": "uuid",
+        "nullable": false,
+        "default": null
+      },
+      {
+        "table": "templates",
+        "name": "created_at",
+        "type": "timestamp with time zone",
+        "nullable": false,
+        "default": "now()"
+      },
+      {
+        "table": "templates",
+        "name": "updated_at",
+        "type": "timestamp with time zone",
+        "nullable": false,
+        "default": "now()"
+      },
+      {
+        "table": "users",
+        "name": "id",
+        "type": "uuid",
+        "nullable": false,
+        "default": null
+      },
+      {
+        "table": "users",
+        "name": "first_name",
+        "type": "text",
+        "nullable": false,
+        "default": "''::text"
+      },
+      {
+        "table": "users",
+        "name": "last_name",
+        "type": "text",
+        "nullable": false,
+        "default": "''::text"
+      },
+      {
+        "table": "users",
+        "name": "company",
+        "type": "text",
+        "nullable": false,
+        "default": "''::text"
+      },
+      {
+        "table": "users",
+        "name": "industry",
+        "type": "text",
+        "nullable": false,
+        "default": "''::text"
+      },
+      {
+        "table": "users",
+        "name": "created_at",
+        "type": "timestamp with time zone",
+        "nullable": false,
+        "default": "now()"
+      },
+      {
+        "table": "users",
+        "name": "updated_at",
+        "type": "timestamp with time zone",
+        "nullable": false,
+        "default": "now()"
+      }
+    ],
+    "public_constraints": [
+      {
+        "definition": "CHECK (jsonb_typeof(form_data) = 'object'::text)",
+        "name": "filled_templates_form_data_check",
+        "table": "filled_templates",
+        "type": "c"
+      },
+      {
+        "definition": "PRIMARY KEY (id)",
+        "name": "filled_templates_pkey",
+        "table": "filled_templates",
+        "type": "p"
+      },
+      {
+        "definition": "FOREIGN KEY (template_id) REFERENCES templates(id) ON DELETE SET NULL",
+        "name": "filled_templates_template_id_fkey",
+        "table": "filled_templates",
+        "type": "f"
+      },
+      {
+        "definition": "FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE",
+        "name": "filled_templates_user_id_fkey",
+        "table": "filled_templates",
+        "type": "f"
+      },
+      {
+        "definition": "CHECK (jsonb_typeof(attendees) = 'array'::text)",
+        "name": "scheduled_events_attendees_check",
+        "table": "scheduled_events",
+        "type": "c"
+      },
+      {
+        "definition": "FOREIGN KEY (created_by) REFERENCES auth.users(id) ON DELETE CASCADE",
+        "name": "scheduled_events_created_by_fkey",
+        "table": "scheduled_events",
+        "type": "f"
+      },
+      {
+        "definition": "CHECK (duration > 0)",
+        "name": "scheduled_events_duration_check",
+        "table": "scheduled_events",
+        "type": "c"
+      },
+      {
+        "definition": "PRIMARY KEY (id)",
+        "name": "scheduled_events_pkey",
+        "table": "scheduled_events",
+        "type": "p"
+      },
+      {
+        "definition": "CHECK (priority = ANY (ARRAY['low'::text, 'medium'::text, 'high'::text]))",
+        "name": "scheduled_events_priority_check",
+        "table": "scheduled_events",
+        "type": "c"
+      },
+      {
+        "definition": "CHECK (reminder_minutes >= 0)",
+        "name": "scheduled_events_reminder_minutes_check",
+        "table": "scheduled_events",
+        "type": "c"
+      },
+      {
+        "definition": "CHECK (status = ANY (ARRAY['scheduled'::text, 'in_progress'::text, 'completed'::text, 'cancelled'::text]))",
+        "name": "scheduled_events_status_check",
+        "table": "scheduled_events",
+        "type": "c"
+      },
+      {
+        "definition": "CHECK (type = ANY (ARRAY['form_review'::text, 'team_meeting'::text, 'training'::text, 'maintenance'::text, 'other'::text]))",
+        "name": "scheduled_events_type_check",
+        "table": "scheduled_events",
+        "type": "c"
+      },
+      {
+        "definition": "PRIMARY KEY (id)",
+        "name": "template_reviews_pkey",
+        "table": "template_reviews",
+        "type": "p"
+      },
+      {
+        "definition": "CHECK (rating >= 0 AND rating <= 5)",
+        "name": "template_reviews_rating_check",
+        "table": "template_reviews",
+        "type": "c"
+      },
+      {
+        "definition": "FOREIGN KEY (reviewer_id) REFERENCES auth.users(id) ON DELETE CASCADE",
+        "name": "template_reviews_reviewer_id_fkey",
+        "table": "template_reviews",
+        "type": "f"
+      },
+      {
+        "definition": "CHECK (status = ANY (ARRAY['pending'::text, 'approved'::text, 'rejected'::text, 'needs_changes'::text]))",
+        "name": "template_reviews_status_check",
+        "table": "template_reviews",
+        "type": "c"
+      },
+      {
+        "definition": "FOREIGN KEY (template_id) REFERENCES templates(id) ON DELETE CASCADE",
+        "name": "template_reviews_template_id_fkey",
+        "table": "template_reviews",
+        "type": "f"
+      },
+      {
+        "definition": "UNIQUE (template_id, reviewer_id)",
+        "name": "template_reviews_template_id_reviewer_id_key",
+        "table": "template_reviews",
+        "type": "u"
+      },
+      {
+        "definition": "PRIMARY KEY (id)",
+        "name": "template_shares_pkey",
+        "table": "template_shares",
+        "type": "p"
+      },
+      {
+        "definition": "FOREIGN KEY (recipient_id) REFERENCES auth.users(id) ON DELETE CASCADE",
+        "name": "template_shares_recipient_id_fkey",
+        "table": "template_shares",
+        "type": "f"
+      },
+      {
+        "definition": "CHECK (role = ANY (ARRAY['viewer'::text, 'editor'::text, 'admin'::text]))",
+        "name": "template_shares_role_check",
+        "table": "template_shares",
+        "type": "c"
+      },
+      {
+        "definition": "FOREIGN KEY (shared_by) REFERENCES auth.users(id) ON DELETE CASCADE",
+        "name": "template_shares_shared_by_fkey",
+        "table": "template_shares",
+        "type": "f"
+      },
+      {
+        "definition": "FOREIGN KEY (template_id) REFERENCES templates(id) ON DELETE CASCADE",
+        "name": "template_shares_template_id_fkey",
+        "table": "template_shares",
+        "type": "f"
+      },
+      {
+        "definition": "UNIQUE (template_id, recipient_id)",
+        "name": "template_shares_template_id_recipient_id_key",
+        "table": "template_shares",
+        "type": "u"
+      },
+      {
+        "definition": "CHECK (category = ANY (ARRAY['healthcare'::text, 'fieldwork'::text, 'hr'::text, 'legal'::text, 'education'::text, 'realestate'::text]))",
+        "name": "templates_category_check",
+        "table": "templates",
+        "type": "c"
+      },
+      {
+        "definition": "FOREIGN KEY (created_by) REFERENCES auth.users(id) ON DELETE CASCADE",
+        "name": "templates_created_by_fkey",
+        "table": "templates",
+        "type": "f"
+      },
+      {
+        "definition": "PRIMARY KEY (id)",
+        "name": "templates_pkey",
+        "table": "templates",
+        "type": "p"
+      },
+      {
+        "definition": "CHECK (visibility = ANY (ARRAY['visible'::text, 'hidden'::text]))",
+        "name": "templates_visibility_check",
+        "table": "templates",
+        "type": "c"
+      },
+      {
+        "definition": "FOREIGN KEY (id) REFERENCES auth.users(id) ON DELETE CASCADE",
+        "name": "users_id_fkey",
+        "table": "users",
+        "type": "f"
+      },
+      {
+        "definition": "PRIMARY KEY (id)",
+        "name": "users_pkey",
+        "table": "users",
+        "type": "p"
+      }
+    ],
+    "public_indexes": [
+      {
+        "definition": "CREATE UNIQUE INDEX filled_templates_pkey ON public.filled_templates USING btree (id)",
+        "name": "filled_templates_pkey",
+        "table": "public.filled_templates"
+      },
+      {
+        "definition": "CREATE INDEX filled_templates_user_created_idx ON public.filled_templates USING btree (user_id, created_at DESC)",
+        "name": "filled_templates_user_created_idx",
+        "table": "public.filled_templates"
+      },
+      {
+        "definition": "CREATE INDEX scheduled_events_actor_date_time_idx ON public.scheduled_events USING btree (created_by, date, \"time\")",
+        "name": "scheduled_events_actor_date_time_idx",
+        "table": "public.scheduled_events"
+      },
+      {
+        "definition": "CREATE INDEX scheduled_events_actor_status_idx ON public.scheduled_events USING btree (created_by, status, date)",
+        "name": "scheduled_events_actor_status_idx",
+        "table": "public.scheduled_events"
+      },
+      {
+        "definition": "CREATE INDEX scheduled_events_actor_type_idx ON public.scheduled_events USING btree (created_by, type, date)",
+        "name": "scheduled_events_actor_type_idx",
+        "table": "public.scheduled_events"
+      },
+      {
+        "definition": "CREATE UNIQUE INDEX scheduled_events_pkey ON public.scheduled_events USING btree (id)",
+        "name": "scheduled_events_pkey",
+        "table": "public.scheduled_events"
+      },
+      {
+        "definition": "CREATE UNIQUE INDEX template_reviews_pkey ON public.template_reviews USING btree (id)",
+        "name": "template_reviews_pkey",
+        "table": "public.template_reviews"
+      },
+      {
+        "definition": "CREATE INDEX template_reviews_reviewer_idx ON public.template_reviews USING btree (reviewer_id, created_at DESC)",
+        "name": "template_reviews_reviewer_idx",
+        "table": "public.template_reviews"
+      },
+      {
+        "definition": "CREATE UNIQUE INDEX template_reviews_template_id_reviewer_id_key ON public.template_reviews USING btree (template_id, reviewer_id)",
+        "name": "template_reviews_template_id_reviewer_id_key",
+        "table": "public.template_reviews"
+      },
+      {
+        "definition": "CREATE INDEX template_reviews_template_status_idx ON public.template_reviews USING btree (template_id, status, created_at DESC)",
+        "name": "template_reviews_template_status_idx",
+        "table": "public.template_reviews"
+      },
+      {
+        "definition": "CREATE UNIQUE INDEX template_shares_pkey ON public.template_shares USING btree (id)",
+        "name": "template_shares_pkey",
+        "table": "public.template_shares"
+      },
+      {
+        "definition": "CREATE INDEX template_shares_recipient_idx ON public.template_shares USING btree (recipient_id, shared_at DESC)",
+        "name": "template_shares_recipient_idx",
+        "table": "public.template_shares"
+      },
+      {
+        "definition": "CREATE UNIQUE INDEX template_shares_template_id_recipient_id_key ON public.template_shares USING btree (template_id, recipient_id)",
+        "name": "template_shares_template_id_recipient_id_key",
+        "table": "public.template_shares"
+      },
+      {
+        "definition": "CREATE INDEX template_shares_template_idx ON public.template_shares USING btree (template_id)",
+        "name": "template_shares_template_idx",
+        "table": "public.template_shares"
+      },
+      {
+        "definition": "CREATE INDEX templates_category_idx ON public.templates USING btree (category)",
+        "name": "templates_category_idx",
+        "table": "public.templates"
+      },
+      {
+        "definition": "CREATE INDEX templates_created_by_idx ON public.templates USING btree (created_by)",
+        "name": "templates_created_by_idx",
+        "table": "public.templates"
+      },
+      {
+        "definition": "CREATE UNIQUE INDEX templates_pkey ON public.templates USING btree (id)",
+        "name": "templates_pkey",
+        "table": "public.templates"
+      },
+      {
+        "definition": "CREATE INDEX templates_visibility_idx ON public.templates USING btree (visibility)",
+        "name": "templates_visibility_idx",
+        "table": "public.templates"
+      },
+      {
+        "definition": "CREATE UNIQUE INDEX users_pkey ON public.users USING btree (id)",
+        "name": "users_pkey",
+        "table": "public.users"
+      }
+    ],
+    "application_policies": [
+      {
+        "check": null,
+        "command": "DELETE",
+        "name": "filled_delete_owner",
+        "roles": [
+          "authenticated"
+        ],
+        "schema": "public",
+        "table": "filled_templates",
+        "using": "(user_id = auth.uid())"
+      },
+      {
+        "check": "((user_id = auth.uid()) AND ((template_id IS NULL) OR p5_can_read_template(template_id)))",
+        "command": "INSERT",
+        "name": "filled_insert_owner",
+        "roles": [
+          "authenticated"
+        ],
+        "schema": "public",
+        "table": "filled_templates",
+        "using": null
+      },
+      {
+        "check": null,
+        "command": "SELECT",
+        "name": "filled_select_owner",
+        "roles": [
+          "authenticated"
+        ],
+        "schema": "public",
+        "table": "filled_templates",
+        "using": "(user_id = auth.uid())"
+      },
+      {
+        "check": "(user_id = auth.uid())",
+        "command": "UPDATE",
+        "name": "filled_update_owner",
+        "roles": [
+          "authenticated"
+        ],
+        "schema": "public",
+        "table": "filled_templates",
+        "using": "(user_id = auth.uid())"
+      },
+      {
+        "check": null,
+        "command": "DELETE",
+        "name": "events_delete_owner",
+        "roles": [
+          "authenticated"
+        ],
+        "schema": "public",
+        "table": "scheduled_events",
+        "using": "(created_by = auth.uid())"
+      },
+      {
+        "check": "(created_by = auth.uid())",
+        "command": "INSERT",
+        "name": "events_insert_owner",
+        "roles": [
+          "authenticated"
+        ],
+        "schema": "public",
+        "table": "scheduled_events",
+        "using": null
+      },
+      {
+        "check": null,
+        "command": "SELECT",
+        "name": "events_select_owner",
+        "roles": [
+          "authenticated"
+        ],
+        "schema": "public",
+        "table": "scheduled_events",
+        "using": "(created_by = auth.uid())"
+      },
+      {
+        "check": "(created_by = auth.uid())",
+        "command": "UPDATE",
+        "name": "events_update_owner",
+        "roles": [
+          "authenticated"
+        ],
+        "schema": "public",
+        "table": "scheduled_events",
+        "using": "(created_by = auth.uid())"
+      },
+      {
+        "check": null,
+        "command": "DELETE",
+        "name": "reviews_delete_author_or_owner",
+        "roles": [
+          "authenticated"
+        ],
+        "schema": "public",
+        "table": "template_reviews",
+        "using": "((reviewer_id = auth.uid()) OR p5_is_template_owner(template_id))"
+      },
+      {
+        "check": "((reviewer_id = auth.uid()) AND (status = 'pending'::text) AND p5_can_read_template(template_id) AND (NOT p5_is_template_owner(template_id)))",
+        "command": "INSERT",
+        "name": "reviews_insert_eligible_author",
+        "roles": [
+          "authenticated"
+        ],
+        "schema": "public",
+        "table": "template_reviews",
+        "using": null
+      },
+      {
+        "check": null,
+        "command": "SELECT",
+        "name": "reviews_select_author_or_owner",
+        "roles": [
+          "authenticated"
+        ],
+        "schema": "public",
+        "table": "template_reviews",
+        "using": "((reviewer_id = auth.uid()) OR p5_is_template_owner(template_id))"
+      },
+      {
+        "check": "((reviewer_id = auth.uid()) OR p5_is_template_owner(template_id))",
+        "command": "UPDATE",
+        "name": "reviews_update_author_or_owner",
+        "roles": [
+          "authenticated"
+        ],
+        "schema": "public",
+        "table": "template_reviews",
+        "using": "((reviewer_id = auth.uid()) OR p5_is_template_owner(template_id))"
+      },
+      {
+        "check": null,
+        "command": "DELETE",
+        "name": "shares_delete_managers_or_recipient",
+        "roles": [
+          "authenticated"
+        ],
+        "schema": "public",
+        "table": "template_shares",
+        "using": "((recipient_id = auth.uid()) OR p5_can_manage_shares(template_id))"
+      },
+      {
+        "check": "((shared_by = auth.uid()) AND p5_can_manage_shares(template_id))",
+        "command": "INSERT",
+        "name": "shares_insert_managers",
+        "roles": [
+          "authenticated"
+        ],
+        "schema": "public",
+        "table": "template_shares",
+        "using": null
+      },
+      {
+        "check": null,
+        "command": "SELECT",
+        "name": "shares_select_participants",
+        "roles": [
+          "authenticated"
+        ],
+        "schema": "public",
+        "table": "template_shares",
+        "using": "((recipient_id = auth.uid()) OR p5_can_manage_shares(template_id))"
+      },
+      {
+        "check": "((recipient_id = auth.uid()) OR p5_can_manage_shares(template_id))",
+        "command": "UPDATE",
+        "name": "shares_update_managers_or_recipient",
+        "roles": [
+          "authenticated"
+        ],
+        "schema": "public",
+        "table": "template_shares",
+        "using": "((recipient_id = auth.uid()) OR p5_can_manage_shares(template_id))"
+      },
+      {
+        "check": null,
+        "command": "DELETE",
+        "name": "templates_delete_owner",
+        "roles": [
+          "authenticated"
+        ],
+        "schema": "public",
+        "table": "templates",
+        "using": "(created_by = auth.uid())"
+      },
+      {
+        "check": "(created_by = auth.uid())",
+        "command": "INSERT",
+        "name": "templates_insert_owner",
+        "roles": [
+          "authenticated"
+        ],
+        "schema": "public",
+        "table": "templates",
+        "using": null
+      },
+      {
+        "check": null,
+        "command": "SELECT",
+        "name": "templates_select_accessible",
+        "roles": [
+          "authenticated"
+        ],
+        "schema": "public",
+        "table": "templates",
+        "using": "((created_by = auth.uid()) OR p5_can_read_template(id))"
+      },
+      {
+        "check": "(p5_template_access_role(id) = ANY (ARRAY['owner'::text, 'editor'::text]))",
+        "command": "UPDATE",
+        "name": "templates_update_owner_or_editor",
+        "roles": [
+          "authenticated"
+        ],
+        "schema": "public",
+        "table": "templates",
+        "using": "(p5_template_access_role(id) = ANY (ARRAY['owner'::text, 'editor'::text]))"
+      },
+      {
+        "check": "(id = auth.uid())",
+        "command": "INSERT",
+        "name": "users_insert_self",
+        "roles": [
+          "authenticated"
+        ],
+        "schema": "public",
+        "table": "users",
+        "using": null
+      },
+      {
+        "check": null,
+        "command": "SELECT",
+        "name": "users_select_self",
+        "roles": [
+          "authenticated"
+        ],
+        "schema": "public",
+        "table": "users",
+        "using": "(id = auth.uid())"
+      },
+      {
+        "check": "(id = auth.uid())",
+        "command": "UPDATE",
+        "name": "users_update_self",
+        "roles": [
+          "authenticated"
+        ],
+        "schema": "public",
+        "table": "users",
+        "using": "(id = auth.uid())"
+      }
+    ],
+    "application_triggers": [
+      {
+        "definition": "EXECUTE FUNCTION p5_guard_filled_update()",
+        "name": "filled_templates_guard",
+        "table": "filled_templates"
+      },
+      {
+        "definition": "EXECUTE FUNCTION p5_set_updated_at()",
+        "name": "scheduled_events_updated_at",
+        "table": "scheduled_events"
+      },
+      {
+        "definition": "EXECUTE FUNCTION p5_guard_review_update()",
+        "name": "reviews_guard",
+        "table": "template_reviews"
+      },
+      {
+        "definition": "EXECUTE FUNCTION p5_set_updated_at()",
+        "name": "reviews_updated_at",
+        "table": "template_reviews"
+      },
+      {
+        "definition": "EXECUTE FUNCTION p5_guard_share_update()",
+        "name": "shares_guard",
+        "table": "template_shares"
+      },
+      {
+        "definition": "EXECUTE FUNCTION p5_set_updated_at()",
+        "name": "shares_updated_at",
+        "table": "template_shares"
+      },
+      {
+        "definition": "EXECUTE FUNCTION p5_guard_template_file_reference()",
+        "name": "templates_file_reference_guard",
+        "table": "templates"
+      },
+      {
+        "definition": "EXECUTE FUNCTION p5_guard_template_file_reference()",
+        "name": "templates_file_reference_guard",
+        "table": "templates"
+      },
+      {
+        "definition": "EXECUTE FUNCTION p5_guard_template_identity()",
+        "name": "templates_identity_guard",
+        "table": "templates"
+      },
+      {
+        "definition": "EXECUTE FUNCTION p5_set_updated_at()",
+        "name": "templates_updated_at",
+        "table": "templates"
+      },
+      {
+        "definition": "EXECUTE FUNCTION p5_set_updated_at()",
+        "name": "users_updated_at",
+        "table": "users"
+      }
+    ],
+    "security_definer_functions": [
+      {
+        "configuration": [
+          "search_path=pg_catalog, public"
+        ],
+        "name": "p5_can_manage_shares(uuid)",
+        "owner": "postgres",
+        "security_definer": true
+      },
+      {
+        "configuration": [
+          "search_path=pg_catalog, public"
+        ],
+        "name": "p5_can_read_template(uuid)",
+        "owner": "postgres",
+        "security_definer": true
+      },
+      {
+        "configuration": [
+          "search_path=pg_catalog, public"
+        ],
+        "name": "p5_guard_review_update()",
+        "owner": "postgres",
+        "security_definer": true
+      },
+      {
+        "configuration": [
+          "search_path=pg_catalog, public"
+        ],
+        "name": "p5_guard_share_update()",
+        "owner": "postgres",
+        "security_definer": true
+      },
+      {
+        "configuration": [
+          "search_path=pg_catalog, public"
+        ],
+        "name": "p5_is_template_owner(uuid)",
+        "owner": "postgres",
+        "security_definer": true
+      },
+      {
+        "configuration": [
+          "search_path=pg_catalog, public"
+        ],
+        "name": "p5_template_access_role(uuid)",
+        "owner": "postgres",
+        "security_definer": true
+      },
+      {
+        "configuration": [
+          "search_path=pg_catalog"
+        ],
+        "name": "rls_auto_enable()",
+        "owner": "postgres",
+        "security_definer": true
+      }
+    ],
+    "migration_history_present": false
+  },
+  "storage": {
+    "buckets": [
+      {
+        "allowed_mime_types": [
+          "application/json",
+          "application/pdf",
+          "application/vnd.ms-excel",
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          "text/csv"
+        ],
+        "file_size_limit": 20971520,
+        "id": "template-files",
+        "name": "template-files",
+        "public": false
+      }
+    ],
+    "policies": [
+      {
+        "check": null,
+        "command": "DELETE",
+        "name": "template_files_owner_delete",
+        "roles": [
+          "authenticated"
+        ],
+        "schema": "storage",
+        "table": "objects",
+        "using": "((bucket_id = 'template-files'::text) AND (owner_id = ( SELECT (auth.uid())::text AS uid)) AND p5_is_template_owner(p5_object_template_id(name)))"
+      },
+      {
+        "check": "((bucket_id = 'template-files'::text) AND (owner_id = ( SELECT (auth.uid())::text AS uid)) AND p5_is_template_owner(p5_object_template_id(name)))",
+        "command": "UPDATE",
+        "name": "template_files_owner_update",
+        "roles": [
+          "authenticated"
+        ],
+        "schema": "storage",
+        "table": "objects",
+        "using": "((bucket_id = 'template-files'::text) AND (owner_id = ( SELECT (auth.uid())::text AS uid)) AND p5_is_template_owner(p5_object_template_id(name)))"
+      },
+      {
+        "check": "((bucket_id = 'template-files'::text) AND (p5_object_template_id(name) IS NOT NULL) AND (owner_id = ( SELECT (auth.uid())::text AS uid)) AND p5_is_template_owner(p5_object_template_id(name)))",
+        "command": "INSERT",
+        "name": "template_files_owner_upload",
+        "roles": [
+          "authenticated"
+        ],
+        "schema": "storage",
+        "table": "objects",
+        "using": null
+      },
+      {
+        "check": null,
+        "command": "SELECT",
+        "name": "template_files_read_access",
+        "roles": [
+          "authenticated"
+        ],
+        "schema": "storage",
+        "table": "objects",
+        "using": "((bucket_id = 'template-files'::text) AND (p5_object_template_id(name) IS NOT NULL) AND ((owner_id = ( SELECT (auth.uid())::text AS uid)) OR (p5_template_access_role(p5_object_template_id(name)) = ANY (ARRAY['owner'::text, 'viewer'::text, 'editor'::text, 'admin'::text]))))"
+      }
+    ],
+    "objects_security": {
+      "delete_granted_to_authenticated": true,
+      "insert_granted_to_authenticated": true,
+      "rls_enabled": true,
+      "select_granted_to_authenticated": true,
+      "storage_usage_granted_to_authenticated": true,
+      "update_granted_to_authenticated": true
+    },
+    "object_rows_or_payloads_read": false
+  },
+  "roles": [
+    {
+      "bypassrls": false,
+      "createdb": false,
+      "createrole": false,
+      "inherit": true,
+      "login": false,
+      "name": "authenticated",
+      "superuser": false
+    },
+    {
+      "bypassrls": false,
+      "createdb": false,
+      "createrole": false,
+      "inherit": false,
+      "login": true,
+      "name": "django_app",
+      "superuser": false
+    },
+    {
+      "bypassrls": false,
+      "createdb": false,
+      "createrole": false,
+      "inherit": false,
+      "login": true,
+      "name": "django_data",
+      "superuser": false
+    },
+    {
+      "bypassrls": true,
+      "createdb": false,
+      "createrole": false,
+      "inherit": true,
+      "login": false,
+      "name": "service_role",
+      "superuser": false
+    }
+  ],
+  "memberships": [
+    {
+      "admin_option": false,
+      "inherit_option": false,
+      "member": "django_data",
+      "role": "authenticated",
+      "set_option": true
+    }
+  ],
+  "schema_privileges": [
+    {
+      "create": false,
+      "role": "authenticated",
+      "schema": "django",
+      "usage": false
+    },
+    {
+      "create": true,
+      "role": "django_app",
+      "schema": "django",
+      "usage": true
+    },
+    {
+      "create": false,
+      "role": "django_data",
+      "schema": "django",
+      "usage": false
+    },
+    {
+      "create": false,
+      "role": "authenticated",
+      "schema": "public",
+      "usage": true
+    },
+    {
+      "create": false,
+      "role": "django_app",
+      "schema": "public",
+      "usage": true
+    },
+    {
+      "create": false,
+      "role": "django_data",
+      "schema": "public",
+      "usage": true
+    }
+  ],
+  "provider_owned_infrastructure": {
+    "event_triggers": [
+      {
+        "enabled": "O",
+        "event": "ddl_command_end",
+        "function": "rls_auto_enable()",
+        "name": "ensure_rls",
+        "owner": "postgres"
+      },
+      {
+        "enabled": "O",
+        "event": "sql_drop",
+        "function": "set_graphql_placeholder()",
+        "name": "issue_graphql_placeholder",
+        "owner": "supabase_admin"
+      },
+      {
+        "enabled": "O",
+        "event": "ddl_command_end",
+        "function": "grant_pg_cron_access()",
+        "name": "issue_pg_cron_access",
+        "owner": "supabase_admin"
+      },
+      {
+        "enabled": "O",
+        "event": "ddl_command_end",
+        "function": "grant_pg_graphql_access()",
+        "name": "issue_pg_graphql_access",
+        "owner": "supabase_admin"
+      },
+      {
+        "enabled": "O",
+        "event": "ddl_command_end",
+        "function": "grant_pg_net_access()",
+        "name": "issue_pg_net_access",
+        "owner": "supabase_admin"
+      },
+      {
+        "enabled": "O",
+        "event": "ddl_command_end",
+        "function": "pgrst_ddl_watch()",
+        "name": "pgrst_ddl_watch",
+        "owner": "supabase_admin"
+      },
+      {
+        "enabled": "O",
+        "event": "sql_drop",
+        "function": "pgrst_drop_watch()",
+        "name": "pgrst_drop_watch",
+        "owner": "supabase_admin"
+      }
+    ],
+    "ensure_rls_unchanged": true
+  },
+  "runtime": {
+    "database_host_mode": "direct host (not pooler)",
+    "pooler_configured": false,
+    "pooler_verified": false,
+    "django_default_schema": "django",
+    "django_data_schema": "public"
+  },
+  "verification": {
+    "public_row_values_read": false,
+    "auth_identities_read": false,
+    "session_tokens_read": false,
+    "storage_object_payloads_read": false,
+    "hosted_probe_result": "docs/data/P5_HOSTED_RESULTS.json"
+  },
+  "limitations": [
+    "No hosted pooler URL is configured, so the required transaction-pooler RLS/user-switch check remains open.",
+    "The application has no pre-existing Supabase migration-history relation; repository migrations are not proof of historic application.",
+    "Catalog table row estimates are not exact row counts and are intentionally not used as evidence of application data."
+  ]
+}

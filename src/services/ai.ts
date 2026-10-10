@@ -5,6 +5,19 @@ import {
   GROQ_API_URL,
 } from "../config/api";
 
+const USE_DJANGO_SERVICES = import.meta.env.VITE_USE_DJANGO_SERVICES === "true";
+const DJANGO_API_BASE = (
+  import.meta.env.VITE_DJANGO_API_BASE_URL || "http://127.0.0.1:8000"
+).replace(/\/+$/, "");
+const INTERNAL_API_MARKER = import.meta.env.VITE_INTERNAL_API_TOKEN || "voiceform-p3";
+
+function serviceHeaders(): Record<string, string> {
+  return {
+    "Content-Type": "application/json",
+    "X-Internal-Api-Token": INTERNAL_API_MARKER,
+  };
+}
+
 interface AudioValidationError extends Error {
   code: 'INVALID_AUDIO' | 'INVALID_FORMAT' | 'TOO_LARGE' | 'CORRUPTED';
 }
@@ -87,8 +100,8 @@ export async function transcribeAudio({
     }
 
     // ✅ Fixed: Always use local API for now to avoid configuration issues
-    const API_BASE = "http://localhost:3001";
-    const transcribeUrl = `${API_BASE}/api/transcribe`;
+    const API_BASE = USE_DJANGO_SERVICES ? DJANGO_API_BASE : "http://localhost:3001";
+    const transcribeUrl = `${API_BASE}/api/transcribe${USE_DJANGO_SERVICES ? "/" : ""}`;
     
     console.log('Transcribing with URL:', transcribeUrl);
     console.log('Audio MIME type:', mimeType);
@@ -101,9 +114,9 @@ export async function transcribeAudio({
 
     const response = await fetch(transcribeUrl, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: USE_DJANGO_SERVICES
+        ? await serviceHeaders()
+        : { "Content-Type": "application/json" },
       body: JSON.stringify({ 
         audio, 
         mimeType 
@@ -169,8 +182,8 @@ export async function synthesizeSpeech(text: string): Promise<string> {
     }
 
     // ✅ Fixed: Always use local API for consistency
-    const API_BASE = "http://localhost:3001";
-    const ttsUrl = `${API_BASE}/api/tts`;
+    const API_BASE = USE_DJANGO_SERVICES ? DJANGO_API_BASE : "http://localhost:3001";
+    const ttsUrl = `${API_BASE}/api/tts${USE_DJANGO_SERVICES ? "/" : ""}`;
     
     console.log('Synthesizing speech with URL:', ttsUrl);
 
@@ -182,9 +195,9 @@ export async function synthesizeSpeech(text: string): Promise<string> {
 
     const response = await fetch(ttsUrl, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: USE_DJANGO_SERVICES
+        ? await serviceHeaders()
+        : { "Content-Type": "application/json" },
       body: JSON.stringify({ text }),
     });
 
@@ -268,6 +281,33 @@ export async function processWithGroq(
     // Validate inputs
     if (!userInput?.trim()) {
       throw new Error("User input is required");
+    }
+
+    if (USE_DJANGO_SERVICES) {
+      const response = await fetch(`${DJANGO_API_BASE}/api/ai/extract/`, {
+        method: "POST",
+        headers: await serviceHeaders(),
+        credentials: "omit",
+        body: JSON.stringify({ userInput, formFields, currentFormData, conversation }),
+      });
+      if (!response.ok) {
+        throw new Error(`AI processing failed with status ${response.status}`);
+      }
+      const result = await response.json();
+      if (typeof result.response !== "string") {
+        throw new Error("AI processing returned an invalid response");
+      }
+      let audioUrl: string | undefined;
+      try {
+        audioUrl = await synthesizeSpeech(result.response);
+      } catch (ttsError) {
+        console.warn("Failed to generate speech, continuing without audio:", ttsError);
+      }
+      return {
+        response: result.response,
+        extractedData: result.extractedData || {},
+        audioUrl: audioUrl || undefined,
+      };
     }
 
     if (!GROQ_API_KEY) {
@@ -428,4 +468,4 @@ function extractDataFromText(text: string, formFields: any[], currentFormData: a
   }
 
   return extractedData;
-} 
+}

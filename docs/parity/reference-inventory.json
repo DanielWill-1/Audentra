@@ -1,0 +1,204 @@
+{
+  "review_date": "2026-10-10",
+  "kind": "historical-owner-accepted-references",
+  "files": [
+    {
+      "path": "page-screenshots/about.png",
+      "route": "/about",
+      "width": 1440,
+      "height": 2145,
+      "sha256": "1e2adaed7cda7e2af7211a56fb39831d77746aad662a0732ed990538e2995fb2",
+      "review_observation": "Historical visible reference; no live behavior or authenticated fixture claim."
+    },
+    {
+      "path": "page-screenshots/activitylog.png",
+      "route": "/activitylog",
+      "width": 1440,
+      "height": 1326,
+      "sha256": "668a6f7038d85238262aa97672fdad44c889e40532c3224001996a71c167e257",
+      "review_observation": "Historical visible reference; no live behavior or authenticated fixture claim."
+    },
+    {
+      "path": "page-screenshots/AIVoiceAutoFill.png",
+      "route": "/AIVoiceAutoFill",
+      "width": 1440,
+      "height": 996,
+      "sha256": "701dce14129bd779e0666cdcd9239c567e3d6b0748de2279d55ec8ff0be25c57",
+      "review_observation": "Login screen; successful application state not shown."
+    },
+    {
+      "path": "page-screenshots/contact.png",
+      "route": "/contact",
+      "width": 1440,
+      "height": 2423,
+      "sha256": "db7c92751c77683490e40d45e2297127a1f9b30cf94f00d47dec5e740ed6ce66",
+      "review_observation": "Historical visible reference; no live behavior or authenticated fixture claim."
+    },
+    {
+      "path": "page-screenshots/dashboard.png",
+      "route": "/dashboard",
+      "width": 1440,
+      "height": 1392,
+      "sha256": "bf2bfd8c0aa4820735dd18e71acdd55231c73c85cd4d542c7dd2b7b910751108",
+      "review_observation": "Historical visible reference; no live behavior or authenticated fixture claim."
+    },
+    {
+      "path": "page-screenshots/documentation.png",
+      "route": "/documentation",
+      "width": 1440,
+      "height": 2872,
+      "sha256": "1781cccefc157d5284d8299cb5c8317d9b719ea13e96a97a8b5a9898abae8753",
+      "review_observation": "Historical visible reference; no live behavior or authenticated fixture claim."
+    },
+    {
+      "path": "page-screenshots/features.png",
+      "route": "/features",
+      "width": 1440,
+      "height": 2506,
+      "sha256": "72bc7092ca2d03882c49cb678fe7de2e641b232e0b17dc0e1ddb62c99fb25ec4",
+      "review_observation": "Historical visible reference; no live behavior or authenticated fixture claim."
+    },
+    {
+      "path": "page-screenshots/filledtemplates.png",
+      "route": "/filledtemplates",
+      "width": 1440,
+      "height": 900,
+      "sha256": "0f51a6d4f6e0c51cb173ff9127d79d1e14df7a576cf4284e92d91a8170d00348",
+      "review_observation": "Loading spinner; successful populated page not shown."
+    },
+    {
+      "path": "page-screenshots/forgot-password.png",
+      "route": "/forgot-password",
+      "width": 1440,
+      "height": 900,
+      "sha256": "8336b74a35c8ae42e85053ae2bcf2d61a4f174d6f22841f80270ec4b3fcdfde2",
+      "review_observation": "Historical visible reference; no live behavior or authenticated fixture claim."
+    },
+    {
+      "path": "page-screenshots/help-center.png",
+      "route": "/help-center",
+      "width": 1440,
+      "height": 3043,
+      "sha256": "db69a5c0d3c26cd9a6228e92bedf8ff2b027377e616e8573fbce0df6902979b7",
+      "review_observation": "Historical visible reference; no live behavior or authenticated fixture claim."
+    },
+    {
+      "path": "page-screenshots/home.png",
+      "route": "/",
+      "width": 1440,
+      "height": 3193,
+      "sha256": "e2a5c87b1f72d26c5acf8eb572500b0ac2eaabf74faab1dda60cfca5fddcd4dd",
+      "review_observation": "Historical landing-page copy differs from the current manifest heading."
+    },
+    {
+      "path": "page-screenshots/industries.png",
+      "route": "/industries",
+      "width": 1440,
+      "height": 2663,
+      "sha256": "28e3418ea29b0ea13f65f5fe169a7a07c087dbcbf48fc7699ff50c2b08da5cf5",
+      "review_observation": "Historical visible reference; no live behavior or authenticated fixture claim."
+    },
+    {
+      "path": "page-screenshots/login.png",
+      "route": "/login",
+      "width": 1440,
+      "height": 996,
+      "sha256": "701dce14129bd779e0666cdcd9239c567e3d6b0748de2279d55ec8ff0be25c57",
+      "review_observation": "Historical visible reference; no live behavior or authenticated fixture claim."
+    },
+    {
+      "path": "page-screenshots/manage-schedules.png",
+      "route": "/manage-schedules",
+      "width": 1440,
+      "height": 996,
+      "sha256": "701dce14129bd779e0666cdcd9239c567e3d6b0748de2279d55ec8ff0be25c57",
+      "review_observation": "Login screen; successful application state not shown."
+    },
+    {
+      "path": "page-screenshots/pricing.png",
+      "route": "/pricing",
+      "width": 1440,
+      "height": 3018,
+      "sha256": "12ae0519147bd35f19ebd81399002042cc3f34c094ac0fd42b4d9d2396ac7f50",
+      "review_observation": "Historical visible reference; no live behavior or authenticated fixture claim."
+    },
+    {
+      "path": "page-screenshots/privacy.png",
+      "route": "/privacy",
+      "width": 1440,
+      "height": 900,
+      "sha256": "1089ca699e10d6d76aca3fb9df431850be5692db6aca979fa22d3014fa637b4e",
+      "review_observation": "Historical visible reference; no live behavior or authenticated fixture claim."
+    },
+    {
+      "path": "page-screenshots/reset-password.png",
+      "route": "/reset-password",
+      "width": 1440,
+      "height": 900,
+      "sha256": "0fb6ef36c321a29e95651b6057034108ae10f5be50c665aeca72abb93fa94acf",
+      "review_observation": "Historical visible reference; no live behavior or authenticated fixture claim."
+    },
+    {
+      "path": "page-screenshots/scheduler-settings.png",
+      "route": "/scheduler-settings",
+      "width": 1440,
+      "height": 996,
+      "sha256": "701dce14129bd779e0666cdcd9239c567e3d6b0748de2279d55ec8ff0be25c57",
+      "review_observation": "Login screen; successful application state not shown."
+    },
+    {
+      "path": "page-screenshots/scheduler.png",
+      "route": "/scheduler",
+      "width": 1440,
+      "height": 996,
+      "sha256": "701dce14129bd779e0666cdcd9239c567e3d6b0748de2279d55ec8ff0be25c57",
+      "review_observation": "Login screen; successful application state not shown."
+    },
+    {
+      "path": "page-screenshots/security.png",
+      "route": "/security",
+      "width": 1440,
+      "height": 2643,
+      "sha256": "20a120cb6381024763bb76ed82c0b49e3528cf4b54409189b611a4b00e30b255",
+      "review_observation": "Historical visible reference; no live behavior or authenticated fixture claim."
+    },
+    {
+      "path": "page-screenshots/signup.png",
+      "route": "/signup",
+      "width": 1440,
+      "height": 1200,
+      "sha256": "8fb3a4893bf3cfb9ab7b72dce9544de72bf6d496ddf6045916536ccfb6ad4d08",
+      "review_observation": "Historical visible reference; no live behavior or authenticated fixture claim."
+    },
+    {
+      "path": "page-screenshots/status.png",
+      "route": "/status",
+      "width": 1440,
+      "height": 3225,
+      "sha256": "5a8f6d166b675c0c5bc745b42aa12c21fe4cb455aed6937f97ee55cb1eee6e40",
+      "review_observation": "Historical visible reference; no live behavior or authenticated fixture claim."
+    },
+    {
+      "path": "page-screenshots/templates.png",
+      "route": "/templates",
+      "width": 1440,
+      "height": 900,
+      "sha256": "fb794141f9038d9c59d310cdb6a373bc174e940fe00b2aff71642a0a7e422d23",
+      "review_observation": "Template-loading error; successful populated list not shown."
+    },
+    {
+      "path": "page-screenshots/terms.png",
+      "route": "/terms",
+      "width": 1440,
+      "height": 900,
+      "sha256": "a33d6b0970b27d0368e283b042b37b6f5a010b53180f4822a84724648c60862f",
+      "review_observation": "Historical visible reference; no live behavior or authenticated fixture claim."
+    }
+  ],
+  "missing_route_images": [
+    "/open"
+  ],
+  "new_matrix_goldens_created": false,
+  "owner_acceptance": "Accepted for manual visual reference on 2026-10-10, with full matrix exceptions documented in P1_ACCEPTANCE.md.",
+  "screenshot_source_commit": "not recorded; current HEAD does not establish screenshot provenance"
+}

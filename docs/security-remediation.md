@@ -1,6 +1,9 @@
 # P0 Security Remediation — Record
 
-**Phase:** P0 of [`docs/python-migration-plan.md`](python-migration-plan.md) (v0.3), executed as an isolated phase. **P1 was not started.**
+> Current handoff: the owner reports P0 complete; the findings/statuses below remain the historical execution record. New migration work goes in `migration/parity/` for P1 and `migration/django/` for later application phases, with comparison evidence in `docs/parity/`. Existing application/design folders remain in their original locations through full verification and soak; cleanup is gated on P11. Preserve this record and sanitized security evidence. Completed P0 removals of credentials/exports are not reversed by the folder-preservation policy. See [the current migration plan](../MIGRATION_PLAN.md#separate-folders-and-preservation).
+
+**Phase:** P0 of [`docs/python-migration-plan.md`](python-migration-plan.md) (v0.3), executed as an isolated phase. **P1 had not started at the time of this P0 execution record.**
+> Current phase note (2026-10-10): P1 is finalized with [owner-accepted exceptions](parity/P1_ACCEPTANCE.md), P2 is complete/reviewed, and [P3_REVIEW.md](services/P3_REVIEW.md) records passing existing checks and open defects. The [P4 brief](../prompt.md) is prepared; implementation has not started. P3's loopback/origin boundary and public marker are not authentication. P4 requires verified credentials and session CSRF. No hosted Auth/security configuration was changed during this review; the P0 status below remains historical.
 **Scope:** close live credential/data exposures, remove leaked material from the repository and its history, harden the immediately verifiable critical RLS issue, and leave application behaviour otherwise unchanged.
 **Status:** **INCOMPLETE — repository-local work complete and verified; critical external rotations and the remote history rewrite are BLOCKED on human action.** See [§10](#10-acceptance-criteria--status).
 
