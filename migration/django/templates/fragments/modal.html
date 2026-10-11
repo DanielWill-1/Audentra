@@ -1,0 +1,19 @@
+<dialog id="shell-modal" class="shell-dialog" data-shell-dialog aria-labelledby="shell-modal-title">
+  <div class="shell-dialog-card">
+    <div class="flex items-start justify-between gap-6">
+      <div>
+        <p class="mb-2 text-metadata font-semibold uppercase tracking-wider text-primary">{{ modal_eyebrow|default:"Audentra" }}</p>
+        <h2 id="shell-modal-title" class="font-headline-h3 text-headline-h3 text-text-primary">{{ modal_title|default:"Dialog" }}</h2>
+      </div>
+      <button class="icon-button" type="button" data-modal-close aria-label="Close dialog">
+        {% include "fragments/icon.html" with name="close" class_name="h-5 w-5" %}
+      </button>
+    </div>
+    <div class="mt-5 text-body text-text-secondary" data-modal-content>
+      <p>{{ modal_copy|default:"Dialog content belongs to the page using this shared component." }}</p>
+    </div>
+    <div class="mt-7 flex justify-end">
+      <button class="button-primary px-4" type="button" data-modal-close>{{ modal_action|default:"Done" }}</button>
+    </div>
+  </div>
+</dialog>

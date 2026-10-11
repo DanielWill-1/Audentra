@@ -2,11 +2,13 @@
 
 Open-source, voice-first structured-data automation. Speak naturally and Audentra turns the conversation into structured, validated form data — no typing, no rigid questionnaires.
 
-This repository is a Vite + React + TypeScript single-page application (SPA) with a Node/Express backend and Supabase for auth and data.
+This repository preserves the original Vite + React + TypeScript and Node/Express application beside the implemented Django P7 page path. Supabase remains the Auth and data provider. The local P7 route inventory has zero normal legacy fallbacks; P7 acceptance and P8 review repairs remain open, with P9 release acceptance and production cutover separate.
 
 ## Migration folder policy
 
-New migration work is additive: P1 tooling goes in `migration/parity/`, Django work in `migration/django/`, and comparison evidence in `docs/parity/`. P1 is finalized with [accepted exceptions](docs/parity/P1_ACCEPTANCE.md); `/activitylog` remains a future feature. P2 is complete and [reviewed](docs/foundation/P2_REVIEW.md). Its pre-P5 catalog was empty; P5 has since created the reviewed application schema and private Storage bucket. P3 code findings are corrected, with live speech evidence still pending. P4 development authentication passed fresh hosted and PostgreSQL concurrency checks; see [P4_REPORT.md](docs/auth/P4_REPORT.md). P5 Django data services and hosted direct-connection checks pass, but P5 remains partial until the hosted transaction-pooler/user-switch check passes; see [P5_REPORT.md](docs/data/P5_REPORT.md).
+P7 W1–W7 routes and the separate P8 bridge are implemented. All 25 manifest routes resolve locally with zero normal fallback, but the [2026-10-12 P7 review](docs/pages/P7_REVIEW_2026-10-12.md) and [P8 review](docs/services/P8_REVIEW_2026-10-12.md) supersede earlier full-completion claims. See the [dated handoff](HANDOFF_2026-10-12_020354_IST.md) and root [P7/P8 closeout prompt](prompt.md). Existing [report](docs/pages/P7_REPORT.md), [verification](docs/pages/P7_VERIFICATION.md), [route inventory](docs/pages/P7_ROUTE_OWNERSHIP.json) and [differences](docs/pages/P7_DIFFERENCES.md) remain evidence; P9–P11 are separate gates.
+
+New migration work is additive: P1 tooling goes in `migration/parity/`, Django work in `migration/django/`, and comparison evidence stays under `docs/`. P1 is finalized with [accepted exceptions](docs/parity/P1_ACCEPTANCE.md). P2 is complete and [reviewed](docs/foundation/P2_REVIEW.md). P3 code findings are corrected, with live speech evidence still pending. P4 development authentication passed fresh hosted and PostgreSQL concurrency checks; see [P4_REPORT.md](docs/auth/P4_REPORT.md). P5 is complete with hosted shared-pooler isolation; see [P5_REPORT.md](docs/data/P5_REPORT.md) and [P5_VERIFICATION.md](docs/data/P5_VERIFICATION.md). P6 shared shells/rollback are complete; P7/P8 and their final evidence are linked above. The P7 activity page deliberately retains its source-supported browser-local/example feed rather than adding a new activity backend.
 
 Keep the existing `src/`, `server/`, `scripts/`, `public/`, `new pages/`, `page-screenshots/` and Node/Vite configuration in their original locations and runnable until full migration parity, deployment verification and the accepted soak are complete. Revisit these originals for behaviour/content/design comparisons throughout migration. Copy reference content into the new implementation rather than relocating or replacing the original folders.
 
@@ -24,7 +26,7 @@ Old runtime cleanup belongs to the final P11 gate with a documented recovery ref
 
 ## Current status
 
-This project is mid-migration. The public-facing site has been rebuilt onto an approved design system, and the authenticated dashboard has been redesigned onto an application shell. The voice transcript/src pipeline (Google STT, Groq, ElevenLabs, Llama) still runs through the existing backend and is **not yet** migrated to the new schema-authoring model described in the `/documentation` page — that page currently documents the target architecture rather than the shipped runtime.
+The project remains between implementation and release acceptance. The approved P7 local Django path now owns the full 25-route manifest, while the original React/Express runtime remains available for comparison and recovery. P8 verifies the browser media boundary with deterministic fakes; live speech-provider, physical-device, P9 release, P10 deployment/soak, and P11 retirement gates remain open. The `/documentation` page describes parts of the target architecture and does not by itself prove every described capability is shipped.
 
 Below is a precise record of what has shipped versus what remains.
 
@@ -55,7 +57,7 @@ Below is a precise record of what has shipped versus what remains.
 ### Routing (supporting both contexts)
 - **Public:** `/`, `/features`, `/about`, `/login`, `/signup`, `/privacy`, `/terms`, `/open`, `/documentation`
 - **Application:** `/dashboard`, `/templates`, `/scheduler`, `/AIVoiceAutoFill`, `/filledtemplates`, `/activitylog`
-- Additional legacy routes (`/industries`, `/security`, `/pricing`, `/contact`, `/status`, `/help-center`, `/forgot-password`, `/reset-password`, `/manage-schedules`, `/scheduler-settings`) still exist and await migration.
+- The original React router and Express backend remain preserved. P7's Django route registry owns the current 25-path manifest; see [P7_ROUTE_OWNERSHIP.json](docs/pages/P7_ROUTE_OWNERSHIP.json) for each URL name/view and the deliberate reset-password 404.
 
 ---
 

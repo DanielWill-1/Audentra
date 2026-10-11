@@ -1,6 +1,6 @@
 from collections.abc import Mapping
 
-from django.db import connections
+from django.db import connections, transaction
 
 from apps.db.rls import _allow_fixed_metadata_query
 
@@ -84,6 +84,10 @@ SELECT current_user,
 FROM pg_roles AS role
 WHERE role.rolname = current_user
 """
+_HEALTH_SEARCH_PATH = {
+    "default": "SET LOCAL search_path = django",
+    "supabase": "SET LOCAL search_path = public",
+}
 
 
 def inspect_database_alias(alias: str) -> Mapping[str, object]:
@@ -94,9 +98,12 @@ def inspect_database_alias(alias: str) -> Mapping[str, object]:
     if database.vendor != "postgresql":
         raise DatabaseBoundaryError("A PostgreSQL connection is required for live health.")
 
-    with _allow_fixed_metadata_query(_HEALTH_SQL):
+    with transaction.atomic(using=alias):
         with database.cursor() as cursor:
-            cursor.execute(_HEALTH_SQL)
+            with _allow_fixed_metadata_query(_HEALTH_SEARCH_PATH[alias]):
+                cursor.execute(_HEALTH_SEARCH_PATH[alias])
+            with _allow_fixed_metadata_query(_HEALTH_SQL):
+                cursor.execute(_HEALTH_SQL)
             row = cursor.fetchone()
 
     if row is None:

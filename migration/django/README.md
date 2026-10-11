@@ -1,8 +1,10 @@
 # Django foundation
 
-This is a native Windows Django project that runs beside the existing React/Vite and Express application. It provides the P2 foundation, P3 speech/extraction services, P4 development authentication and P5 Supabase application data services. Product pages have not yet migrated; P6/P7 own that work.
+This is a native Windows Django project retained beside the original React/Vite and Express application. It provides the P2 foundation, P3 speech/extraction services, P4 development authentication, P5 Supabase application data services, P6 shells/fallback and implemented P7 pages/P8 media bridge. All 25 manifest paths have local owners with zero normal fallback; P7 acceptance and P8 repairs remain open, followed by separate P9–P11 gates.
 
-The bounded P3 code findings are corrected; live speech-provider evidence remains pending. P4 development authentication was verified with fresh hosted accounts and PostgreSQL concurrency; see [P4_REPORT.md](../../docs/auth/P4_REPORT.md). P5 schema, RLS, Storage and Django data services are implemented and the direct-host probe passes. P5 remains partial until the hosted transaction-pooler/user-switch check passes; see [P5_REPORT.md](../../docs/data/P5_REPORT.md).
+The [dated handoff](../../HANDOFF_2026-10-12_020354_IST.md), [P7 review](../../docs/pages/P7_REVIEW_2026-10-12.md) and [P8 review](../../docs/services/P8_REVIEW_2026-10-12.md) supersede earlier full-completion claims. Root [prompt.md](../../prompt.md) prepares complete P7/P8 closure before P9; the [executed master brief](../../docs/pages/P7_P8_IMPLEMENTATION_PROMPT.md) is archived. Existing aggregate/per-wave reports, assets, ownership snapshots and browser evidence remain available.
+
+The bounded P3 code findings are corrected; live speech-provider evidence remains pending for P9. P4 development authentication was verified with fresh hosted accounts and PostgreSQL concurrency; see [P4_REPORT.md](../../docs/auth/P4_REPORT.md). P5 schema, RLS, Storage, Django data services and hosted shared transaction-pooler/user-switch verification are complete; see [P5_REPORT.md](../../docs/data/P5_REPORT.md) and [P5_VERIFICATION.md](../../docs/data/P5_VERIFICATION.md). P6 shells and controlled rollback remain implemented; normal P7 page routing now has zero legacy fallbacks. See [P6 report](../../docs/rendering/P6_REPORT.md) and [rollback runbook](../../docs/rendering/P6_ROLLBACK.md).
 
 ## Setup
 
@@ -53,7 +55,7 @@ P3 service endpoints are disabled by default and use deterministic mocks when en
 
 P5 adds unmanaged Django models and services for profiles, templates, UUID-based sharing, reviews, scheduling, filled forms and private template files. Supabase remains the data store; all application queries use a verified principal and a transaction-local `authenticated` RLS context on the `supabase` alias. Django sessions/migration state remain on the separate `default`/`django` alias.
 
-P5 direct-host and local PostgreSQL checks pass. To complete the phase, configure `DJANGO_SUPABASE_DATABASE_URL` in the ignored local `.env` with the exact shared transaction-pooler URL for `django_data` from Supabase Dashboard → Connect, keeping its password local, then run `scripts/check_p5_hosted_data.py`. Do not compose the host or widen the request role. See [P5 contracts](../../docs/data/P5_CONTRACTS.md), [RLS matrix](../../docs/data/P5_RLS_MATRIX.md), [verification](../../docs/data/P5_VERIFICATION.md) and [report](../../docs/data/P5_REPORT.md).
+P5 direct-host and local PostgreSQL checks pass. The final hosted probe also passed through the shared transaction pooler with the restricted project-scoped `django_data` login: 65 checks, A/B/A identity and private-row isolation, transaction cleanup, forced rollback/recovery, reused Django client connection and exact cleanup. Transaction mode uses transaction-local search paths and disables Psycopg prepared statements. See [P5 contracts](../../docs/data/P5_CONTRACTS.md), [RLS matrix](../../docs/data/P5_RLS_MATRIX.md), [verification](../../docs/data/P5_VERIFICATION.md) and [report](../../docs/data/P5_REPORT.md). P6 verification is in [P6_VERIFICATION.md](../../docs/rendering/P6_VERIFICATION.md).
 
 ## P4 development authentication
 
@@ -82,4 +84,4 @@ P2 did not create public application tables or change Auth, Storage, existing Su
 
 ## Source tokens
 
-The minimal fixture in templates/base.html and config/tailwind.config.cjs copies only the classes and token values needed to prove the standalone build. Colors, font families and spacing are sourced from the unchanged repository tailwind.config.js. The source CSS stays under assets/ and the downloaded binary under .state/, outside the collected static directory; only the built CSS is collected. Full shells and page styling remain for P6/P7.
+The shared P6 shells use color, font-family and spacing tokens from the repository Tailwind config. The source CSS stays under assets/ and the downloaded binary under .state/, outside the collected static directory; only the built CSS is collected. P7 extended the Django theme for the migrated pages; its pinned Tailwind build and token check passed in the final verification.

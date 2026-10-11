@@ -1,7 +1,7 @@
 {
   "status": "passed",
   "date": "2026-10-11",
-  "environment": "linked development Supabase; Django direct host database URL",
+  "environment": "linked development Supabase; Django shared transaction pooler database URL",
   "checks": [
     "development_signup_confirmation_disabled",
     "owner_fresh_signup_session",
@@ -23,6 +23,18 @@
     "visible_templates_are_discoverable_to_authenticated_accounts",
     "viewer_cannot_edit_template_content",
     "hidden_template_is_not_discoverable_without_a_share",
+    "pooler_unscoped_application_query_rejected",
+    "pooler_unverified_principal_rejected",
+    "pooler_wrong_database_alias_rejected",
+    "pooler_nested_user_switch_rejected",
+    "pooler_same_user_nesting_allowed",
+    "pooler_same_user_context_restored_after_rejection",
+    "pooler_verified_claims_role_and_identity_a_b_a",
+    "pooler_verified_private_template_isolation_a_b_a",
+    "pooler_forced_database_error_rolled_back",
+    "pooler_rollback_removed_synthetic_template",
+    "pooler_identity_recovered_after_rollback_a_b_a",
+    "pooler_reused_django_client_connection",
     "owner_can_update_template_content",
     "private_storage_upload_owner",
     "visible_template_does_not_grant_file_access",
@@ -61,7 +73,29 @@
   "accounts_deleted": 3,
   "storage_objects_removed": 0,
   "emails_sent": 0,
-  "database_host_mode": "direct host",
-  "pooler_verified": false,
+  "database_host_mode": "shared transaction pooler",
+  "pooler_configured": true,
+  "pooler_verified": true,
+  "transaction_pooler_isolation": {
+    "passed": true,
+    "django_client_connection_reused": true,
+    "backend_pid_sequence": [
+      85935,
+      85935,
+      85935,
+      85935,
+      85935
+    ],
+    "idle_backend_pid_sequence": [
+      85935,
+      85935,
+      85935,
+      85935,
+      85935,
+      85935
+    ],
+    "backend_reused_across_observations": true,
+    "transaction_entry_role_and_claims_cleared": true
+  },
   "cleanup_ok": true
 }

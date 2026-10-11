@@ -1,12 +1,14 @@
 # Migration state
 
-**Updated:** 2026-10-11  
+**Updated:** 2026-10-12
 **Project:** Audentra / VoiceForm  
-**Current task:** P5 implementation and evidence review. P5a schema/Storage and P5b Django data services are implemented; P5 remains partial pending hosted transaction-pooler verification.
-**Active step:** [prompt.md](prompt.md) defines the bounded P5 scope. [P5_REPORT.md](docs/data/P5_REPORT.md), [P5_VERIFICATION.md](docs/data/P5_VERIFICATION.md), [P5_RLS_MATRIX.md](docs/data/P5_RLS_MATRIX.md) and [schema reconciliation](docs/schema-reconciliation.md) record actual changes and evidence.
-**Next implementation step:** Configure the exact shared transaction-pooler URL locally and rerun the hosted P5 probe. Do not begin P6/P7 or claim P5 complete before this P5b gate passes. Exposed-key retirement remains separately approval-dependent; P3 live speech evidence remains a later voice/parity gate.
+**Current task:** Combined P7/P8 closure prompt prepared at the owner's request, 2026-10-12 02:19:14 IST. P7 route delivery is established; full acceptance and P8 repair remain open. This update is documentation only.
+**Active step:** See the dated [handoff](HANDOFF_2026-10-12_020354_IST.md), [P7 review](docs/pages/P7_REVIEW_2026-10-12.md) and [P8 review](docs/services/P8_REVIEW_2026-10-12.md). All 25 routes have local owners and zero normal fallback. Fresh isolated pytest passed 145 tests in 4.18s and Django check passed; broader recorded evidence does not close the newly identified gaps.
+**Next execution scope:** Root [prompt.md](prompt.md) now covers all remaining P7 and P8 requirements together, including comparison/UI/hosted Storage-review-filled/timezone/voice proof. After the combined completion gate passes, prepare the P9 brief and stop; P9 execution and P10/P11 follow later. No repairs were performed by this prompt update.
 
-**Session handoff:** [HANDOFF_P5_P6.md](HANDOFF_P5_P6.md) records completed session work, evidence limitations, the P5 closure runbook, and bounded P6 preparation. It does not authorize P6 implementation.
+**P5 closure result (2026-10-11):** The shared transaction-pooler probe passed all 65 hosted checks and cleaned all three synthetic accounts. A/B/A role/claims and private-row isolation, transaction cleanup, forced rollback/recovery and reused Django client connection passed. Local verification passed 95 pytest tests, Django's system check, focused mypy across 60 source files and Ruff.
+
+**Session handoff:** [Current dated handoff](HANDOFF_2026-10-12_020354_IST.md) records session delivery and corrected P7/P8 status. [HANDOFF_P5_P6.md](HANDOFF_P5_P6.md) retains P5/P6 history. [P6_ROLLBACK.md](docs/rendering/P6_ROLLBACK.md) documents fallback rollback.
 
 **Owner scope revision:** The 2026-10-11 development-only request supersedes earlier SMTP, confirmation-delivery, legacy account and React Auth compatibility gates. Supabase remains the sole provider via its Python SDK. The supplied publishable key is configured. Automatic approval review blocked broad credential revocation; see [P4_CREDENTIAL_ROTATION.json](docs/auth/P4_CREDENTIAL_ROTATION.json).
 
@@ -14,7 +16,7 @@
 
 ## 1. Purpose and authority
 
-Use this file for current facts, evidence, decisions and blockers. Use [MIGRATION_PLAN.md](MIGRATION_PLAN.md) for scope and completion gates, the archived [P2](docs/foundation/P2_IMPLEMENTATION_PROMPT.md) and [P3](docs/services/P3_IMPLEMENTATION_PROMPT.md) briefs for executed scope, [archived P4 brief](docs/auth/P4_IMPLEMENTATION_PROMPT.md) for executed Auth scope, [prompt.md](prompt.md) for P5, and [P4_REPORT.md](docs/auth/P4_REPORT.md) for execution evidence.
+Use this file for current facts, evidence, decisions and blockers. Use [MIGRATION_PLAN.md](MIGRATION_PLAN.md) for scope/gates and the archived P2–P6 briefs for their original scope. The executed [P7/P8 master brief](docs/pages/P7_P8_IMPLEMENTATION_PROMPT.md) is archived; root [prompt.md](prompt.md) now prepares complete P7/P8 closeout. Evidence and dated reviews remain under `docs/pages/` and `docs/services/`.
 
 On 2026-10-10 the user authorized implementation of the P2 brief on native Windows and the existing hosted testing project. P2 created restricted django_app and django_data roles and a django schema, migrated only Django sessions/migration bookkeeping, and verified both runtime aliases. The public application table catalog and Storage bucket count remained empty. No Docker, commits, pushes, deployment, P3 work or P0 recovery was part of P2. P1 carryovers remain assigned to their later phases.
 
@@ -28,7 +30,9 @@ The user reports P0 is done. Carry that completion forward as owner-reported acc
 
 The user also requires the existing application/reference folders to remain in their original locations until the migration is fully finished and verified. Preserve src/, server/, scripts/, public/, new pages/, page-screenshots/ and existing legacy configuration through P9 and the P10 soak. Run repeated comparisons against those originals; do not move them into legacy/ or overwrite reference screenshots. P11 runtime retirement needs the completion gates and a documented clean recovery reference; design/documentation/parity evidence remains retained. P0 removals stay in effect.
 
-## 2. Repository snapshot
+## 2. Historical repository snapshot
+
+The table below describes the earlier handoff, not the current HEAD. The latest review inspected acba956 plus uncommitted P5 changes; see [P6 readiness review](docs/rendering/P6_READINESS_REVIEW.md). Preserve the current working tree.
 
 | Item | Observation | Evidence / limitation |
 |---|---|---|
@@ -46,17 +50,17 @@ Refresh this snapshot at each handoff. Preserve other people's working tree chan
 
 | Concern | Current implementation |
 |---|---|
-| Frontend | React 18, TypeScript, Vite, React Router |
-| Styling | Tailwind CSS; design tokens in `tailwind.config.js` |
-| Backend | Express in `server/`; mounted transcription and TTS routes |
-| Identity / data | Browser Supabase clients and `AuthContext`; Supabase Auth, PostgREST and Storage |
-| Speech | Browser microphone capture/playback; legacy JSON requests to Express |
+| Migrated page path | P7 manifest routes are locally owned by Django templates/views; all 25 URL patterns resolve and the normal legacy fallback count is zero |
+| Retained source/runtime | React 18, TypeScript, Vite, React Router and Express remain in their original folders for P9–P11 comparison/recovery; no traffic cutover or legacy retirement occurred |
+| Styling | Django uses its P6 public/application shells and the pinned Tailwind CSS 3 build; source tokens remain in `tailwind.config.js` and the Django theme config |
+| Identity / data | Django migrated pages use verified server sessions and P5 Supabase Python data services; the retained React stack keeps its separate existing session behavior |
+| Speech | P8 provides browser MediaRecorder and same-origin multipart to Django/P3; live provider and physical-device behavior remain unverified |
 | Groq | `src/config/api.ts` exports `GROQ_API_KEY` as `undefined`; the assistant can use its existing mock fallback |
-| Activity | `src/lib/activity.ts` uses localStorage and example items |
-| Settings / collaboration | Several preferences, team and review flows use localStorage or mocks |
+| Activity | The retained React source uses localStorage; migrated `/activitylog` remains browser-local/example data and is not a server audit ledger |
+| Settings / collaboration | Scheduler settings and dashboard preferences remain local; only P5-backed template share/review operations use real services |
 | Screenshots | `scripts/screenshot.js` uses Node Playwright, route discovery and a desktop viewport; it does not set up a signed-in session |
 
-The README reports completed public-page and dashboard design work. Those pages remain React implementations; their redesign does not complete a Python phase. The `/documentation` page describes a target schema architecture that the runtime has not implemented.
+The original React/Vite/Express app is preserved as a source/reference runtime, while the P7 route manifest is served through the Django path. This establishes local ownership, not production cutover or full P9 release acceptance. The `/documentation` page describes a target architecture and does not itself prove that every described capability is shipped.
 
 The earlier audit identifies ElevenLabs code and an alternate transcription route as unused. Verify actual imports and mounted routes before a future port; file presence does not prove a working integration.
 
@@ -141,7 +145,7 @@ The screenshot script discovers routes from `App.tsx`; its fallback omits `/open
 
 ## 7. P1 final review and acceptance
 
-P1 is finalized with owner-accepted exceptions. [P1_ACCEPTANCE.md](docs/parity/P1_ACCEPTANCE.md) records the exact scope, checks and phase assignments. The [P1 brief](docs/parity/P1_IMPLEMENTATION_PROMPT.md), [P2 brief](docs/foundation/P2_IMPLEMENTATION_PROMPT.md) and [P3 brief](docs/services/P3_IMPLEMENTATION_PROMPT.md) are archived; root prompt.md now specifies P5a/P5b. P4 scope is archived in docs/auth/P4_IMPLEMENTATION_PROMPT.md.
+P1 is finalized with owner-accepted exceptions. [P1_ACCEPTANCE.md](docs/parity/P1_ACCEPTANCE.md) records the exact scope, checks and phase assignments. Executed P1–P6 and [P7/P8 briefs](docs/pages/P7_P8_IMPLEMENTATION_PROMPT.md) are archived; root [prompt.md](prompt.md) prepares combined P7/P8 closure following the dated review.
 
 The reviewed harness, guarded seeder, capture/comparison tooling, tests and CI live in migration/parity/ and .github/. The manifest accepts all 25 current routes and Q21 retains /activitylog. All 24 existing desktop PNGs were inventoried and visually reviewed; /open and mobile references are absent. Four application images show login, one shows loading and one shows an error. They are accepted historical manual references, not successful authenticated goldens. Numeric tolerances remain proposals. Originals were preserved.
 
@@ -171,10 +175,11 @@ No legacy source fixes, secret-history recovery, commits or deployments were per
 | P3 | Code findings corrected; live-provider evidence remains open | [P3 review](docs/services/P3_REVIEW.md) and [P3 report](docs/services/P3_REPORT.md); keep live speech checks for later voice/P9 verification |
 | P4 | Development Auth accepted by owner; separate credential-retirement approval pending | [P4 report](docs/auth/P4_REPORT.md); fresh hosted account, HTMX, PostgreSQL and regression proof; no SMTP/legacy-identity gate |
 | P5a | Baseline/reconciliation implemented and applied; isolated baseline, empty-target remediation, idempotence and native RLS checks passed | Hosted target inventory is refreshed; current hosted schema-only dump is unavailable under the restricted runtime role |
-| P5b | Django profiles/templates/shares/reviews/scheduling/filled-form/Storage services implemented; hosted direct-host probe passed | Shared transaction-pooler identity/user-switch proof is still required; keep P5 partial |
-| P6 | Not started | P2 |
-| P7 W1-W7 | Not started | Wave-specific dependencies |
-| P8 | Not started | P3/P6; complete before W7 |
+| P5b | Complete | Hosted shared-pooler probe, A/B/A identity/data isolation, cleanup and local checks passed; see P5 evidence |
+| P6 | Implemented; W1 closed both review findings | [Review](docs/rendering/P6_REVIEW.md) records R1/R2 disposition; [P6 report](docs/rendering/P6_REPORT.md) retains original delivery evidence |
+| P7 W1 | Complete; R1–R4 review corrections closed | Eleven public pages; dated dispositions in [review](docs/pages/P7_W1_REVIEW.md); W1 snapshot fallback 10 |
+| P7 W2-W7 | Local route delivery implemented; acceptance incomplete | All 25 owners local and fallback zero; missing comparison/flow/timezone/integration gates in [dated review](docs/pages/P7_REVIEW_2026-10-12.md) |
+| P8 | Implemented; repair and closeout required | 12 historical fake-media checks passed, but reproduced races and missing actual-page/lifecycle/codec/checklist proof remain; see [review](docs/services/P8_REVIEW_2026-10-12.md) |
 | P9 | Not started | Full gate after page waves; P1 harness is the starting point |
 | P10 | Not started | Full parity, deployment access and rollback agreement |
 | P11 | Not started | P10 soak and zero transitional usage evidence |
@@ -191,20 +196,20 @@ The P4 implementation retains a functional persistent-sign-in choice with a 14-d
 
 Before P5, repository DDL was missing for template_shares, template_reviews and filled_templates, and the linked development target had no public app tables or Storage bucket. That says nothing about any historical source project. P5 now records new development contracts, applies a fresh baseline/reconciliation, and preserves historical migrations. Do not treat the newly created contracts as recovered legacy DDL or use personal dump rows as fixtures.
 
-The app historically referenced template-files and public URLs. P5 created the private `template-files` bucket and policies and verified hosted owner/shared-recipient access, including revocation. P2 created only restricted roles and Django-owned state; public schema/Storage changes belong to P5 and are now recorded in the P5 report. Hosted pooler semantics remain unverified.
+The app historically referenced template-files and public URLs. P5 created the private `template-files` bucket and policies and verified hosted owner/shared-recipient access, including revocation. P2 created only restricted roles and Django-owned state; public schema/Storage changes belong to P5 and are now recorded in the P5 report. P5's hosted shared-pooler identity, transaction-cleanup and connection-reuse checks passed as recorded in the closure evidence.
 
 ## 10. Sources and conflicts
 
 | Source | Role |
 |---|---|
-| Current session | Owner-reported P0 completion; P1 exceptions accepted; P2 implemented/reviewed; P3 implementation authorized and underway |
+| Current session | Review corrected full-completion claims; fresh 145 tests/Django check pass, media bugs reproduced; dated handoff and P8 prompt prepared |
 | `docs/python-migration-plan.md` | Detailed target, phases, questions and wave order; revision history includes v0.3 |
 | `docs/security-remediation.md` | Historical P0 changes and operator blockers; local-cleanliness claim superseded by merge evidence |
 | `docs/p0-evidence/*.json` | Historical sanitized scan results |
 | `README.md` | Project/UI history and recorded environment limitation; runtime claims need evidence |
 | `docs/tables.md` | Historical migration/schema audit; inferred fields are not verified live DDL |
-| Previous root `prompt.md` | P1/P2/P3 scopes archived under their evidence folders; current root prompt specifies P5; P4 scope archived under docs/auth |
-| `docs/prompt.md` | Pointer to prepared root prompt and archived scope; no separate execution authority |
+| Root `prompt.md` | Prepared complete P7/P8 closure, then P9 prompt preparation; original all-wave brief archived under docs/pages/ |
+| `docs/prompt.md` | Current review, handoff, prompt and historical evidence index |
 | `.commandcode/taste/taste.md` | Empty template; no migration requirements |
 | Current routes, package/config/server/screenshot/activity files | Runtime and tooling evidence |
 
@@ -212,7 +217,9 @@ The old long plan contains stale headings and conflicting instructions. The [cor
 
 ## 11. Handoff and updates
 
-P2 is complete/reviewed. P3 code corrections pass; the owner accepted P4 development authentication; see [P4_REPORT.md](docs/auth/P4_REPORT.md). Fresh hosted signup/login/session/refresh/password-change/logout, real HTMX browser and PostgreSQL concurrency passed. SMTP/legacy-account compatibility is outside the revised scope. Exposed-key retirement awaits separate approval. P5 schema, private Storage and Django services are implemented; 90 regression tests, Django checks, native PostgreSQL RLS/idempotence proof and the hosted direct-connection probe pass. P5 remains partial until the pooler user-switch proof is completed. Preserve original source/reference folders. See [P5_REPORT.md](docs/data/P5_REPORT.md) and [prompt.md](prompt.md). Do not proceed to P6/P7 under this P5 implementation handoff.
+The P6 findings and W1 R1–R4 remain closed. Fresh review passed 145 isolated tests and Django check. Prior mypy/Ruff/JS/static checks, 50 captures/14 interactions, 12 isolated fake-media checks and hosted W5/W6 cleanup evidence remain retained, but do not close the new [P7](docs/pages/P7_REVIEW_2026-10-12.md)/[P8](docs/services/P8_REVIEW_2026-10-12.md) findings. The [dated handoff](HANDOFF_2026-10-12_020354_IST.md) distinguishes new checks from historical execution evidence.
+
+P2–P6 completion evidence and P1 accepted exceptions remain as previously recorded. P3 live speech evidence, P4 recovery email/production policy and credential follow-up remain separate. Preserve original source/reference folders through P9 and the P10 soak; P11 retirement needs its own gate.
 
 Future updates must record:
 

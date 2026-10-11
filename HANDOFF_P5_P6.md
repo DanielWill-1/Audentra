@@ -1,26 +1,48 @@
-# Session handoff: finish P5, then prepare P6
+# Session handoff: P5/P6 delivered; P7/P8 complete
+
+**Superseded current status — 2026-10-12 02:03:54 IST:** Preserve the history below, but earlier unconditional P7/P8 completion claims are superseded by the [dated handoff](HANDOFF_2026-10-12_020354_IST.md), [P7 review](docs/pages/P7_REVIEW_2026-10-12.md) and [P8 review](docs/services/P8_REVIEW_2026-10-12.md). Root prompt.md now prepares P8 repair; the [executed all-wave brief](docs/pages/P7_P8_IMPLEMENTATION_PROMPT.md) is archived.
 
 **Recorded:** 2026-10-11  
+**Updated:** 2026-10-12 (complete P7/P8 execution and aggregate verification)
 **Repository:** VoiceForm / Audentra  
 **Workspace:** `C:\Users\danie\OneDrive\Documents\GitHub\voiceform\VoiceForm`  
-**HEAD at handoff:** `b66efbb`  
-**Current status:** P5 implementation and direct-host verification passed; P5 remains partial. P6 has not started.  
-**Scope of this document:** Session history and continuation through P6 only.
+**HEAD at original handoff:** `b66efbb`
+**HEAD at start of P7/P8 execution:** `acba9564752f1c121b81d17f59fca4d3f2b9b0f8`; preserve the pre-existing dirty working tree.
+**Current status:** P5/P6/P7/P8 are delivered. P7 now owns all 25 route-manifest paths locally with zero normal legacy fallbacks, and W1 review findings R1–R4 are closed. The full seven-wave/P8 execution, hosted W5/W6 route check, and aggregate verification are documented in [P7_REPORT.md](docs/pages/P7_REPORT.md) and [P7_VERIFICATION.md](docs/pages/P7_VERIFICATION.md).
+**Scope of this document:** P5/P6 history and the latest P7/P8 completion handoff. P9 parity/release acceptance, P10 deployment/soak, and P11 legacy retirement remain separate.
+
+## P7/P8 completion handoff — 2026-10-12
+
+The executed [root prompt](prompt.md) covers all seven P7 waves and the separate P8 media bridge. The final [route inventory](docs/pages/P7_ROUTE_OWNERSHIP.json) resolves every manifest route to its registered Django URL name/view and records the effective fallback progression 10 → 8 → 8 → 7 → 6 → 3 → 0. Per-wave reports, verification, assets, ownership snapshots, screenshots, and source captures remain under `docs/pages/`.
+
+The final verification passed 145 Django tests, Django's system check, mypy over 92 files, Ruff, JavaScript syntax checks, pinned Tailwind build/token validation, and `collectstatic`. Browser evidence covers 50 desktop/mobile captures and 14 interactions; P8 passed 12 fake-media checks. A hosted shared-pooler Django route run passed 11 W5 sharing checks plus four W6 schedule persistence/export/delete checks using three synthetic accounts; zero emails were sent and exact fixture cleanup passed.
+
+P9 still owns physical-device/live-provider evidence and full parity/release acceptance. P7 did not perform a route-level Storage transfer; P5's hosted service/RLS checks remain the evidence for private-file access and cleanup. P10/P11, production Auth decisions, recovery email, OAuth, and credential follow-up remain open. No commit, push, deployment, Docker operation, or broad data cleanup was performed.
 
 ## 1. Read this first
 
-The next session should finish the remaining P5 transaction-pooler evidence. It should not rebuild the schema, repeat the completed service migration, reopen accepted development authentication, or silently start P6. Once P5 closes, prepare a bounded P6 implementation brief and implement it when the owner requests that work.
+P5 and P6 are complete; do not reopen their accepted scope. P7/P8 are also complete under the owner's all-wave authorization. Use the aggregate verification above as the current handoff; the original 2026-10-11 W1-only status below is historical.
 
-This handoff records earlier work from the session and its reports. Creating this file did not rerun tests, make hosted changes, or implement P6. The results below are dated execution evidence, not newly repeated checks.
+This handoff retains the historical P5 closure evidence and links the later P6 execution evidence. The P6 report records its checks, browser captures and build limitation.
+
+### Follow-up closure work
+
+At the first closure checkpoint on 2026-10-11, local configuration still used the direct database host, the browser-control session could not initialize, and no hosted pooler probe had run. That checkpoint is historical and is superseded by the completion record below.
+
+The probe distinguishes configured mode from behavioral verification, validates the project-scoped restricted login, and includes A/B/A role/claims and private-template checks, transaction-entry cleanup observations, forced SQL-error rollback, context-guard checks, and Django client/backend observations. Transaction mode disables Psycopg prepared statements and session startup search-path options; the fixed health probe now sets its search path inside a transaction. Follow-up checks passed: 95 pytest tests, Django check, focused mypy across 60 source files and Ruff. The prior direct-host result is preserved separately in `docs/data/P5_HOSTED_RESULTS_DIRECT.json`.
+
+### P5 closure completion (2026-10-11)
+
+The hosted probe passed through the shared transaction pooler using the restricted `django_data.<project-ref>` login. All 65 checks passed, including A/B/A verified role/claims and private-template isolation, transaction-entry cleanup, forced SQL-error rollback and recovery, and Django client connection reuse. Three synthetic accounts were created and deleted, no emails were sent, and `cleanup_ok` is true. Sanitized observations are in [P5_HOSTED_RESULTS.json](docs/data/P5_HOSTED_RESULTS.json); the earlier direct-host result remains archived separately. P5 is complete.
 
 Read these in order:
 
 1. Latest owner instructions, then this handoff.
 2. [MIGRATION_STATE.md](MIGRATION_STATE.md) for current status and [MIGRATION_PLAN.md](MIGRATION_PLAN.md) for authoritative scope/gates.
-3. [prompt.md](prompt.md), which remains the active P5 brief.
+3. Root [prompt.md](prompt.md) and the aggregate [P7 report](docs/pages/P7_REPORT.md)/[verification](docs/pages/P7_VERIFICATION.md) for completed P7/P8, [P7_W1_REVIEW.md](docs/pages/P7_W1_REVIEW.md) for dated R1–R4 dispositions, and the per-wave reports/assets/evidence for detail. [Archived P6 scope](docs/rendering/P6_IMPLEMENTATION_PROMPT.md), [P6_REPORT.md](docs/rendering/P6_REPORT.md), [P6_VERIFICATION.md](docs/rendering/P6_VERIFICATION.md) and [P6_REVIEW.md](docs/rendering/P6_REVIEW.md) retain P6 evidence and finding closure. The completed P5 brief is archived as [P5_CLOSURE_PROMPT.md](docs/data/P5_CLOSURE_PROMPT.md).
 4. [P5_REPORT.md](docs/data/P5_REPORT.md), [P5_VERIFICATION.md](docs/data/P5_VERIFICATION.md), and [P5_HOSTED_RESULTS.json](docs/data/P5_HOSTED_RESULTS.json).
 5. [P5_CONTRACTS.md](docs/data/P5_CONTRACTS.md), [P5_RLS_MATRIX.md](docs/data/P5_RLS_MATRIX.md), and [schema reconciliation](docs/schema-reconciliation.md).
-6. For P6 preparation, [P1 acceptance](docs/parity/P1_ACCEPTANCE.md), [route manifest](docs/parity/route-manifest.json), [flow inventory](docs/parity/flows.md), and [Django README](migration/django/README.md).
+6. For P6/P7 routing and design context, use [P1 acceptance](docs/parity/P1_ACCEPTANCE.md), [route manifest](docs/parity/route-manifest.json), [flow inventory](docs/parity/flows.md), [Django README](migration/django/README.md) and the current P6 evidence linked above.
 
 Older reports describe the situation when written. For example, P3's initial report retained unresolved code findings that its later review closed, and early schema inventories correctly described the pre-P5 empty target. Use the newer review/current inventory when interpreting those records.
 
@@ -48,10 +70,10 @@ Older reports describe the situation when written. For example, P3's initial rep
 | P3 | Code corrections closed; live evidence outstanding | Speech/extraction service contracts and reviewed mock regressions pass. Live provider/device/browser speech parity has not been established. Owner selected Groq GPT OSS 120B. |
 | P4 | Development Auth accepted | Fresh signup/login/session/refresh/password change/logout, HTMX, CSRF/protected routes, and PostgreSQL race checks passed. Credential retirement and email recovery remain separate limitations. |
 | P5a | Implemented and applied | New development schema, private Storage configuration/policies, fresh baseline, guarded remediation, catalog and native reconciliation evidence. No complete current hosted SQL dump. |
-| P5b | Implemented; partial acceptance | Profiles/templates/shares/reviews/schedules/filled forms/Storage services and direct-host verification pass. Hosted transaction-pooler isolation proof remains open. |
-| P6 | Not started | Shared Django rendering shell, fragments/static pipeline, and explicit legacy fallback. No product page migration is claimed. |
+| P5b | Complete | Profiles/templates/shares/reviews/schedules/filled forms/Storage services and hosted shared-pooler isolation verification pass. |
+| P6 | Implemented and reviewed | Shared shells/fragments/static and controlled fallback delivered; W1 closed the portable-test and malformed-redirect findings. |
 
-The roadmap's architectural entry to P6 is P2 plus P1 manifest/design references. The active session handoff nevertheless requires closing P5 first; architectural independence does not authorize expanding the current P5 task.
+The roadmap's architectural entry to P6 was P2 plus P1 manifest/design references. The session's additional P5 gate is closed, and P6 implementation is complete within the shared-shell/fallback scope.
 
 ## 4. Earlier session work to preserve
 
@@ -142,9 +164,9 @@ The session produced or refreshed P5 contracts, decisions, RLS matrix, target in
 
 | Verification | Recorded result | Qualification |
 |---|---|---|
-| Isolated Django pytest | **90 passed** | Native Windows Python 3.12; no hosted test database creation/flush |
+| Isolated Django pytest | **95 passed** | Latest P5 closure rerun; native Windows Python 3.12; no hosted test database creation/flush |
 | `manage.py check` | Passed | Test settings, no issues |
-| Focused mypy | Passed, 59 source files | `apps scripts/check_p5_hosted_data.py` |
+| Focused mypy | Passed, 60 source files | Latest P5 closure run: `apps scripts/check_p5_hosted_data.py` |
 | Focused Ruff | Passed | Same P5/app selection |
 | `git diff --check` | Passed | CRLF warnings were informational |
 | Broad `mypy apps scripts` | Not clean | 19 existing type findings in `check_p4_postgres_concurrency.py` and `check_p4_hosted_auth.py`; do not claim full broad typing success |
@@ -153,10 +175,10 @@ The session produced or refreshed P5 contracts, decisions, RLS matrix, target in
 | Baseline/remediation equivalence | Passed | Normalized schema-only dumps from separate scratch databases matched |
 | Native RLS matrix | Passed on both schema paths | Owner/viewer/editor/admin/unrelated/review/object assertions; synthetic DML rolled back |
 | Django RLS scratch | Passed | Verified identity, query guard, same-user nesting, rejected nested user switch, rollback |
-| Hosted P5 probe | **53 checks passed** | Existing development target, **direct PostgreSQL connection** |
-| Hosted transaction pooler | **Not verified** | Exact pooler URL absent; remains the P5 gate |
+| Earlier hosted P5 probe | **53 checks passed** | Existing development target, direct PostgreSQL connection; preserved as historical evidence |
+| Final hosted P5 probe | **65 checks passed** | Shared transaction pooler; restricted project-scoped login; A/B/A isolation and rollback/recovery passed |
 
-Latest hosted result: three generated accounts created and deleted, zero emails, `cleanup_ok: true`, `database_host_mode: "direct host"`, `pooler_verified: false`. The final cleanup counter for Storage is zero because replacement/deletion checks had already removed the test objects; it does not mean Storage was untested.
+Latest hosted result: three generated accounts created and deleted, zero emails, `cleanup_ok: true`, `database_host_mode: "shared transaction pooler"`, `pooler_verified: true`. The final cleanup counter for Storage is zero because replacement/deletion checks had already removed the test objects; it does not mean Storage was untested.
 
 The sandbox initially denied a connection before any generated accounts were created. The same authorized synthetic probe passed with approved network access. If this repeats, distinguish environment connection denial from an application regression. Do not bypass an automatic-review rejection.
 
@@ -172,7 +194,9 @@ Native `pg_dump --schema-only` reached hosted PostgreSQL with `django_data` but 
 
 New databases created for the final scratch baseline/remediation comparisons were removed. An earlier native loopback cluster / `p5_rls` scratch database may still exist; this handoff does not claim all PostgreSQL processes were stopped. Native PostgreSQL 18.4 stubs are not a full Supabase 17.6 restore and cannot establish hosted pooler or CDN behavior.
 
-## 7. What remains to finish P5
+## 7. Historical P5 closure runbook (completed)
+
+This section preserves the pre-closure procedure. Its missing-configuration statements are historical: the 65-check shared-pooler run passed, cleanup succeeded and P5 is closed. Do not execute it as a pending task; use the current status and hosted evidence above.
 
 **Required gate:** Prove verified claims/role isolation, user switching, and transaction cleanup on the real Supabase shared transaction pooler.
 
@@ -187,7 +211,7 @@ The deleted tracked `.temp/pooler-url` belonged to an older project link. Do not
 1. Read the brief/contracts and inspect current local configuration without printing secrets. Preserve the dirty working tree.
 2. Obtain/configure the exact shared transaction-pooler endpoint; confirm project consistency, restricted data role, and transaction rather than session/direct mode.
 3. Use a fresh shell or clear any scratch `DJANGO_SUPABASE_DATABASE_URL` override so it cannot mask `.env`. Never point the hosted probe at `127.0.0.1:49518/p5_rls`.
-4. Inspect `check_p5_hosted_data.py` before relying on it: its current `pooler_verified` value is derived from hostname suffix and port. That flag alone is not behavioral proof.
+4. Review the strengthened `check_p5_hosted_data.py`: configured pooler mode is separate from its behavioral result. Confirm `pooler_verified` can only become true after identity/claims, A/B/A private-row, transaction cleanup, rollback, client-reuse and generated-resource cleanup checks pass.
 5. Run the existing fresh-account hosted probe over the real pooler. Verify generated-resource cleanup and all previously passing role/data/Storage boundaries.
 6. Ensure the hosted evidence explicitly covers A → B → A verified identity changes through reused client connections, `current_user`/`auth.uid()`/claims for each transaction, and isolation after a forced rollback/error. Add bounded hosted checks if the present probe does not demonstrate these. Record connection reuse/transaction boundaries honestly; do not infer a backend assignment from the URL.
 7. Check transaction-local role/claims do not survive commit/rollback or leak into the next principal. Preserve unverified-principal and nested-user-switch rejection.
@@ -197,7 +221,7 @@ The deleted tracked `.temp/pooler-url` belonged to an older project link. Do not
 
 `check_p5_rls_scratch.py` intentionally refuses anything except its exact native scratch URL. Do not remove that safeguard or run its fabricated identities against hosted Supabase. Hosted evidence must use freshly authenticated synthetic accounts.
 
-One probe detail to review when changing connection mode: the current hosted script compares the configured data-alias username literally with `django_data`. A shared-pooler login may include the project suffix. If that assertion needs adapting, validate the exact approved pooler login and actual restricted database role; do not remove the role check or substitute a privileged account.
+Historical probe issue resolved during closure: the script now validates the exact project-scoped pooler login and actual restricted database role. It no longer requires a pooler username to equal the unsuffixed direct-host login.
 
 ### Commands already used successfully
 
@@ -258,7 +282,7 @@ Original files remain for reference. Their historical React data contracts may d
 
 Build reusable Django public/application rendering shells and shared fragments, with explicit routing back to existing legacy pages. Preserve the site's established design and allow comparisons while migration continues.
 
-Required inputs: P2 foundation, P1 route manifest/design references, existing assets/tokens, and an authorized P6 execution brief. Under the current session sequence, finish the P5 pooler gate first. Do not overwrite root `prompt.md` with P6 as part of this handoff-only request.
+Required inputs were the P2 foundation, P1 route manifest/design references and existing assets/tokens. P5's pooler gate is closed. The owner subsequently authorized P6 implementation under the [archived P6 brief](docs/rendering/P6_IMPLEMENTATION_PROMPT.md); implementation/review evidence is linked above.
 
 ### Implementation work to include in the future P6 prompt
 
@@ -299,19 +323,21 @@ $env:DJANGO_SETTINGS_MODULE = 'config.settings.dev'
 & $storePython manage.py runserver 127.0.0.1:8000
 ```
 
-Implemented UI is the development Auth/protected account interface: `/signup/`, `/login/`, `/auth/session/`, `/change-password/`; `/healthz` reports health. Speech/extraction API routes also exist. Product pages are not yet ported, and P6 fallback is not implemented. A root-level `python manage.py` failure is a working-directory issue.
+At the original P6 handoff, implemented UI included the development Auth/protected account interface (`/signup/`, `/login/`, `/auth/session/`, `/change-password/`), shared P6 public/app shells, synthetic shell previews and the controlled legacy fallback. `/healthz` reports health, and speech/extraction API routes remain Django-owned. P7 W1 later migrated eleven public page bodies; the remaining waves are still pending. A root-level `python manage.py` failure is a working-directory issue.
 
 For shell styling, use the existing `migration/django/scripts/build_static.ps1` and `check_static.py` workflow documented in the Django README. Inspect current scripts before extending them. Do not overwrite the legacy `dist/client` or historical screenshots to prove Django shell work.
 
 ## 11. Working tree and operational cautions
 
-HEAD is `b66efbb`; substantial tracked modifications and untracked migration/documentation directories remain. No migration commit, push, deployment, or history rewrite was made in this P5 work. Some dirty files predate P5; do not attribute all of them to this session or reset them.
+At the original handoff HEAD was `b66efbb`. The P6 readiness review inspected `acba956` plus uncommitted P5 changes; preserve those changes together with the P6 implementation. No commit, push, deployment or history rewrite was made.
 
 Preserve ignored `.env` files, caches/environments, and local CLI metadata. Do not print passwords/tokens/admin keys or export real application rows/Auth identities/object payloads for a handoff. Sanitized catalog/check names and synthetic verification evidence are sufficient.
 
 Do not use `git clean`, broad delete, `db reset`, blind `db push`, original-folder moves, or privilege widening as a shortcut. A local scratch process or partial Docker cache is not a reason to perform unsolicited cleanup.
 
-## 12. Ready-to-use continuation prompts
+## 12. Historical continuation prompts
+
+These prompts describe the earlier sequence before P5 closed and are historical. The archived P6/W1 briefs and reports retain their executed scope. Root [prompt.md](prompt.md) records the completed seven-wave P7/P8 execution; use the aggregate [P7 report](docs/pages/P7_REPORT.md) and [verification](docs/pages/P7_VERIFICATION.md) for current status. [MIGRATION_PLAN.md](MIGRATION_PLAN.md) records the completion and separate P9–P11 gates.
 
 ### Next session: finish P5 only
 

@@ -42,7 +42,7 @@ def test_authenticated_password_change_is_csrf_protected_and_signs_out() -> None
             "/change-password/", values, HTTP_X_CSRFTOKEN=csrf, HTTP_HX_REQUEST="true"
         )
     assert changed.status_code == 200
-    assert changed["HX-Redirect"] == "/login/"
+    assert changed["HX-Redirect"] == "/login"
     assert not Session.objects.filter(session_key=old_key).exists()
     auth.return_value.update_password.assert_called_once_with(values["password"], ACCESS, REFRESH)
     logout_auth.return_value.sign_out_local.assert_called_once_with(ACCESS)

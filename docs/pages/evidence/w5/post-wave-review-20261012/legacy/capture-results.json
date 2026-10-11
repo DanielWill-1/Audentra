@@ -1,0 +1,49 @@
+{
+  "captured_at": "2026-10-11T18:48:34.836Z",
+  "source": "Current React/Vite routes with intercepted Supabase Auth/PostgREST synthetic fixture responses",
+  "fixture_identity": "11111111-1111-4111-8111-111111111111 (non-hosted synthetic account)",
+  "fixture_data": "Patient intake template, schedule, and filled-form row; all requests to the dummy Supabase origin are intercepted",
+  "base_url": "http://127.0.0.1:15573",
+  "browser": "148.0.7778.96",
+  "waves": {
+    "w5": {
+      "wave": "W5",
+      "pages": [
+        {
+          "route": "/templates",
+          "viewport": {
+            "name": "desktop",
+            "width": 1440,
+            "height": 900
+          },
+          "response_status": 200,
+          "url": "/templates",
+          "title": "Audentra — Open-source voice-to-structured-data",
+          "heading": "Templates",
+          "document_width": 1440,
+          "viewport_width": 1440,
+          "console_errors": [],
+          "failed_requests": [],
+          "screenshot": "templates-desktop.png"
+        },
+        {
+          "route": "/templates",
+          "viewport": {
+            "name": "mobile",
+            "width": 390,
+            "height": 844
+          },
+          "response_status": 200,
+          "url": "/templates",
+          "title": "Audentra — Open-source voice-to-structured-data",
+          "heading": "Templates",
+          "document_width": 665,
+          "viewport_width": 390,
+          "console_errors": [],
+          "failed_requests": [],
+          "screenshot": "templates-mobile.png"
+        }
+      ]
+    }
+  }
+}

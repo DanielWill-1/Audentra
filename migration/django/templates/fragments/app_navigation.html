@@ -1,0 +1,31 @@
+{% load static %}
+<nav class="flex-1 space-y-1 overflow-y-auto px-3 py-4" aria-label="Workspace">
+  <p class="px-3 pb-1 font-label-code text-[11px] uppercase tracking-wider text-text-muted">Workspace</p>
+  <a class="app-nav-link" href="/dashboard" {% if active_route == '/dashboard' %}aria-current="page"{% endif %}>
+    {% include "fragments/icon.html" with name="home" %}<span>Home</span>
+  </a>
+  <a class="app-nav-link" href="/AIVoiceAutoFill" {% if active_route == '/AIVoiceAutoFill' %}aria-current="page"{% endif %}>
+    {% include "fragments/icon.html" with name="mic" %}<span>Forms</span>
+  </a>
+  <a class="app-nav-link" href="/filledtemplates" {% if active_route == '/filledtemplates' %}aria-current="page"{% endif %}>
+    {% include "fragments/icon.html" with name="file-text" %}<span>Filled forms</span>
+  </a>
+  <a class="app-nav-link" href="/templates" {% if active_route == '/templates' %}aria-current="page"{% endif %}>
+    {% include "fragments/icon.html" with name="grid" %}<span>Templates</span>
+  </a>
+  <a class="app-nav-link" href="/activitylog" {% if active_route == '/activitylog' %}aria-current="page"{% endif %}>
+    {% include "fragments/icon.html" with name="activity" %}<span>Activity</span>
+  </a>
+  <a class="app-nav-link" href="/scheduler" {% if active_route == '/scheduler' or active_route == '/manage-schedules' or active_route == '/scheduler-settings' %}aria-current="page"{% endif %}>
+    {% include "fragments/icon.html" with name="clock" %}<span>Scheduler</span>
+  </a>
+  <a class="app-nav-link" href="/dashboard#team">{% include "fragments/icon.html" with name="users" %}<span>Team</span></a>
+  <div class="my-3 h-px bg-border" aria-hidden="true"></div>
+  <a class="app-nav-link" href="/dashboard#settings" {% if active_route == '/dashboard' %}aria-current="location"{% endif %}>{% include "fragments/icon.html" with name="settings" %}<span>Settings</span></a>
+  <div class="my-3 h-px bg-border" aria-hidden="true"></div>
+  <p class="px-3 pb-1 font-label-code text-[11px] uppercase tracking-wider text-text-muted">Resources</p>
+  <a class="app-nav-link" href="https://github.com/DanielWill-1/Audentra" target="_blank" rel="noopener noreferrer">
+    {% include "fragments/icon.html" with name="github" %}<span>GitHub</span>{% include "fragments/icon.html" with name="external" class_name="ml-auto h-3.5 w-3.5 text-text-muted" %}
+  </a>
+  <a class="app-nav-link" href="/documentation">{% include "fragments/icon.html" with name="book" %}<span>Documentation</span></a>
+</nav>

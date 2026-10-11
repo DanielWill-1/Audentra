@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}{% block page_title %}Audentra{% endblock %}{% endblock %}
+{% block body %}
+  {% include "fragments/public_header.html" %}
+  <main id="main-content" tabindex="-1">
+    {% block content %}{% endblock %}
+  </main>
+  {% include "fragments/public_footer.html" %}
+  {% include "fragments/modal.html" %}
+  <script src="{% static 'js/pages.js' %}" defer></script>
+{% endblock %}

@@ -1,8 +1,8 @@
 # Migration plan and scope controls
 
 **Version:** 2.1
-**Updated:** 2026-10-11  
-**Current task:** P5 implementation and evidence closure. P5 remains partial until hosted transaction-pooler user-switch proof passes.
+**Updated:** 2026-10-12
+**Current task:** Owner-requested combined P7/P8 closure prompt prepared 2026-10-12 02:19:14 IST. All 25 route paths have local owners and fallback zero, but acceptance/repair remains open. Root [prompt.md](prompt.md) now closes all remaining P7/P8 requirements before preparing the P9 brief. See the [dated handoff](HANDOFF_2026-10-12_020354_IST.md), [P7 review](docs/pages/P7_REVIEW_2026-10-12.md) and [P8 review](docs/services/P8_REVIEW_2026-10-12.md). No repairs were executed by this update; P9 execution/P10/P11 remain separate.
 
 **Owner scope revision:** The owner's 2026-10-11 request replaces the earlier SMTP/legacy-account/React compatibility gates. Supabase Python SDK + Django + HTMX signup/login/session/refresh/password-change/logout passed against fresh hosted accounts. The project remains development-only and signup confirmation is disabled with authorization; email recovery is separate.
 
@@ -11,7 +11,10 @@
 **Completed P2 brief:** [P2_IMPLEMENTATION_PROMPT.md](docs/foundation/P2_IMPLEMENTATION_PROMPT.md)
 **Archived P3 brief:** [P3_IMPLEMENTATION_PROMPT.md](docs/services/P3_IMPLEMENTATION_PROMPT.md)
 **Archived P4 scope and execution record:** [P4_IMPLEMENTATION_PROMPT.md](docs/auth/P4_IMPLEMENTATION_PROMPT.md), [P4_REPORT.md](docs/auth/P4_REPORT.md)
-**Active P5 brief:** [prompt.md](prompt.md) — bounded schema, Storage and Django data/RLS handoff; implementation is in place, pooler gate pending
+**Archived P5 closure brief:** [P5_CLOSURE_PROMPT.md](docs/data/P5_CLOSURE_PROMPT.md) — hosted shared transaction-pooler gate passed; P5 is complete
+**P6 implementation evidence:** [archived brief](docs/rendering/P6_IMPLEMENTATION_PROMPT.md), [report](docs/rendering/P6_REPORT.md), [verification](docs/rendering/P6_VERIFICATION.md), [review](docs/rendering/P6_REVIEW.md), [route ownership](docs/rendering/P6_ROUTE_OWNERSHIP.json), [asset inventory](docs/rendering/P6_ASSET_INVENTORY.md), [rollback](docs/rendering/P6_ROLLBACK.md)
+**P7 W1 result:** The [W1 report](docs/pages/P7_W1_REPORT.md), [verification](docs/pages/P7_W1_VERIFICATION.md), [review](docs/pages/P7_W1_REVIEW.md), [asset provenance](docs/pages/P7_W1_ASSETS.md) and [route ownership](docs/pages/P7_W1_ROUTE_OWNERSHIP.json) record the delivered wave. Its [executed brief](docs/pages/P7_W1_IMPLEMENTATION_PROMPT.md) is archived.
+**P7/P8 execution and review:** The [executed master brief](docs/pages/P7_P8_IMPLEMENTATION_PROMPT.md) is archived. Reports/evidence remain intact, but their unconditional completion claim is superseded by the dated reviews above. Root [prompt.md](prompt.md) prepares complete P7/P8 closure before P9. P8 is a separate prerequisite, not W8.
 **P3 evidence:** [P3_REPORT.md](docs/services/P3_REPORT.md), [P3_CONTRACTS.md](docs/services/P3_CONTRACTS.md), [P3_REVIEW.md](docs/services/P3_REVIEW.md)
 **P2 evidence:** [P2_REPORT.md](docs/foundation/P2_REPORT.md), [P2_REVIEW.md](docs/foundation/P2_REVIEW.md)
 
@@ -70,7 +73,7 @@ Before a future implementation, record a bounded brief:
 | Item | Required content |
 |---|---|
 | Authorization | User instruction permitting the phase and any external/destructive step |
-| Objective | One phase or P7 wave with a concrete result |
+| Objective | A concrete phase/wave result, or all packages explicitly included in the owner's master brief |
 | Entry gates | Upstream completion and required decision evidence |
 | Files | Exact existing paths and proposed new files/directories |
 | Behavior | Flows to preserve and accepted intentional differences |
@@ -78,7 +81,7 @@ Before a future implementation, record a bounded brief:
 | Recovery | Code/traffic rollback, or operator recovery for a history change |
 | Stop conditions | Missing access, unresolved choice or required scope expansion |
 
-Map changed files to the brief. Record unrelated bugs in a backlog. Finish independent authorized work when a gate blocks dependent work. One completed phase does not authorize the next. Use one phase per branch and one P7 wave per reviewable change as the existing plan specifies.
+Map changed files to the brief. Record unrelated bugs in a backlog. Finish independent authorized work when a gate blocks dependent work. Completion alone does not authorize another phase. The owner's full P7/P8 brief superseded separate-wave approval stops; its execution evidence is preserved, with acceptance gaps identified by the 2026-10-12 review. This does not authorize P9–P11.
 
 Preserve user changes. Dependency overlap does not authorize additional phases, background work or remote writes.
 
@@ -234,7 +237,7 @@ The repair proposal is limited to the P0 paths, history, scanner gate and incide
 
 ### P5a: schema reconciliation
 
-**Entry:** P2, safe Supabase environment, recorded new-development contracts for absent objects and artifact/config authorization. Product decisions precede schema additions for deferred features. The [P5 brief](prompt.md) bounds native Windows/no-Docker verification.
+**Entry:** P2, safe Supabase environment, recorded new-development contracts for absent objects and artifact/config authorization. Product decisions precede schema additions for deferred features. The [archived P5 closure brief](docs/data/P5_CLOSURE_PROMPT.md) records native Windows/no-Docker verification bounds.
 
 **Scope:** Sanitized schema reference, historical replay, classified deltas/data shape, fresh-install baseline and separate guarded live remediation. Verify tables, policies and Storage configuration instead of inferring them from client types.
 
@@ -252,7 +255,7 @@ The repair proposal is limited to the P0 paths, history, scanner gate and incide
 
 **Exit:** Policy-specific owner/non-owner matrix, rejection outside RLS context, alias isolation, pooler/user-switch checks, Storage round trips and differential CRUD. Preserve verified participant access for shared/review records.
 
-**P5 status:** Profile/template/share/review/scheduler/filled-form/Storage services are implemented. The hosted direct-connection probe and native RLS/query-guard tests pass. P5b remains partial until the hosted transaction pooler is configured and the hosted probe confirms claims and user switching over that pooler. See [P5_VERIFICATION.md](docs/data/P5_VERIFICATION.md).
+**P5 status:** Profile/template/share/review/scheduler/filled-form/Storage services are implemented. The hosted direct-connection run is archived; the final shared transaction-pooler run passed 65 checks with the project-scoped restricted login, A/B/A claims and private-row isolation, transaction cleanup, forced rollback/recovery, client reuse and exact cleanup. Transaction-mode settings disable prepared statements and use transaction-local search paths. P5a/P5b and overall P5 are complete. See [P5_VERIFICATION.md](docs/data/P5_VERIFICATION.md) and [P5_HOSTED_RESULTS.json](docs/data/P5_HOSTED_RESULTS.json).
 
 **Limits:** No schema/policy redesign. Resolve necessary schema expansion before coding it.
 
@@ -268,7 +271,7 @@ The repair proposal is limited to the P0 paths, history, scanner gate and incide
 
 ### P7: seven page waves
 
-Each wave needs its own authorized file/route brief, preserved flows, differences and comparisons before advancing.
+The [archived master brief](docs/pages/P7_P8_IMPLEMENTATION_PROMPT.md) supplied route/file scope and preserved-flow defaults for W1–W7/P8. Routes are locally delivered; complete acceptance is open per the [dated P7 review](docs/pages/P7_REVIEW_2026-10-12.md). Keep comparison, UI/route, timezone and integrated voice gates in P7 rather than silently moving them to P9. New schema/product behavior remains outside this scope.
 
 | Wave | Routes | Entry dependencies |
 |---|---|---|
@@ -280,11 +283,13 @@ Each wave needs its own authorized file/route brief, preserved flows, difference
 | W6 | `/scheduler`, `/manage-schedules`, `/scheduler-settings` | W5/P5b; Q13/preferences |
 | W7 | `/AIVoiceAutoFill`, `/filledtemplates`, `/activitylog` if retained | W6/P8/P5b; Q21 |
 
-**Exit per wave:** Django serves its paths; fallback count decreases by wave size; content/visual/flow checks pass at both viewports without legacy browser auth; rollback works. Record expected legacy re-login for a protected route rollback.
+**Exit per wave:** Django serves its paths; effective fallback count decreases by newly migrated fallback pages; content/visual/flow checks pass at both viewports without legacy browser auth; rollback works. W3's four Auth routes were already excluded and do not decrease fallback count. Expected counts across P6/W1/W2/W3/W4/W5/W6/W7 are 21/10/8/8/7/6/3/0. Record expected legacy re-login for a protected route rollback.
 
 **Limits:** Build each wave in migration/django/ while preserving every original page/component in place through full migration verification and soak. Copy legal wording/design; no incidental product changes or per-wave deletion of reference source.
 
 ### P8: media bridge
+
+**Current review:** Existing bridge needs P8-R1–R6 repair/closeout; see [P8 review](docs/services/P8_REVIEW_2026-10-12.md) and root [prompt.md](prompt.md). The 12-check isolated fake-media result is retained; it does not cover the reproduced races or actual-page session integration.
 
 **Entry:** P3/P6; complete before W7.
 
@@ -385,7 +390,7 @@ Before expanding scope, record trigger, affected files/routes/data, necessity, a
 
 Each handoff reads state/plan/prompt, preserves completed work/user changes, refreshes stale evidence and executes only the authorized task. An old prompt cannot authorize a new phase.
 
-Current handoff: **P5 implementation is in place; hosted transaction-pooler verification is the remaining P5 gate.** [P5_REPORT.md](docs/data/P5_REPORT.md) records the six-table schema, private Storage policies, Django services, hosted direct-connection probe and native verification. P5 created new development contracts because the linked target had no application DDL; historical migrations remain unchanged. Preserve original folders. Put the exact `django_data` shared transaction-pooler URL from Supabase Dashboard → Connect into the ignored local environment and rerun the hosted probe; keep the URL private. Do not mark P5 complete until this passes. The next scoped work after P5 closure is P6; exposed-key retirement and P3 live speech evidence remain separate gates.
+Current handoff: **P5/P6 remain delivered; P7 routes are implemented with fallback zero, while P7 acceptance and P8 repairs remain open.** W1 R1–R4 remain closed. The [dated handoff](HANDOFF_2026-10-12_020354_IST.md) and [P7](docs/pages/P7_REVIEW_2026-10-12.md)/[P8](docs/services/P8_REVIEW_2026-10-12.md) reviews supersede unconditional completion claims; root [prompt.md](prompt.md) prepares complete P7/P8 closeout. Preserve existing aggregate/per-wave evidence and original folders. P9–P11, P1 exceptions and P4 recovery/security follow-ups remain separate.
 
 ## 8. Corrections to older documents
 

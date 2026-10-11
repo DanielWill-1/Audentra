@@ -1,13 +1,16 @@
 from __future__ import annotations
 
+from collections.abc import Iterator
 from contextlib import contextmanager
 from datetime import date, time
 from types import SimpleNamespace
+from typing import cast
 from uuid import UUID
 
 import pytest
 from apps.accounts.models import Profile
 from apps.accounts.principals import SupabaseUser
+from apps.db.pooler import connection_profile
 from apps.db.rls import (
     RlsContextError,
     _active_user,
@@ -24,9 +27,68 @@ from apps.storage.services import _file_details, _validated_path
 from apps.templates_app.models import Template, TemplateReview, TemplateShare
 from apps.templates_app.services import _validate_template_values
 from apps.voice.models import FilledTemplate
+from config.settings.base import _database_from_url
 from django.core.files.uploadedfile import SimpleUploadedFile
 
 TEST_USER = UUID("11111111-1111-4111-8111-111111111111")
+PROJECT_REF = "pgtttjmqibxufvwehkyj"
+
+
+def test_transaction_pooler_settings_disable_session_state_and_prepared_statements() -> None:
+    database = _database_from_url(
+        f"postgresql://django_data.{PROJECT_REF}:synthetic@aws-0-us-east-1.pooler.supabase.com:6543/postgres?sslmode=require",
+        "public",
+    )
+
+    options = cast(dict[str, object], database["OPTIONS"])
+    assert options["sslmode"] == "require"
+    assert options["prepare_threshold"] is None
+    assert "options" not in options
+
+
+def test_direct_database_settings_keep_schema_search_path() -> None:
+    database = _database_from_url(
+        "postgresql://django_data:synthetic@db.example.supabase.co:5432/postgres?sslmode=require",
+        "public",
+    )
+
+    options = cast(dict[str, object], database["OPTIONS"])
+    assert options["sslmode"] == "require"
+    assert options["options"] == "-c search_path=public"
+    assert "prepare_threshold" not in options
+
+
+def test_shared_transaction_pooler_requires_exact_project_scoped_login() -> None:
+    config = {
+        "HOST": "aws-0-us-east-1.pooler.supabase.com",
+        "PORT": "6543",
+        "USER": f"django_data.{PROJECT_REF}",
+        "NAME": "postgres",
+        "OPTIONS": {"sslmode": "require"},
+    }
+
+    assert connection_profile(config, PROJECT_REF) == ("shared transaction pooler", True)
+    config["USER"] = "django_data.anotherprojectref"
+    assert connection_profile(config, PROJECT_REF) == ("shared transaction pooler", False)
+
+
+def test_session_and_dedicated_poolers_do_not_satisfy_shared_pooler_gate() -> None:
+    session_config = {
+        "HOST": "aws-0-us-east-1.pooler.supabase.com",
+        "PORT": "5432",
+        "USER": f"django_data.{PROJECT_REF}",
+    }
+    dedicated_config = {
+        "HOST": f"db.{PROJECT_REF}.supabase.co",
+        "PORT": "6543",
+        "USER": "django_data",
+    }
+
+    assert connection_profile(session_config, PROJECT_REF) == ("shared session pooler", False)
+    assert connection_profile(dedicated_config, PROJECT_REF) == (
+        "dedicated transaction pooler",
+        False,
+    )
 
 
 def test_unverified_principal_cannot_open_rls_context() -> None:
@@ -126,10 +188,7 @@ def test_private_download_uses_a_fresh_cdn_cache_key_per_request(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     template_id = UUID("aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa")
-    path = (
-        "templates/aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa/"
-        "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb.pdf"
-    )
+    path = "templates/aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa/bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb.pdf"
     template = SimpleNamespace(id=template_id, created_by=TEST_USER, uploaded_file=path)
     monkeypatch.setattr(Template, "objects", _TemplateTestManager(template))
     operations: list[tuple[str, object]] = []
@@ -211,11 +270,11 @@ def _patch_storage_context(
     bucket: object,
 ) -> None:
     @contextmanager
-    def fake_context(_user: SupabaseUser):
+    def fake_context(_user: SupabaseUser) -> Iterator[None]:
         yield None
 
     @contextmanager
-    def fake_bucket(_token: str):
+    def fake_bucket(_token: str) -> Iterator[object]:
         yield bucket
 
     monkeypatch.setattr(storage_services, "rls_context", fake_context)

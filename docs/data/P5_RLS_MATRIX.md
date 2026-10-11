@@ -2,7 +2,7 @@
 
 **Reviewed:** 2026-10-11  
 **Target:** Existing Audentra development project.  
-**Result:** Hosted direct-connection matrix passed; transaction-pooler matrix is pending.
+**Result:** Hosted authorization matrix passed, including the shared transaction-pooler identity-switch and isolation checks (2026-10-11).
 
 The target matrix is enforced by PostgreSQL RLS, grants and guarded database functions. Django service checks are an additional layer; they do not replace RLS. “Owner” is the template creator, “recipient” is an existing account with a share, and “unrelated” has neither relationship.
 
@@ -31,8 +31,8 @@ The review-author column describes authorship only; the user must also meet the 
 - [P5_HOSTED_RESULTS.json](P5_HOSTED_RESULTS.json) records owner/editor/stranger accounts and hosted checks for roles, review visibility, private file access and revocation, scheduling, filled forms and profile isolation. All three synthetic accounts were deleted and no emails were sent.
 - `migration/django/scripts/p5_native_rls_checks.sql` exercises native PostgreSQL policy behavior, including admin share management without template editing and editor content changes without visibility changes.
 - `migration/django/scripts/check_p5_rls_scratch.py` passes query-context rejection, verified identity, nested context, user switching and rollback checks against a local native PostgreSQL scratch database.
-- The hosted run used the direct database connection. The `django_data` membership is `SET TRUE, INHERIT FALSE`; it is not `BYPASSRLS` and is not a request-path service-role connection.
+- The final hosted run used the shared transaction pooler with the project-scoped `django_data` login. The role membership is `SET TRUE, INHERIT FALSE`; it is not `BYPASSRLS` and is not a request-path service-role connection. The probe verified A/B/A identity/claims and private-row isolation on a reused Django client connection, transaction-entry cleanup, forced rollback and recovery.
 
 ## Explicit boundary
 
-The hosted transaction pooler was not configured. Re-run the hosted probe with the exact shared transaction-pooler URL from Supabase Dashboard → Connect, keeping its password in `migration/django/.env`. Do not infer pooler success from the direct-host result or from native PostgreSQL tests. Keep P5b partial until this row is verified.
+The active hosted result verifies the shared transaction pooler: [P5_HOSTED_RESULTS.json](P5_HOSTED_RESULTS.json). The previous direct-host evidence remains archived separately. Do not infer future pooler behavior from either record if the endpoint, role or driver configuration changes; rerun the hosted probe after such changes.

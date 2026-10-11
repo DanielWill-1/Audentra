@@ -1313,9 +1313,9 @@
     "ensure_rls_unchanged": true
   },
   "runtime": {
-    "database_host_mode": "direct host (not pooler)",
-    "pooler_configured": false,
-    "pooler_verified": false,
+    "database_host_mode": "shared transaction pooler",
+    "pooler_configured": true,
+    "pooler_verified": true,
     "django_default_schema": "django",
     "django_data_schema": "public"
   },
@@ -1324,10 +1324,13 @@
     "auth_identities_read": false,
     "session_tokens_read": false,
     "storage_object_payloads_read": false,
-    "hosted_probe_result": "docs/data/P5_HOSTED_RESULTS.json"
+    "hosted_probe_result": "docs/data/P5_HOSTED_RESULTS.json",
+    "transaction_pooler_isolation": "passed; see hosted result for sanitized A/B/A and backend observations",
+    "synthetic_accounts_created": 3,
+    "synthetic_accounts_deleted": 3,
+    "cleanup_ok": true
   },
   "limitations": [
-    "No hosted pooler URL is configured, so the required transaction-pooler RLS/user-switch check remains open.",
     "The application has no pre-existing Supabase migration-history relation; repository migrations are not proof of historic application.",
     "Catalog table row estimates are not exact row counts and are intentionally not used as evidence of application data."
   ]

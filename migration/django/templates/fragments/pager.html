@@ -1,0 +1,5 @@
+<nav class="flex items-center justify-between border-t border-border py-4" aria-label="Pagination">
+  <a class="pager-link" href="?page={{ previous_page }}" {% if not previous_page %}aria-disabled="true" tabindex="-1"{% endif %}>Previous</a>
+  <p class="text-sm text-text-secondary">Page {{ current_page|default:1 }}{% if page_count %} of {{ page_count }}{% endif %}</p>
+  <a class="pager-link" href="?page={{ next_page }}" {% if not next_page %}aria-disabled="true" tabindex="-1"{% endif %}>Next</a>
+</nav>

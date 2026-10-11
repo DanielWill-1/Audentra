@@ -1,12 +1,11 @@
-# Active migration prompt
+# Current migration handoff and prompt
 
-The owner requested P5 implementation on 2026-10-11. P5 schema, Storage and Django data services are implemented; the phase remains partial until the hosted transaction-pooler/user-switch proof passes.
+**Updated:** 2026-10-12 02:19:14 IST.
 
-Use [root prompt.md](../prompt.md) as the canonical P5 brief:
+Use root [prompt.md](../prompt.md) for the owner-requested combined P7/P8 closure task. Read the [dated session handoff](../HANDOFF_2026-10-12_020354_IST.md), [P7 review](pages/P7_REVIEW_2026-10-12.md) and [P8 review](services/P8_REVIEW_2026-10-12.md) first. The owner expanded the P8-only draft to finish every remaining P7/P8 requirement before P9. This update prepares documents; it does not implement repairs.
 
-- **P5a:** Schema/reference reconciliation, isolated baseline/remediation proof and reviewed Storage provisioning.
-- **P5b:** Django models/selectors/services, fail-closed user RLS context, Storage adapter and hosted verification.
+All 25 manifest routes have local Django owners and zero normal legacy fallback. Fresh review passed 145 isolated tests and Django check, but P7 full acceptance remains open. The combined prompt closes P7-R1–R5, all original wave requirements and P8-R1–R6, including hosted route evidence and aggregate verification. It requires a completed closure matrix/report before declaring P7/P8 complete.
 
-See [P5_REPORT.md](data/P5_REPORT.md) and [P5_VERIFICATION.md](data/P5_VERIFICATION.md) for the as-built status and exact remaining gate. The existing project/data and original source/reference folders remain preserved. Page rendering and route migration remain P6/P7; do not start them under this P5 handoff.
+The former all-wave brief is archived intact as [P7_P8_IMPLEMENTATION_PROMPT.md](pages/P7_P8_IMPLEMENTATION_PROMPT.md). Preserve historical [P7 aggregate evidence](pages/P7_VERIFICATION.md), per-wave reports/assets/snapshots/captures, [P8 verification](services/P8_VERIFICATION.md), P5's 65-check hosted result and the P7 W5/W6 15-check hosted result. They retain their stated fixture boundaries; full-completion claims are superseded by the dated reviews.
 
-The [P4 brief](auth/P4_IMPLEMENTATION_PROMPT.md) is archived, and [P4_REPORT.md](auth/P4_REPORT.md) retains actual results. Exact exposed-key retirement remains separately approval-dependent. Email-based forgotten-password recovery remains unavailable; development signup confirmation must be reconsidered before production.
+After successful combined closure, archive the executed brief and prepare the P9 implementation prompt as the next root prompt. Do not execute P9 in the closure task. P9 full release acceptance/physical-device/live-provider proof, P10 deployment/soak and P11 retirement remain later gates. Original source/runtime and evidence stay in place; existing development Auth limitations and credential follow-up remain separate.

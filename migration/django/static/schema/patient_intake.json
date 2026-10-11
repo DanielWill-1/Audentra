@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ClinicalPatientIntake",
+  "type": "object",
+  "required": ["patient_id", "systolic_bp", "heart_rate", "triage_category"],
+  "properties": {
+    "patient_id": {"type": "string", "pattern": "^MED-[0-9]{6}$"},
+    "systolic_bp": {"type": "integer", "minimum": 50, "maximum": 260},
+    "heart_rate": {"type": "integer", "minimum": 30, "maximum": 220},
+    "triage_category": {
+      "type": "string",
+      "enum": ["EMERGENT", "URGENT", "NON_URGENT"]
+    },
+    "chief_complaint_transcript": {"type": "string", "maxLength": 500}
+  }
+}

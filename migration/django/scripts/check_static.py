@@ -51,11 +51,16 @@ def verify() -> None:
         raise SystemExit("Compiled CSS is missing; run scripts/build_static.ps1 first.")
     css = output.read_text(encoding="utf-8")
     required_tokens = (
-        "rgb(0 74 198/var(--tw-bg-opacity,1))",
+        "rgb(0 74 198/var(--tw-text-opacity,1))",
         "Hanken Grotesk",
+        "JetBrains Mono",
         "4.5rem",
         "5.5rem",
         "8.5rem",
+        ".app-nav-link[aria-current=page]",
+        "prefers-reduced-motion:reduce",
+        ".shell-dialog",
+        ".mobile-drawer",
     )
     if any(token not in css for token in required_tokens):
         raise SystemExit("Compiled CSS is missing required design tokens.")

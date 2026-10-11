@@ -19,7 +19,8 @@ from datetime import date, time, timedelta
 from pathlib import Path
 from types import SimpleNamespace
 from typing import Any, cast
-from uuid import UUID
+from urllib.parse import urlsplit
+from uuid import UUID, uuid4
 
 PROJECT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PROJECT))
@@ -30,6 +31,7 @@ import django
 django.setup()
 
 import httpx
+from apps.accounts.principals import SupabaseUser
 from apps.accounts.profile_selectors import get_profile
 from apps.accounts.profile_services import update_profile
 from apps.accounts.services.gotrue import AuthServiceError
@@ -38,7 +40,8 @@ from apps.accounts.services.tokens import (
     access_token_for_verified_request,
     authenticate_session,
 )
-from apps.db.rls import rls_context
+from apps.db.pooler import connection_profile
+from apps.db.rls import RlsContextError, _allow_fixed_metadata_query, rls_context
 from apps.scheduler.selectors import (
     event_stats,
     events_by_status,
@@ -90,13 +93,23 @@ from apps.voice.filled_services import (
 from apps.voice.selectors import get_filled, list_filled
 from django.conf import settings
 from django.contrib.sessions.models import Session
-from django.db import DatabaseError, connections
+from django.db import DatabaseError, connections, transaction
 from django.http import HttpRequest
 from django.test import Client
 from supabase import create_client
 from supabase.lib.client_options import SyncClientOptions
 
 REPORT = PROJECT.parents[1] / "docs/data/P5_HOSTED_RESULTS.json"
+DIRECT_REPORT = REPORT.with_name("P5_HOSTED_RESULTS_DIRECT.json")
+_RLS_STATE_SQL = (
+    "SELECT session_user, current_user, current_setting('request.jwt.claim.sub', true), "
+    "current_setting('request.jwt.claims', true), pg_backend_pid()"
+)
+_SCOPED_RLS_STATE_SQL = (
+    "SELECT session_user, current_user, auth.uid()::text, "
+    "current_setting('request.jwt.claim.sub', true), "
+    "current_setting('request.jwt.claims', true), pg_backend_pid()"
+)
 
 
 def _check(checks: list[str], condition: bool, name: str) -> None:
@@ -170,6 +183,222 @@ def _id(value: Any) -> UUID:
     return value if isinstance(value, UUID) else UUID(str(value))
 
 
+def _read_transaction_identity() -> dict[str, Any]:
+    with transaction.atomic(using="supabase"):
+        with _allow_fixed_metadata_query(_RLS_STATE_SQL):
+            with connections["supabase"].cursor() as cursor:
+                cursor.execute(_RLS_STATE_SQL)
+                row = cursor.fetchone()
+    session_user, current_user, subject, claims, backend_pid = row
+    parsed_claims = json.loads(claims) if claims else None
+    return {
+        "session_user": session_user,
+        "current_user": current_user,
+        "subject": subject,
+        "claims": parsed_claims,
+        "backend_pid": backend_pid,
+    }
+
+
+def _run_scoped_identity(
+    user: Any, expected_user_id: UUID, private_template_id: UUID, raw_connection: Any
+) -> dict[str, Any]:
+    connection = connections["supabase"]
+    with rls_context(user):
+        with connection.cursor() as cursor:
+            cursor.execute(
+                _SCOPED_RLS_STATE_SQL
+                + ", EXISTS(SELECT 1 FROM public.templates WHERE id = %s)",
+                [str(private_template_id)],
+            )
+            session_user, current_user, auth_uid, subject, claims, backend_pid, can_read = (
+                cursor.fetchone()
+            )
+    if connection.connection is not raw_connection:
+        raise AssertionError("Django replaced the database client connection during the probe")
+    parsed_claims = json.loads(claims) if claims else {}
+    return {
+        "session_user_ok": session_user == "django_data",
+        "current_user_ok": current_user == "authenticated",
+        "auth_uid_ok": str(auth_uid) == str(expected_user_id),
+        "subject_ok": subject == str(expected_user_id),
+        "claims_ok": parsed_claims
+        == {"sub": str(expected_user_id), "role": "authenticated"},
+        "can_read_private_template": can_read,
+        "backend_pid": backend_pid,
+    }
+
+
+def _assert_idle_identity(identity: dict[str, Any]) -> None:
+    if (
+        identity["session_user"] != "django_data"
+        or identity["current_user"] != "django_data"
+        or identity["subject"] not in (None, "")
+        or identity["claims"] not in (None, "", {})
+    ):
+        raise AssertionError("Transaction-local role or claims survived transaction end")
+
+
+def _verify_pooler_isolation(
+    owner: Any,
+    stranger: Any,
+    private_template_id: UUID,
+    checks: list[str],
+) -> dict[str, Any]:
+    connection = connections["supabase"]
+    connection.ensure_connection()
+    raw_connection = connection.connection
+    if raw_connection is None:
+        raise AssertionError("The Supabase client connection did not open")
+
+    unscoped_query_rejected = False
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT 1")
+    except RlsContextError:
+        unscoped_query_rejected = True
+    _check(checks, unscoped_query_rejected, "pooler_unscoped_application_query_rejected")
+
+    unverified_rejected = False
+    try:
+        with rls_context(SupabaseUser(uuid4(), None, {})):
+            pass
+    except RlsContextError:
+        unverified_rejected = True
+    _check(checks, unverified_rejected, "pooler_unverified_principal_rejected")
+
+    wrong_alias_rejected = False
+    try:
+        with rls_context(owner, using="default"):
+            pass
+    except RlsContextError:
+        wrong_alias_rejected = True
+    _check(checks, wrong_alias_rejected, "pooler_wrong_database_alias_rejected")
+
+    nested_switch_rejected = False
+    with rls_context(owner):
+        try:
+            with rls_context(stranger):
+                pass
+        except RlsContextError:
+            nested_switch_rejected = True
+    _check(checks, nested_switch_rejected, "pooler_nested_user_switch_rejected")
+    same_user_nesting_works = False
+    with rls_context(owner):
+        with rls_context(owner):
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT auth.uid() = %s::uuid", [str(owner.id)])
+                same_user_nesting_works = cursor.fetchone()[0] is True
+    _check(checks, same_user_nesting_works, "pooler_same_user_nesting_allowed")
+    _check(
+        checks,
+        _run_scoped_identity(owner, owner.id, private_template_id, raw_connection)[
+            "claims_ok"
+        ],
+        "pooler_same_user_context_restored_after_rejection",
+    )
+
+    idle_states: list[dict[str, Any]] = []
+
+    def check_idle(label: str) -> None:
+        state = _read_transaction_identity()
+        _assert_idle_identity(state)
+        idle_states.append({"after": label, "backend_pid": state["backend_pid"]})
+
+    check_idle("initial")
+    owner_first = _run_scoped_identity(owner, owner.id, private_template_id, raw_connection)
+    stranger_state = _run_scoped_identity(
+        stranger, stranger.id, private_template_id, raw_connection
+    )
+    owner_second = _run_scoped_identity(owner, owner.id, private_template_id, raw_connection)
+
+    for identity in (owner_first, stranger_state, owner_second):
+        if not all(
+            identity[key]
+            for key in (
+                "session_user_ok",
+                "current_user_ok",
+                "auth_uid_ok",
+                "subject_ok",
+                "claims_ok",
+            )
+        ):
+            raise AssertionError("Verified identity or role claims did not match the active actor")
+    if not owner_first["can_read_private_template"] or stranger_state[
+        "can_read_private_template"
+    ] or not owner_second["can_read_private_template"]:
+        raise AssertionError("A/B/A private template isolation did not match RLS policy")
+    _check(checks, True, "pooler_verified_claims_role_and_identity_a_b_a")
+    _check(checks, True, "pooler_verified_private_template_isolation_a_b_a")
+    check_idle("owner_commit")
+    check_idle("stranger_commit")
+    check_idle("owner_commit_again")
+
+    rollback_error = False
+    rollback_template_id: UUID | None = None
+    try:
+        with rls_context(owner):
+            rollback_template = create_template(
+                owner,
+                {
+                    "name": "P5 rollback-only probe",
+                    "category": "education",
+                    "description": "This synthetic row must roll back",
+                    "form_data": {"fields": []},
+                    "visibility": "hidden",
+                },
+            )
+            rollback_template_id = _id(rollback_template["id"])
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT 1 / 0")
+    except DatabaseError as error:
+        cause = error.__cause__
+        rollback_error = (
+            getattr(error, "sqlstate", None) == "22012"
+            or getattr(cause, "sqlstate", None) == "22012"
+        )
+    _check(checks, rollback_error, "pooler_forced_database_error_rolled_back")
+    _check(
+        checks,
+        rollback_template_id is not None
+        and get_template(owner, rollback_template_id) is None,
+        "pooler_rollback_removed_synthetic_template",
+    )
+    check_idle("owner_rollback_error")
+    stranger_after_error = _run_scoped_identity(
+        stranger, stranger.id, private_template_id, raw_connection
+    )
+    owner_after_error = _run_scoped_identity(
+        owner, owner.id, private_template_id, raw_connection
+    )
+    _check(
+        checks,
+        stranger_after_error["claims_ok"]
+        and not stranger_after_error["can_read_private_template"]
+        and owner_after_error["claims_ok"]
+        and owner_after_error["can_read_private_template"],
+        "pooler_identity_recovered_after_rollback_a_b_a",
+    )
+    check_idle("recovery_commits")
+    pids = [
+        owner_first["backend_pid"],
+        stranger_state["backend_pid"],
+        owner_second["backend_pid"],
+        stranger_after_error["backend_pid"],
+        owner_after_error["backend_pid"],
+    ]
+    same_client = connection.connection is raw_connection
+    _check(checks, same_client, "pooler_reused_django_client_connection")
+    return {
+        "passed": True,
+        "django_client_connection_reused": same_client,
+        "backend_pid_sequence": pids,
+        "idle_backend_pid_sequence": [state["backend_pid"] for state in idle_states],
+        "backend_reused_across_observations": len(set(pids)) < len(pids),
+        "transaction_entry_role_and_claims_cleared": True,
+    }
+
+
 def main() -> int:
     checks: list[str] = []
     emails: list[str] = []
@@ -190,23 +419,30 @@ def main() -> int:
     exception_type: str | None = None
     cleanup_ok = True
     data_database = settings.DATABASES["supabase"]
-    database_host = str(data_database.get("HOST", "")).lower()
-    database_port = str(data_database.get("PORT", ""))
-    transaction_pooler = (
-        database_host.endswith(".pooler.supabase.com") and database_port == "6543"
-    )
-    result["database_host_mode"] = (
-        "shared transaction pooler"
-        if transaction_pooler
-        else "direct host"
-        if ".supabase.co" in database_host
-        else "other"
-    )
-    result["pooler_verified"] = transaction_pooler
+    supabase_host = urlsplit(settings.SUPABASE_URL).hostname or ""
+    project_ref = supabase_host.split(".", maxsplit=1)[0]
+    connection_mode, valid_data_login = connection_profile(data_database, project_ref)
+    transaction_pooler = connection_mode == "shared transaction pooler" and valid_data_login
+    result["database_host_mode"] = connection_mode
+    result["pooler_configured"] = transaction_pooler
+    result["pooler_verified"] = False
     result["environment"] = (
         "linked development Supabase; Django "
         f"{result['database_host_mode']} database URL"
     )
+    if REPORT.exists():
+        try:
+            previous_result = json.loads(REPORT.read_text(encoding="utf-8"))
+            if (
+                previous_result.get("status") == "passed"
+                and previous_result.get("database_host_mode") == "direct host"
+                and not DIRECT_REPORT.exists()
+            ):
+                DIRECT_REPORT.write_bytes(REPORT.read_bytes())
+        except (OSError, json.JSONDecodeError):
+            raise SystemExit(
+                "Could not preserve the previous hosted P5 result safely"
+            ) from None
     admin_key = os.getenv("SUPABASE_TEST_ADMIN_KEY", "")
     if not settings.SUPABASE_PUBLISHABLE_KEY.startswith("sb_publishable_"):
         raise SystemExit("Development publishable key is not configured")
@@ -291,7 +527,7 @@ def main() -> int:
             _check(
                 checks,
                 connections["default"].settings_dict["USER"] == "django_app"
-                and connections["supabase"].settings_dict["USER"] == "django_data",
+                and valid_data_login,
                 "restricted_database_aliases_configured",
             )
 
@@ -391,6 +627,15 @@ def main() -> int:
                 and get_template(stranger, primary_id) is None,
                 "hidden_template_is_not_discoverable_without_a_share",
             )
+            failed_stage = "transaction_pooler_identity_and_cleanup"
+            if transaction_pooler:
+                result["transaction_pooler_isolation"] = _verify_pooler_isolation(
+                    owner, stranger, primary_id, checks
+                )
+            else:
+                result["pooler_blocker"] = (
+                    "Configure the exact shared transaction-pooler URL and restricted login."
+                )
             set_template_visibility(owner, primary_id, "visible")
             updated = update_template(owner, primary_id, {"description": "Owner edit verified"})
             _check(
@@ -792,6 +1037,23 @@ def main() -> int:
                 detail = f"{detail} | {type(cause).__name__}: {cause}"
             for sensitive_value in [*emails, *account_ids]:
                 detail = detail.replace(sensitive_value, "<synthetic-account>")
+            for sensitive_value in (
+                str(data_database.get("PASSWORD", "")),
+                admin_key,
+                settings.SUPABASE_PUBLISHABLE_KEY,
+            ):
+                if sensitive_value:
+                    detail = detail.replace(sensitive_value, "<redacted>")
+            detail = re.sub(
+                r"(?i)(postgres(?:ql)?://)[^\s@]+@",
+                r"\1<credentials-redacted>@",
+                detail,
+            )
+            detail = re.sub(
+                r"(?i)\b(password|passwd|user|host)=('[^']*'|\"[^\"]*\"|[^\s,]+)",
+                r"\1=<redacted>",
+                detail,
+            )
             result["failure_detail"] = re.sub(
                 r"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}",
                 "<uuid>",
@@ -851,6 +1113,12 @@ def main() -> int:
             if not cleanup_ok:
                 result["status"] = "failed"
                 result["cleanup_failed"] = True
+            result["pooler_verified"] = bool(
+                transaction_pooler
+                and result.get("status") == "passed"
+                and cleanup_ok
+                and result.get("transaction_pooler_isolation", {}).get("passed") is True
+            )
             result["checks"] = checks
             REPORT.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
             print(json.dumps(result), flush=True)

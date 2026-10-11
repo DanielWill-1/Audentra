@@ -1,0 +1,17 @@
+{% extends "base_app.html" %}
+{% block page_title %}Workspace shell preview · Audentra{% endblock %}
+{% block content %}
+  <section class="mx-auto max-w-6xl px-margin py-8 md:px-10 md:py-12">
+    <p class="text-metadata font-semibold uppercase tracking-wider text-primary">P6 shell fixture</p>
+    <h1 class="mt-2 font-headline-h3 text-headline-h3 text-text-primary">What would you like to work on?</h1>
+    <p class="mt-3 max-w-2xl text-body text-text-secondary">This is a synthetic layout preview. Sign in separately on the Django Auth site; this shell does not establish or imply a legacy SPA session.</p>
+    <div class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <article class="preview-card"><h2>Forms</h2><p>Voice-led form workflows will move in a later page wave.</p></article>
+      <article class="preview-card"><h2>Templates</h2><p>Template data and actions are intentionally absent from this fixture.</p></article>
+      <article class="preview-card"><h2>Schedule</h2><p>Navigation is real; product page bodies remain with P7.</p></article>
+    </div>
+    <div class="mt-8">
+      <button class="button-primary px-5" type="button" data-modal-open="shell-modal" aria-haspopup="dialog" aria-expanded="false">Open shell dialog</button>
+    </div>
+  </section>
+{% endblock %}

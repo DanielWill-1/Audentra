@@ -1,7 +1,7 @@
 # P5 implementation report
 
 **Date:** 2026-10-11  
-**Overall status:** **Partial — implementation and direct-host verification passed; transaction-pooler proof is still required.**
+**Overall status:** **Complete for P5.** Implementation, hosted shared transaction-pooler verification and cleanup passed on 2026-10-11. P6 has not started.
 
 P5 added a Django data layer for the existing development site and reconciled the previously empty public application schema. P5 does not migrate pages or change the React/Express source. Original folders remain in place.
 
@@ -18,26 +18,28 @@ P5 added a Django data layer for the existing development site and reconciled th
 
 ## Verification
 
-- Hosted P5 probe passed against the existing development project through its direct PostgreSQL host. It created and deleted three generated accounts, sent zero emails, and reported cleanup success.
+- The earlier hosted direct-host P5 probe passed and is preserved in [P5_HOSTED_RESULTS_DIRECT.json](P5_HOSTED_RESULTS_DIRECT.json).
+- The final hosted P5 probe passed through the existing project's shared transaction pooler: 65 checks, three generated accounts created and deleted, zero emails, and cleanup success. `pooler_verified` is true only after the restricted project-scoped login, A/B/A role/claims and private-row isolation, context guards, forced rollback/recovery, reused Django client connection and complete cleanup passed. See [P5_HOSTED_RESULTS.json](P5_HOSTED_RESULTS.json).
 - The hosted probe passed fresh signup/profile setup, profile isolation, template CRUD/search, private file access and revocation, share roles/escalation denial, participant-only reviews, scheduler operations, filled-form isolation and exact object cleanup.
 - Native PostgreSQL scratch passed clean baseline creation, baseline/remediation catalog equivalence, empty-target remediation twice, unchanged normalized schema after re-application, and RLS policy assertions on both schema paths. A separate Django scratch probe passed context, user-switch and rollback checks.
 - Regression checks: 90 pytest tests passed; `manage.py check` passed; focused P5/app Ruff and mypy are recorded in [P5_VERIFICATION.md](P5_VERIFICATION.md).
+- Follow-up closure changes passed 95 pytest tests, `manage.py check`, focused mypy over 60 source files and Ruff. These local checks accompany the hosted behavioral proof.
 - The hosted catalog now records six public application tables with RLS enabled, 23 public policies, a private `template-files` bucket and four Storage policies. The connector role can set `authenticated` with `INHERIT FALSE, SET TRUE`; it does not inherit application privileges.
 
-## Remaining P5 gate
+## P5 closure
 
-The hosted `DJANGO_SUPABASE_DATABASE_URL` still points to the direct database host. The acceptance brief requires the same authenticated identity and user-switch checks through the shared transaction pooler. The local environment does not contain a pooler URL, so `P5_HOSTED_RESULTS.json` correctly says `pooler_verified: false`; P5b and overall P5 must remain partial.
+The hosted acceptance gate passed through the exact shared transaction-pooler endpoint and restricted `django_data.<project-ref>` login. The probe verified A/B/A role, claims and private-row isolation on a reused Django client connection; confirmed transaction-entry role/claims were cleared; forced a SQL error and verified rollback plus identity recovery; and passed all existing Auth/data/Storage checks. Three generated accounts were deleted, no email was sent, and `cleanup_ok` is true. The active result contains no connection string or credential.
 
-To finish that gate, put the exact shared transaction-pooler URL for the `django_data` role from Supabase Dashboard → Connect into the ignored `migration/django/.env` as `DJANGO_SUPABASE_DATABASE_URL`. Keep the password local. Run the hosted probe in [P5_VERIFICATION.md](P5_VERIFICATION.md), review cleanup, and refresh the target inventory/result. Do not compose the hostname or paste the URL/password into chat.
+Transaction-mode settings disable Psycopg prepared statements and session startup search-path state. RLS requests and the fixed health probe set search paths inside their own transactions. Local coverage and hosted behavior now both pass. P5 is complete; P6 remains unstarted and requires a separate owner request.
 
 ## Other limitations
 
 - The target had no public application schema to recover. P5 creates new development contracts documented in [P5_CONTRACTS.md](P5_CONTRACTS.md); these are not claimed as historical schema.
 - A full hosted schema-only dump was unavailable: Supabase CLI tried to start Docker and was stopped, and native `pg_dump` with the restricted request role was denied table locks. The app role was not widened. Current hosted catalog evidence is `P5_TARGET_INVENTORY.json`; the pre-P5 dump is labelled historical.
-- The hosted test establishes the direct connection, not transaction-pooler behavior. Native PostgreSQL does not replace hosted Supabase Storage/RLS checks.
+- The earlier direct-host result remains separately archived; the final hosted result verifies transaction-pooler behavior. Native PostgreSQL scratch checks still do not replace hosted Supabase Storage/RLS checks.
 - Email-based password recovery, P4 credential retirement, production signup-confirmation policy, team/demo storage, preferences, activity backend, anonymous share links, page migration and production deployment remain outside P5.
 - A broad `mypy apps scripts` invocation also reports existing P4 probe typing findings; the focused P5/app command is the relevant P5 check. See [P5_VERIFICATION.md](P5_VERIFICATION.md).
 
 ## Next phase
 
-Complete the transaction-pooler check before closing P5b. Then P6 may build the shared Django rendering shell; P7 page waves remain separately gated by the roadmap and product decisions.
+P5b and overall P5 are complete. P6 may build the shared Django rendering shell after a separate owner request; P7 page waves remain separately gated by the roadmap and product decisions.

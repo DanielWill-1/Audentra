@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}{% block page_title %}Workspace · Audentra{% endblock %}{% endblock %}
+{% block body %}
+  <div class="app-frame flex min-h-screen bg-background">
+    <aside class="app-sidebar sticky top-0 hidden h-screen w-60 shrink-0 flex-col border-r border-border bg-background md:flex" aria-label="Workspace navigation">
+      <a class="brand-lockup flex h-16 items-center gap-2 border-b border-border px-4" href="/dashboard" aria-label="Audentra workspace home">
+        <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
+        <span class="font-headline-h3 text-headline-h3 tracking-tight text-text-primary">Audentra</span>
+      </a>
+      {% include "fragments/app_navigation.html" %}
+      <div class="border-t border-border p-3">
+        {% if request.user.is_authenticated %}
+          <p class="truncate px-3 py-2 text-sm text-text-secondary">{{ request.user.email|default:"Signed-in account" }}</p>
+          <form method="post" action="/logout/" class="px-3">
+            {% csrf_token %}
+            <button class="text-sm font-medium text-text-primary underline" type="submit">Sign out</button>
+          </form>
+        {% else %}
+          <a class="flex min-h-10 items-center gap-3 rounded-lg px-3 text-body-medium text-text-secondary hover:bg-surface-subtle focus-visible:outline" href="/login/?next={{ active_route|urlencode }}">
+            {% include "fragments/icon.html" with name="user" class_name="h-4 w-4" %}
+            <span>Sign in to workspace</span>
+          </a>
+        {% endif %}
+      </div>
+    </aside>
+    <div class="min-w-0 flex-1">
+      <header class="app-mobile-bar sticky top-0 z-30 flex h-14 items-center justify-between border-b border-border bg-background px-4 md:hidden">
+        <a class="brand-lockup flex items-center gap-2" href="/dashboard" aria-label="Audentra workspace home">
+          <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
+          <span class="text-lg font-semibold tracking-tight text-text-primary">Audentra</span>
+        </a>
+        <button class="icon-button" type="button" data-modal-open="mobile-navigation" aria-haspopup="dialog" aria-expanded="false" aria-controls="mobile-navigation" aria-label="Open workspace navigation">
+          {% include "fragments/icon.html" with name="menu" class_name="h-5 w-5" %}
+        </button>
+      </header>
+      <main id="main-content" class="min-h-screen min-w-0 pt-14 md:pt-0" tabindex="-1">
+        {% include "fragments/messages.html" %}
+        {% block content %}{% endblock %}
+      </main>
+    </div>
+  </div>
+  <dialog id="mobile-navigation" class="mobile-drawer" data-shell-dialog aria-labelledby="mobile-navigation-title">
+    <div class="flex items-center justify-between border-b border-border px-4 py-3">
+      <h2 id="mobile-navigation-title" class="font-body-medium text-body-medium font-semibold">Workspace</h2>
+      <button class="icon-button" type="button" data-modal-close aria-label="Close workspace navigation">
+        {% include "fragments/icon.html" with name="close" class_name="h-5 w-5" %}
+      </button>
+    </div>
+    {% include "fragments/app_navigation.html" %}
+    <div class="border-t border-border px-6 py-4 text-sm text-text-muted">
+      {% if request.user.is_authenticated %}Signed in as {{ request.user.email|default:"your account" }}.{% else %}Sign in through the Django Auth site to open workspace pages.{% endif %}
+    </div>
+  </dialog>
+  {% include "fragments/modal.html" %}
+{% endblock %}

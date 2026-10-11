@@ -1,0 +1,434 @@
+{
+  "source": "current React/Vite development server",
+  "base_url": "http://localhost:5173",
+  "pages": [
+    {
+      "route": "/terms",
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "response_status": 200,
+      "title": "Audentra — Open-source voice-to-structured-data",
+      "heading": "Terms of Use",
+      "bodyFont": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "documentWidth": 1440,
+      "viewportWidth": 1440,
+      "fontStatus": "loaded",
+      "horizontal_overflow": false,
+      "main_html_bytes": 5454,
+      "console_errors": [],
+      "failed_requests": []
+    },
+    {
+      "route": "/terms",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "response_status": 200,
+      "title": "Audentra — Open-source voice-to-structured-data",
+      "heading": "Terms of Use",
+      "bodyFont": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "documentWidth": 390,
+      "viewportWidth": 390,
+      "fontStatus": "loaded",
+      "horizontal_overflow": false,
+      "main_html_bytes": 5454,
+      "console_errors": [],
+      "failed_requests": []
+    },
+    {
+      "route": "/privacy",
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "response_status": 200,
+      "title": "Audentra — Open-source voice-to-structured-data",
+      "heading": "Privacy Notice",
+      "bodyFont": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "documentWidth": 1440,
+      "viewportWidth": 1440,
+      "fontStatus": "loaded",
+      "horizontal_overflow": false,
+      "main_html_bytes": 16261,
+      "console_errors": [],
+      "failed_requests": []
+    },
+    {
+      "route": "/privacy",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "response_status": 200,
+      "title": "Audentra — Open-source voice-to-structured-data",
+      "heading": "Privacy Notice",
+      "bodyFont": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "documentWidth": 390,
+      "viewportWidth": 390,
+      "fontStatus": "loaded",
+      "horizontal_overflow": false,
+      "main_html_bytes": 16261,
+      "console_errors": [],
+      "failed_requests": []
+    },
+    {
+      "route": "/open",
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "response_status": 200,
+      "title": "Audentra — Open-source voice-to-structured-data",
+      "heading": "Open Source License & Attribution",
+      "bodyFont": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "documentWidth": 1440,
+      "viewportWidth": 1440,
+      "fontStatus": "loaded",
+      "horizontal_overflow": false,
+      "main_html_bytes": 10218,
+      "console_errors": [],
+      "failed_requests": []
+    },
+    {
+      "route": "/open",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "response_status": 200,
+      "title": "Audentra — Open-source voice-to-structured-data",
+      "heading": "Open Source License & Attribution",
+      "bodyFont": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "documentWidth": 390,
+      "viewportWidth": 390,
+      "fontStatus": "loaded",
+      "horizontal_overflow": false,
+      "main_html_bytes": 10218,
+      "console_errors": [],
+      "failed_requests": []
+    },
+    {
+      "route": "/about",
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "response_status": 200,
+      "title": "Audentra — Open-source voice-to-structured-data",
+      "heading": "Forms shouldn’t require\nthis much typing.",
+      "bodyFont": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "documentWidth": 1440,
+      "viewportWidth": 1440,
+      "fontStatus": "loaded",
+      "horizontal_overflow": false,
+      "main_html_bytes": 9214,
+      "console_errors": [],
+      "failed_requests": []
+    },
+    {
+      "route": "/about",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "response_status": 200,
+      "title": "Audentra — Open-source voice-to-structured-data",
+      "heading": "Forms shouldn’t require\nthis much typing.",
+      "bodyFont": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "documentWidth": 390,
+      "viewportWidth": 390,
+      "fontStatus": "loaded",
+      "horizontal_overflow": false,
+      "main_html_bytes": 9214,
+      "console_errors": [],
+      "failed_requests": []
+    },
+    {
+      "route": "/security",
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "response_status": 200,
+      "title": "Audentra — Open-source voice-to-structured-data",
+      "heading": "Enterprise-Grade Security",
+      "bodyFont": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "documentWidth": 1440,
+      "viewportWidth": 1440,
+      "fontStatus": "loaded",
+      "horizontal_overflow": false,
+      "main_html_bytes": 12022,
+      "console_errors": [],
+      "failed_requests": []
+    },
+    {
+      "route": "/security",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "response_status": 200,
+      "title": "Audentra — Open-source voice-to-structured-data",
+      "heading": "Enterprise-Grade Security",
+      "bodyFont": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "documentWidth": 390,
+      "viewportWidth": 390,
+      "fontStatus": "loaded",
+      "horizontal_overflow": false,
+      "main_html_bytes": 12022,
+      "console_errors": [],
+      "failed_requests": []
+    },
+    {
+      "route": "/pricing",
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "response_status": 200,
+      "title": "Audentra — Open-source voice-to-structured-data",
+      "heading": "Simple, Transparent Pricing",
+      "bodyFont": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "documentWidth": 1440,
+      "viewportWidth": 1440,
+      "fontStatus": "loaded",
+      "horizontal_overflow": false,
+      "main_html_bytes": 15449,
+      "console_errors": [],
+      "failed_requests": []
+    },
+    {
+      "route": "/pricing",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "response_status": 200,
+      "title": "Audentra — Open-source voice-to-structured-data",
+      "heading": "Simple, Transparent Pricing",
+      "bodyFont": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "documentWidth": 390,
+      "viewportWidth": 390,
+      "fontStatus": "loaded",
+      "horizontal_overflow": false,
+      "main_html_bytes": 15449,
+      "console_errors": [],
+      "failed_requests": []
+    },
+    {
+      "route": "/industries",
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "response_status": 200,
+      "title": "Audentra — Open-source voice-to-structured-data",
+      "heading": "Specialized for Your Industry",
+      "bodyFont": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "documentWidth": 1440,
+      "viewportWidth": 1440,
+      "fontStatus": "loaded",
+      "horizontal_overflow": false,
+      "main_html_bytes": 16907,
+      "console_errors": [],
+      "failed_requests": []
+    },
+    {
+      "route": "/industries",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "response_status": 200,
+      "title": "Audentra — Open-source voice-to-structured-data",
+      "heading": "Specialized for Your Industry",
+      "bodyFont": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "documentWidth": 390,
+      "viewportWidth": 390,
+      "fontStatus": "loaded",
+      "horizontal_overflow": false,
+      "main_html_bytes": 16907,
+      "console_errors": [],
+      "failed_requests": []
+    },
+    {
+      "route": "/features",
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "response_status": 200,
+      "title": "Audentra — Open-source voice-to-structured-data",
+      "heading": "Voice in.\nStructured data out.",
+      "bodyFont": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "documentWidth": 1440,
+      "viewportWidth": 1440,
+      "fontStatus": "loaded",
+      "horizontal_overflow": false,
+      "main_html_bytes": 21941,
+      "console_errors": [],
+      "failed_requests": []
+    },
+    {
+      "route": "/features",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "response_status": 200,
+      "title": "Audentra — Open-source voice-to-structured-data",
+      "heading": "Voice in.\nStructured data out.",
+      "bodyFont": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "documentWidth": 390,
+      "viewportWidth": 390,
+      "fontStatus": "loaded",
+      "horizontal_overflow": false,
+      "main_html_bytes": 21941,
+      "console_errors": [],
+      "failed_requests": []
+    },
+    {
+      "route": "/contact",
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "response_status": 200,
+      "title": "Audentra — Open-source voice-to-structured-data",
+      "heading": "Get in Touch",
+      "bodyFont": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "documentWidth": 1440,
+      "viewportWidth": 1440,
+      "fontStatus": "loaded",
+      "horizontal_overflow": false,
+      "main_html_bytes": 4699,
+      "console_errors": [],
+      "failed_requests": []
+    },
+    {
+      "route": "/contact",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "response_status": 200,
+      "title": "Audentra — Open-source voice-to-structured-data",
+      "heading": "Get in Touch",
+      "bodyFont": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "documentWidth": 390,
+      "viewportWidth": 390,
+      "fontStatus": "loaded",
+      "horizontal_overflow": false,
+      "main_html_bytes": 4699,
+      "console_errors": [],
+      "failed_requests": []
+    },
+    {
+      "route": "/status",
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "response_status": 200,
+      "title": "Audentra — Open-source voice-to-structured-data",
+      "heading": "System Status",
+      "bodyFont": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "documentWidth": 1440,
+      "viewportWidth": 1440,
+      "fontStatus": "loaded",
+      "horizontal_overflow": false,
+      "main_html_bytes": 14385,
+      "console_errors": [],
+      "failed_requests": []
+    },
+    {
+      "route": "/status",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "response_status": 200,
+      "title": "Audentra — Open-source voice-to-structured-data",
+      "heading": "System Status",
+      "bodyFont": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "documentWidth": 390,
+      "viewportWidth": 390,
+      "fontStatus": "loaded",
+      "horizontal_overflow": false,
+      "main_html_bytes": 14385,
+      "console_errors": [],
+      "failed_requests": []
+    },
+    {
+      "route": "/help-center",
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "response_status": 200,
+      "title": "Audentra — Open-source voice-to-structured-data",
+      "heading": "Help Center (Sample Data)",
+      "bodyFont": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "documentWidth": 1440,
+      "viewportWidth": 1440,
+      "fontStatus": "loaded",
+      "horizontal_overflow": false,
+      "main_html_bytes": 33292,
+      "console_errors": [],
+      "failed_requests": []
+    },
+    {
+      "route": "/help-center",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "response_status": 200,
+      "title": "Audentra — Open-source voice-to-structured-data",
+      "heading": "Help Center (Sample Data)",
+      "bodyFont": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "documentWidth": 545,
+      "viewportWidth": 390,
+      "fontStatus": "loaded",
+      "horizontal_overflow": true,
+      "main_html_bytes": 33292,
+      "console_errors": [],
+      "failed_requests": []
+    }
+  ],
+  "interactions": [
+    {
+      "route": "/privacy",
+      "state": "clipboard write success feedback"
+    },
+    {
+      "route": "/help-center",
+      "state": "title search combined with Getting Started category"
+    }
+  ]
+}

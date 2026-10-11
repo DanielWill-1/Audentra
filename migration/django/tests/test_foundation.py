@@ -57,8 +57,9 @@ def test_health_accepts_get_only() -> None:
     assert response.status_code == 405
 
 
-def test_no_legacy_pages_or_django_auth_are_mounted() -> None:
-    assert Client().get("/").status_code == 404
+def test_migrated_pages_and_auth_mount_without_django_admin() -> None:
+    assert Client().get("/").status_code == 200
+    assert Client().get("/dashboard").status_code == 302
     assert not any("AuthenticationMiddleware" in item for item in settings.MIDDLEWARE)
     assert "django.contrib.auth" not in settings.INSTALLED_APPS
     assert "django.contrib.admin" not in settings.INSTALLED_APPS
@@ -68,6 +69,53 @@ def test_live_probe_rejects_non_postgresql_connections() -> None:
     with patch("apps.core.health.connections", {"default": SimpleNamespace(vendor="sqlite")}):
         with pytest.raises(DatabaseBoundaryError, match="PostgreSQL"):
             inspect_database_alias("default")
+
+
+def test_health_sets_supabase_search_path_inside_its_transaction() -> None:
+    statements: list[str] = []
+
+    class Cursor:
+        def __enter__(self) -> "Cursor":
+            return self
+
+        def __exit__(self, *_args: object) -> None:
+            return None
+
+        def execute(self, statement: str) -> None:
+            statements.append(statement)
+
+        def fetchone(self) -> tuple[object, ...]:
+            return (
+                "django_data",
+                "public",
+                False,
+                False,
+                False,
+                False,
+                False,
+                True,
+                True,
+                False,
+                False,
+                True,
+                False,
+                True,
+                True,
+                False,
+                False,
+                True,
+            )
+
+    database = SimpleNamespace(vendor="postgresql", cursor=Cursor)
+    with (
+        patch("apps.core.health.connections", {"supabase": database}),
+        patch("apps.core.health.transaction.atomic") as atomic,
+    ):
+        assert inspect_database_alias("supabase") == {"alias": "supabase", "status": "ok"}
+
+    atomic.assert_called_once_with(using="supabase")
+    assert statements[0] == "SET LOCAL search_path = public"
+    assert statements[1].startswith("\nSELECT current_user,")
 
 
 def test_unknown_database_alias_is_rejected() -> None:

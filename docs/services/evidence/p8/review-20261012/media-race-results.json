@@ -1,0 +1,19 @@
+{
+  "captured_at": "2026-10-11T20:33:26.573Z",
+  "method": "Node VM; shipped p7_media.js; fake DOM/MediaRecorder; no browser, microphone, network or provider call",
+  "purpose": "Assertions confirm review defects in current code, not successful acceptance tests.",
+  "findings": [
+    {
+      "id": "P8-R1a",
+      "observed": "Old stop callback stops the new recording stream while its recorder remains recording."
+    },
+    {
+      "id": "P8-R1b",
+      "observed": "Out-of-order permission results leave the current microphone stream unstopped on pagehide."
+    },
+    {
+      "id": "P8-R2",
+      "observed": "No MediaRecorder error event handler is registered; recorder error cleanup is untested and unhandled."
+    }
+  ]
+}

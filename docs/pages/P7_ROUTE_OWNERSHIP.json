@@ -1,0 +1,250 @@
+{
+  "schema_version": 1,
+  "status": "final route registry verified",
+  "generated": "2026-10-12",
+  "source_manifest": "docs/parity/route-manifest.json",
+  "source_manifest_sha256": "ada8836ff8ba323888f1b99d42e7d720b66823c3975e008af104789d3923c9b7",
+  "route_count": 25,
+  "owner_counts": {
+    "django-page": 13,
+    "django-auth-excluded": 3,
+    "local-404": 1,
+    "django-app": 8,
+    "legacy-fallback": 0
+  },
+  "effective_fallback_count": 0,
+  "runtime_inventory": "migration/django/config/p6_route_ownership.json",
+  "routes": [
+    {
+      "path": "/",
+      "category": "public",
+      "owner": "django-page",
+      "url_name": "page-",
+      "django_view": "apps.pages.views.home_page",
+      "route_state": "local"
+    },
+    {
+      "path": "/features",
+      "category": "public",
+      "owner": "django-page",
+      "url_name": "page-features",
+      "django_view": "apps.pages.views.features_page",
+      "route_state": "local"
+    },
+    {
+      "path": "/industries",
+      "category": "public",
+      "owner": "django-page",
+      "url_name": "page-industries",
+      "django_view": "apps.pages.views.industries_page",
+      "route_state": "local"
+    },
+    {
+      "path": "/security",
+      "category": "public",
+      "owner": "django-page",
+      "url_name": "page-security",
+      "django_view": "apps.pages.views.security_page",
+      "route_state": "local"
+    },
+    {
+      "path": "/pricing",
+      "category": "public",
+      "owner": "django-page",
+      "url_name": "page-pricing",
+      "django_view": "apps.pages.views.pricing_page",
+      "route_state": "local"
+    },
+    {
+      "path": "/about",
+      "category": "public",
+      "owner": "django-page",
+      "url_name": "page-about",
+      "django_view": "apps.pages.views.about_page",
+      "route_state": "local"
+    },
+    {
+      "path": "/contact",
+      "category": "public",
+      "owner": "django-page",
+      "url_name": "page-contact",
+      "django_view": "apps.pages.views.contact_page",
+      "route_state": "local"
+    },
+    {
+      "path": "/status",
+      "category": "public",
+      "owner": "django-page",
+      "url_name": "page-status",
+      "django_view": "apps.pages.views.status_page",
+      "route_state": "local"
+    },
+    {
+      "path": "/help-center",
+      "category": "public",
+      "owner": "django-page",
+      "url_name": "page-help-center",
+      "django_view": "apps.pages.views.help_center_page",
+      "route_state": "local"
+    },
+    {
+      "path": "/documentation",
+      "category": "public",
+      "owner": "django-page",
+      "url_name": "page-documentation",
+      "django_view": "apps.pages.views.documentation_page",
+      "route_state": "local"
+    },
+    {
+      "path": "/terms",
+      "category": "public",
+      "owner": "django-page",
+      "url_name": "page-terms",
+      "django_view": "apps.pages.views.terms_page",
+      "route_state": "local"
+    },
+    {
+      "path": "/privacy",
+      "category": "public",
+      "owner": "django-page",
+      "url_name": "page-privacy",
+      "django_view": "apps.pages.views.privacy_page",
+      "route_state": "local"
+    },
+    {
+      "path": "/open",
+      "category": "public",
+      "owner": "django-page",
+      "url_name": "page-open",
+      "django_view": "apps.pages.views.open_page",
+      "route_state": "local"
+    },
+    {
+      "path": "/login",
+      "category": "authentication",
+      "owner": "django-auth-excluded",
+      "url_name": "login",
+      "django_view": "apps.accounts.views.login",
+      "route_state": "local"
+    },
+    {
+      "path": "/signup",
+      "category": "authentication",
+      "owner": "django-auth-excluded",
+      "url_name": "signup",
+      "django_view": "apps.accounts.views.signup",
+      "route_state": "local"
+    },
+    {
+      "path": "/forgot-password",
+      "category": "authentication",
+      "owner": "django-auth-excluded",
+      "url_name": "forgot-password",
+      "django_view": "apps.accounts.views.forgot_password",
+      "route_state": "local"
+    },
+    {
+      "path": "/reset-password",
+      "category": "authentication",
+      "owner": "local-404",
+      "url_name": "reset-password",
+      "django_view": "apps.accounts.views.reset_password",
+      "route_state": "intentional-http-404"
+    },
+    {
+      "path": "/dashboard",
+      "category": "application",
+      "owner": "django-app",
+      "url_name": "app-dashboard",
+      "django_view": "apps.application.views.dashboard",
+      "route_state": "verified-session-required"
+    },
+    {
+      "path": "/templates",
+      "category": "application",
+      "owner": "django-app",
+      "url_name": "app-templates",
+      "django_view": "apps.application.views.templates_page",
+      "route_state": "verified-session-required"
+    },
+    {
+      "path": "/scheduler",
+      "category": "application",
+      "owner": "django-app",
+      "url_name": "app-scheduler",
+      "django_view": "apps.application.views.scheduler",
+      "route_state": "verified-session-required"
+    },
+    {
+      "path": "/manage-schedules",
+      "category": "application",
+      "owner": "django-app",
+      "url_name": "app-manage-schedules",
+      "django_view": "apps.application.views.manage_schedules",
+      "route_state": "verified-session-required"
+    },
+    {
+      "path": "/scheduler-settings",
+      "category": "application",
+      "owner": "django-app",
+      "url_name": "app-scheduler-settings",
+      "django_view": "apps.application.views.scheduler_settings",
+      "route_state": "verified-session-required"
+    },
+    {
+      "path": "/filledtemplates",
+      "category": "application",
+      "owner": "django-app",
+      "url_name": "app-filledtemplates",
+      "django_view": "apps.application.views.filled_templates",
+      "route_state": "verified-session-required"
+    },
+    {
+      "path": "/AIVoiceAutoFill",
+      "category": "application",
+      "owner": "django-app",
+      "url_name": "app-aivoiceautofill",
+      "django_view": "apps.application.views.voice_autofill",
+      "route_state": "verified-session-required"
+    },
+    {
+      "path": "/activitylog",
+      "category": "application",
+      "owner": "django-app",
+      "url_name": "app-activitylog",
+      "django_view": "apps.application.views.activity_log",
+      "route_state": "verified-session-required"
+    }
+  ],
+  "fallback_count_progression": [
+    {
+      "checkpoint": "W1",
+      "effective_fallback_count": 10
+    },
+    {
+      "checkpoint": "W2",
+      "effective_fallback_count": 8
+    },
+    {
+      "checkpoint": "W3",
+      "effective_fallback_count": 8
+    },
+    {
+      "checkpoint": "W4",
+      "effective_fallback_count": 7
+    },
+    {
+      "checkpoint": "W5",
+      "effective_fallback_count": 6
+    },
+    {
+      "checkpoint": "W6",
+      "effective_fallback_count": 3
+    },
+    {
+      "checkpoint": "W7",
+      "effective_fallback_count": 0
+    }
+  ],
+  "runtime_resolution_verified": true
+}

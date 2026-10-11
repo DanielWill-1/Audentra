@@ -20,6 +20,8 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "apps.core.apps.CoreConfig",
     "apps.accounts.apps.AccountsConfig",
+    "apps.pages.apps.PagesConfig",
+    "apps.application.apps.ApplicationConfig",
     "apps.templates_app.apps.TemplatesAppConfig",
     "apps.scheduler.apps.SchedulerConfig",
     "apps.voice",
@@ -54,6 +56,18 @@ def _database_from_url(url: str, schema: str) -> dict[str, object]:
         raise ValueError("Database URL must be a PostgreSQL URL with a host.")
 
     query = parse_qs(parsed.query)
+    pooler_transaction = (
+        (parsed.hostname or "").endswith(".pooler.supabase.com") and parsed.port == 6543
+    )
+    options: dict[str, object] = {
+        "sslmode": query.get("sslmode", ["require"])[0],
+        "connect_timeout": 5,
+        "application_name": f"voiceform-django-{schema}",
+    }
+    if pooler_transaction:
+        options["prepare_threshold"] = None
+    else:
+        options["options"] = f"-c search_path={schema}"
     return {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": unquote(parsed.path.lstrip("/")) or "postgres",
@@ -64,12 +78,7 @@ def _database_from_url(url: str, schema: str) -> dict[str, object]:
         "CONN_MAX_AGE": 0,
         "CONN_HEALTH_CHECKS": True,
         "DISABLE_SERVER_SIDE_CURSORS": True,
-        "OPTIONS": {
-            "sslmode": query.get("sslmode", ["require"])[0],
-            "options": f"-c search_path={schema}",
-            "connect_timeout": 5,
-            "application_name": f"voiceform-django-{schema}",
-        },
+        "OPTIONS": options,
     }
 
 
@@ -128,6 +137,48 @@ DATA_UPLOAD_MAX_MEMORY_SIZE = P3_MAX_REQUEST_BYTES
 FILE_UPLOAD_MAX_MEMORY_SIZE = 2_621_440
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 1000
 P3_PROVIDER_TIMEOUT_SECONDS = float(os.getenv("P3_PROVIDER_TIMEOUT_SECONDS", "15"))
+
+# The P6 bridge stays opt-in even when a local legacy origin is configured.
+# It forwards only routes and assets listed in the reviewed P6 inventories.
+P6_LEGACY_FALLBACK_ENABLED = os.getenv("P6_LEGACY_FALLBACK_ENABLED", "false").lower() == "true"
+P6_LEGACY_ORIGIN = os.getenv("P6_LEGACY_ORIGIN", "").strip()
+P7_LEGACY_ROLLBACK_ROUTES = frozenset(
+    route.strip()
+    for route in os.getenv("P7_LEGACY_ROLLBACK_ROUTES", "").split(",")
+    if route.strip()
+)
+P7_PUBLIC_SESSION_ROUTES = frozenset(
+    {
+        "/",
+        "/features",
+        "/industries",
+        "/security",
+        "/pricing",
+        "/about",
+        "/contact",
+        "/status",
+        "/help-center",
+        "/documentation",
+        "/terms",
+        "/privacy",
+        "/open",
+    }
+)
+P7_PROTECTED_PATHS = frozenset(
+    {
+        "/dashboard",
+        "/templates",
+        "/scheduler",
+        "/manage-schedules",
+        "/scheduler-settings",
+        "/filledtemplates",
+        "/AIVoiceAutoFill",
+        "/activitylog",
+    }
+)
+P6_PREVIEW_ENABLED = os.getenv("P6_PREVIEW_ENABLED", "false").lower() == "true"
+P6_ASSET_INVENTORY = BASE_DIR / "config" / "p6_legacy_assets.json"
+P6_ROUTE_OWNERSHIP = BASE_DIR / "config" / "p6_route_ownership.json"
 
 SPEECH_BACKEND = os.getenv("SPEECH_BACKEND", "mock").lower()
 TTS_BACKEND = os.getenv("TTS_BACKEND", "mock").lower()

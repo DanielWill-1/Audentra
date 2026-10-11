@@ -1,0 +1,49 @@
+{% extends "base_app.html" %}
+{% load static %}
+{% block page_title %}Home · Audentra{% endblock %}
+{% block extra_head %}<script src="{% static 'js/p7_dashboard.js' %}" defer></script>{% endblock %}
+{% block content %}
+<div class="mx-auto max-w-7xl space-y-8 px-4 py-8 sm:px-6 lg:px-8">
+  <header class="flex flex-wrap items-end justify-between gap-4">
+    <div><p class="text-sm font-medium text-text-secondary">Your workspace</p><h1 class="mt-1 text-3xl font-semibold text-text-primary">What would you like to work on?</h1><p class="mt-2 text-text-secondary">Welcome back{% if profile.first_name %}, {{ profile.first_name }}{% endif %}{% if profile.last_name %} {{ profile.last_name }}{% endif %}.</p></div>
+    <a class="button-primary" href="/AIVoiceAutoFill">Start a voice form</a>
+  </header>
+  {% if notice %}<p role="status" class="notice-success">{{ notice }}</p>{% endif %}{% if error %}<p role="alert" class="notice-error">{{ error }}</p>{% endif %}{% if data_error %}<p role="status" class="notice-warning">{{ data_error }}</p>{% endif %}
+  <section aria-label="Workspace overview" class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+    {% for label,value in stats.items %}<article class="card p-5"><p class="text-sm text-text-secondary">{{ label|title }}</p><p class="mt-2 text-3xl font-semibold text-text-primary">{{ value }}</p></article>{% endfor %}
+  </section>
+  <section class="card flex flex-wrap items-center justify-between gap-5 p-6" aria-labelledby="start-voice-title"><div><p class="text-sm font-medium text-text-secondary">Ready to listen</p><h2 id="start-voice-title" class="mt-1 text-2xl font-semibold">Start with your voice</h2><p class="mt-2 max-w-2xl text-text-secondary">Speak naturally and Audentra will turn the conversation into structured form data.</p></div><div class="flex flex-wrap gap-3"><a class="button-primary" href="/AIVoiceAutoFill">Start voice form</a><a class="button-secondary" href="/AIVoiceAutoFill">Choose a template</a></div></section>
+  <section class="grid gap-4 sm:grid-cols-3" aria-label="Workspace shortcuts"><a class="card p-5" href="/templates"><h2 class="font-semibold">Choose template</h2><p class="mt-1 text-sm text-text-secondary">Browse your schemas</p></a><a class="card p-5" href="/filledtemplates"><h2 class="font-semibold">Filled forms</h2><p class="mt-1 text-sm text-text-secondary">Inspect completed records</p></a><a class="card p-5" href="/templates#create-template"><h2 class="font-semibold">Create template</h2><p class="mt-1 text-sm text-text-secondary">JSON Schema or Pydantic</p></a></section>
+  <section class="space-y-3" aria-labelledby="recent-forms-title" data-dashboard-recent-forms-root><div class="flex items-center justify-between"><div><h2 id="recent-forms-title" class="text-xl font-semibold">Recent forms</h2><p class="mt-1 text-xs text-text-muted">Browser-local examples and history; they do not change saved forms.</p></div><a class="text-sm font-medium underline" href="/filledtemplates">View all forms <span aria-hidden="true">→</span></a></div><ul class="card divide-y divide-border" data-dashboard-recent-forms></ul><p class="card p-5 text-sm text-text-secondary" data-dashboard-recent-forms-empty hidden>No recent forms yet. Start a voice form to see it here.</p><p class="text-xs text-text-muted" data-dashboard-recent-forms-status role="status" aria-live="polite"></p></section>
+  <div class="grid gap-6 lg:grid-cols-[minmax(0,1.5fr)_minmax(18rem,1fr)]">
+    <section class="card p-6" aria-labelledby="upcoming-title"><div class="flex items-center justify-between"><div><h2 id="upcoming-title" class="text-xl font-semibold">Upcoming schedule</h2><p class="mt-1 text-sm text-text-secondary">Your next scheduled events.</p></div><a class="text-sm font-medium underline" href="/scheduler">Open scheduler</a></div>
+      {% if upcoming_events %}<ul class="mt-5 divide-y divide-border">{% for event in upcoming_events %}<li class="flex flex-wrap items-center justify-between gap-3 py-4"><div><p class="font-medium">{{ event.title }}</p><p class="mt-1 text-sm text-text-secondary">{{ event.date|date:"M j, Y" }} at {{ event.time|time:"g:i A" }} · {{ event.type|title }}</p></div><span class="rounded-full bg-surface-subtle px-3 py-1 text-xs">{{ event.status|title }}</span></li>{% endfor %}</ul>{% else %}<p class="mt-6 text-sm text-text-secondary">No upcoming events. Create one in the scheduler.</p>{% endif %}
+    </section>
+    <section id="profile-settings" class="card p-6" aria-labelledby="profile-title"><h2 id="profile-title" class="text-xl font-semibold">Profile settings</h2><p class="mt-1 text-sm text-text-secondary">Update your account profile.</p>
+      <form method="post" class="mt-5 space-y-4">{% csrf_token %}<input type="hidden" name="action" value="save-profile">
+        <div class="grid gap-4 sm:grid-cols-2"><label class="field-label">First name<input class="field-input" name="first_name" value="{{ profile.first_name }}" maxlength="100"></label><label class="field-label">Last name<input class="field-input" name="last_name" value="{{ profile.last_name }}" maxlength="100"></label></div>
+        <label class="field-label">Company<input class="field-input" name="company" value="{{ profile.company }}" maxlength="200"></label><label class="field-label">Industry<input class="field-input" name="industry" value="{{ profile.industry }}" maxlength="120"></label>
+        <button class="button-secondary" type="submit">Save profile</button>
+      </form>
+    </section>
+  </div>
+  <section id="team" class="card p-6" aria-labelledby="team-title"><div class="flex flex-wrap items-center justify-between gap-4"><div><h2 id="team-title" class="text-xl font-semibold">Team workspace</h2><p class="mt-1 text-sm text-text-secondary">Team membership stays a demo state. Sharing and reviews use the existing template workspace.</p></div><button class="button-secondary" type="button" data-modal-open="team-demo" aria-haspopup="dialog" aria-expanded="false">Team options</button></div><div class="mt-4 flex flex-wrap gap-3"><a class="button-secondary" href="/templates#collaboration">Share with an existing account</a><a class="button-secondary" href="/templates#collaboration">Open reviews</a></div></section>
+  <section id="settings" class="card p-6" aria-labelledby="dashboard-settings-title" data-dashboard-settings>
+    <div class="mb-5"><p class="text-sm font-medium text-text-secondary">Browser preferences</p><h2 id="dashboard-settings-title" class="mt-1 text-xl font-semibold">Voice &amp; AI settings</h2><p class="mt-1 text-sm text-text-secondary">These preferences are saved in this browser and do not change provider settings.</p></div>
+    <form data-dashboard-preferences class="grid gap-4 sm:grid-cols-2">
+      <label class="field-label">Language<select class="field-input" name="language"><option>English (US)</option><option>English (UK)</option><option>Spanish</option><option>French</option><option>German</option></select></label>
+      <label class="field-label">Processing speed<select class="field-input" name="aiProcessingSpeed"><option>Real-time (Recommended)</option><option>Fast</option><option>Balanced</option><option>Accurate</option></select></label>
+      <label class="field-label">Industry specialization<select class="field-input" name="industrySpecialization"><option>Healthcare</option><option>Field Work &amp; Construction</option><option>Human Resources</option><option>Legal Services</option><option>Education</option><option>General Business</option></select></label>
+      <label class="field-label">Voice sensitivity <output data-sensitivity-output>7</output><input class="field-input" type="range" name="voiceSensitivity" min="1" max="10" step="1" value="7"></label>
+    </form>
+    <p class="mt-4 text-sm text-text-secondary" data-dashboard-settings-status role="status" aria-live="polite">Preferences are ready.</p>
+  </section>
+  <section class="space-y-4" aria-labelledby="templates-title"><div class="flex items-center justify-between"><h2 id="templates-title" class="text-xl font-semibold">Recent templates</h2><a class="text-sm font-medium underline" href="/templates">View all</a></div>
+    {% if templates %}<div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">{% for template in templates %}<article class="card p-5"><p class="text-xs uppercase tracking-wide text-text-muted">{{ template.category }}</p><h3 class="mt-2 font-semibold">{{ template.name }}</h3><p class="mt-2 line-clamp-2 text-sm text-text-secondary">{{ template.description|default:"Voice-powered form template" }}</p><a class="mt-4 inline-block text-sm font-medium underline" href="/AIVoiceAutoFill?template={{ template.id }}">Use template</a></article>{% endfor %}</div>{% else %}<p class="card p-5 text-sm text-text-secondary">No templates are available yet. Create a template to get started.</p>{% endif %}
+  </section>
+</div>
+<dialog id="team-demo" class="w-[min(34rem,calc(100vw-2rem))] rounded-xl border border-border bg-background p-0 shadow-xl" data-shell-dialog aria-labelledby="team-demo-title">
+  <div class="flex items-start justify-between gap-4 border-b border-border p-5"><div><p class="text-sm text-text-secondary">Team collaboration</p><h2 id="team-demo-title" class="mt-1 text-xl font-semibold">Choose a supported action</h2></div><button class="button-secondary" type="button" data-modal-close>Close</button></div>
+  <div class="space-y-4 p-5"><p class="text-sm text-text-secondary">Membership directories and email invitations are unavailable. You can share templates with existing account UUIDs and use the review queue.</p><a class="button-primary" href="/templates#collaboration">Open sharing and reviews</a><p class="text-xs text-text-muted">No invitation or membership change is created by this dialog.</p></div>
+</dialog>
+{% endblock %}

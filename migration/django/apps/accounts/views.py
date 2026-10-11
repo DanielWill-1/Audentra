@@ -20,7 +20,18 @@ from apps.accounts.services.tokens import (
     logout_session,
 )
 
-SAFE_NEXT_NAMES = {"auth-session", "change-password"}
+SAFE_NEXT_NAMES = {
+    "auth-session",
+    "change-password",
+    "app-dashboard",
+    "app-templates",
+    "app-scheduler",
+    "app-manage-schedules",
+    "app-scheduler-settings",
+    "app-aivoiceautofill",
+    "app-filledtemplates",
+    "app-activitylog",
+}
 
 
 def _template(
@@ -159,6 +170,24 @@ def forgot_password(request: HttpRequest) -> HttpResponse:
                 "site. If you can sign in, use Change password on your account page."
             ),
         },
+    )
+
+
+@never_cache
+@require_GET
+def reset_password(request: HttpRequest) -> HttpResponse:
+    # Recovery tokens are deliberately not consumed, rendered, or sent to the legacy site.
+    return _template(
+        request,
+        "accounts/message.html",
+        {
+            "title": "Reset link unavailable",
+            "message": (
+                "Password reset links are not active on this development site. "
+                "Return to sign in or use Change password after signing in."
+            ),
+        },
+        404,
     )
 
 

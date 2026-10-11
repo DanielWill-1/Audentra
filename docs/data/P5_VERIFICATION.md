@@ -1,7 +1,9 @@
 # P5 verification record
 
 **Date:** 2026-10-11  
-**Overall:** Partial; hosted transaction-pooler/user-switch verification remains open.
+**Overall:** **P5 verification complete** for the existing development target, including hosted shared transaction-pooler/user-switch verification.
+
+The earlier direct-host result is preserved in [P5_HOSTED_RESULTS_DIRECT.json](P5_HOSTED_RESULTS_DIRECT.json). The active [hosted result](P5_HOSTED_RESULTS.json) records the subsequent shared transaction-pooler run.
 
 ## Results
 
@@ -15,9 +17,10 @@
 | Native policy assertions | Both isolated schema paths | Passed | Owner, viewer, editor, admin, unrelated account, reviews, storage object access and role bounds; synthetic statements rolled back |
 | Django RLS context | Native PostgreSQL 18.4 scratch | Passed | `check_p5_rls_scratch.py`: context guard, verified identity, nested context, user switch and rollback |
 | Hosted schema application | Linked Audentra development project, PostgreSQL 17.6 | Passed | Two additive P5 migrations applied; post-apply inventory: 6 public app tables, RLS on all 6, 23 public policies, 4 Storage policies |
-| Hosted data/Storage probe | Linked development project, direct DB connection | Passed | [P5_HOSTED_RESULTS.json](P5_HOSTED_RESULTS.json); 3 synthetic accounts created and deleted; cleanup true; 0 emails sent |
-| Hosted transaction pooler | Not configured | **Pending** | Current `.env` uses a direct database host; no pooler identity/user-switch evidence |
+| Hosted data/Storage probe | Linked development project, shared transaction pooler | Passed | [P5_HOSTED_RESULTS.json](P5_HOSTED_RESULTS.json); 65 checks; 3 synthetic accounts created and deleted; cleanup true; 0 emails sent |
+| Hosted transaction-pooler isolation | Shared transaction pooler; restricted project-scoped `django_data` login | Passed | A/B/A verified role/claims and private-row isolation; same Django client connection reused; entry role/claims cleared; forced SQL error rolled back; identity recovered; all 65 checks and exact cleanup passed |
 | Django regressions | Native Windows / Python 3.12 | Passed | 90 pytest tests; `manage.py check`; focused P5/app mypy and Ruff commands recorded below |
+| P5 closure follow-up checks | Native Windows / Python 3.12 | Passed | 95 pytest tests; Django check; focused mypy over 60 source files; Ruff. Added coverage for exact pooler login/mode settings and transaction-local health search path |
 | Full broad mypy selection | Native Windows / Python 3.12 | Existing P4 probe type errors | `mypy apps scripts` also checks `check_p4_postgres_concurrency.py` and `check_p4_hosted_auth.py`; their unrelated legacy type findings remain. P5 files are checked with the focused command below |
 
 ## Reproducible local commands
@@ -47,7 +50,9 @@ $env:DJANGO_SETTINGS_MODULE = 'config.settings.dev'
 & $storePython scripts/check_p5_hosted_data.py
 ```
 
-The script uses fresh synthetic accounts and exact object paths, sends no email, and deletes only resources it created. Its `pooler_verified` field is derived from the configured Supabase shared transaction-pooler host and port. The latest committed result is direct-host evidence, not pooler evidence.
+The script uses fresh synthetic accounts and exact object paths, sends no email, and deletes only resources it created. Pooler mode detection is separate from behavioral verification: the probe sets `pooler_verified` true only after the restricted project-scoped login, A/B/A identity/claims and data isolation, role/claim cleanup, forced rollback, client reuse, existing checks and exact cleanup all pass. It records sanitized backend PID observations to distinguish client reuse from backend reuse.
+
+The Django data connection disables Psycopg prepared statements for shared transaction mode and omits a session startup search path. RLS requests and the fixed health probe set search paths inside their own transactions. Local regression tests cover connection-mode parsing and mode-specific settings. The hosted pooler probe passed on 2026-10-11; it reused Django's client connection across observations and recorded sanitized backend observations in the active result.
 
 ## Schema dump limitation
 

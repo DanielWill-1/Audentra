@@ -1,7 +1,7 @@
 # P5 Django data contracts
 
 **Reviewed:** 2026-10-11  
-**Status:** Implemented for development. The hosted transaction-pooler check remains open.
+**Status:** Implemented and verified for development, including the hosted shared transaction pooler (2026-10-11).
 
 These are new development contracts for the verified empty application schema. They are not recovered historical DDL. See [schema reconciliation](../schema-reconciliation.md), [operation inventory](P5_OPERATION_INVENTORY.md) and [P5 report](P5_REPORT.md).
 
@@ -11,7 +11,7 @@ These are new development contracts for the verified empty application schema. T
 - Application ORM work uses the `supabase` alias inside `apps.db.rls.rls_context`. The context verifies the principal, opens a transaction, sets transaction-local Supabase claims and `SET LOCAL ROLE authenticated`, and restores context on exit or error.
 - An ORM query guard rejects unscoped application queries on the `supabase` alias. P5-managed models use `managed = False`; Django migrations stay on the separate `default`/`django` alias.
 - The `django_data` login has no inherited `authenticated` privileges. It may `SET ROLE authenticated` within a transaction; grants are `INHERIT FALSE, SET TRUE`.
-- The direct hosted connection passed. A shared transaction-pooler URL has not been configured, so transaction-pooler behavior is not yet verified.
+- The hosted shared transaction-pooler probe passed with the restricted project-scoped `django_data` login. A/B/A claims and row isolation, transaction cleanup, forced rollback/recovery and Django client reuse are recorded in [P5_HOSTED_RESULTS.json](P5_HOSTED_RESULTS.json); the earlier direct-host run is preserved separately.
 
 ## Profiles
 

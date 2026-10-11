@@ -496,7 +496,7 @@ def test_password_change_requires_verified_session() -> None:
             {"password": "new secure passphrase", "confirm_password": "new secure passphrase"},
         )
     assert response.status_code == 302
-    assert response["Location"].startswith("/login/?next=")
+    assert response["Location"].startswith("/login?next=")
     auth.assert_not_called()
 
 

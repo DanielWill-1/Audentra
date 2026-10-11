@@ -1,435 +1,154 @@
-# P5 — Supabase Schema, Storage and Django Data Access
+# Finish P7 and P8 completely, then hand off to P9
 
-**Prepared:** 2026-10-11
+**Updated:** 2026-10-12 02:19:14 IST (Asia/Kolkata, UTC+05:30).
+**Status:** Ready for the next implementation request. This update prepares the brief only.
+**Scope:** Close every remaining requirement of all seven P7 waves and P8, including P7-R1–R5 and P8-R1–R6. Repair existing implementation and supply missing evidence. Successful execution must leave P7/P8 closed and P9 as the next phase. P8 is a separate prerequisite, not an eighth P7 wave.
+**Authority:** The owner explicitly expanded the P8-only closeout to complete P7 and P8 together. This supersedes the P8-only stopping boundary in the dated reviews/handoff and [previous closeout prompt](docs/services/P8_CLOSEOUT_PROMPT_2026-10-12.md). Existing review findings, development contracts and preservation limits still apply.
+**Baseline:** HEAD `acba9564752f1c121b81d17f59fca4d3f2b9b0f8` plus the preserved dirty tree. All 25 manifest routes have local owners; normal legacy fallback is zero. Fresh review passed 145 pytest tests and Django check. P7/P8 unconditional completion claims were superseded by dated reviews.
 
-**Mode for this handoff:** P5 implementation is in place. Continue only with the remaining P5 verification gate; do not repeat completed schema/service work or expand into P6/P7.
+When asked to execute this prompt, work continuously through the entire P7/P8 closeout without stopping after a finding or wave or requesting routine wave approvals. Do not stop at P8 with known P7 work outstanding. Read the archived all-wave brief as the full requirement baseline: the review findings are a minimum backlog, not a replacement for requirements that were missed by the review. Execute P9 only after a later owner request; prepare its brief at the end of successful closure.
 
-**Detailed continuation record:** [HANDOFF_P5_P6.md](HANDOFF_P5_P6.md) covers session history, remaining P5 proof, and preparation through P6. This file remains the active P5 brief.
+## Read first
 
-**Use:** Active P5 scope and handoff. The owner requested P5 implementation on 2026-10-11; actual work and the open gate are recorded in [P5_REPORT.md](docs/data/P5_REPORT.md).
+1. Latest owner instructions and applicable AGENTS.md; [dated handoff](HANDOFF_2026-10-12_020354_IST.md), [P8 review](docs/services/P8_REVIEW_2026-10-12.md), [P7 review](docs/pages/P7_REVIEW_2026-10-12.md), MIGRATION_STATE.md and MIGRATION_PLAN.md.
+2. P8_REPORT.md, P8_CONTRACTS.md, P8_VERIFICATION.md and historical evidence in `docs/services/`; archived [P7/P8 brief](docs/pages/P7_P8_IMPLEMENTATION_PROMPT.md), all seven P7 wave reports/verification/assets/ownership snapshots and aggregate reports/differences.
+3. P3_CONTRACTS.md/P3_REVIEW.md, P4_CONTRACTS.md/P4_REPORT.md, P5_CONTRACTS.md and P5_VERIFICATION.md; preserve accepted provider, identity, CSRF, byte-limit, RLS and legacy-input semantics.
+4. Mounted source `src/pages/AIVoiceAutoFill.tsx`, `src/services/ai.ts` and related field mapping/playback; actual Django `static/js/p7_media.js`, `p7_voice.js`, `apps/application/views.py`, `templates/application/voice_autofill.html`, `apps/api/`, `apps/speech/`, `apps/ai/`, `apps/voice/` and relevant tests/browser fixture settings.
+5. `docs/parity/flows.md`, route-manifest.json, P1_ACCEPTANCE.md, current source for every affected page/component and its mounted service path. Review the actual source control inventory rather than relying only on the prior reports.
+6. Existing `scripts/p8_media_check.cjs`, P7 browser/source runners, hosted route probe, route registry/resolver/rollback and W7 route tests. Read their mocks/bypasses before reusing them.
 
-**Authority:** Latest owner instructions, [MIGRATION_PLAN.md](MIGRATION_PLAN.md), [MIGRATION_STATE.md](MIGRATION_STATE.md), then this bounded implementation brief. Older conflicting directions do not override the current development scope.
+Record HEAD, dirty state and baseline. Keep original source/evidence in place. Historical mock/hosted results do not replace the actual missing checks below.
 
-## 1. Goal
+## Combined execution order and requirement matrix
 
-Give the existing Django application a reproducible Supabase application schema and a tested data layer for profiles, templates, scheduling, sharing, reviews, filled forms and template-file Storage.
+Baseline and requirement matrix → P8-R1–R6 repairs → P7 comparison and W3–W6 missing flows/hosted proof → W6 time-boundary checks → actual-page W7 voice/filled/activity closure → all-wave regression/comparison/ownership/rollback checks → final P7/P8 closure report and P9 prompt. Independent checks may be grouped, but repaired P8 must pass before W7 closes.
 
-Complete schema reconciliation before implementing application queries. Enforce database RLS using the verified Supabase identity, preserve application data, and leave the original application available for comparison.
+Create `docs/pages/P7_P8_CLOSURE_MATRIX.md` before implementation. Map every requirement/control in the archived brief and current source to wave/route, existing implementation, missing repair, actual test/evidence path, fixture type, outcome and any explicit pre-existing exception. Include every P7/P8 review ID. Reuse evidence only when it proves the same current behavior at the same boundary; service tests do not automatically prove a page interaction, and mock saves do not prove hosted persistence. Keep the matrix current throughout execution.
 
-P5 produces backend services and verification evidence for later pages. The shared website shell belongs to P6; dashboard, template, scheduler and other page migrations belong to P7. Finishing P5 does not mean those pages are migrated.
+### P7-R1: enforce source content and reachable behavior
 
-## 2. Accepted starting point
+Extend W3–W7 comparisons to enforce route-specific sections/order, headings, labels/fields, local destinations and meaningful control behavior. Retain the passing W1/W2 comparison/clipboard regressions. Normalize only justified presentation differences; explicitly register differences supported by the owner-approved development contracts. Do not blanket-allow current output, missing source sections or token differences. An implementation report calling a difference accepted is insufficient authority on its own.
 
-| Phase | Handoff |
+Add negative controls proving that removing a required section/control/destination or changing an expected field causes the comparison gate to fail. Inspect source and Django screenshots at 1440×900 and 390×844, including successful protected states. Check fonts, wrapping, mobile drawers, overflow, console errors, failed requests, keyboard/focus and no React/proxy bootstrap. Numeric pixel tolerances remain unapproved; record visual inspection without inventing a score. Correct missing preserved UI/flows as part of this task.
+
+### P7-R2: finish the required page and route flows
+
+Audit all seven waves, including W1/W2 regressions. The following W3–W6 checklist is mandatory; finish missing implementation as well as verification:
+
+| Wave | Required closeout |
 |---|---|
-| P0 | Complete per owner report; do not claim this brief independently reverified history cleanup or every provider rotation |
-| P1 | Finalized with accepted exceptions; retain the 25-route reference and accepted screenshots |
-| P2 | Django foundation under migration/django; dedicated django schema; restricted django_app and django_data logins |
-| P3 | Speech/extraction code corrections recorded; live provider/device evidence remains a later voice/parity gate |
-| P4 | Development Supabase Auth accepted by the owner; fresh signup/login/session/refresh/password-change/logout and HTMX verification recorded |
-| P5a | Baseline and guarded remediation implemented/applied; isolated baseline, empty-target replay, idempotence and RLS checks passed; linked target inventory refreshed |
-| P5b | Django data services and hosted direct-connection checks pass; transaction-pooler/user-switch verification remains open, so P5 is partial |
-
-Use [P4_REPORT.md](docs/auth/P4_REPORT.md) for actual P4 evidence and [the archived P4 brief](docs/auth/P4_IMPLEMENTATION_PROMPT.md) for its executed scope.
-
-P4 carryovers:
-
-- Exposed-key retirement remains approval-dependent. Replacement/local consumer cleanup does not prove revocation. Automatic approval review rejected broader revocation; do not retry or bypass it under P5 authorization.
-- Development signup confirmation is disabled with authorization. Reconsider it before production.
-- Email-based forgotten-password recovery remains unavailable. Disabling signup confirmation does not solve recovery.
-- These are recorded followups, not instructions to reopen accepted Auth or add SMTP during P5.
-
-The last recorded hosted catalog, dated 2026-10-10, had **zero public application tables and zero Storage buckets**. This is historical evidence, not permission to assume the target is still empty. Reinspect before drafting or applying changes.
-
-## 3. Non-negotiable constraints
-
-1. Development only; existing Supabase project and database remain intact.
-2. Supabase remains the sole Auth provider. Use the current Python SDK Auth/session implementation; no Django Auth, OAuth expansion or React Auth compatibility work.
-3. Native Windows and existing hosted Supabase tooling. No Docker, paid services, custom SMTP or new mandatory cloud subscription.
-4. Keep migration application code in migration/django. Preserve src, server, new pages, backups and original design/reference folders in place.
-5. Historical files in supabase/migrations, including P0 hardening, are read-only references. Append new remediation migrations; never insert a fabricated migration before an old timestamp.
-6. No project/database reset, application-table truncation, dropping existing data, bulk identity import, old-account testing or migration of historical customer rows.
-7. Existing database aliases remain separate: default for Django state; supabase for application data.
-8. Application models use managed = False. Django migrations must never create or modify Supabase application tables.
-9. No service_role, secret API key, postgres, supabase_admin, table-owner or BYPASSRLS connection in ordinary request data paths.
-10. Minimal JavaScript. No new frontend framework, browser token storage or frontend data migration.
-11. Use fresh generated test accounts and synthetic records. Clean up only exact resources created by the current verification run.
-12. Preserve unrelated working-tree changes. No commit, push, deployment, Git history rewrite or automatic key retirement is part of P5.
-
-## 4. Read and inventory before coding
-
-Read these sources in focused sections; check actual files and imports rather than assuming historical paths still exist.
-
-### Current authority and evidence
-
-- MIGRATION_PLAN.md: P5a/P5b, architecture constraints, decision register, folder preservation.
-- MIGRATION_STATE.md: current evidence and carryovers.
-- docs/foundation/django-owned-state.md, P2_REPORT.md and P2_REVIEW.md.
-- docs/auth/P4_REPORT.md, P4_CONTRACTS.md, P4_DEVELOPMENT_CONFIG.json and P4_HOSTED_FLOW_RESULTS.json.
-- docs/services/P3_REVIEW.md and P3_REPORT.md.
-- docs/parity/P1_ACCEPTANCE.md, route-manifest.json and testing-schema-summary.json.
-- docs/python-migration-plan.md: data-access design, P5a/P5b and call-site appendix. Current owner scope overrides its Docker, legacy Auth, activity and service-role fallback directions.
-- docs/tables.md: historical audit only. Inferred columns, public-bucket advice and the instruction to insert an old migration are not verified schema authority.
-
-### Actual implementation and references
-
-- migration/django/apps/db/router.py and apps/core/health.py.
-- config/settings, apps/accounts/principals.py, middleware.py, sessions.py and services/tokens.py.
-- Current API identity/CSRF boundary and regression tests.
-- supabase/bootstrap, supabase/config.toml, all existing migrations and Supabase SQL tests.
-- src/lib/templates.ts, scheduler.ts and both Supabase client modules.
-- Mounted template builder/card flows, src/pages/FilledTemplates.tsx and the filled-form save in src/pages/AIVoiceAutoFill.tsx.
-- Sharing/review callers, nested relation reads and actual profile operations.
-- Team components, dashboard/scheduler preferences and src/lib/activity.ts to identify mocks and deferred decisions.
-- Existing schema backup DDL only when needed, handled locally without displaying personal rows, identities or credentials.
-
-Produce **docs/data/P5_OPERATION_INVENTORY.md** with one row per actual operation:
-
-| Required field | Meaning |
-|---|---|
-| Source/caller | Exact current file/function and whether reachable, unused or demo |
-| Operation | Read/write/search/aggregate/bulk/Storage action |
-| Object/shape | Tables, columns, joins, JSON shape, expected result and ordering |
-| Actor | Owner, recipient, reviewer, member or anonymous |
-| Authorization | Required access and ownership fields |
-| Python target | Planned selector/service/model module |
-| Disposition | Core P5, pending decision, later phase or unused |
-| Evidence | Schema reference and planned verification |
-
-Reconcile the old “38 call sites” claim against the current source. Do not force an obsolete count or add 38 HTTP endpoints merely to match it.
-
-## 5. Decisions and bounded defaults
-
-Record facts, owner decisions and implementation defaults separately in **docs/data/P5_DECISIONS.md**.
-
-| Topic | P5 treatment |
-|---|---|
-| Current target | Existing owner-approved development project only; verify CLI link and private runtime configuration agree |
-| Q3: schema provenance | Establish a dated schema reference. For absent objects, specify a new development contract explicitly; do not present an inferred table as recovered historical DDL |
-| Historical identities/data | No import, preservation test or old-account acceptance requirement; existing application data still must not be deleted |
-| Profile data | Own-profile read/update and fresh-user initialization are core; exact columns come from reconciliation; no global email directory |
-| Q5: preferences | Browser state versus per-user persistence remains undecided; do not add preference schema until resolved |
-| Q6/Q7: team/demo flows | Inventory separately; no invented organization system, invitation email service or demo-to-real conversion without a bounded decision |
-| Existing share/review operations | Core under the accepted UUID account-sharing contract; viewer reads, editor edits content, admin manages shares, owner controls visibility/deletion; reviews are visible to author and template owner |
-| Q13: scheduling/timezone | Preserve verified date/time semantics; document ambiguity and defer product timezone correction to its decision gate |
-| Q16: generated share link | Record the currently unrouted link; no new anonymous/public share route in P5 |
-| Q21: activity | Retain the future feature and route reference; do not add an activity backend or seed fake activity in P5 |
-| Storage visibility | Owner accepted private file access scoped to owners and authorized share recipients. The private bucket and policies are implemented; visible-template discovery does not make a file public |
-
-Do not ask the owner again about already accepted development Auth, no Docker, original-folder preservation or retaining activity.
+| W3 Auth/navigation | Real accepted signup/login/session/remember-me/logout/password-change navigation; full-page/HTMX validation/errors, double submission, CSRF rejection, safe next paths, expired/refreshed/provider-unavailable sessions, protected routes, cache/referrer policy and verified public/app navigation. Exercise browser forms rather than only capturing them. Recovery/reset/OAuth retain accepted unavailable states; no email/OAuth integration. |
+| W4 Dashboard | Home/Team/Settings, mobile drawer, overview/cards/refresh, recent local activity, upcoming events and quick actions. Audit each reachable source dialog, open/close/Escape/focus/validation/result, empty/populated/error state and fixed safe navigation. Preserve local preferences and truthful demo/unavailable membership/invite behavior; contracted sharing/reviews must reach working P5-backed flows. |
+| W5 Templates | List/grid/search/category/sort; builder stepper/manual/upload paths; add/reorder/remove/required fields; persisted create/edit/duplicate/visibility/confirmed delete; template export bytes. Inspect actual source parsing semantics and preserve supported behavior without claiming unsupported parsing. Exercise private upload/download/replacement/delete, cacheNonce/revocation, cleanup failure feedback, UUID share/revoke/hide/role and review queue/request/content/status flows through actual routes. Verify owner/editor/viewer/admin/reviewer/unrelated boundaries without adding anonymous shares or membership/email backends. |
+| W6 Scheduler | Month/week, previous/next/today/date selection, create/edit/delete/cancel and validation/results; management search/type/status/sort, selection and row/bulk complete/cancel/export/delete. Verify every selected ID under the principal, reject mixed foreign IDs before any partial mutation, and check exported bytes and persisted changes. |
+| W6 Settings | Every tab, per-user local keys/defaults, Save/Reset, actual JSON import/export roundtrip, invalid JSON/unsupported values/storage failures and accessible errors. Integration/notification toggles remain honest local state. |
 
-If Q3 cannot be established from a trustworthy schema reference, prepare the proposed development schema from historical DDL plus observed caller contracts, label every inference, and obtain a focused decision on that concrete proposal before applying it. This is a schema-design decision, not permission to erase data. Continue independent inventory and verification preparation while it is pending.
+Finish the missing real development-project evidence using the already approved minimal synthetic fixture boundary. Extend the hosted Django route probe or a focused successor for private Storage transfers/replacement/revocation/delete and review transitions, and any persistence path not established by retained valid route evidence. Use fresh synthetic accounts and exact template/share/review/schedule/filled IDs and Storage object paths. Assert downloaded bytes/content, persisted rows and access denials; exercise actual Django session+CSRF routes. No paid speech provider or email delivery is needed.
 
-## 6. P5a — Reconcile and provision safely
+Use restricted project-scoped pooler identities and P5 verified-principal RLS. Privileged test credentials are allowed only at the existing authorized fixture provisioning/cleanup seam, never for application request data access. Track created resources before further operations and cleanup in finally blocks, including on failure. Delete only generated IDs/objects/accounts/sessions; record sanitized checks and exact cleanup. Preserve all pre-existing project data. Treat cleanup failure as an unresolved gate rather than claiming success. Do not replace hosted semantics with mocked permission checks.
 
-### A1. Read-only target and privilege preflight
+### P7-R3: timezone and date boundary proof
 
-1. Inspect environment variable names and configuration without printing secret values.
-2. Verify CLI/project/runtime target consistency and record the selected development project, date, database/CLI versions and pooler mode.
-3. Read catalog metadata for public tables, columns, constraints, indexes, functions, triggers, views, RLS flags, policies, grants and role memberships.
-4. Inspect the existing django schema/session placement and both connector roles without reading session tokens.
-5. Inventory bucket configuration and Storage policies; do not list or download unrelated objects.
-6. Record application row counts and targeted aggregate integrity checks only where relevant objects exist. Avoid personal-row exports and Auth-user inventories.
-7. Separate application-owned objects from provider-owned auth/storage machinery. Do not dump provider credentials or replace provider schema.
+Add deterministic UTC/local midnight, positive/negative offset and DST transition fixtures to scheduling selectors/routes/calendar/settings as applicable. Compare entered values, stored semantics, query date boundaries and displayed results against the source and P5 contract. Prove create/edit/filter/export behavior at those boundaries. Preserve entered date/time and established UTC-derived P5 semantics; document observed differences without introducing a new timezone product or schema.
 
-Outputs: **docs/data/P5_TARGET_INVENTORY.json** and sanitized **supabase/schema_dump/** references.
+### P7-R4/R5: W7 and the P8 dependency
 
-### A2. Establish reference and classify every delta
+The P8 actual-page journey below is also required W7 evidence. Complete Voice AutoFill template selection, capture/chat, ID/label field matching, editable review, return-to-chat state, incomplete feedback, successful real filled save/list/confirmed delete and safe retries. Prove unavailable/revoked template on extraction and save and unrelated-account denial. Include one minimal hosted Django-route filled-record persistence/read/delete check with deterministic extraction or pre-reviewed synthetic values; no live provider is needed. Keep browser mocks distinct from that persistence evidence.
 
-Compare current catalog, historical migrations, trustworthy backup schema DDL if necessary, and the operation inventory.
+Finish owner-scoped filled-template empty/populated/error/snapshot states and source navigation. Audit Activity's source-supported local/example feed, refresh/search/type/date filters and row deletion, preserving existing browser data and safe untrusted rendering. Document any bounded browser-key isolation correction. Do not add an activity database, audio-upload UI, filled export or new behavior for source-inactive controls.
 
-Pay particular attention to:
+Every remaining original requirement must have a concrete implementation/evidence disposition in the closure matrix. P7-R5 closes only after all P8 findings below pass. Known P7 gaps cannot be relabeled as P9 tasks to meet the completion target.
 
-- templates, scheduled_events and public users profiles.
-- template_shares, template_reviews and filled_templates: repository history does not provide complete creation DDL.
-- teams, team_members, team_invites and team_activity: historical objects do not automatically authorize implementing their demo UI.
-- Duplicate/broad policies, missing foreign keys and incomplete write policies.
-- P0 self-scoped profile hardening and any security-definer functions.
-- template-files bucket, object paths and actual Storage read/write requirements.
-- Scheduler date/time types, defaults, enums and JSON fields.
-- Sharing by email versus user_id, pending recipients, duplicate shares and review rating/status behavior.
+## 1. P8-R1: own each recording attempt's resources
 
-Classify each difference:
+Reproduce the review ordering cases before repair:
 
-1. Live-only objects.
-2. History-only objects.
-3. Divergent definitions.
-4. Configuration outside application DDL.
-5. Data-shape/integrity findings.
-6. Proposed new development contracts for genuinely absent objects; label these distinctly from recovered definitions.
+```powershell
+node docs/services/evidence/p8/review-20261012/reproduce_media_races.cjs
+```
 
-Each entry needs provenance, intended disposition, affected data/access, corresponding artifact and verification status. Missing repository DDL does not establish that a live table is absent. IF NOT EXISTS does not establish that an existing definition is correct.
+This probe asserts defects exist; exit zero is not acceptance. Preserve the recorded review artifact unchanged. Add separate regression tests that express correct behavior and fail on the current implementation.
 
-### A3. Draft two separate SQL paths
+- Delayed stop/data events from recording A after reset/start B must never stop B's stream or append A's chunks to B.
+- Out-of-order permission responses must never overwrite another attempt's active stream. Dispose stale streams directly using their own references.
+- Disable/guard repeated start while permission is pending; reset/pagehide invalidate pending attempts and release resources exactly.
+- Use per-attempt stream/recorder/chunks and generation guards before mutating current UI/resources. Keep the implementation small; no media framework.
+- Prove tracks stop on their own stop/reset/navigation/error, object URLs are revoked when replaced/discarded, and stale async responses cannot report success.
 
-**Fresh-install baseline:** supabase/baseline/00000000000000_baseline.sql.
+## 2. P8-R2: recorder failures and terminal controls
 
-- Application schema, constraints, indexes, triggers, grants and reviewed RLS definitions.
-- Required platform prerequisites documented separately; do not recreate Supabase Auth or Storage internals.
-- Baseline runs only on a verified fresh verification/new environment, never as a blind replacement of the linked project.
-- Include explicit Storage provisioning/configuration instructions where they cannot be represented safely in baseline SQL.
+Handle `MediaRecorder` asynchronous errors as well as construction/start failures. Surface accessible failure with typed-input fallback. Clean its stream/recorder/chunks/preview without touching newer attempts. Restore Record/Stop/Transcribe controls consistently for error, empty, oversized and reset outcomes. Exercise delayed error, delayed stop, empty/oversized capture and retry; prove no failed capture produces a stale success or upload.
 
-**Existing-target remediation:** new timestamped supabase/migrations/*_p5_reconcile_*.sql.
+Retain current audio/envelope byte caps and visible denial/no-device/no-recorder/unsupported states. No automatic mock success on a live failure.
 
-- Only verified missing objects and explicitly reviewed corrections.
-- Check actual definitions and fail clearly on unexpected drift.
-- Guard constraints, policies, indexes and table existence; validate preconditions for existing rows.
-- Do not silently skip incompatible types/constraints or overwrite existing policies.
-- No destructive schema/data changes. Any necessary replacement of an unsafe policy must be individually documented and authorized, retaining tested participant access.
-- Avoid broad PUBLIC grants, permissive true policies and elevated function ownership used as shortcuts.
-- Use transactional application where supported and document any nontransactional operation.
-- Do not blindly run supabase db push against the historical migration directory.
+## 3. P8-R3: TTS playback lifecycle
 
-Storage provisioning must name the exact bucket, visibility, limits, object-path contract and policies. Do not overwrite hosted Auth settings through a broad config push.
+Repair the existing `/api/tts` response playback in `p7_voice.js`. Keep an owned playback handle; pause/release previous audio on replacement/navigation/disposal and suppress late responses. Handle rejected `play()`, failed/invalid response, repeated click and pending request cancellation/replacement visibly. Use deterministic fake Audio/API responses for tests; no real provider call. Do not change TTS prompts/options/provider configuration.
 
-### A4. Verify in isolation, without Docker
+## 4. P8-R4: actual-page authenticated integration
 
-Choose an available free verification environment before executing SQL.
+Keep useful isolated harness checks, but add a test visiting the actual selected-template `/AIVoiceAutoFill?template=...` page and loading its real scripts. Use controlled synthetic identity/data and deterministic media/providers. Clearly label intercepted browser APIs separately from a server test that proves authenticated session+CSRF enforcement.
 
-- Prefer an already available isolated Supabase development environment or native PostgreSQL scratch database with the necessary roles/extensions/helpers documented.
-- Native PostgreSQL can verify application SQL and reconciliation; it does not replace real hosted Supabase Auth, API, Storage or pooler verification.
-- If the preflight proves the target has no application schema or data to restore, build the isolated remediation fixture from that verified empty application state plus minimal documented provider stubs. Record that this is an empty-target equivalent, not a full Supabase restore.
-- Never run db reset, manage.py flush, Django test-database creation or a fresh baseline against the linked application database.
-- Replay historical migrations only in isolation. Capture the first actual failure and its cause; do not edit history to make the replay appear successful.
-- Apply the baseline to a clean verification database and compare its catalog to the documented intended state.
-- Apply remediation to an isolated restored schema copy of the target, using synthetic data to exercise relevant constraints. Preserve constraints/policies/functions needed for a meaningful comparison; document any omitted platform objects.
-- Apply remediation again and prove no unexpected catalog change.
-- Normalize harmless dump noise without discarding semantic differences in grants, policies, constraints, function security or defaults.
+Required successful journey: select accessible template → record/stop/preview → multipart transcript → review transcript → browser chat `/api/ai/extract` → edit extracted field → submit reviewed values → filled list → confirmed delete. Verify returned data and field values, not just status messages. Capture meaningful successful states at desktop/mobile with legacy browser session/storage cleared. Assert no React bootstrap/fallback and no unexpected console/network/overflow failures.
 
-If no safe isolated environment is available, complete the artifacts and report the exact verification dependency. Do not substitute SQLite for RLS/SQL proof or silently waive the restored-copy gate.
+Add server request-boundary tests with `enforce_csrf_checks=True`, a real Django synthetic session containing the expected Supabase auth state, patched provider validation at the established seam, valid CSRF/marker/origin and **no Authorization header**. Prove accepted multipart reaches the deterministic transcriber; missing/expired session, wrong CSRF, disallowed origin/missing marker reject before provider access. Reuse valid P4 tests where they cover the exact contract; avoid fixture middleware that bypasses the boundary being asserted.
 
-### A5. Apply only the reviewed development changes
+Prevent stale/duplicate chat/media success and verify real page forms retain reviewed conversation/data state. Investigate separate save-form conversation fields, manual edits before subsequent chat and Return to chat navigation against mounted source semantics; make only fixes needed for this integrated flow. Recheck accessible template on save; test revoked/unreadable template and unrelated-user denial. Label mocked save/list/delete accurately; a mock result must not be reported as hosted persistence.
 
-After isolated proof and applicable authorization:
+The isolated P8 boundary requires no hosted provider call. The combined P7 task separately requires the minimal hosted Storage/review/filled persistence evidence above; a mocked browser journey cannot close those gates.
 
-1. Recheck target identity and catalog immediately before application.
-2. Retain a private scoped schema/config snapshot; use data backup only if a proposed operation actually needs it, without committing personal data.
-3. Apply the explicit reviewed remediation/provisioning artifacts through an administrative path separate from runtime.
-4. Compare post-application catalog, row-count preservation and RLS/grants against the intended state.
-5. Verify an unchanged second application.
-6. Record which exact statements/configuration were applied and which remain pending.
+## 5. P8-R5: deliberate codec and provider boundary
 
-An implementation request authorizes preparing and executing its safe, scoped development work. Still resolve missing schema/product decisions and obey tool approval rules before dependent writes. If automatic approval review rejects an action, report that rejection, continue unaffected work, and do not retry through another tool to bypass it.
+Inventory every advertised recorder MIME and the current P3/server/provider behavior. Parameterized WebM/Ogg do not match the current adapter's exact encoding-map keys; MP4 lacks an explicit entry. Add deterministic fake-provider request assertions for supported MIME parameters and byte limits. Normalize media-type parameters deliberately for backend configuration where appropriate while retaining truthful captured blob metadata; never relabel audio bytes.
 
-**P5a exit:** trustworthy reference/disposition, classified deltas, verified baseline and restored-copy remediation (or an empty-target equivalent where the verified target has no app schema/data), idempotence, preserved data, and exact target provisioning results. A written SQL file or successful SQL exit alone is insufficient.
+If a recorder format cannot be supported within the established P3 contract, remove it from advertised capture choices or show an explicit unsupported state. Do not introduce a transcoding service, dependencies or speculative codec support. Preserve existing supported JSON/base64 clients until P11 and existing provider/model/prompt/error semantics. Keep byte/MIME validation before provider access; any contract correction must be documented and covered by focused legacy regression tests. Mock transcription success alone is not codec proof, and no live/provider/device success is authorized or inferred.
 
-## 7. P5b — Implement the Django data layer
+## 6. P8-R6: physical-device checklist and honest evidence
 
-### B1. Prove the RLS boundary before feature services
+Create `docs/services/P8_DEVICE_CHECKLIST.md`: browser/version/OS, secure context, real granted/denied/no-device permission, supported recorder MIME, audible preview/TTS, stop/reset/repeat/background/navigation cleanup, empty/size/provider failure and transcript correctness. Include desktop/mobile dimensions, expected evidence, mock-versus-real columns and explicit **not run** status. Physical microphone/live provider execution belongs to later P9 acceptance; this prompt prepares that checklist.
 
-Implement under migration/django/apps/db:
+Update P8 contracts/report/verification with each review ID's disposition, exact commands, actual-page integration evidence, remaining device/provider limits and reproducible tests. Preserve all original 12-check and defect-reproduction artifacts; write new dated evidence separately, using configurable output directories where needed.
 
-- rls_context and require_rls_context.
-- A query-time guard rejecting unscoped application queries on the supabase alias.
-- Reviewed role/grant setup in separate administrative SQL.
-- Models routed to the correct alias; migrations on supabase remain denied.
+## Aggregate verification and closure deliverables
 
-Required behavior:
+Before fixing each reproduced behavior, establish a failing regression. Run focused tests during repair, then full isolated pytest, Django check, appropriate mypy/Ruff including new helpers/probes, syntax checks for changed JS/helpers, all-wave deterministic browser comparisons and actual-page integration. Build/verify pinned static output and collectstatic if source assets change. Verify request bytes/headers, exported/downloaded data, actual field state, persistence, role/session denial and exact cleanup. Run `git diff --check` after documentation updates. Avoid test assertions that simply mirror implementation without exercising the required behavior.
 
-1. Accept only a server-verified Supabase identity from the existing Auth boundary. A UUID or client-submitted user_id is not authentication.
-2. Open transaction.atomic on supabase. Set parameterized request.jwt.claims and SET LOCAL ROLE authenticated on the **same connection within that transaction**.
-3. Pin the supported role/search path; never accept a role or arbitrary claim dictionary from the browser.
-4. Construct only policy-required trusted claims. Email-based policies require a verified identity email; editable user metadata cannot grant permissions.
-5. Keep tokens in the existing server token service. Do not add JWTs to SupabaseUser, templates, responses or logs.
-6. Queries outside the context fail at execution time, including raw cursors and ORM queries.
-7. Reject nested contexts for different users; define and test same-user nesting and rollback behavior.
-8. Materialize selectors, aggregates and related data before leaving the context. Lazy queryset/template evaluation must not issue later unscoped queries.
-9. Reset transaction-local role/claims after success and failure. Prove user switching on reused connections and under the actual hosted pooler.
-10. Keep both logins restricted: no superuser, database/role creation, inherited broad privileges or BYPASSRLS. Only django_data receives the narrowly reviewed authenticated-role capability.
-11. Default keeps only Django-owned state access. Supabase cannot read django_session or Django bookkeeping.
-12. Do not fall back to service-role SQL plus application filters if this proof fails.
+Reconcile the runtime registry with the unchanged 25-path manifest, documented ownership and actual URL resolver; retain zero normal fallbacks and all Auth exclusions. Preserve representative public/protected exact-route rollback/restoration and encoded/method rejection checks, independent-session re-login limits, fixed origin/digests/header stripping and fail-closed behavior. Reuse valid browser rollback evidence; repeat affected checks if route/session/rollback implementation changes. Normal captures must use DEBUG=False, previews off and fallback disabled/unavailable.
 
-**Existing foundation integration:** apps/core/health.py currently requires no role memberships. Update its expectations narrowly for the reviewed P5 django_data membership, while retaining restrictions on django_app and unexpected memberships/grants. Provide a fixed metadata-only health inspection path that cannot become an arbitrary query bypass. Preserve /healthz and session behavior. Health must run outside a user's RLS context.
+Native local runner from `migration/django/`:
 
-The query guard must permit its own fixed transaction/connection setup safely, then enforce application access; do not add a publicly accessible skip_guard flag or heuristic SQL whitelist that allows application queries.
+```powershell
+$p8Python = Join-Path $env:LOCALAPPDATA 'Microsoft/WindowsApps/PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0/python.exe'
+$env:PYTHONPATH = (Resolve-Path -LiteralPath './.venv-p2/Lib/site-packages').Path
+$env:DJANGO_SETTINGS_MODULE = 'config.settings.test'
+& $p8Python -m pytest -q -p no:cacheprovider
+& $p8Python manage.py check
+& $p8Python -m mypy apps config tests
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/run_ruff.ps1 check apps config tests scripts
+```
 
-### B2. Models, selectors and write services
+Do not claim an environment-blocked check passed; use the actual tool escalation policy for a required blocked local process. No reinstall/broad cleanup just to avoid existing runner quirks.
 
-Suggested modules, adjusted to verified contracts:
+Deliver repaired code, meaningful tests and separate dated source/Django/browser/server/hosted evidence, completed closure matrix and device checklist. Update every affected wave report/verification/assets/ownership record, P7 aggregate report/verification/differences/route inventory, P8 contracts/report/verification and both review finding dispositions. Preserve original dated findings and historical results; append closure evidence rather than erasing them. Update MIGRATION_STATE.md, MIGRATION_PLAN.md, docs/prompt.md, readmes and a newly dated/time-stamped session handoff with consistent actual status.
 
-    migration/django/apps/db/rls.py
-    migration/django/apps/templates_app/{models,schemas,selectors,services}.py
-    migration/django/apps/scheduler/{models,schemas,selectors,services}.py
-    migration/django/apps/storage/services.py
-    migration/django/apps/accounts/{profile_selectors,profile_services}.py
-    migration/django/tests/unit/
-    migration/django/tests/rls/
-    migration/django/scripts/
+Produce `docs/pages/P7_P8_CLOSURE_REPORT.md` covering every requirement and review ID, repairs, exact commands/results, source/fixture revisions, runtime/settings, hosted checks/cleanup, route/rollback checks and evidence links. Distinguish deterministic versus hosted versus unrun physical/live results. Run an independent final read-through of the matrix and reports: existence of a route, screenshot, file or passing unrelated test is insufficient to close a requirement.
 
-Use small modules, explicit inputs/outputs and existing dependencies. Avoid a generic repository framework or parallel Auth implementation.
+### Completion gate and P9 handoff
 
-- Unmanaged models map verified table names, UUIDs, nullable columns, JSON fields, constraints and relationships.
-- Reads use selectors; mutations use services with explicit field allowlists and server actor ownership.
-- Ownership, reviewer/author identity and audit timestamps are server-controlled. Reject foreign-owner injection and permission escalation.
-- Return stable typed results or documented errors; do not expose SQL, keys, tokens or unrelated record existence.
-- Not-found and permission failures must remain consistent with the chosen access contract.
-- Parameterize search, dates, identifiers and limits; bound pagination/bulk sizes.
-- Preserve verified result ordering and relation behavior; avoid accidental N+1 queries or whole-table reads.
-- Validation applies to new writes without rewriting unrelated existing records.
+P7/P8 are complete only when all of the following are evidenced:
 
-### B3. Required operation families
+- All seven P7 wave requirements and P7-R1–R5 are implemented and verified within accepted development boundaries; all P8-R1–R6 have concrete passing dispositions.
+- Enforced source/control comparisons and negative controls pass; required actual-page interactions, accessibility/mobile checks, session/CSRF/object/role denials and timezone fixtures pass.
+- Required hosted route Storage/review/filled persistence evidence passes with exact cleanup; mock success is not counted as hosted proof.
+- The full regression/tool/static checks and all 25 route-owner/zero-fallback/rollback checks pass; current reports/indexes agree with the closure matrix.
+- Remaining items are exclusively established later-phase gates or explicit pre-existing accepted exceptions, such as physical-device/live-provider proof and full P9 release acceptance. No newly discovered required P7/P8 gap is hidden among those items.
 
-| Family | Required backend work |
-|---|---|
-| Profiles | Fresh-account own-profile initialization, own read/update and safe metadata mapping; prove repeat initialization is safe and cannot edit another user |
-| Templates | Create/read/list/update/delete, category filtering, visibility changes, search and verified relation reads |
-| Sharing | Create/remove/list sent/list received, visibility and role changes where the contract permits; enforce owner/recipient separation and duplicate behavior |
-| Reviews | Queue/list/create/update/list per template; preserve verified pending rating/status semantics and reviewer/owner access |
-| Scheduler | Create/detail/list/update/delete, date ranges, upcoming, status/type filters, completion/cancellation, stats/search and verified bulk operations |
-| Filled forms | Save/list/delete and supported detail reads; server-owned user_id and verified JSON structure; no voice recorder migration |
-| Template files | Bounded upload, authorized read/download and supported cleanup/replacement using acting-user Storage credentials |
+After this gate passes, archive this executed combined brief as `docs/pages/P7_P8_CLOSEOUT_PROMPT.md`, prepare `docs/parity/P9_IMPLEMENTATION_PROMPT.md` grounded in P1 acceptance/carryovers, MIGRATION_PLAN.md and the actual closure evidence, and replace root `prompt.md` with the ready-to-execute P9 brief. The P9 brief must cover full route/visual/behavior/data/Auth/RLS/Storage/provider/schema release acceptance, the explicit unrun physical-device/live-provider matrix and review/approval needs for any external actions. Do not run P9 in this task. Final report must state that P7/P8 are closed and P9 is next only when the gate actually passes.
 
-Implement every **core** inventory operation or report it pending explicitly. Pending product decisions must not be hidden as “implemented,” mocked successful writes or empty lists.
+If a genuinely required decision or external dependency remains unavailable, continue all independent authorized P7/P8 work, record its exact unresolved gate and report incomplete status. Do not prepare a P9-ready completion claim from a blocked or failed P7/P8 gate.
 
-For fresh profile initialization, choose one reconciled mechanism: reviewed Auth trigger or idempotent user-scoped service. Do not add two competing provisioning paths. A broken profile trigger must not break signup silently; exercise the P4 signup regression after provisioning. Do not backfill every historical account.
+## Bounds and stop point
 
-### B4. Sharing/review policy contracts
+Native Windows; application edits in `migration/django/`, P7 evidence in `docs/pages/`, P8 evidence in `docs/services/`. Preserve the original app, assets, design references and existing dirty edits. Keep session-derived authority, CSRF/RLS, private Storage and field-review semantics. No bearer token bridge, schema/auth provider change, email/OAuth/team/reminder integration, audio-upload/new filled export feature, dependency upgrade, Docker, paid/live provider call, commit/push, deployment or legacy deletion. Minimal development-project hosted fixture verification is authorized only as scoped above.
 
-Before implementing mutations, write an operation-by-role table in **docs/data/P5_RLS_MATRIX.md**.
-
-At minimum distinguish owner, intended recipient/reviewer, unrelated authenticated user and anonymous user. Where applicable distinguish viewer/editor/admin and pending/active membership.
-
-- A share must not permit sharing somebody else's template.
-- A recipient must not grant themselves higher privileges, transfer ownership or remove other recipients' shares.
-- Owner/recipient reads of referenced templates must agree with share permissions; having access to a share row alone is insufficient.
-- Review creation/update must verify eligibility and actor identity. Do not expose all users' reviews because a historical SELECT policy was broad.
-- Email-based access must define normalization, verified-email source and pending-recipient behavior.
-- Prevent recursive team policies and privilege escalation through mutable membership fields where teams are in approved scope.
-
-Necessary policy corrections belong to the P5a reconciliation artifacts and verification. Return to that gate for a discovered deficiency; do not alter policies ad hoc while writing feature services.
-
-### B5. Storage adapter
-
-Use the official Supabase Python SDK or its supported Storage client with the **acting user's access JWT** and configured publishable key. Isolate client auth state per operation and use finite timeouts. Reuse P4's token/refresh boundary rather than introducing browser sessions or a second token cache.
-
-- Store bucket/object identifiers as the authoritative reference, not an arbitrary caller-provided external URL.
-- Validate supported file type/size and path input; use server-generated identifiers.
-- Establish an ownership-safe path contract in P5a. The old templates/{templateId}.{ext} path is a reference, not proof of safe ownership.
-- Prove owner writes and intended recipient reads; reject traversal, foreign paths and unauthorized overwrite/delete.
-- Private reads use authenticated download or bounded signed URLs. A public bucket intentionally exposes public reads and must be documented and tested as such.
-- Never claim private RLS read protection for public asset URLs.
-- Keep database/Storage operations consistent: handle upload failures, rejected record writes and deletion failures with bounded compensation/retry behavior. Do not delete an unrelated object as compensation.
-- Do not mutate storage.objects directly as a substitute for Storage APIs or RLS verification.
-
-## 8. Verification required during implementation
-
-This brief explicitly requires focused tests and relevant regression checks when implementation is authorized. Documentation preparation alone does not authorize hosted writes.
-
-### Offline/unit checks
-
-- Input validation, JSON/date conversions, search parameterization, result/error contracts.
-- Server-controlled actor fields and rejected permission escalation.
-- Schema-diff normalization and drift detection, plus remediation guards.
-- Context state, nesting, rollback and lazy evaluation behavior.
-- Storage failure compensation with exact synthetic object references.
-- Model routing and migration denial for unmanaged/application tables.
-- Static review for runtime elevated credentials, logs, browser tokens and unsafe SQL.
-- Relevant existing regression suite, lint/type/framework/lock/static checks using the current project commands.
-
-SQLite or mock checks are useful unit evidence; they do not satisfy PostgreSQL RLS, pooler, Supabase Storage or hosted acceptance.
-
-### Real PostgreSQL/Supabase checks
-
-Use at least two fresh generated accounts plus anonymous access; add a third if unrelated-user and recipient cases cannot be separated with two. No emails, legacy accounts or paid speech calls are needed.
-
-1. Baseline/catalog equivalence, restored-copy remediation and repeat-application proof.
-2. Authenticated role/claims on the actual configured pooler; auth.uid resolves to the acting account.
-3. Out-of-context raw/ORM queries rejected and no app access through the raw connector role.
-4. Correct allow/deny matrix for SELECT/INSERT/UPDATE/DELETE on each in-scope table.
-5. Own-profile protection, fresh signup provisioning and no global profile/email enumeration.
-6. Ownership spoofing, share/review role escalation and foreign-reference attacks rejected.
-7. User A → user B → no context on reused connections; include rollback/failure paths and concurrent requests.
-8. Default/supabase alias separation and unchanged session/refresh/logout behavior.
-9. CRUD/search/filter/stat/relation results compared with verified contracts using synthetic fixtures.
-10. Storage upload/download/deletion and owner/non-owner/anonymous behavior under the approved visibility model.
-11. Permission failures produce no unauthorized partial write or destructive compensation.
-12. Real P4 signup/login/protected-session/password-change/logout regression after schema/grant changes.
-
-Differential comparison may use the preserved helper behavior and a small user-scoped reference client against synthetic records. No React Auth handoff or full old-page login harness is required. Where old behavior is insecure, broken or mock-only, document the intended contract and explicit discrepancy instead of reproducing it.
-
-Hosted probes must opt in, verify the exact development target, track created account/row/object IDs and clean only those resources in finally blocks. Use administrative credentials solely for separate provisioning or exact probe cleanup. Ordinary assertions must run as the user, not as admin.
-
-Record test command, date, environment, result, sanitized artifact and limitations. A skipped check remains pending. Do not delete generated Auth accounts before cleaning their owned Storage objects and required fixtures.
-
-## 9. Deliverables and completion gates
-
-### Required artifacts
-
-| Artifact | Contents |
-|---|---|
-| docs/data/P5_OPERATION_INVENTORY.md | Audited current call sites and disposition |
-| docs/data/P5_DECISIONS.md | Provenance, owner choices, bounded defaults, unresolved scope |
-| docs/data/P5_TARGET_INVENTORY.json | Sanitized dated target/catalog/config metadata |
-| supabase/schema_dump/ | Sanitized schema references, replay result and classified diffs |
-| supabase/baseline/00000000000000_baseline.sql | Verified fresh-install application baseline |
-| New supabase/migrations/*_p5_reconcile_*.sql | Guarded reviewed existing-target remediation |
-| docs/schema-reconciliation.md | Reference provenance, per-delta disposition, application/verification procedure |
-| docs/data/P5_CONTRACTS.md | Python operation inputs/outputs, actor/access rules and Storage contract |
-| docs/data/P5_RLS_MATRIX.md | Expected and actual per-role access, including denial cases |
-| docs/data/P5_VERIFICATION.md | Commands/results, environments, baseline/idempotence/RLS/Storage proof |
-| docs/data/P5_REPORT.md | P5a/P5b status, implemented operations, applied changes, limitations and next gate |
-| MIGRATION_STATE.md / MIGRATION_PLAN.md | Actual completion state and carryovers |
-| migration/django/README.md | Native run/test setup, config variable names and data-layer usage |
-
-No secret values, personal rows, raw JWTs, database passwords or complete Auth exports in these artifacts. Schema-only exports still need review for sensitive defaults/function bodies.
-
-### Current execution status (2026-10-11)
-
-- The fresh baseline + Storage policy artifact and both P5 migrations have passed isolated native PostgreSQL checks. Their normalized public/Storage schema-only dumps match exactly; empty-target remediation was also applied twice and did not change the normalized dump on the second application. The linked development project now has six application tables with RLS, 23 public policies and four Storage policies.
-- Django profile, template, share, review, scheduler, filled-form and private-file services are implemented. The hosted direct-connection synthetic probe passed and cleaned its three accounts.
-- P5 remains partial because the required hosted shared-transaction-pooler user-switch proof has not run. The current local `DJANGO_SUPABASE_DATABASE_URL` is direct.
-- To close the gate, use the exact `django_data` shared transaction-pooler connection string shown by Supabase Dashboard → Connect in the ignored `migration/django/.env`, then rerun `scripts/check_p5_hosted_data.py`. Keep credentials local. Do not invent/compose the pooler host, widen the runtime role for `pg_dump`, or mark the direct-host result as pooler proof.
-- [P5_VERIFICATION.md](docs/data/P5_VERIFICATION.md) records the commands and exact evidence. [P5_REPORT.md](docs/data/P5_REPORT.md) is the as-built status.
-
-Supabase CLI's linked dump unexpectedly attempted Docker and was stopped. A native schema-only dump using the restricted `django_data` login was denied table locks, as expected for that least-privilege role. No database grants were widened; the dated catalog JSON plus reviewed SQL are the current hosted schema references.
-
-### P5a complete only when
-
-- Reference/rebuild disposition and dependent schema decisions are recorded.
-- Every relevant delta is classified; no inferred DDL is falsely labeled authoritative.
-- Fresh baseline matches the intended catalog. Remediation matches a restored-copy catalog; when the verified target has no application schema/data to restore, use an isolated equivalent empty application schema with minimal platform stubs and state that this is not a full Supabase restore.
-- A second remediation application is unchanged.
-- Exact development-target changes and data preservation are verified.
-- Storage configuration is established for the approved contract.
-- Original migration history remains unchanged.
-
-### P5b complete only when
-
-- P5a is complete for every implemented operation.
-- Hosted role/claims/pooler/query-guard/alias proof passes.
-- All core operation families are implemented and verified under real user RLS.
-- Sharing/reviews permit intended participants while denying unrelated access and escalation.
-- Real Storage round trips and failure handling pass.
-- Fresh profile provisioning and P4 Auth regressions pass.
-- Relevant regression checks pass, with pre-existing failures distinguished from introduced failures.
-- Remaining feature decisions and later production/security followups are explicit.
-
-If a required core service or mandatory verification is blocked, report **P5 partial**, identify the precise dependency, and leave the affected gate open. Optional/later features must have an explicit disposition; do not expand scope to finish them.
-
-## 10. Rollback, handoff and execution behavior
-
-Preserve the old source as reference throughout implementation. It is not a data rollback mechanism.
-
-- Code/runtime rollback uses the previous code/config with compatible schema.
-- Newly created empty synthetic verification resources can be cleaned by exact ID.
-- Existing application data is never restored from stale personal dumps, deleted or replaced as a convenience.
-- Correct schema/policy issues through reviewed forward changes. Do not claim additive DDL has no authorization or integrity risk.
-- If a write fails, inspect the real partial state before retrying.
-
-Work in small reviewable steps: inventory → schema decision/reference → isolated schema proof → scoped provisioning → RLS proof → feature services → hosted/regression checks → report.
-
-Provide concise progress updates and continue independent work while a narrow decision is pending. Explain concrete blockers, including unavailable native verification tooling or automatic approval rejection. Avoid repeatedly diagnosing accepted P4 or asking for broad “go ahead” confirmation.
-
-Finish with the implemented operation list, exact schema/config changes, verification results, remaining limitations and the next phase. P6 is the next shared rendering phase after this backend work; P7 page waves retain their dependency gates.
-
-Do not overwrite this prompt with a P6 implementation brief or begin P6/P7 unless the owner requests that next handoff.
-
-## Official references to verify during execution
-
-- [Supabase RLS and trusted claims](https://supabase.com/docs/guides/database/postgres/row-level-security).
-- [Supabase user/profile management](https://supabase.com/docs/guides/auth/managing-user-data).
-- [Supabase Storage access control](https://supabase.com/docs/guides/storage/security/access-control).
-- [Supabase bucket visibility](https://supabase.com/docs/guides/storage/buckets/fundamentals).
-- [PostgreSQL role membership](https://www.postgresql.org/docs/current/role-membership.html); use documentation matching the actual hosted PostgreSQL version.
-
-Verify current SDK and platform behavior against official documentation when implementing. The local role, pooler and access matrix must be demonstrated on this project's configuration.
+Finish P7 and P8 together, with no known requirement left outstanding, then prepare the P9 handoff/brief and stop. The latest request updates this prompt only; implementation begins when the owner asks to execute it. P9 execution, P10 deployment/soak and P11 retirement remain later scopes.

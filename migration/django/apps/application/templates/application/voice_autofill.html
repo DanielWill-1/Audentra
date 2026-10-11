@@ -1,0 +1,36 @@
+{% extends "base_app.html" %}
+{% load static %}
+{% block page_title %}Voice form · Audentra{% endblock %}
+{% block extra_head %}<script src="{% static 'js/p7_voice.js' %}" defer></script><script src="{% static 'js/p7_media.js' %}" defer></script>{% endblock %}
+{% block content %}
+<div class="mx-auto max-w-6xl space-y-6 px-4 py-8 sm:px-6 lg:px-8">
+  <header><p class="text-sm text-text-secondary">Fill a form naturally</p><h1 class="mt-1 text-3xl font-semibold">AI voice form</h1><p class="mt-2 text-text-secondary">Choose a template, record or type, then review every field before saving.</p></header>
+  {% if error %}<p role="alert" class="notice-error">{{ error }}</p>{% endif %}{% if notice %}<p role="status" class="notice-success">{{ notice }}</p>{% endif %}
+  {% if not selected_template %}
+    <section class="card p-6" aria-labelledby="choose-template"><h2 id="choose-template" class="text-xl font-semibold">Choose a template</h2><p class="mt-1 text-sm text-text-secondary">Only templates available to this account are shown.</p><div class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{% for template in templates %}<article class="rounded-xl border border-border p-4"><h3 class="font-semibold">{{ template.name }}</h3><p class="mt-1 text-sm text-text-secondary">{{ template.description|default:template.category }}</p><a class="button-secondary mt-4" href="/AIVoiceAutoFill?template={{ template.id }}">Use template</a></article>{% empty %}<p class="text-sm text-text-secondary">No available templates. Create one first.</p>{% endfor %}</div></section>
+  {% else %}
+    <div data-voice-root data-template-name="{{ selected_template.name }}" data-fields-json="{{ fields_json }}" data-api-marker="{{ api_marker }}" data-max-audio-bytes="{{ max_audio_bytes }}">
+      <div class="grid gap-6 lg:grid-cols-2">
+        <section class="card space-y-4 p-5" aria-labelledby="assistant-title"><div><p class="text-sm text-text-secondary">{{ selected_template.category|title }}</p><h2 id="assistant-title" class="text-xl font-semibold">{{ selected_template.name }}</h2></div>
+          <div data-chat-messages class="max-h-96 space-y-3 overflow-y-auto rounded-lg bg-surface-subtle p-4" aria-live="polite">{% for message in conversation %}<article class="rounded-lg bg-white p-3"><p class="text-xs font-medium uppercase text-text-muted">{% if message.type == "user" %}You{% else %}Assistant{% endif %}</p><p class="mt-1 whitespace-pre-wrap text-sm">{{ message.content }}</p></article>{% empty %}<p class="text-sm text-text-secondary">Describe the details you want to add to this form.</p>{% endfor %}</div>
+          <form method="post" data-voice-chat-form class="space-y-3">{% csrf_token %}<input type="hidden" name="action" value="extract"><input type="hidden" name="template_id" value="{{ selected_template.id }}"><input type="hidden" name="conversation_json" value="{{ conversation_json }}"><input type="hidden" name="form_data" value="{{ form_data_json }}"><label class="field-label">Message<textarea class="field-input" name="message" rows="3" maxlength="4000" data-voice-message placeholder="For example: My name is Ana and I prefer email contact."></textarea></label><div class="flex flex-wrap gap-2"><button class="button-primary" type="submit">Send to assistant</button><button class="button-secondary" type="button" data-record-start>Record</button><button class="button-secondary" type="button" data-record-stop disabled>Stop</button><button class="button-secondary" type="button" data-record-transcribe disabled>Transcribe recording</button><button class="button-secondary" type="button" data-record-reset>Reset recording</button></div><audio class="w-full" controls data-audio-preview hidden></audio><p data-media-status class="text-sm text-text-secondary" role="status" aria-live="polite"></p></form>
+          <details><summary class="cursor-pointer text-sm font-medium">Audio and provider status</summary><p class="mt-2 text-sm text-text-secondary">The recorder uses your browser microphone and the configured P3 service. If recording or transcription is unavailable, enter the same information in the message field.</p></details>
+        </section>
+        <section class="card p-5" aria-labelledby="review-fields"><div class="flex items-start justify-between gap-3"><div><h2 id="review-fields" class="text-xl font-semibold">Review form fields</h2><p class="mt-1 text-sm text-text-secondary">Edit extracted values before saving.</p></div><a class="text-sm font-medium underline" href="/AIVoiceAutoFill?template={{ selected_template.id }}">Return to chat</a></div>
+          <form method="post" class="mt-4 space-y-4">{% csrf_token %}<input type="hidden" name="action" value="save"><input type="hidden" name="template_id" value="{{ selected_template.id }}"><input type="hidden" name="conversation_json" value="{{ conversation_json }}">
+            {% for field in field_rows %}<label class="field-label">{{ field.label|default:field.id }}{% if field.required %}<span class="text-red-700">Required</span>{% endif %}
+              {% if field.type == "textarea" %}<textarea class="field-input" rows="3" name="field_{{ field.id }}" {% if field.required %}required{% endif %}>{{ field.value }}</textarea>
+              {% elif field.type == "select" %}<select class="field-input" name="field_{{ field.id }}" {% if field.required %}required{% endif %}><option value="">Choose an option</option>{% for option in field.options %}<option value="{{ option }}" {% if field.value == option %}selected{% endif %}>{{ option }}</option>{% endfor %}</select>
+              {% elif field.type == "checkbox" %}<input type="checkbox" name="field_{{ field.id }}" value="true" {% if field.checked %}checked{% endif %}>
+              {% elif field.type == "radio" %}<select class="field-input" name="field_{{ field.id }}" {% if field.required %}required{% endif %}><option value="">Choose an option</option>{% for option in field.options %}<option value="{{ option }}" {% if field.value == option %}selected{% endif %}>{{ option }}</option>{% endfor %}</select>
+              {% else %}<input class="field-input" type="{% if field.type == 'email' %}email{% elif field.type == 'number' %}number{% elif field.type == 'date' %}date{% else %}text{% endif %}" name="field_{{ field.id }}" value="{{ field.value }}" {% if field.required %}required{% endif %}>{% endif %}
+            </label>{% empty %}<p class="text-sm text-text-secondary">This template has no fields. Add fields before filling it.</p>{% endfor %}
+            {% if field_rows %}<button class="button-primary" type="submit">Save filled form</button>{% endif %}
+          </form>
+        </section>
+      </div>
+      <p class="text-xs text-text-muted">Speech and AI behavior depends on the configured development provider. Mock responses are test evidence only and are not live-provider proof.</p>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

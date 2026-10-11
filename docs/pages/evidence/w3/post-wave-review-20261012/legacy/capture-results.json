@@ -1,0 +1,151 @@
+{
+  "captured_at": "2026-10-11T19:01:46.583Z",
+  "source": "Current React/Vite routes with intercepted Supabase Auth/PostgREST synthetic fixture responses",
+  "fixture_identity": "Anonymous source-browser state; Auth forms do not use a synthetic account",
+  "fixture_data": "Auth pages captured without a signed-in session; no credentials were submitted",
+  "base_url": "http://127.0.0.1:15573",
+  "browser": "148.0.7778.96",
+  "waves": {
+    "w3": {
+      "wave": "W3",
+      "pages": [
+        {
+          "route": "/login",
+          "viewport": {
+            "name": "desktop",
+            "width": 1440,
+            "height": 900
+          },
+          "response_status": 200,
+          "url": "/login",
+          "title": "Audentra — Open-source voice-to-structured-data",
+          "heading": "Welcome back",
+          "document_width": 1440,
+          "viewport_width": 1440,
+          "console_errors": [],
+          "failed_requests": [],
+          "screenshot": "login-desktop.png"
+        },
+        {
+          "route": "/login",
+          "viewport": {
+            "name": "mobile",
+            "width": 390,
+            "height": 844
+          },
+          "response_status": 200,
+          "url": "/login",
+          "title": "Audentra — Open-source voice-to-structured-data",
+          "heading": "Welcome back",
+          "document_width": 390,
+          "viewport_width": 390,
+          "console_errors": [],
+          "failed_requests": [],
+          "screenshot": "login-mobile.png"
+        },
+        {
+          "route": "/signup",
+          "viewport": {
+            "name": "desktop",
+            "width": 1440,
+            "height": 900
+          },
+          "response_status": 200,
+          "url": "/signup",
+          "title": "Audentra — Open-source voice-to-structured-data",
+          "heading": "Create your account",
+          "document_width": 1440,
+          "viewport_width": 1440,
+          "console_errors": [],
+          "failed_requests": [],
+          "screenshot": "signup-desktop.png"
+        },
+        {
+          "route": "/signup",
+          "viewport": {
+            "name": "mobile",
+            "width": 390,
+            "height": 844
+          },
+          "response_status": 200,
+          "url": "/signup",
+          "title": "Audentra — Open-source voice-to-structured-data",
+          "heading": "Create your account",
+          "document_width": 390,
+          "viewport_width": 390,
+          "console_errors": [],
+          "failed_requests": [],
+          "screenshot": "signup-mobile.png"
+        },
+        {
+          "route": "/forgot-password",
+          "viewport": {
+            "name": "desktop",
+            "width": 1440,
+            "height": 900
+          },
+          "response_status": 200,
+          "url": "/forgot-password",
+          "title": "Audentra — Open-source voice-to-structured-data",
+          "heading": "Reset Your Password",
+          "document_width": 1440,
+          "viewport_width": 1440,
+          "console_errors": [],
+          "failed_requests": [],
+          "screenshot": "forgot-password-desktop.png"
+        },
+        {
+          "route": "/forgot-password",
+          "viewport": {
+            "name": "mobile",
+            "width": 390,
+            "height": 844
+          },
+          "response_status": 200,
+          "url": "/forgot-password",
+          "title": "Audentra — Open-source voice-to-structured-data",
+          "heading": "Reset Your Password",
+          "document_width": 390,
+          "viewport_width": 390,
+          "console_errors": [],
+          "failed_requests": [],
+          "screenshot": "forgot-password-mobile.png"
+        },
+        {
+          "route": "/reset-password",
+          "viewport": {
+            "name": "desktop",
+            "width": 1440,
+            "height": 900
+          },
+          "response_status": 200,
+          "url": "/reset-password",
+          "title": "Audentra — Open-source voice-to-structured-data",
+          "heading": "Reset Your Password",
+          "document_width": 1440,
+          "viewport_width": 1440,
+          "console_errors": [],
+          "failed_requests": [],
+          "screenshot": "reset-password-desktop.png"
+        },
+        {
+          "route": "/reset-password",
+          "viewport": {
+            "name": "mobile",
+            "width": 390,
+            "height": 844
+          },
+          "response_status": 200,
+          "url": "/reset-password",
+          "title": "Audentra — Open-source voice-to-structured-data",
+          "heading": "Reset Your Password",
+          "document_width": 390,
+          "viewport_width": 390,
+          "console_errors": [],
+          "failed_requests": [],
+          "screenshot": "reset-password-mobile.png"
+        }
+      ]
+    }
+  }
+}

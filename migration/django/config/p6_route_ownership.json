@@ -1,0 +1,133 @@
+{
+  "schema_version": 1,
+  "source_manifest": "docs/parity/route-manifest.json",
+  "source_manifest_sha256": "ada8836ff8ba323888f1b99d42e7d720b66823c3975e008af104789d3923c9b7",
+  "route_count": 25,
+  "routes": [
+    {
+      "path": "/",
+      "category": "public",
+      "owner": "django-page"
+    },
+    {
+      "path": "/features",
+      "category": "public",
+      "owner": "django-page"
+    },
+    {
+      "path": "/industries",
+      "category": "public",
+      "owner": "django-page"
+    },
+    {
+      "path": "/security",
+      "category": "public",
+      "owner": "django-page"
+    },
+    {
+      "path": "/pricing",
+      "category": "public",
+      "owner": "django-page"
+    },
+    {
+      "path": "/about",
+      "category": "public",
+      "owner": "django-page"
+    },
+    {
+      "path": "/contact",
+      "category": "public",
+      "owner": "django-page"
+    },
+    {
+      "path": "/status",
+      "category": "public",
+      "owner": "django-page"
+    },
+    {
+      "path": "/help-center",
+      "category": "public",
+      "owner": "django-page"
+    },
+    {
+      "path": "/documentation",
+      "category": "public",
+      "owner": "django-page"
+    },
+    {
+      "path": "/terms",
+      "category": "public",
+      "owner": "django-page"
+    },
+    {
+      "path": "/privacy",
+      "category": "public",
+      "owner": "django-page"
+    },
+    {
+      "path": "/open",
+      "category": "public",
+      "owner": "django-page"
+    },
+    {
+      "path": "/login",
+      "category": "authentication",
+      "owner": "django-auth-excluded"
+    },
+    {
+      "path": "/signup",
+      "category": "authentication",
+      "owner": "django-auth-excluded"
+    },
+    {
+      "path": "/forgot-password",
+      "category": "authentication",
+      "owner": "django-auth-excluded"
+    },
+    {
+      "path": "/reset-password",
+      "category": "authentication",
+      "owner": "local-404"
+    },
+    {
+      "path": "/dashboard",
+      "category": "application",
+      "owner": "django-app"
+    },
+    {
+      "path": "/templates",
+      "category": "application",
+      "owner": "django-app"
+    },
+    {
+      "path": "/scheduler",
+      "category": "application",
+      "owner": "django-app"
+    },
+    {
+      "path": "/manage-schedules",
+      "category": "application",
+      "owner": "django-app"
+    },
+    {
+      "path": "/scheduler-settings",
+      "category": "application",
+      "owner": "django-app"
+    },
+    {
+      "path": "/filledtemplates",
+      "category": "application",
+      "owner": "django-app"
+    },
+    {
+      "path": "/AIVoiceAutoFill",
+      "category": "application",
+      "owner": "django-app"
+    },
+    {
+      "path": "/activitylog",
+      "category": "application",
+      "owner": "django-app"
+    }
+  ]
+}

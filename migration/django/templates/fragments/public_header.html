@@ -1,0 +1,25 @@
+{% load static %}
+<header class="public-header sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur-md">
+  <div class="mx-auto flex h-16 max-w-[1200px] items-center justify-between px-margin md:px-margin-desktop">
+    <a class="brand-lockup group flex items-center gap-2 text-text-primary" href="/" aria-label="Audentra home">
+      <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
+      <span class="font-headline-h3 text-headline-h3 tracking-tight">Audentra</span>
+    </a>
+    <nav class="hidden items-center gap-space-lg md:flex" aria-label="Main navigation">
+      <a class="public-nav-link {% if active_route == '/features' %}text-text-primary{% endif %}" href="/features" {% if active_route == '/features' %}aria-current="page"{% endif %}>Features</a>
+      <a class="public-nav-link {% if active_route == '/about' %}text-text-primary{% endif %}" href="/about" {% if active_route == '/about' %}aria-current="page"{% endif %}>About</a>
+      <a class="public-nav-link inline-flex items-center gap-1.5" href="https://github.com/DanielWill-1/Audentra" target="_blank" rel="noopener noreferrer">
+        {% include "fragments/icon.html" with name="github" class_name="h-4 w-4" %}<span>GitHub</span>
+        {% include "fragments/icon.html" with name="external" class_name="h-3.5 w-3.5 text-text-muted" %}
+      </a>
+    </nav>
+    <div class="flex items-center gap-2 sm:gap-space-md">
+      {% if request.user.is_authenticated %}
+        <a class="public-nav-link px-2 py-2" href="/dashboard">Dashboard</a>
+      {% else %}
+        <a class="public-nav-link px-2 py-2" href="/login">Sign in</a>
+      {% endif %}
+      <a class="button-primary h-10 px-4" href="/dashboard">Try Demo</a>
+    </div>
+  </div>
+</header>

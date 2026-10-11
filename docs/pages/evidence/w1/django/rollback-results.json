@@ -1,0 +1,71 @@
+{
+  "source": "reviewed compiled legacy bundle; P7 rollback owner=/features; preview is loopback-only",
+  "base_url": "http://127.0.0.1:8000",
+  "browser": "148.0.7778.96",
+  "route": "/features",
+  "fallback_page_counts": {
+    "before": 10,
+    "selected_rollback": 11,
+    "restored": 10
+  },
+  "pages": [
+    {
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "title": "Audentra — Open-source voice-to-structured-data",
+      "heading": "Voice in.\nStructured data out.",
+      "document_width": 1440,
+      "viewport_width": 1440,
+      "react_root_present": true,
+      "response_status": 200,
+      "response_proxy_marker": "1",
+      "bundle_assets": {
+        "/assets/index-CFJQDHLM.css": {
+          "status": 200,
+          "legacy_proxy_marker": "1"
+        },
+        "/assets/index-Dmvoeb2c.js": {
+          "status": 200,
+          "legacy_proxy_marker": "1"
+        }
+      },
+      "console_errors": [],
+      "failed_requests": [],
+      "screenshot": "features-rollback-desktop.png"
+    },
+    {
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "title": "Audentra — Open-source voice-to-structured-data",
+      "heading": "Voice in.\nStructured data out.",
+      "document_width": 390,
+      "viewport_width": 390,
+      "react_root_present": true,
+      "response_status": 200,
+      "response_proxy_marker": "1",
+      "bundle_assets": {
+        "/assets/index-CFJQDHLM.css": {
+          "status": 200,
+          "legacy_proxy_marker": "1"
+        },
+        "/assets/index-Dmvoeb2c.js": {
+          "status": 200,
+          "legacy_proxy_marker": "1"
+        }
+      },
+      "console_errors": [],
+      "failed_requests": [],
+      "screenshot": "features-rollback-mobile.png"
+    }
+  ],
+  "bundle_assets": [
+    "/assets/index-Dmvoeb2c.js",
+    "/assets/index-CFJQDHLM.css"
+  ]
+}

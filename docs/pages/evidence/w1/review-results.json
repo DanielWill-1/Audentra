@@ -1,0 +1,46 @@
+{
+  "reviewed_at_utc": "2026-10-11 13:59:04 UTC",
+  "head": "acba9564752f1c121b81d17f59fca4d3f2b9b0f8",
+  "snapshot_includes_uncommitted_work": true,
+  "application_code_changed_during_review": false,
+  "fresh_checks": {
+    "pytest": {"passed": 127, "seconds": 4.40, "compiled_bundle_present": true},
+    "django_system_check": {"issues": 0}
+  },
+  "header_membership_probe": {
+    "header_set": "X-Legacy-Proxy: 1",
+    "string_key_present": true,
+    "bytes_key_present": false
+  },
+  "active_rollback_probe": {
+    "route": "/features",
+    "resolved_owner": "legacy-features",
+    "encoded_status": 400,
+    "post_status": 405,
+    "upstream_calls": 0,
+    "transport": "mocked; unexpected upstream access raises an assertion"
+  },
+  "stored_browser_evidence_inspected": {
+    "browser_rerun_during_review": false,
+    "django_pages": 22,
+    "exact_normalized_text_matches": 20,
+    "recorded_text_differences": "Added visible Search label on both Help Center captures",
+    "missing_source_text_tokens": 0,
+    "missing_local_link_destinations": 0,
+    "horizontal_overflows": 0,
+    "console_errors": 0,
+    "failed_requests": 0,
+    "compiled_rollback_pages": 2,
+    "compiled_rollback_count_metadata": "Expected constants; separate unit test verifies pattern counts",
+    "images_visually_inspected": [
+      "django/features-desktop.png",
+      "django/features-mobile.png",
+      "django/help-center-mobile.png",
+      "django/privacy-mobile.png",
+      "legacy/features-mobile.png",
+      "legacy/help-center-mobile.png"
+    ]
+  },
+  "open_review_findings": ["W1-R1", "W1-R2", "W1-R3", "W1-R4"],
+  "hosted_or_provider_operations": 0
+}

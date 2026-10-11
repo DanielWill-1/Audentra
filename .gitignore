@@ -45,6 +45,16 @@ migration/django/staticfiles/
 migration/django/static/css/app.css
 *service-account*.json
 
+# Local route-drift scratch directories (not application source or fixtures).
+/migration/django/.p6-route-drift-*/
+
+# Generated browser screenshots: retain locally; regenerate with the P6/P7/P8 runners.
+# Keep evidence JSON, comparison HTML, reports and scripts available to commit.
+# Original page-screenshots/ and other source/design assets remain available to commit.
+/docs/pages/evidence/**/*.png
+/docs/rendering/evidence/**/*.png
+/docs/services/evidence/**/*.png
+
 # Database dumps / cluster backups / archives
 *.backup
 *.backup.gz

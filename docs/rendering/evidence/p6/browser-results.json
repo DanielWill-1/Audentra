@@ -1,0 +1,60 @@
+{
+  "browser": "148.0.7778.96",
+  "base_url": "http://127.0.0.1:8000",
+  "viewports": [
+    {
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "width": 390,
+      "height": 844
+    }
+  ],
+  "checks": [
+    "public modal open, focus wrap, Escape, backdrop, and focus restore at 1440px",
+    "public shell rendered without horizontal overflow at 1440×900",
+    "public modal open, focus wrap, Escape, backdrop, and focus restore at 390px",
+    "public shell rendered without horizontal overflow at 390×844",
+    "app shell rendered without horizontal overflow at 1440×900",
+    "mobile workspace drawer, modal focus, Escape, restoration, and reduced-motion preference",
+    "app shell rendered without horizontal overflow at 390×844",
+    "legacy home rendered with its real compiled bundle at 1440×900; horizontal overflow=false",
+    "legacy home rendered with its real compiled bundle at 390×844; horizontal overflow=false",
+    "existing Django Auth form submitted invalid synthetic data and HTMX swapped #auth-main validation"
+  ],
+  "asset_responses": [
+    {
+      "path": "/static/css/app.css",
+      "status": 200
+    },
+    {
+      "path": "/static/icons/sprite.svg",
+      "status": 200
+    },
+    {
+      "path": "/static/js/shell.js",
+      "status": 200
+    },
+    {
+      "path": "/favicon.svg",
+      "status": 200,
+      "marker": "1"
+    },
+    {
+      "path": "/image.png",
+      "status": 200,
+      "marker": "1"
+    },
+    {
+      "path": "/assets/index-CFJQDHLM.css",
+      "status": 200,
+      "marker": "1"
+    },
+    {
+      "path": "/assets/index-Dmvoeb2c.js",
+      "status": 200,
+      "marker": "1"
+    }
+  ]
+}

@@ -1,0 +1,1427 @@
+{
+  "source": "Django pages, W1 test settings (DEBUG=false; preview and legacy fallback disabled)",
+  "base_url": "http://127.0.0.1:18875",
+  "browser": "148.0.7778.96",
+  "pages": [
+    {
+      "route": "/terms",
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "title": "Terms of Use | Audentra",
+      "heading": "Terms of Use",
+      "body_font": "\"Hanken Grotesk\", sans-serif",
+      "document_width": 1440,
+      "viewport_width": 1440,
+      "font_status": "loaded",
+      "has_react_root": false,
+      "has_react_bootstrap": false,
+      "local_links": [],
+      "comparison": {
+        "route": "/terms",
+        "viewport": "1440x900",
+        "source_heading": "Terms of Use",
+        "django_heading": "Terms of Use",
+        "source_body_font": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+        "django_body_font": "\"Hanken Grotesk\", sans-serif",
+        "source_horizontal_overflow": false,
+        "django_horizontal_overflow": false,
+        "legacy_html_bytes": 5454,
+        "normalized_page_text_matches": true,
+        "reviewed_visible_text_allowlist": [],
+        "source_text_characters": 3183,
+        "django_text_characters": 3183,
+        "text_tokens_missing_from_django": [],
+        "text_tokens_added_in_django": [],
+        "local_link_destinations_missing_from_django": [],
+        "local_link_destinations_added_in_django": [],
+        "django_local_links": [],
+        "console_errors": [],
+        "failed_requests": [],
+        "local_responses": [
+          {
+            "path": "/terms",
+            "status": 200
+          },
+          {
+            "path": "/static/css/app.css",
+            "status": 200
+          },
+          {
+            "path": "/static/icons/sprite.svg",
+            "status": 200
+          },
+          {
+            "path": "/static/js/shell.js",
+            "status": 200
+          },
+          {
+            "path": "/static/js/pages.js",
+            "status": 200
+          }
+        ]
+      }
+    },
+    {
+      "route": "/terms",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "title": "Terms of Use | Audentra",
+      "heading": "Terms of Use",
+      "body_font": "\"Hanken Grotesk\", sans-serif",
+      "document_width": 390,
+      "viewport_width": 390,
+      "font_status": "loaded",
+      "has_react_root": false,
+      "has_react_bootstrap": false,
+      "local_links": [],
+      "comparison": {
+        "route": "/terms",
+        "viewport": "390x844",
+        "source_heading": "Terms of Use",
+        "django_heading": "Terms of Use",
+        "source_body_font": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+        "django_body_font": "\"Hanken Grotesk\", sans-serif",
+        "source_horizontal_overflow": false,
+        "django_horizontal_overflow": false,
+        "legacy_html_bytes": 5454,
+        "normalized_page_text_matches": true,
+        "reviewed_visible_text_allowlist": [],
+        "source_text_characters": 3183,
+        "django_text_characters": 3183,
+        "text_tokens_missing_from_django": [],
+        "text_tokens_added_in_django": [],
+        "local_link_destinations_missing_from_django": [],
+        "local_link_destinations_added_in_django": [],
+        "django_local_links": [],
+        "console_errors": [],
+        "failed_requests": [],
+        "local_responses": [
+          {
+            "path": "/terms",
+            "status": 200
+          },
+          {
+            "path": "/static/css/app.css",
+            "status": 200
+          },
+          {
+            "path": "/static/icons/sprite.svg",
+            "status": 200
+          },
+          {
+            "path": "/static/js/shell.js",
+            "status": 200
+          },
+          {
+            "path": "/static/js/pages.js",
+            "status": 200
+          }
+        ]
+      }
+    },
+    {
+      "route": "/privacy",
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "title": "Privacy Notice | Audentra",
+      "heading": "Privacy Notice",
+      "body_font": "\"Hanken Grotesk\", sans-serif",
+      "document_width": 1440,
+      "viewport_width": 1440,
+      "font_status": "loaded",
+      "has_react_root": false,
+      "has_react_bootstrap": false,
+      "local_links": [],
+      "comparison": {
+        "route": "/privacy",
+        "viewport": "1440x900",
+        "source_heading": "Privacy Notice",
+        "django_heading": "Privacy Notice",
+        "source_body_font": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+        "django_body_font": "\"Hanken Grotesk\", sans-serif",
+        "source_horizontal_overflow": false,
+        "django_horizontal_overflow": false,
+        "legacy_html_bytes": 16261,
+        "normalized_page_text_matches": true,
+        "reviewed_visible_text_allowlist": [],
+        "source_text_characters": 5560,
+        "django_text_characters": 5560,
+        "text_tokens_missing_from_django": [],
+        "text_tokens_added_in_django": [],
+        "local_link_destinations_missing_from_django": [],
+        "local_link_destinations_added_in_django": [],
+        "django_local_links": [],
+        "console_errors": [],
+        "failed_requests": [],
+        "local_responses": [
+          {
+            "path": "/privacy",
+            "status": 200
+          },
+          {
+            "path": "/static/css/app.css",
+            "status": 200
+          },
+          {
+            "path": "/static/icons/sprite.svg",
+            "status": 200
+          },
+          {
+            "path": "/static/js/pages.js",
+            "status": 200
+          },
+          {
+            "path": "/static/js/shell.js",
+            "status": 200
+          }
+        ]
+      }
+    },
+    {
+      "route": "/privacy",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "title": "Privacy Notice | Audentra",
+      "heading": "Privacy Notice",
+      "body_font": "\"Hanken Grotesk\", sans-serif",
+      "document_width": 390,
+      "viewport_width": 390,
+      "font_status": "loaded",
+      "has_react_root": false,
+      "has_react_bootstrap": false,
+      "local_links": [],
+      "comparison": {
+        "route": "/privacy",
+        "viewport": "390x844",
+        "source_heading": "Privacy Notice",
+        "django_heading": "Privacy Notice",
+        "source_body_font": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+        "django_body_font": "\"Hanken Grotesk\", sans-serif",
+        "source_horizontal_overflow": false,
+        "django_horizontal_overflow": false,
+        "legacy_html_bytes": 16261,
+        "normalized_page_text_matches": true,
+        "reviewed_visible_text_allowlist": [],
+        "source_text_characters": 5560,
+        "django_text_characters": 5560,
+        "text_tokens_missing_from_django": [],
+        "text_tokens_added_in_django": [],
+        "local_link_destinations_missing_from_django": [],
+        "local_link_destinations_added_in_django": [],
+        "django_local_links": [],
+        "console_errors": [],
+        "failed_requests": [],
+        "local_responses": [
+          {
+            "path": "/privacy",
+            "status": 200
+          },
+          {
+            "path": "/static/css/app.css",
+            "status": 200
+          },
+          {
+            "path": "/static/icons/sprite.svg",
+            "status": 200
+          },
+          {
+            "path": "/static/js/pages.js",
+            "status": 200
+          },
+          {
+            "path": "/static/js/shell.js",
+            "status": 200
+          }
+        ]
+      }
+    },
+    {
+      "route": "/open",
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "title": "Open Source License & Attribution | Audentra",
+      "heading": "Open Source License & Attribution",
+      "body_font": "\"Hanken Grotesk\", sans-serif",
+      "document_width": 1440,
+      "viewport_width": 1440,
+      "font_status": "loaded",
+      "has_react_root": false,
+      "has_react_bootstrap": false,
+      "local_links": [],
+      "comparison": {
+        "route": "/open",
+        "viewport": "1440x900",
+        "source_heading": "Open Source License & Attribution",
+        "django_heading": "Open Source License & Attribution",
+        "source_body_font": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+        "django_body_font": "\"Hanken Grotesk\", sans-serif",
+        "source_horizontal_overflow": false,
+        "django_horizontal_overflow": false,
+        "legacy_html_bytes": 10218,
+        "normalized_page_text_matches": true,
+        "reviewed_visible_text_allowlist": [],
+        "source_text_characters": 7986,
+        "django_text_characters": 7986,
+        "text_tokens_missing_from_django": [],
+        "text_tokens_added_in_django": [],
+        "local_link_destinations_missing_from_django": [],
+        "local_link_destinations_added_in_django": [],
+        "django_local_links": [],
+        "console_errors": [],
+        "failed_requests": [],
+        "local_responses": [
+          {
+            "path": "/open",
+            "status": 200
+          },
+          {
+            "path": "/static/css/app.css",
+            "status": 200
+          },
+          {
+            "path": "/static/icons/sprite.svg",
+            "status": 200
+          },
+          {
+            "path": "/static/js/pages.js",
+            "status": 200
+          },
+          {
+            "path": "/static/js/shell.js",
+            "status": 200
+          }
+        ]
+      }
+    },
+    {
+      "route": "/open",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "title": "Open Source License & Attribution | Audentra",
+      "heading": "Open Source License & Attribution",
+      "body_font": "\"Hanken Grotesk\", sans-serif",
+      "document_width": 390,
+      "viewport_width": 390,
+      "font_status": "loaded",
+      "has_react_root": false,
+      "has_react_bootstrap": false,
+      "local_links": [],
+      "comparison": {
+        "route": "/open",
+        "viewport": "390x844",
+        "source_heading": "Open Source License & Attribution",
+        "django_heading": "Open Source License & Attribution",
+        "source_body_font": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+        "django_body_font": "\"Hanken Grotesk\", sans-serif",
+        "source_horizontal_overflow": false,
+        "django_horizontal_overflow": false,
+        "legacy_html_bytes": 10218,
+        "normalized_page_text_matches": true,
+        "reviewed_visible_text_allowlist": [],
+        "source_text_characters": 7986,
+        "django_text_characters": 7986,
+        "text_tokens_missing_from_django": [],
+        "text_tokens_added_in_django": [],
+        "local_link_destinations_missing_from_django": [],
+        "local_link_destinations_added_in_django": [],
+        "django_local_links": [],
+        "console_errors": [],
+        "failed_requests": [],
+        "local_responses": [
+          {
+            "path": "/open",
+            "status": 200
+          },
+          {
+            "path": "/static/css/app.css",
+            "status": 200
+          },
+          {
+            "path": "/static/icons/sprite.svg",
+            "status": 200
+          },
+          {
+            "path": "/static/js/shell.js",
+            "status": 200
+          },
+          {
+            "path": "/static/js/pages.js",
+            "status": 200
+          }
+        ]
+      }
+    },
+    {
+      "route": "/about",
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "title": "About Audentra | Audentra",
+      "heading": "Forms shouldn’t require\nthis much typing.",
+      "body_font": "\"Hanken Grotesk\", sans-serif",
+      "document_width": 1440,
+      "viewport_width": 1440,
+      "font_status": "loaded",
+      "has_react_root": false,
+      "has_react_bootstrap": false,
+      "local_links": [
+        "/documentation"
+      ],
+      "comparison": {
+        "route": "/about",
+        "viewport": "1440x900",
+        "source_heading": "Forms shouldn’t require\nthis much typing.",
+        "django_heading": "Forms shouldn’t require\nthis much typing.",
+        "source_body_font": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+        "django_body_font": "\"Hanken Grotesk\", sans-serif",
+        "source_horizontal_overflow": false,
+        "django_horizontal_overflow": false,
+        "legacy_html_bytes": 9214,
+        "normalized_page_text_matches": true,
+        "reviewed_visible_text_allowlist": [],
+        "source_text_characters": 1394,
+        "django_text_characters": 1394,
+        "text_tokens_missing_from_django": [],
+        "text_tokens_added_in_django": [],
+        "local_link_destinations_missing_from_django": [],
+        "local_link_destinations_added_in_django": [],
+        "django_local_links": [
+          "/documentation"
+        ],
+        "console_errors": [],
+        "failed_requests": [],
+        "local_responses": [
+          {
+            "path": "/about",
+            "status": 200
+          },
+          {
+            "path": "/static/css/app.css",
+            "status": 200
+          },
+          {
+            "path": "/static/icons/sprite.svg",
+            "status": 200
+          },
+          {
+            "path": "/static/js/shell.js",
+            "status": 200
+          },
+          {
+            "path": "/static/js/pages.js",
+            "status": 200
+          }
+        ]
+      }
+    },
+    {
+      "route": "/about",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "title": "About Audentra | Audentra",
+      "heading": "Forms shouldn’t require\nthis much typing.",
+      "body_font": "\"Hanken Grotesk\", sans-serif",
+      "document_width": 390,
+      "viewport_width": 390,
+      "font_status": "loaded",
+      "has_react_root": false,
+      "has_react_bootstrap": false,
+      "local_links": [
+        "/documentation"
+      ],
+      "comparison": {
+        "route": "/about",
+        "viewport": "390x844",
+        "source_heading": "Forms shouldn’t require\nthis much typing.",
+        "django_heading": "Forms shouldn’t require\nthis much typing.",
+        "source_body_font": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+        "django_body_font": "\"Hanken Grotesk\", sans-serif",
+        "source_horizontal_overflow": false,
+        "django_horizontal_overflow": false,
+        "legacy_html_bytes": 9214,
+        "normalized_page_text_matches": true,
+        "reviewed_visible_text_allowlist": [],
+        "source_text_characters": 1394,
+        "django_text_characters": 1394,
+        "text_tokens_missing_from_django": [],
+        "text_tokens_added_in_django": [],
+        "local_link_destinations_missing_from_django": [],
+        "local_link_destinations_added_in_django": [],
+        "django_local_links": [
+          "/documentation"
+        ],
+        "console_errors": [],
+        "failed_requests": [],
+        "local_responses": [
+          {
+            "path": "/about",
+            "status": 200
+          },
+          {
+            "path": "/static/css/app.css",
+            "status": 200
+          },
+          {
+            "path": "/static/icons/sprite.svg",
+            "status": 200
+          },
+          {
+            "path": "/static/js/shell.js",
+            "status": 200
+          },
+          {
+            "path": "/static/js/pages.js",
+            "status": 200
+          }
+        ]
+      }
+    },
+    {
+      "route": "/security",
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "title": "Security | Audentra",
+      "heading": "Enterprise-Grade Security",
+      "body_font": "\"Hanken Grotesk\", sans-serif",
+      "document_width": 1440,
+      "viewport_width": 1440,
+      "font_status": "loaded",
+      "has_react_root": false,
+      "has_react_bootstrap": false,
+      "local_links": [],
+      "comparison": {
+        "route": "/security",
+        "viewport": "1440x900",
+        "source_heading": "Enterprise-Grade Security",
+        "django_heading": "Enterprise-Grade Security",
+        "source_body_font": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+        "django_body_font": "\"Hanken Grotesk\", sans-serif",
+        "source_horizontal_overflow": false,
+        "django_horizontal_overflow": false,
+        "legacy_html_bytes": 12022,
+        "normalized_page_text_matches": true,
+        "reviewed_visible_text_allowlist": [],
+        "source_text_characters": 2279,
+        "django_text_characters": 2279,
+        "text_tokens_missing_from_django": [],
+        "text_tokens_added_in_django": [],
+        "local_link_destinations_missing_from_django": [],
+        "local_link_destinations_added_in_django": [],
+        "django_local_links": [],
+        "console_errors": [],
+        "failed_requests": [],
+        "local_responses": [
+          {
+            "path": "/security",
+            "status": 200
+          },
+          {
+            "path": "/static/css/app.css",
+            "status": 200
+          },
+          {
+            "path": "/static/icons/sprite.svg",
+            "status": 200
+          },
+          {
+            "path": "/static/js/pages.js",
+            "status": 200
+          },
+          {
+            "path": "/static/js/shell.js",
+            "status": 200
+          }
+        ]
+      }
+    },
+    {
+      "route": "/security",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "title": "Security | Audentra",
+      "heading": "Enterprise-Grade Security",
+      "body_font": "\"Hanken Grotesk\", sans-serif",
+      "document_width": 390,
+      "viewport_width": 390,
+      "font_status": "loaded",
+      "has_react_root": false,
+      "has_react_bootstrap": false,
+      "local_links": [],
+      "comparison": {
+        "route": "/security",
+        "viewport": "390x844",
+        "source_heading": "Enterprise-Grade Security",
+        "django_heading": "Enterprise-Grade Security",
+        "source_body_font": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+        "django_body_font": "\"Hanken Grotesk\", sans-serif",
+        "source_horizontal_overflow": false,
+        "django_horizontal_overflow": false,
+        "legacy_html_bytes": 12022,
+        "normalized_page_text_matches": true,
+        "reviewed_visible_text_allowlist": [],
+        "source_text_characters": 2279,
+        "django_text_characters": 2279,
+        "text_tokens_missing_from_django": [],
+        "text_tokens_added_in_django": [],
+        "local_link_destinations_missing_from_django": [],
+        "local_link_destinations_added_in_django": [],
+        "django_local_links": [],
+        "console_errors": [],
+        "failed_requests": [],
+        "local_responses": [
+          {
+            "path": "/security",
+            "status": 200
+          },
+          {
+            "path": "/static/css/app.css",
+            "status": 200
+          },
+          {
+            "path": "/static/icons/sprite.svg",
+            "status": 200
+          },
+          {
+            "path": "/static/js/shell.js",
+            "status": 200
+          },
+          {
+            "path": "/static/js/pages.js",
+            "status": 200
+          }
+        ]
+      }
+    },
+    {
+      "route": "/pricing",
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "title": "Pricing | Audentra",
+      "heading": "Simple, Transparent Pricing",
+      "body_font": "\"Hanken Grotesk\", sans-serif",
+      "document_width": 1440,
+      "viewport_width": 1440,
+      "font_status": "loaded",
+      "has_react_root": false,
+      "has_react_bootstrap": false,
+      "local_links": [],
+      "comparison": {
+        "route": "/pricing",
+        "viewport": "1440x900",
+        "source_heading": "Simple, Transparent Pricing",
+        "django_heading": "Simple, Transparent Pricing",
+        "source_body_font": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+        "django_body_font": "\"Hanken Grotesk\", sans-serif",
+        "source_horizontal_overflow": false,
+        "django_horizontal_overflow": false,
+        "legacy_html_bytes": 15449,
+        "normalized_page_text_matches": true,
+        "reviewed_visible_text_allowlist": [],
+        "source_text_characters": 1805,
+        "django_text_characters": 1805,
+        "text_tokens_missing_from_django": [],
+        "text_tokens_added_in_django": [],
+        "local_link_destinations_missing_from_django": [],
+        "local_link_destinations_added_in_django": [],
+        "django_local_links": [],
+        "console_errors": [],
+        "failed_requests": [],
+        "local_responses": [
+          {
+            "path": "/pricing",
+            "status": 200
+          },
+          {
+            "path": "/static/css/app.css",
+            "status": 200
+          },
+          {
+            "path": "/static/icons/sprite.svg",
+            "status": 200
+          },
+          {
+            "path": "/static/js/shell.js",
+            "status": 200
+          },
+          {
+            "path": "/static/js/pages.js",
+            "status": 200
+          }
+        ]
+      }
+    },
+    {
+      "route": "/pricing",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "title": "Pricing | Audentra",
+      "heading": "Simple, Transparent Pricing",
+      "body_font": "\"Hanken Grotesk\", sans-serif",
+      "document_width": 390,
+      "viewport_width": 390,
+      "font_status": "loaded",
+      "has_react_root": false,
+      "has_react_bootstrap": false,
+      "local_links": [],
+      "comparison": {
+        "route": "/pricing",
+        "viewport": "390x844",
+        "source_heading": "Simple, Transparent Pricing",
+        "django_heading": "Simple, Transparent Pricing",
+        "source_body_font": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+        "django_body_font": "\"Hanken Grotesk\", sans-serif",
+        "source_horizontal_overflow": false,
+        "django_horizontal_overflow": false,
+        "legacy_html_bytes": 15449,
+        "normalized_page_text_matches": true,
+        "reviewed_visible_text_allowlist": [],
+        "source_text_characters": 1805,
+        "django_text_characters": 1805,
+        "text_tokens_missing_from_django": [],
+        "text_tokens_added_in_django": [],
+        "local_link_destinations_missing_from_django": [],
+        "local_link_destinations_added_in_django": [],
+        "django_local_links": [],
+        "console_errors": [],
+        "failed_requests": [],
+        "local_responses": [
+          {
+            "path": "/pricing",
+            "status": 200
+          },
+          {
+            "path": "/static/css/app.css",
+            "status": 200
+          },
+          {
+            "path": "/static/icons/sprite.svg",
+            "status": 200
+          },
+          {
+            "path": "/static/js/pages.js",
+            "status": 200
+          },
+          {
+            "path": "/static/js/shell.js",
+            "status": 200
+          }
+        ]
+      }
+    },
+    {
+      "route": "/industries",
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "title": "Industries | Audentra",
+      "heading": "Specialized for Your Industry",
+      "body_font": "\"Hanken Grotesk\", sans-serif",
+      "document_width": 1440,
+      "viewport_width": 1440,
+      "font_status": "loaded",
+      "has_react_root": false,
+      "has_react_bootstrap": false,
+      "local_links": [],
+      "comparison": {
+        "route": "/industries",
+        "viewport": "1440x900",
+        "source_heading": "Specialized for Your Industry",
+        "django_heading": "Specialized for Your Industry",
+        "source_body_font": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+        "django_body_font": "\"Hanken Grotesk\", sans-serif",
+        "source_horizontal_overflow": false,
+        "django_horizontal_overflow": false,
+        "legacy_html_bytes": 16907,
+        "normalized_page_text_matches": true,
+        "reviewed_visible_text_allowlist": [],
+        "source_text_characters": 2291,
+        "django_text_characters": 2291,
+        "text_tokens_missing_from_django": [],
+        "text_tokens_added_in_django": [],
+        "local_link_destinations_missing_from_django": [],
+        "local_link_destinations_added_in_django": [],
+        "django_local_links": [],
+        "console_errors": [],
+        "failed_requests": [],
+        "local_responses": [
+          {
+            "path": "/industries",
+            "status": 200
+          },
+          {
+            "path": "/static/css/app.css",
+            "status": 200
+          },
+          {
+            "path": "/static/icons/sprite.svg",
+            "status": 200
+          },
+          {
+            "path": "/static/js/shell.js",
+            "status": 200
+          },
+          {
+            "path": "/static/js/pages.js",
+            "status": 200
+          }
+        ]
+      }
+    },
+    {
+      "route": "/industries",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "title": "Industries | Audentra",
+      "heading": "Specialized for Your Industry",
+      "body_font": "\"Hanken Grotesk\", sans-serif",
+      "document_width": 390,
+      "viewport_width": 390,
+      "font_status": "loaded",
+      "has_react_root": false,
+      "has_react_bootstrap": false,
+      "local_links": [],
+      "comparison": {
+        "route": "/industries",
+        "viewport": "390x844",
+        "source_heading": "Specialized for Your Industry",
+        "django_heading": "Specialized for Your Industry",
+        "source_body_font": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+        "django_body_font": "\"Hanken Grotesk\", sans-serif",
+        "source_horizontal_overflow": false,
+        "django_horizontal_overflow": false,
+        "legacy_html_bytes": 16907,
+        "normalized_page_text_matches": true,
+        "reviewed_visible_text_allowlist": [],
+        "source_text_characters": 2291,
+        "django_text_characters": 2291,
+        "text_tokens_missing_from_django": [],
+        "text_tokens_added_in_django": [],
+        "local_link_destinations_missing_from_django": [],
+        "local_link_destinations_added_in_django": [],
+        "django_local_links": [],
+        "console_errors": [],
+        "failed_requests": [],
+        "local_responses": [
+          {
+            "path": "/industries",
+            "status": 200
+          },
+          {
+            "path": "/static/css/app.css",
+            "status": 200
+          },
+          {
+            "path": "/static/icons/sprite.svg",
+            "status": 200
+          },
+          {
+            "path": "/static/js/shell.js",
+            "status": 200
+          },
+          {
+            "path": "/static/js/pages.js",
+            "status": 200
+          }
+        ]
+      }
+    },
+    {
+      "route": "/features",
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "title": "Features | Audentra",
+      "heading": "Voice in.\nStructured data out.",
+      "body_font": "\"Hanken Grotesk\", sans-serif",
+      "document_width": 1440,
+      "viewport_width": 1440,
+      "font_status": "loaded",
+      "has_react_root": false,
+      "has_react_bootstrap": false,
+      "local_links": [
+        "/dashboard",
+        "/dashboard",
+        "/documentation"
+      ],
+      "comparison": {
+        "route": "/features",
+        "viewport": "1440x900",
+        "source_heading": "Voice in.\nStructured data out.",
+        "django_heading": "Voice in.\nStructured data out.",
+        "source_body_font": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+        "django_body_font": "\"Hanken Grotesk\", sans-serif",
+        "source_horizontal_overflow": false,
+        "django_horizontal_overflow": false,
+        "legacy_html_bytes": 21941,
+        "normalized_page_text_matches": true,
+        "reviewed_visible_text_allowlist": [],
+        "source_text_characters": 2572,
+        "django_text_characters": 2572,
+        "text_tokens_missing_from_django": [],
+        "text_tokens_added_in_django": [],
+        "local_link_destinations_missing_from_django": [],
+        "local_link_destinations_added_in_django": [],
+        "django_local_links": [
+          "/dashboard",
+          "/dashboard",
+          "/documentation"
+        ],
+        "console_errors": [],
+        "failed_requests": [],
+        "local_responses": [
+          {
+            "path": "/features",
+            "status": 200
+          },
+          {
+            "path": "/static/css/app.css",
+            "status": 200
+          },
+          {
+            "path": "/static/icons/sprite.svg",
+            "status": 200
+          },
+          {
+            "path": "/static/js/pages.js",
+            "status": 200
+          },
+          {
+            "path": "/static/js/shell.js",
+            "status": 200
+          }
+        ]
+      }
+    },
+    {
+      "route": "/features",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "title": "Features | Audentra",
+      "heading": "Voice in.\nStructured data out.",
+      "body_font": "\"Hanken Grotesk\", sans-serif",
+      "document_width": 390,
+      "viewport_width": 390,
+      "font_status": "loaded",
+      "has_react_root": false,
+      "has_react_bootstrap": false,
+      "local_links": [
+        "/dashboard",
+        "/dashboard",
+        "/documentation"
+      ],
+      "comparison": {
+        "route": "/features",
+        "viewport": "390x844",
+        "source_heading": "Voice in.\nStructured data out.",
+        "django_heading": "Voice in.\nStructured data out.",
+        "source_body_font": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+        "django_body_font": "\"Hanken Grotesk\", sans-serif",
+        "source_horizontal_overflow": false,
+        "django_horizontal_overflow": false,
+        "legacy_html_bytes": 21941,
+        "normalized_page_text_matches": true,
+        "reviewed_visible_text_allowlist": [],
+        "source_text_characters": 2572,
+        "django_text_characters": 2572,
+        "text_tokens_missing_from_django": [],
+        "text_tokens_added_in_django": [],
+        "local_link_destinations_missing_from_django": [],
+        "local_link_destinations_added_in_django": [],
+        "django_local_links": [
+          "/dashboard",
+          "/dashboard",
+          "/documentation"
+        ],
+        "console_errors": [],
+        "failed_requests": [],
+        "local_responses": [
+          {
+            "path": "/features",
+            "status": 200
+          },
+          {
+            "path": "/static/css/app.css",
+            "status": 200
+          },
+          {
+            "path": "/static/icons/sprite.svg",
+            "status": 200
+          },
+          {
+            "path": "/static/js/shell.js",
+            "status": 200
+          },
+          {
+            "path": "/static/js/pages.js",
+            "status": 200
+          }
+        ]
+      }
+    },
+    {
+      "route": "/contact",
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "title": "Contact | Audentra",
+      "heading": "Get in Touch",
+      "body_font": "\"Hanken Grotesk\", sans-serif",
+      "document_width": 1440,
+      "viewport_width": 1440,
+      "font_status": "loaded",
+      "has_react_root": false,
+      "has_react_bootstrap": false,
+      "local_links": [],
+      "comparison": {
+        "route": "/contact",
+        "viewport": "1440x900",
+        "source_heading": "Get in Touch",
+        "django_heading": "Get in Touch",
+        "source_body_font": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+        "django_body_font": "\"Hanken Grotesk\", sans-serif",
+        "source_horizontal_overflow": false,
+        "django_horizontal_overflow": false,
+        "legacy_html_bytes": 4699,
+        "normalized_page_text_matches": true,
+        "reviewed_visible_text_allowlist": [],
+        "source_text_characters": 1152,
+        "django_text_characters": 1152,
+        "text_tokens_missing_from_django": [],
+        "text_tokens_added_in_django": [],
+        "local_link_destinations_missing_from_django": [],
+        "local_link_destinations_added_in_django": [],
+        "django_local_links": [],
+        "console_errors": [],
+        "failed_requests": [],
+        "local_responses": [
+          {
+            "path": "/contact",
+            "status": 200
+          },
+          {
+            "path": "/static/css/app.css",
+            "status": 200
+          },
+          {
+            "path": "/static/icons/sprite.svg",
+            "status": 200
+          },
+          {
+            "path": "/static/js/shell.js",
+            "status": 200
+          },
+          {
+            "path": "/static/js/pages.js",
+            "status": 200
+          }
+        ]
+      }
+    },
+    {
+      "route": "/contact",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "title": "Contact | Audentra",
+      "heading": "Get in Touch",
+      "body_font": "\"Hanken Grotesk\", sans-serif",
+      "document_width": 390,
+      "viewport_width": 390,
+      "font_status": "loaded",
+      "has_react_root": false,
+      "has_react_bootstrap": false,
+      "local_links": [],
+      "comparison": {
+        "route": "/contact",
+        "viewport": "390x844",
+        "source_heading": "Get in Touch",
+        "django_heading": "Get in Touch",
+        "source_body_font": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+        "django_body_font": "\"Hanken Grotesk\", sans-serif",
+        "source_horizontal_overflow": false,
+        "django_horizontal_overflow": false,
+        "legacy_html_bytes": 4699,
+        "normalized_page_text_matches": true,
+        "reviewed_visible_text_allowlist": [],
+        "source_text_characters": 1152,
+        "django_text_characters": 1152,
+        "text_tokens_missing_from_django": [],
+        "text_tokens_added_in_django": [],
+        "local_link_destinations_missing_from_django": [],
+        "local_link_destinations_added_in_django": [],
+        "django_local_links": [],
+        "console_errors": [],
+        "failed_requests": [],
+        "local_responses": [
+          {
+            "path": "/contact",
+            "status": 200
+          },
+          {
+            "path": "/static/css/app.css",
+            "status": 200
+          },
+          {
+            "path": "/static/icons/sprite.svg",
+            "status": 200
+          },
+          {
+            "path": "/static/js/shell.js",
+            "status": 200
+          },
+          {
+            "path": "/static/js/pages.js",
+            "status": 200
+          }
+        ]
+      }
+    },
+    {
+      "route": "/status",
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "title": "Status | Audentra",
+      "heading": "System Status",
+      "body_font": "\"Hanken Grotesk\", sans-serif",
+      "document_width": 1440,
+      "viewport_width": 1440,
+      "font_status": "loaded",
+      "has_react_root": false,
+      "has_react_bootstrap": false,
+      "local_links": [],
+      "comparison": {
+        "route": "/status",
+        "viewport": "1440x900",
+        "source_heading": "System Status",
+        "django_heading": "System Status",
+        "source_body_font": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+        "django_body_font": "\"Hanken Grotesk\", sans-serif",
+        "source_horizontal_overflow": false,
+        "django_horizontal_overflow": false,
+        "legacy_html_bytes": 14385,
+        "normalized_page_text_matches": true,
+        "reviewed_visible_text_allowlist": [],
+        "source_text_characters": 1654,
+        "django_text_characters": 1654,
+        "text_tokens_missing_from_django": [],
+        "text_tokens_added_in_django": [],
+        "local_link_destinations_missing_from_django": [],
+        "local_link_destinations_added_in_django": [],
+        "django_local_links": [],
+        "console_errors": [],
+        "failed_requests": [],
+        "local_responses": [
+          {
+            "path": "/status",
+            "status": 200
+          },
+          {
+            "path": "/static/css/app.css",
+            "status": 200
+          },
+          {
+            "path": "/static/icons/sprite.svg",
+            "status": 200
+          },
+          {
+            "path": "/static/js/shell.js",
+            "status": 200
+          },
+          {
+            "path": "/static/js/pages.js",
+            "status": 200
+          }
+        ]
+      }
+    },
+    {
+      "route": "/status",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "title": "Status | Audentra",
+      "heading": "System Status",
+      "body_font": "\"Hanken Grotesk\", sans-serif",
+      "document_width": 390,
+      "viewport_width": 390,
+      "font_status": "loaded",
+      "has_react_root": false,
+      "has_react_bootstrap": false,
+      "local_links": [],
+      "comparison": {
+        "route": "/status",
+        "viewport": "390x844",
+        "source_heading": "System Status",
+        "django_heading": "System Status",
+        "source_body_font": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+        "django_body_font": "\"Hanken Grotesk\", sans-serif",
+        "source_horizontal_overflow": false,
+        "django_horizontal_overflow": false,
+        "legacy_html_bytes": 14385,
+        "normalized_page_text_matches": true,
+        "reviewed_visible_text_allowlist": [],
+        "source_text_characters": 1654,
+        "django_text_characters": 1654,
+        "text_tokens_missing_from_django": [],
+        "text_tokens_added_in_django": [],
+        "local_link_destinations_missing_from_django": [],
+        "local_link_destinations_added_in_django": [],
+        "django_local_links": [],
+        "console_errors": [],
+        "failed_requests": [],
+        "local_responses": [
+          {
+            "path": "/status",
+            "status": 200
+          },
+          {
+            "path": "/static/css/app.css",
+            "status": 200
+          },
+          {
+            "path": "/static/icons/sprite.svg",
+            "status": 200
+          },
+          {
+            "path": "/static/js/shell.js",
+            "status": 200
+          },
+          {
+            "path": "/static/js/pages.js",
+            "status": 200
+          }
+        ]
+      }
+    },
+    {
+      "route": "/help-center",
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "title": "Help Center | Audentra",
+      "heading": "Help Center (Sample Data)",
+      "body_font": "\"Hanken Grotesk\", sans-serif",
+      "document_width": 1440,
+      "viewport_width": 1440,
+      "font_status": "loaded",
+      "has_react_root": false,
+      "has_react_bootstrap": false,
+      "local_links": [],
+      "comparison": {
+        "route": "/help-center",
+        "viewport": "1440x900",
+        "source_heading": "Help Center (Sample Data)",
+        "django_heading": "Help Center (Sample Data)",
+        "source_body_font": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+        "django_body_font": "\"Hanken Grotesk\", sans-serif",
+        "source_horizontal_overflow": false,
+        "django_horizontal_overflow": false,
+        "legacy_html_bytes": 33292,
+        "normalized_page_text_matches": true,
+        "reviewed_visible_text_allowlist": [
+          {
+            "element": "button[type=\"submit\"]",
+            "text": "Search"
+          }
+        ],
+        "source_text_characters": 1551,
+        "django_text_characters": 1551,
+        "text_tokens_missing_from_django": [],
+        "text_tokens_added_in_django": [],
+        "local_link_destinations_missing_from_django": [],
+        "local_link_destinations_added_in_django": [],
+        "django_local_links": [],
+        "console_errors": [],
+        "failed_requests": [],
+        "local_responses": [
+          {
+            "path": "/help-center",
+            "status": 200
+          },
+          {
+            "path": "/static/css/app.css",
+            "status": 200
+          },
+          {
+            "path": "/static/icons/sprite.svg",
+            "status": 200
+          },
+          {
+            "path": "/static/js/shell.js",
+            "status": 200
+          },
+          {
+            "path": "/static/js/pages.js",
+            "status": 200
+          }
+        ]
+      }
+    },
+    {
+      "route": "/help-center",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "title": "Help Center | Audentra",
+      "heading": "Help Center (Sample Data)",
+      "body_font": "\"Hanken Grotesk\", sans-serif",
+      "document_width": 390,
+      "viewport_width": 390,
+      "font_status": "loaded",
+      "has_react_root": false,
+      "has_react_bootstrap": false,
+      "local_links": [],
+      "comparison": {
+        "route": "/help-center",
+        "viewport": "390x844",
+        "source_heading": "Help Center (Sample Data)",
+        "django_heading": "Help Center (Sample Data)",
+        "source_body_font": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+        "django_body_font": "\"Hanken Grotesk\", sans-serif",
+        "source_horizontal_overflow": true,
+        "django_horizontal_overflow": false,
+        "legacy_html_bytes": 33292,
+        "normalized_page_text_matches": true,
+        "reviewed_visible_text_allowlist": [
+          {
+            "element": "button[type=\"submit\"]",
+            "text": "Search"
+          }
+        ],
+        "source_text_characters": 1551,
+        "django_text_characters": 1551,
+        "text_tokens_missing_from_django": [],
+        "text_tokens_added_in_django": [],
+        "local_link_destinations_missing_from_django": [],
+        "local_link_destinations_added_in_django": [],
+        "django_local_links": [],
+        "console_errors": [],
+        "failed_requests": [],
+        "local_responses": [
+          {
+            "path": "/help-center",
+            "status": 200
+          },
+          {
+            "path": "/static/css/app.css",
+            "status": 200
+          },
+          {
+            "path": "/static/icons/sprite.svg",
+            "status": 200
+          },
+          {
+            "path": "/static/js/pages.js",
+            "status": 200
+          },
+          {
+            "path": "/static/js/shell.js",
+            "status": 200
+          }
+        ]
+      }
+    }
+  ],
+  "interactions": [
+    {
+      "route": "/privacy",
+      "state": "clipboard write succeeds and transient success is shown"
+    },
+    {
+      "route": "/privacy",
+      "state": "clipboard denial gives accessible recovery feedback"
+    },
+    {
+      "route": "/privacy",
+      "state": "keyboard-focusable table-of-contents anchor navigation"
+    },
+    {
+      "route": "/help-center",
+      "state": "case-insensitive title search combined with category; count is 1"
+    },
+    {
+      "route": "/help-center",
+      "state": "category filter returns two reviewed Voice Features items"
+    },
+    {
+      "route": "/help-center",
+      "state": "no-match state and browse-all reset"
+    }
+  ],
+  "local_probes": [
+    {
+      "path": "/reset-password",
+      "status": 404,
+      "legacy_proxy_marker": null
+    },
+    {
+      "path": "/terms",
+      "status": 400,
+      "legacy_proxy_marker": null
+    },
+    {
+      "path": "/%66eatures",
+      "status": 200,
+      "legacy_proxy_marker": null,
+      "note": "Chromium/Django runserver normalizes this encoded migrated route before the page view."
+    }
+  ]
+}

@@ -1,0 +1,93 @@
+{
+  "wave": "W2",
+  "source": "current React/Vite development server",
+  "base_url": "http://localhost:5173",
+  "pages": [
+    {
+      "route": "/",
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "response_status": 200,
+      "title": "Audentra — Open-source voice-to-structured-data",
+      "heading": "Speak.\nAudentra handles\nthe paperwork.",
+      "bodyFont": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "documentWidth": 1440,
+      "viewportWidth": 1440,
+      "fontStatus": "loaded",
+      "horizontal_overflow": false,
+      "main_html_bytes": 42009,
+      "console_errors": [],
+      "failed_requests": []
+    },
+    {
+      "route": "/",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "response_status": 200,
+      "title": "Audentra — Open-source voice-to-structured-data",
+      "heading": "Speak.\nAudentra handles\nthe paperwork.",
+      "bodyFont": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "documentWidth": 390,
+      "viewportWidth": 390,
+      "fontStatus": "loaded",
+      "horizontal_overflow": false,
+      "main_html_bytes": 42009,
+      "console_errors": [],
+      "failed_requests": []
+    },
+    {
+      "route": "/documentation",
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "response_status": 200,
+      "title": "Audentra — Open-source voice-to-structured-data",
+      "heading": "Documentation & Architecture Guide",
+      "bodyFont": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "documentWidth": 1440,
+      "viewportWidth": 1440,
+      "fontStatus": "loaded",
+      "horizontal_overflow": false,
+      "main_html_bytes": 23076,
+      "console_errors": [],
+      "failed_requests": []
+    },
+    {
+      "route": "/documentation",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "response_status": 200,
+      "title": "Audentra — Open-source voice-to-structured-data",
+      "heading": "Documentation & Architecture Guide",
+      "bodyFont": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "documentWidth": 390,
+      "viewportWidth": 390,
+      "fontStatus": "loaded",
+      "horizontal_overflow": false,
+      "main_html_bytes": 23076,
+      "console_errors": [],
+      "failed_requests": []
+    }
+  ],
+  "interactions": [
+    {
+      "route": "/documentation",
+      "state": "copy writes the exact displayed code to clipboard"
+    },
+    {
+      "route": "/documentation",
+      "state": "source React copy denial logs an error without accessible feedback"
+    }
+  ]
+}

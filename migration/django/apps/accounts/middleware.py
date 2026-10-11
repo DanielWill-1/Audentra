@@ -16,7 +16,19 @@ def _is_service_request(request: HttpRequest) -> bool:
 
 
 def _requires_verified_principal(request: HttpRequest) -> bool:
-    return request.path_info in {"/login/", "/auth/session/", "/change-password/"}
+    return request.path_info in {
+        "/login",
+        "/login/",
+        "/signup",
+        "/signup/",
+        "/forgot-password",
+        "/forgot-password/",
+        "/auth/session/",
+        "/change-password",
+        "/change-password/",
+        *settings.P7_PUBLIC_SESSION_ROUTES,
+        *settings.P7_PROTECTED_PATHS,
+    }
 
 
 class SupabasePrincipalMiddleware:
@@ -35,8 +47,19 @@ class SupabasePrincipalMiddleware:
             if principal is not None:
                 cast(Any, request).user = principal
         response = self.get_response(request)
-        if request.path_info.startswith(
-            ("/auth/", "/login/", "/signup/", "/forgot-password/", "/change-password/", "/logout/")
+        if (
+            request.path_info.startswith(
+                (
+                    "/auth/",
+                    "/login/",
+                    "/signup/",
+                    "/forgot-password/",
+                    "/reset-password",
+                    "/change-password/",
+                    "/logout/",
+                )
+            )
+            or request.path_info in settings.P7_PROTECTED_PATHS
         ):
             response["Cache-Control"] = "no-store"
             response["Referrer-Policy"] = "no-referrer"

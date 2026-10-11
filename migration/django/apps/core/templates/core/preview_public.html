@@ -1,0 +1,13 @@
+{% extends "base_public.html" %}
+{% block page_title %}Public shell preview · Audentra{% endblock %}
+{% block content %}
+  <section class="mx-auto max-w-[1200px] px-margin py-section-mobile md:px-margin-desktop md:py-section-tablet lg:py-section-desktop">
+    <p class="mb-4 text-metadata font-semibold uppercase tracking-wider text-primary">P6 shell fixture</p>
+    <h1 class="max-w-3xl font-display-hero text-display-hero text-text-primary">A voice-first workspace, ready for the web.</h1>
+    <p class="mt-6 max-w-2xl text-body-large text-text-secondary">This local preview exercises the shared public header, responsive content frame, focus styles, and footer. It contains no product data.</p>
+    <div class="mt-8 flex flex-wrap gap-3">
+      <a class="button-primary px-5" href="/features">Explore features</a>
+      <button class="button-secondary px-5" type="button" data-modal-open="shell-modal" aria-haspopup="dialog" aria-expanded="false">Open shell dialog</button>
+    </div>
+  </section>
+{% endblock %}

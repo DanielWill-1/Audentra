@@ -1,7 +1,7 @@
 # P5 decisions and bounded defaults
 
 **Reviewed:** 2026-10-11  
-**Status:** P5 implementation is in place; P5 remains partial pending the hosted transaction-pooler verification gate.
+**Status:** P5 implementation and hosted shared transaction-pooler verification are complete (2026-10-11). P6 has not started.
 
 ## Verified facts
 
@@ -10,7 +10,7 @@
 - There is no `supabase_migrations.schema_migrations` relation on this target. Historical files in `supabase/migrations/` are references, not evidence that they were applied here.
 - The target runs PostgreSQL 17.6. `django_app` remains a restricted login with no role membership. `django_data` has only the reviewed `authenticated` membership with `INHERIT FALSE, SET TRUE`; `service_role` bypasses RLS and is excluded from request paths.
 - The provider-owned `ensure_rls` event trigger invokes `public.rls_auto_enable()` for new public tables. P5 leaves that trigger/function unchanged and writes explicit policies and grants.
-- The hosted P5 probe passed through the direct PostgreSQL connection and cleaned its three generated accounts. Neither Django database URL uses the shared transaction pooler; `pooler_verified` is false. Pooler user-switch proof remains an open P5b gate.
+- The earlier hosted direct PostgreSQL probe is preserved separately. The final hosted P5 probe passed through the shared transaction pooler with the restricted project-scoped `django_data` login; 65 checks passed, three generated accounts were deleted, cleanup succeeded, and `pooler_verified` is true. A/B/A identity/claims and private-row isolation, transaction cleanup, forced rollback/recovery and Django client reuse are recorded in [P5_HOSTED_RESULTS.json](P5_HOSTED_RESULTS.json).
 
 ## Owner decisions
 
@@ -46,4 +46,4 @@ The linked project has no public application DDL to recover. P5's baseline there
 
 ## Verification status
 
-The pre-change catalog facts were gathered with `supabase db query --linked --file docs/data/P5_READONLY_PREFLIGHT.sql --output-format json`. The guarded P5 baseline/reconciliation and the additive share-role correction were applied to the linked development project. The post-change catalog and the synthetic hosted result are recorded in `P5_TARGET_INVENTORY.json` and `P5_HOSTED_RESULTS.json`; three generated accounts were deleted and no test email was sent. Native PostgreSQL baseline, empty-target remediation, idempotence and RLS checks passed. No full hosted schema dump was captured: Supabase CLI attempted Docker and was stopped; native `pg_dump` using the restricted `django_data` role was denied table locks as expected. Do not grant that request role broader privileges to enable dumps. A shared transaction-pooler URL is still absent from the local config, so P5 is not closed.
+The pre-change catalog facts were gathered with `supabase db query --linked --file docs/data/P5_READONLY_PREFLIGHT.sql --output-format json`. The guarded P5 baseline/reconciliation and the additive share-role correction were applied to the linked development project. The post-change catalog and synthetic hosted results are recorded in `P5_TARGET_INVENTORY.json`, `P5_HOSTED_RESULTS_DIRECT.json` and `P5_HOSTED_RESULTS.json`; the final pooler run deleted all three generated accounts and sent no test email. Native PostgreSQL baseline, empty-target remediation, idempotence and RLS checks passed. No full hosted schema dump was captured: Supabase CLI attempted Docker and was stopped; native `pg_dump` using the restricted `django_data` role was denied table locks as expected. Do not grant that request role broader privileges to enable dumps. P5 is closed with the hosted pooler proof; the dump limitation remains explicit.

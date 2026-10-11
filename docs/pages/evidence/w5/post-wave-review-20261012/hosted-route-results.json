@@ -1,0 +1,36 @@
+{
+  "run": "P7 W5/W6 protected Django routes against the development shared pooler",
+  "route_waves": [
+    "W5",
+    "W6"
+  ],
+  "source": "Fresh synthetic Auth accounts; django_data RLS context; exact fixture cleanup",
+  "status": "passed",
+  "accounts_created": 3,
+  "emails_sent": 0,
+  "checks": [
+    "restricted_app_and_data_database_roles_verified",
+    "development_signup_requires_no_email_delivery",
+    "three_fresh_accounts_authenticated_through_django",
+    "template_creation_persisted_for_owner_only",
+    "viewer_reads_owner_shared_hidden_template",
+    "viewer_edit_and_unrelated_delete_export_denied",
+    "owner_promoted_viewer_to_editor_through_route",
+    "editor_saved_template_content_through_route",
+    "editor_update_persisted_and_visible_to_owner",
+    "admin_manages_shares_without_template_edit_rights",
+    "admin_and_owner_revocation_restore_expected_visibility",
+    "schedule_route_create_persisted_owner_scoped_event",
+    "schedule_management_route_reads_persisted_event",
+    "schedule_export_contains_persisted_event_content",
+    "schedule_route_delete_removed_exact_fixture"
+  ],
+  "cleanup": {
+    "generated_shares_removed": true,
+    "generated_template_removed": true,
+    "generated_schedules_removed": true,
+    "generated_accounts_deleted": true,
+    "tracked_sessions_deleted": true
+  },
+  "cleanup_ok": true
+}

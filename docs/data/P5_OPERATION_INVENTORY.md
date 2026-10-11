@@ -2,7 +2,7 @@
 
 **Reviewed:** 2026-10-11  
 **Target:** Existing linked Audentra development project (see P5_TARGET_INVENTORY.json).  
-**Status:** The 41-call-site source inventory is implemented in Django services/selectors and covered by local plus hosted checks; P5 remains partial until the hosted transaction-pooler gate passes.
+**Status:** The 41-call-site source inventory is implemented in Django services/selectors and covered by local plus hosted checks, including the shared transaction-pooler gate completed on 2026-10-11. See [P5_HOSTED_RESULTS.json](P5_HOSTED_RESULTS.json).
 
 This inventory counts current TypeScript call expressions, then separates PostgreSQL/Storage network work from local SDK helpers. It is a source audit, not proof that a React page currently succeeds against the migrated target. Current hosted schema/results are in [P5_TARGET_INVENTORY.json](P5_TARGET_INVENTORY.json) and [P5_HOSTED_RESULTS.json](P5_HOSTED_RESULTS.json).
 

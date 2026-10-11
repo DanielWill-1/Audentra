@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "source": "dist/client preserved build copied to migration/django/.state/p6-legacy-build",
+  "document_sha256": "dfd4b1a1e65069db79594e458affbdf704a7edba5fd2f82df0fb0085f0851a73",
+  "document_size": 1038,
+  "assets": [
+    {
+      "path": "/assets/index-Dmvoeb2c.js",
+      "size": 744017,
+      "sha256": "6bb4edd5c3b86474cec4953bcb782bb5f078e699c4861e9c7a6084dee4a91a42",
+      "content_type": "text/javascript"
+    },
+    {
+      "path": "/assets/index-CFJQDHLM.css",
+      "size": 51985,
+      "sha256": "418f4c202acfe1d8d58df08b4500a86d12975c14e18486dc600f8d381fc7f488",
+      "content_type": "text/css"
+    },
+    {
+      "path": "/favicon.svg",
+      "size": 431,
+      "sha256": "e5786d9cc465947d7ef5458efdcc7f6a77adf2a7f5f79fe31f8dee4824fb32ea",
+      "content_type": "image/svg+xml"
+    },
+    {
+      "path": "/image.png",
+      "size": 19260,
+      "sha256": "4e22e1a1042caf5213bb157d8b3e32c19ccad269a7f842012fb8529d02591f92",
+      "content_type": "image/png"
+    }
+  ]
+}

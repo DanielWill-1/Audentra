@@ -1,0 +1,282 @@
+{
+  "source": "Django pages, W2 test settings (DEBUG=false; preview and legacy fallback disabled)",
+  "base_url": "http://127.0.0.1:18875",
+  "browser": "148.0.7778.96",
+  "pages": [
+    {
+      "route": "/",
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "title": "Audentra | Voice-first form automation",
+      "heading": "Speak.\nAudentra handles\nthe paperwork.",
+      "body_font": "\"Hanken Grotesk\", sans-serif",
+      "document_width": 1440,
+      "viewport_width": 1440,
+      "font_status": "loaded",
+      "has_react_root": false,
+      "has_react_bootstrap": false,
+      "local_links": [
+        "/AIVoiceAutoFill",
+        "/dashboard",
+        "/documentation"
+      ],
+      "comparison": {
+        "route": "/",
+        "viewport": "1440x900",
+        "source_heading": "Speak.\nAudentra handles\nthe paperwork.",
+        "django_heading": "Speak.\nAudentra handles\nthe paperwork.",
+        "source_body_font": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+        "django_body_font": "\"Hanken Grotesk\", sans-serif",
+        "source_horizontal_overflow": false,
+        "django_horizontal_overflow": false,
+        "legacy_html_bytes": 42009,
+        "normalized_page_text_matches": true,
+        "reviewed_visible_text_allowlist": [],
+        "source_text_characters": 5893,
+        "django_text_characters": 5893,
+        "text_tokens_missing_from_django": [],
+        "text_tokens_added_in_django": [],
+        "local_link_destinations_missing_from_django": [],
+        "local_link_destinations_added_in_django": [],
+        "django_local_links": [
+          "/AIVoiceAutoFill",
+          "/dashboard",
+          "/documentation"
+        ],
+        "console_errors": [],
+        "failed_requests": [],
+        "local_responses": [
+          {
+            "path": "/",
+            "status": 200
+          },
+          {
+            "path": "/static/css/app.css",
+            "status": 200
+          },
+          {
+            "path": "/static/icons/sprite.svg",
+            "status": 200
+          },
+          {
+            "path": "/static/js/shell.js",
+            "status": 200
+          },
+          {
+            "path": "/static/js/pages.js",
+            "status": 200
+          }
+        ]
+      }
+    },
+    {
+      "route": "/",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "title": "Audentra | Voice-first form automation",
+      "heading": "Speak.\nAudentra handles\nthe paperwork.",
+      "body_font": "\"Hanken Grotesk\", sans-serif",
+      "document_width": 390,
+      "viewport_width": 390,
+      "font_status": "loaded",
+      "has_react_root": false,
+      "has_react_bootstrap": false,
+      "local_links": [
+        "/AIVoiceAutoFill",
+        "/dashboard",
+        "/documentation"
+      ],
+      "comparison": {
+        "route": "/",
+        "viewport": "390x844",
+        "source_heading": "Speak.\nAudentra handles\nthe paperwork.",
+        "django_heading": "Speak.\nAudentra handles\nthe paperwork.",
+        "source_body_font": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+        "django_body_font": "\"Hanken Grotesk\", sans-serif",
+        "source_horizontal_overflow": false,
+        "django_horizontal_overflow": false,
+        "legacy_html_bytes": 42009,
+        "normalized_page_text_matches": true,
+        "reviewed_visible_text_allowlist": [],
+        "source_text_characters": 5893,
+        "django_text_characters": 5893,
+        "text_tokens_missing_from_django": [],
+        "text_tokens_added_in_django": [],
+        "local_link_destinations_missing_from_django": [],
+        "local_link_destinations_added_in_django": [],
+        "django_local_links": [
+          "/AIVoiceAutoFill",
+          "/dashboard",
+          "/documentation"
+        ],
+        "console_errors": [],
+        "failed_requests": [],
+        "local_responses": [
+          {
+            "path": "/",
+            "status": 200
+          },
+          {
+            "path": "/static/css/app.css",
+            "status": 200
+          },
+          {
+            "path": "/static/icons/sprite.svg",
+            "status": 200
+          },
+          {
+            "path": "/static/js/pages.js",
+            "status": 200
+          },
+          {
+            "path": "/static/js/shell.js",
+            "status": 200
+          }
+        ]
+      }
+    },
+    {
+      "route": "/documentation",
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "title": "Documentation & Architecture Guide | Audentra",
+      "heading": "Documentation & Architecture Guide",
+      "body_font": "\"Hanken Grotesk\", sans-serif",
+      "document_width": 1440,
+      "viewport_width": 1440,
+      "font_status": "loaded",
+      "has_react_root": false,
+      "has_react_bootstrap": false,
+      "local_links": [],
+      "comparison": {
+        "route": "/documentation",
+        "viewport": "1440x900",
+        "source_heading": "Documentation & Architecture Guide",
+        "django_heading": "Documentation & Architecture Guide",
+        "source_body_font": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+        "django_body_font": "\"Hanken Grotesk\", sans-serif",
+        "source_horizontal_overflow": false,
+        "django_horizontal_overflow": false,
+        "legacy_html_bytes": 23076,
+        "normalized_page_text_matches": true,
+        "reviewed_visible_text_allowlist": [],
+        "source_text_characters": 3943,
+        "django_text_characters": 3943,
+        "text_tokens_missing_from_django": [],
+        "text_tokens_added_in_django": [],
+        "local_link_destinations_missing_from_django": [],
+        "local_link_destinations_added_in_django": [],
+        "django_local_links": [],
+        "console_errors": [],
+        "failed_requests": [],
+        "local_responses": [
+          {
+            "path": "/documentation",
+            "status": 200
+          },
+          {
+            "path": "/static/css/app.css",
+            "status": 200
+          },
+          {
+            "path": "/static/icons/sprite.svg",
+            "status": 200
+          },
+          {
+            "path": "/static/js/shell.js",
+            "status": 200
+          },
+          {
+            "path": "/static/js/pages.js",
+            "status": 200
+          }
+        ]
+      }
+    },
+    {
+      "route": "/documentation",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "title": "Documentation & Architecture Guide | Audentra",
+      "heading": "Documentation & Architecture Guide",
+      "body_font": "\"Hanken Grotesk\", sans-serif",
+      "document_width": 390,
+      "viewport_width": 390,
+      "font_status": "loaded",
+      "has_react_root": false,
+      "has_react_bootstrap": false,
+      "local_links": [],
+      "comparison": {
+        "route": "/documentation",
+        "viewport": "390x844",
+        "source_heading": "Documentation & Architecture Guide",
+        "django_heading": "Documentation & Architecture Guide",
+        "source_body_font": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+        "django_body_font": "\"Hanken Grotesk\", sans-serif",
+        "source_horizontal_overflow": false,
+        "django_horizontal_overflow": false,
+        "legacy_html_bytes": 23076,
+        "normalized_page_text_matches": true,
+        "reviewed_visible_text_allowlist": [],
+        "source_text_characters": 3943,
+        "django_text_characters": 3943,
+        "text_tokens_missing_from_django": [],
+        "text_tokens_added_in_django": [],
+        "local_link_destinations_missing_from_django": [],
+        "local_link_destinations_added_in_django": [],
+        "django_local_links": [],
+        "console_errors": [],
+        "failed_requests": [],
+        "local_responses": [
+          {
+            "path": "/documentation",
+            "status": 200
+          },
+          {
+            "path": "/static/css/app.css",
+            "status": 200
+          },
+          {
+            "path": "/static/icons/sprite.svg",
+            "status": 200
+          },
+          {
+            "path": "/static/js/shell.js",
+            "status": 200
+          },
+          {
+            "path": "/static/js/pages.js",
+            "status": 200
+          }
+        ]
+      }
+    }
+  ],
+  "interactions": [
+    {
+      "route": "/documentation",
+      "state": "copy preserves displayed code and reports clipboard success"
+    },
+    {
+      "route": "/documentation",
+      "state": "clipboard denial exposes accessible recovery feedback"
+    },
+    {
+      "route": "/documentation",
+      "state": "keyboard-operable section navigation"
+    }
+  ],
+  "local_probes": []
+}
