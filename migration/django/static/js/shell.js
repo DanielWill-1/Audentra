@@ -14,6 +14,12 @@
     const target = event.target instanceof Element ? event.target : null;
     if (!target) return;
 
+    const navigationLink = target.closest('#mobile-navigation a[href]');
+    const navigationDialog = navigationLink?.closest('dialog[data-shell-dialog]');
+    if (navigationDialog instanceof HTMLDialogElement && navigationDialog.open) {
+      navigationDialog.close();
+    }
+
     const opener = target.closest('[data-modal-open]');
     if (opener) {
       const dialog = document.getElementById(opener.getAttribute('data-modal-open'));

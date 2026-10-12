@@ -1,5 +1,10 @@
 # P7 complete page migration report
 
+> **Current closeout status - 2026-10-13:** The open SR-1 through SR-4 findings from the independent review are closed. The authoritative evidence is in [P7_SR_CLOSEOUT_2026-10-13.md](P7_SR_CLOSEOUT_2026-10-13.md) and the updated [P7/P8 matrix](P7_P8_CLOSURE_MATRIX.md). Earlier review corrections below remain historical snapshots.
+
+
+> **Review-time correction - 2026-10-13:** At the time of the independent review, P7 acceptance was open for SR-1 through SR-4. The later [P7 finding closeout](P7_SR_CLOSEOUT_2026-10-13.md) closed them; P8 deterministic acceptance is complete. Use the [current handoff](../../HANDOFF_2026-10-13_033145_IST.md) and [P7/P8 matrix](P7_P8_CLOSURE_MATRIX.md) for present status.
+
 **Review correction — 2026-10-12 02:03:54 IST:** Local route delivery is established; full P7 acceptance is incomplete. The disposition below is the historical execution claim, superseded by [P7 review](P7_REVIEW_2026-10-12.md) and [P8 review](../services/P8_REVIEW_2026-10-12.md). The executed brief is [archived](P7_P8_IMPLEMENTATION_PROMPT.md).
 
 **Disposition:** P7 Waves 1–7 and the required P8 media bridge were implemented and verified on 2026-10-12 under the approved development/testing scope. P8 is a separate prerequisite package, not an eighth P7 wave.
@@ -65,3 +70,9 @@ The execution began at HEAD `acba9564752f1c121b81d17f59fca4d3f2b9b0f8` with the 
 ## Remaining phase boundaries
 
 P7/P8 closeout does not authorize P9–P11. P9 still owns full parity/release acceptance, physical-device checks, and live speech/provider evidence. W5's hosted route run did not transfer a file through Storage, and the P7 W6/W7 browser fixtures remain synthetic. Recovery email, production Auth policy, OAuth, the separate React/Django session boundary, and credential follow-up remain as recorded in P3/P4. P10 deployment/soak and P11 legacy retirement stay separate gates; the legacy source/runtime, design references, and screenshots are preserved.
+
+## 2026-10-13 combined P7/P8 closeout
+
+The dated independent completion review findings P7-R1–R5 are closed within the documented P1/P4/P5 development boundaries. All seven waves passed the final browser suite, the route-specific comparison and negative-control gates, W6 timezone boundaries, and the actual-page W7 voice/filled/activity checks. The final registry remains 25 local owners with zero normal legacy fallback. W5 private Storage transfer/replacement/revocation/delete and review transitions, plus W7 filled persistence, passed the hosted synthetic route probe with exact cleanup. See the [closure report](P7_P8_CLOSURE_REPORT.md), [matrix](P7_P8_CLOSURE_MATRIX.md), and dated evidence directories.
+
+This addendum supersedes the earlier follow-up statement that route-level Storage transfer remained untested. P9 parity/release acceptance, physical-device/live-provider evidence, P10 deployment/soak, and P11 retirement remain future gates. No quantitative pixel score or production claim is made.

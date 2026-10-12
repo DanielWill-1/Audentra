@@ -1,0 +1,117 @@
+{
+  "captured_at": "2026-10-12T15:43:01.852Z",
+  "source": "Current React/Vite routes with intercepted Supabase Auth/PostgREST synthetic fixture responses",
+  "fixture_identity": "11111111-1111-4111-8111-111111111111 (non-hosted synthetic account)",
+  "fixture_data": "Patient intake template, schedule, and filled-form row; all dummy-origin requests are intercepted",
+  "base_url": "http://127.0.0.1:15573",
+  "browser": "148.0.7778.96",
+  "waves": {
+    "w6": {
+      "wave": "W6",
+      "pages": [
+        {
+          "route": "/scheduler",
+          "viewport": {
+            "name": "desktop",
+            "width": 1440,
+            "height": 900
+          },
+          "response_status": 200,
+          "url": "/scheduler",
+          "title": "Audentra — Open-source voice-to-structured-data",
+          "heading": "Scheduler",
+          "document_width": 1440,
+          "viewport_width": 1440,
+          "console_errors": [],
+          "failed_requests": [],
+          "screenshot": "scheduler-desktop.png"
+        },
+        {
+          "route": "/scheduler",
+          "viewport": {
+            "name": "mobile",
+            "width": 390,
+            "height": 844
+          },
+          "response_status": 200,
+          "url": "/scheduler",
+          "title": "Audentra — Open-source voice-to-structured-data",
+          "heading": "Scheduler",
+          "document_width": 711,
+          "viewport_width": 390,
+          "console_errors": [],
+          "failed_requests": [],
+          "screenshot": "scheduler-mobile.png"
+        },
+        {
+          "route": "/manage-schedules",
+          "viewport": {
+            "name": "desktop",
+            "width": 1440,
+            "height": 900
+          },
+          "response_status": 200,
+          "url": "/manage-schedules",
+          "title": "Audentra — Open-source voice-to-structured-data",
+          "heading": "Manage All Schedules",
+          "document_width": 1440,
+          "viewport_width": 1440,
+          "console_errors": [],
+          "failed_requests": [],
+          "screenshot": "manage-schedules-desktop.png"
+        },
+        {
+          "route": "/manage-schedules",
+          "viewport": {
+            "name": "mobile",
+            "width": 390,
+            "height": 844
+          },
+          "response_status": 200,
+          "url": "/manage-schedules",
+          "title": "Audentra — Open-source voice-to-structured-data",
+          "heading": "Manage All Schedules",
+          "document_width": 390,
+          "viewport_width": 390,
+          "console_errors": [],
+          "failed_requests": [],
+          "screenshot": "manage-schedules-mobile.png"
+        },
+        {
+          "route": "/scheduler-settings",
+          "viewport": {
+            "name": "desktop",
+            "width": 1440,
+            "height": 900
+          },
+          "response_status": 200,
+          "url": "/scheduler-settings",
+          "title": "Audentra — Open-source voice-to-structured-data",
+          "heading": "Scheduler Settings",
+          "document_width": 1440,
+          "viewport_width": 1440,
+          "console_errors": [],
+          "failed_requests": [],
+          "screenshot": "scheduler-settings-desktop.png"
+        },
+        {
+          "route": "/scheduler-settings",
+          "viewport": {
+            "name": "mobile",
+            "width": 390,
+            "height": 844
+          },
+          "response_status": 200,
+          "url": "/scheduler-settings",
+          "title": "Audentra — Open-source voice-to-structured-data",
+          "heading": "Scheduler Settings",
+          "document_width": 649,
+          "viewport_width": 390,
+          "console_errors": [],
+          "failed_requests": [],
+          "screenshot": "scheduler-settings-mobile.png"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block body %}
+  <main id="main-content" class="min-h-screen" tabindex="-1">
+    {% include "fragments/messages.html" %}
+    {% block content %}{% endblock %}
+  </main>
+  {% include "fragments/modal.html" %}
+{% endblock %}

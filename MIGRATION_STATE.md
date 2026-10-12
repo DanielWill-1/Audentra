@@ -1,14 +1,14 @@
 # Migration state
 
-**Updated:** 2026-10-12
+**Updated:** 2026-10-13 03:34 IST
 **Project:** Audentra / VoiceForm  
-**Current task:** Combined P7/P8 closure prompt prepared at the owner's request, 2026-10-12 02:19:14 IST. P7 route delivery is established; full acceptance and P8 repair remain open. This update is documentation only.
-**Active step:** See the dated [handoff](HANDOFF_2026-10-12_020354_IST.md), [P7 review](docs/pages/P7_REVIEW_2026-10-12.md) and [P8 review](docs/services/P8_REVIEW_2026-10-12.md). All 25 routes have local owners and zero normal fallback. Fresh isolated pytest passed 145 tests in 4.18s and Django check passed; broader recorded evidence does not close the newly identified gaps.
-**Next execution scope:** Root [prompt.md](prompt.md) now covers all remaining P7 and P8 requirements together, including comparison/UI/hosted Storage-review-filled/timezone/voice proof. After the combined completion gate passes, prepare the P9 brief and stop; P9 execution and P10/P11 follow later. No repairs were performed by this prompt update.
+**Current task:** P7 SR-1 through SR-4 are closed within the documented development boundaries; P8 deterministic media/session acceptance is complete; physical-device and live-provider checks remain NOT RUN and are assigned to P9. P9 is in progress after the 25-route acceptance matrix and first local read-only inventory. See [P7 closeout](docs/pages/P7_SR_CLOSEOUT_2026-10-13.md), [P9 report](docs/parity/P9_REPORT.md), and [P9 matrix](docs/parity/P9_ACCEPTANCE_MATRIX.md).
+**Active step:** Continue P9 with source/Django route captures, interaction and visual review, session/security and rollback checks, and read-only schema acceptance. The initial inventory reconciled 25/25 manifest, registry, and resolver paths with zero fallback; it is not end-to-end parity evidence.
+**Next execution scope:** Follow the active [root prompt](prompt.md) and [P9 task](docs/parity/P9_IMPLEMENTATION_PROMPT.md). Browser-route rows and hosted schema/data checks remain NOT RUN. Physical-device and live-provider checks remain NOT RUN without a specific device/provider scope. P10/P11 remain separate.
 
 **P5 closure result (2026-10-11):** The shared transaction-pooler probe passed all 65 hosted checks and cleaned all three synthetic accounts. A/B/A role/claims and private-row isolation, transaction cleanup, forced rollback/recovery and reused Django client connection passed. Local verification passed 95 pytest tests, Django's system check, focused mypy across 60 source files and Ruff.
 
-**Session handoff:** [Current dated handoff](HANDOFF_2026-10-12_020354_IST.md) records session delivery and corrected P7/P8 status. [HANDOFF_P5_P6.md](HANDOFF_P5_P6.md) retains P5/P6 history. [P6_ROLLBACK.md](docs/rendering/P6_ROLLBACK.md) documents fallback rollback.
+**Session handoff:** [Current P7 closeout and P9 kickoff](HANDOFF_2026-10-13_033145_IST.md). The [01:03 review handoff](HANDOFF_2026-10-13_010328_IST.md) and [earlier closeout handoff](HANDOFF_2026-10-13_004133_IST.md) are superseded snapshots. P5/P6 history and rollback evidence remain intact.
 
 **Owner scope revision:** The 2026-10-11 development-only request supersedes earlier SMTP, confirmation-delivery, legacy account and React Auth compatibility gates. Supabase remains the sole provider via its Python SDK. The supplied publishable key is configured. Automatic approval review blocked broad credential revocation; see [P4_CREDENTIAL_ROTATION.json](docs/auth/P4_CREDENTIAL_ROTATION.json).
 
@@ -16,7 +16,7 @@
 
 ## 1. Purpose and authority
 
-Use this file for current facts, evidence, decisions and blockers. Use [MIGRATION_PLAN.md](MIGRATION_PLAN.md) for scope/gates and the archived P2–P6 briefs for their original scope. The executed [P7/P8 master brief](docs/pages/P7_P8_IMPLEMENTATION_PROMPT.md) is archived; root [prompt.md](prompt.md) now prepares complete P7/P8 closeout. Evidence and dated reviews remain under `docs/pages/` and `docs/services/`.
+Use this file for current facts, evidence, decisions and blockers. Use [MIGRATION_PLAN.md](MIGRATION_PLAN.md) for scope/gates and archived phase briefs for original scope. Root [prompt.md](prompt.md) contains the active P9 task. Evidence and dated reviews remain under `docs/pages/`, `docs/services/`, and `docs/parity/`.
 
 On 2026-10-10 the user authorized implementation of the P2 brief on native Windows and the existing hosted testing project. P2 created restricted django_app and django_data roles and a django schema, migrated only Django sessions/migration bookkeeping, and verified both runtime aliases. The public application table catalog and Storage bucket count remained empty. No Docker, commits, pushes, deployment, P3 work or P0 recovery was part of P2. P1 carryovers remain assigned to their later phases.
 
@@ -51,7 +51,7 @@ Refresh this snapshot at each handoff. Preserve other people's working tree chan
 | Concern | Current implementation |
 |---|---|
 | Migrated page path | P7 manifest routes are locally owned by Django templates/views; all 25 URL patterns resolve and the normal legacy fallback count is zero |
-| Retained source/runtime | React 18, TypeScript, Vite, React Router and Express remain in their original folders for P9–P11 comparison/recovery; no traffic cutover or legacy retirement occurred |
+| Retained source/runtime | React 18, TypeScript, Vite, React Router and Express remain in their original folders for P9â€“P11 comparison/recovery; no traffic cutover or legacy retirement occurred |
 | Styling | Django uses its P6 public/application shells and the pinned Tailwind CSS 3 build; source tokens remain in `tailwind.config.js` and the Django theme config |
 | Identity / data | Django migrated pages use verified server sessions and P5 Supabase Python data services; the retained React stack keeps its separate existing session behavior |
 | Speech | P8 provides browser MediaRecorder and same-origin multipart to Django/P3; live provider and physical-device behavior remain unverified |
@@ -145,7 +145,7 @@ The screenshot script discovers routes from `App.tsx`; its fallback omits `/open
 
 ## 7. P1 final review and acceptance
 
-P1 is finalized with owner-accepted exceptions. [P1_ACCEPTANCE.md](docs/parity/P1_ACCEPTANCE.md) records the exact scope, checks and phase assignments. Executed P1–P6 and [P7/P8 briefs](docs/pages/P7_P8_IMPLEMENTATION_PROMPT.md) are archived; root [prompt.md](prompt.md) prepares combined P7/P8 closure following the dated review.
+P1 is finalized with owner-accepted exceptions. [P1_ACCEPTANCE.md](docs/parity/P1_ACCEPTANCE.md) records the exact scope, checks and phase assignments. Executed P1â€“P6 and [P7/P8 briefs](docs/pages/P7_P8_IMPLEMENTATION_PROMPT.md) are archived; root [prompt.md](prompt.md) prepares combined P7/P8 closure following the dated review.
 
 The reviewed harness, guarded seeder, capture/comparison tooling, tests and CI live in migration/parity/ and .github/. The manifest accepts all 25 current routes and Q21 retains /activitylog. All 24 existing desktop PNGs were inventoried and visually reviewed; /open and mobile references are absent. Four application images show login, one shows loading and one shows an error. They are accepted historical manual references, not successful authenticated goldens. Numeric tolerances remain proposals. Originals were preserved.
 
@@ -177,10 +177,9 @@ No legacy source fixes, secret-history recovery, commits or deployments were per
 | P5a | Baseline/reconciliation implemented and applied; isolated baseline, empty-target remediation, idempotence and native RLS checks passed | Hosted target inventory is refreshed; current hosted schema-only dump is unavailable under the restricted runtime role |
 | P5b | Complete | Hosted shared-pooler probe, A/B/A identity/data isolation, cleanup and local checks passed; see P5 evidence |
 | P6 | Implemented; W1 closed both review findings | [Review](docs/rendering/P6_REVIEW.md) records R1/R2 disposition; [P6 report](docs/rendering/P6_REPORT.md) retains original delivery evidence |
-| P7 W1 | Complete; R1–R4 review corrections closed | Eleven public pages; dated dispositions in [review](docs/pages/P7_W1_REVIEW.md); W1 snapshot fallback 10 |
-| P7 W2-W7 | Local route delivery implemented; acceptance incomplete | All 25 owners local and fallback zero; missing comparison/flow/timezone/integration gates in [dated review](docs/pages/P7_REVIEW_2026-10-12.md) |
-| P8 | Implemented; repair and closeout required | 12 historical fake-media checks passed, but reproduced races and missing actual-page/lifecycle/codec/checklist proof remain; see [review](docs/services/P8_REVIEW_2026-10-12.md) |
-| P9 | Not started | Full gate after page waves; P1 harness is the starting point |
+| P7 W1-W7 | Routes implemented; full acceptance open for SR-1â€“SR-4 | [Review](docs/pages/P7_P8_SESSION_REVIEW_2026-10-13.md), [matrix](docs/pages/P7_P8_CLOSURE_MATRIX.md); 25 local owners and zero fallback remain verified |
+| P8 | Deterministic media/development-session boundary revalidated | Fresh 16 media and 12 actual-page voice checks pass; real devices/live providers remain NOT RUN for P9 |
+| P9 | Drafted; not started; P7 entry gate open | [P9 task](docs/parity/P9_IMPLEMENTATION_PROMPT.md); known P7 findings remain P7 work |
 | P10 | Not started | Full parity, deployment access and rollback agreement |
 | P11 | Not started | P10 soak and zero transitional usage evidence |
 
@@ -217,9 +216,11 @@ The old long plan contains stale headings and conflicting instructions. The [cor
 
 ## 11. Handoff and updates
 
-The P6 findings and W1 R1–R4 remain closed. Fresh review passed 145 isolated tests and Django check. Prior mypy/Ruff/JS/static checks, 50 captures/14 interactions, 12 isolated fake-media checks and hosted W5/W6 cleanup evidence remain retained, but do not close the new [P7](docs/pages/P7_REVIEW_2026-10-12.md)/[P8](docs/services/P8_REVIEW_2026-10-12.md) findings. The [dated handoff](HANDOFF_2026-10-12_020354_IST.md) distinguishes new checks from historical execution evidence.
+**Historical review update (2026-10-13):** At the time of the independent review, P7 remained open for SR-1 through SR-4 and P8 deterministic checks passed. The [P7 closeout](docs/pages/P7_SR_CLOSEOUT_2026-10-13.md) later closed those findings; P8 deterministic acceptance is complete and P9 has started. See the [current handoff](HANDOFF_2026-10-13_033145_IST.md) and active [P9 task](docs/parity/P9_IMPLEMENTATION_PROMPT.md). Paragraphs below retain their dated review scope.
 
-P2–P6 completion evidence and P1 accepted exceptions remain as previously recorded. P3 live speech evidence, P4 recovery email/production policy and credential follow-up remain separate. Preserve original source/reference folders through P9 and the P10 soak; P11 retirement needs its own gate.
+At the 2026-10-13 review snapshot, prior mypy/Ruff/JS/static checks, 50 captures/14 interactions, 12 isolated fake-media checks, and hosted W5/W6 cleanup evidence did not close the newly identified P7/P8 findings. Subsequent work closed P7 SR-1 through SR-4 and P8 deterministic acceptance; see the [P7 closeout](docs/pages/P7_SR_CLOSEOUT_2026-10-13.md), [P8 verification](docs/services/P8_VERIFICATION.md), and [current handoff](HANDOFF_2026-10-13_033145_IST.md).
+
+P2â€“P6 completion evidence and P1 accepted exceptions remain as previously recorded. P3 live speech evidence, P4 recovery email/production policy and credential follow-up remain separate. Preserve original source/reference folders through P9 and the P10 soak; P11 retirement needs its own gate.
 
 Future updates must record:
 

@@ -1,5 +1,7 @@
 # P8 media bridge contracts
 
+**Current status (2026-10-13):** The deterministic P8 media, service, and actual-page contracts are closed under fake-media and synthetic-session coverage. See the [P8 report](P8_REPORT.md), [verification](P8_VERIFICATION.md), and [current handoff](../../HANDOFF_2026-10-13_033145_IST.md). Real-device and live-provider checks remain NOT RUN in P9. The review note below records the earlier state.
+
 **Review correction — 2026-10-12 02:03:54 IST:** These are intended contracts; full lifecycle/codec compliance is not yet established. See [P8 review](P8_REVIEW_2026-10-12.md) for reproduced defects and required proof.
 
 ## Browser capture
@@ -19,3 +21,7 @@
 ## Evidence limit
 
 The browser test fakes `MediaDevices`/`MediaRecorder` and intercepts the same-origin API. It does not call a paid/live provider and does not use a physical microphone. Provider, device/codec, and deployment parity remain P9 acceptance work.
+
+## 2026-10-13 verified disposition
+
+The browser recorder owns each attempt's stream, recorder and chunks; MIME parameters are normalized only for provider configuration, while the captured blob metadata and bytes stay unchanged. WebM/Ogg Opus fake-provider mapping and byte limits are asserted, unsupported MP4 capture is not advertised, and the existing JSON/base64 client remains supported. Recorder and TTS requests/playback have explicit cancellation and stale-result suppression. Actual-page/session+CSRF evidence is distinct from mocked provider results. Physical-device and live-provider rows in P8_DEVICE_CHECKLIST.md remain NOT RUN for P9.

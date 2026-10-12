@@ -2,6 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer components {
+  .template-builder-dialog {
+    width: min(42rem, calc(100vw - 2rem));
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+}
+
 @layer base {
   :focus-visible {
     outline: 3px solid #2563eb;

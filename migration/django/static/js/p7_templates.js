@@ -2,8 +2,10 @@
   "use strict";
 
   const types = ["text", "email", "number", "date", "textarea", "select", "radio", "checkbox"];
-  const createFieldId = () =>
-    "field_" + (globalThis.crypto?.randomUUID?.() || Date.now() + "_" + Math.random().toString(16).slice(2));
+  const createFieldId = () => {
+    const randomId = (globalThis.crypto?.randomUUID?.() || "").replaceAll("-", "").slice(0, 10);
+    return `field_${randomId || Date.now().toString(36) + Math.random().toString(36).slice(2, 5)}`;
+  };
 
   function addControl(parent, tag, attributes = {}) {
     const control = document.createElement(tag);
@@ -142,16 +144,129 @@
       payload.value = JSON.stringify({ fields: serialize() });
     }
 
+    const dialog = form.closest("dialog[data-template-dialog]");
+    if (dialog) {
+      const opener = document.querySelector('[data-template-dialog-open]');
+      const close = dialog.querySelector("[data-template-dialog-close]");
+      const setExpanded = (expanded) => opener?.setAttribute("aria-expanded", String(expanded));
+      opener?.addEventListener("click", () => {
+        if (!dialog.open) dialog.showModal();
+        setExpanded(true);
+      });
+      close?.addEventListener("click", () => dialog.close());
+      dialog.addEventListener("click", (event) => {
+        if (event.target === dialog) dialog.close();
+      });
+      dialog.addEventListener("close", () => {
+        setExpanded(false);
+        opener?.focus();
+      });
+      if (window.location.hash === `#${dialog.id}`) {
+        dialog.showModal();
+        setExpanded(true);
+      }
+    }
+
+    if (form.dataset.templateFlow === "true") {
+      const steps = [...form.querySelectorAll("[data-template-step]")];
+      const labels = [...form.querySelectorAll("[data-step-label]")];
+      const back = form.querySelector("[data-template-back]");
+      const next = form.querySelector("[data-template-next]");
+      const save = form.querySelector("[data-template-save]");
+      const status = form.querySelector("[data-template-flow-status]");
+      const file = form.querySelector('[name="template_file"]');
+      let currentStep = 1;
+
+      function announce(message) {
+        if (status) status.textContent = message;
+      }
+
+      function updateCreationPath() {
+        const method = form.querySelector('[name="creation_method"]:checked')?.value || "";
+        const manual = form.querySelector('[data-template-path="manual"]');
+        const upload = form.querySelector('[data-template-path="upload"]');
+        if (manual) manual.hidden = currentStep !== 3 || method !== "manual";
+        if (upload) upload.hidden = currentStep !== 3 || method !== "upload";
+        if (file) file.required = currentStep === 3 && method === "upload";
+        if (method === "manual") announce("Build fields manually. Add at least one field before saving.");
+        else if (method === "upload") announce("The private source file is stored as an attachment; its contents are not converted into fields.");
+      }
+
+      function setStep(step) {
+        currentStep = step;
+        steps.forEach((panel) => { panel.hidden = Number(panel.dataset.templateStep) !== step; });
+        labels.forEach((label) => {
+          const active = Number(label.dataset.stepLabel) === step;
+          if (active) label.setAttribute("aria-current", "step");
+          else label.removeAttribute("aria-current");
+          label.classList.toggle("font-medium", active);
+          label.classList.toggle("text-text-secondary", !active);
+        });
+        if (back) back.hidden = step === 1;
+        if (next) next.hidden = step === 3;
+        if (save) save.hidden = step !== 3;
+        updateCreationPath();
+      }
+
+      next?.addEventListener("click", () => {
+        if (currentStep === 1) {
+          const name = form.querySelector('[name="name"]');
+          const category = form.querySelector('[name="category"]');
+          if (!name.value.trim()) { name.focus(); name.reportValidity(); return; }
+          if (!category.value) { category.focus(); category.reportValidity(); return; }
+          announce("");
+        } else if (currentStep === 2) {
+          const method = form.querySelector('[name="creation_method"]:checked');
+          if (!method) {
+            const firstMethod = form.querySelector('[name="creation_method"]');
+            firstMethod?.focus();
+            announce("Choose manual builder or private file upload to continue.");
+            return;
+          }
+        }
+        setStep(Math.min(3, currentStep + 1));
+      });
+      back?.addEventListener("click", () => setStep(Math.max(1, currentStep - 1)));
+      form.querySelectorAll('[name="creation_method"]').forEach((radio) => {
+        radio.addEventListener("change", updateCreationPath);
+      });
+      setStep(1);
+    }
+
     originalFields.forEach(renderField);
     form.querySelector("[data-add-field]")?.addEventListener("click", () => {
       renderField({ id: createFieldId(), label: "", type: "text", required: false });
       list.lastElementChild?.querySelector('[data-property="label"]')?.focus();
+      const status = form.querySelector("[data-template-flow-status]");
+      if (status?.textContent.includes("Add at least one field before creating")) status.textContent = "";
       sync();
     });
     list.addEventListener("input", sync);
     list.addEventListener("change", sync);
     form.addEventListener("submit", (event) => {
       const fields = serialize();
+      if (form.dataset.templateFlow === "true") {
+        const method = form.querySelector('[name="creation_method"]:checked')?.value;
+        if (!method) {
+          event.preventDefault();
+          form.querySelector("[data-template-next]")?.click();
+          return;
+        }
+        if (method === "manual" && fields.length === 0) {
+          event.preventDefault();
+          const status = form.querySelector("[data-template-flow-status]");
+          if (status) status.textContent = "Add at least one field before creating a voice-enabled form.";
+          form.querySelector("[data-add-field]")?.focus();
+          return;
+        }
+        if (method === "upload" && !form.querySelector('[name="template_file"]')?.files?.length) {
+          event.preventDefault();
+          const file = form.querySelector('[name="template_file"]');
+          file?.focus();
+          file?.reportValidity();
+          return;
+        }
+      }
       if (fields.some((field) => !field.id || !field.label)) {
         event.preventDefault();
         const invalid = [...list.querySelectorAll("input[required]")].find((item) => !item.value.trim());
@@ -164,4 +279,20 @@
   }
 
   document.querySelectorAll("[data-template-builder]").forEach(initForm);
+  document.querySelector("[data-template-refresh]")?.addEventListener("click", () => window.location.reload());
+  document.querySelectorAll("[data-template-results]").forEach((results) => {
+    const section = results.closest("section");
+    const controls = [...(section?.querySelectorAll("[data-template-view]") || [])];
+    const status = section?.querySelector("[data-template-view-status]");
+    controls.forEach((button) => {
+      button.addEventListener("click", () => {
+        const layout = button.dataset.templateView === "list" ? "list" : "grid";
+        results.dataset.templateLayout = layout;
+        results.classList.toggle("sm:grid-cols-2", layout === "grid");
+        results.classList.toggle("xl:grid-cols-3", layout === "grid");
+        controls.forEach((control) => control.setAttribute("aria-pressed", String(control === button)));
+        if (status) status.textContent = `${layout === "grid" ? "Grid" : "List"} layout selected.`;
+      });
+    });
+  });
 })();

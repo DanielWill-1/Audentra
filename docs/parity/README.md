@@ -4,13 +4,13 @@ This directory contains new comparison evidence. It does not replace page-screen
 
 ## Current status
 
-- P1 is finalized with [owner-accepted exceptions](P1_ACCEPTANCE.md). P2 is complete and [reviewed](../foundation/P2_REVIEW.md). [P3_REVIEW.md](../services/P3_REVIEW.md) records passing existing checks and required corrections; root [prompt.md](../../prompt.md) is the prepared P4 brief, not started implementation. [P1](P1_IMPLEMENTATION_PROMPT.md), [P2](../foundation/P2_IMPLEMENTATION_PROMPT.md) and [P3](../services/P3_IMPLEMENTATION_PROMPT.md) briefs are archived.
+- P1 is finalized with [accepted exceptions](P1_ACCEPTANCE.md). P7 SR-1 through SR-4 are closed in the [finding closeout](../pages/P7_SR_CLOSEOUT_2026-10-13.md), and P8 deterministic acceptance is complete; physical-device and live-provider checks remain P9 work. P9 has started; its [25-route acceptance matrix](P9_ACCEPTANCE_MATRIX.md) preceded a passing local read-only inventory. Browser and hosted acceptance remain open.
 - The accepted route contract enumerates all 25 routes from src/App.tsx. /activitylog remains a future feature.
 - All 24 historical desktop PNGs in page-screenshots/ were inventoried and visually reviewed; see [reference-inventory.json](reference-inventory.json). /open and mobile references are absent. Some app images show login/loading/error and cannot stand in for successful authenticated views.
 - Existing images are accepted manual design references. baseline/ still has no full reviewed golden matrix; numeric thresholds and masks remain deferred.
 - The owner confirmed the private .env target is hosted development/testing with no production. CLI linking and read-only catalog inspection work without Docker. [testing-schema-summary.json](testing-schema-summary.json) records zero public app tables and zero Storage buckets.
 - Private PARITY_ URL, exact host allowlist and anon configuration match legacy Vite. CLI entry points load only literal PARITY_ entries, with process values taking precedence. Test identity, elevated key and write acknowledgement are unset; no fixture/database/Auth/Storage writes occurred.
-- Schema/Storage provisioning is P5a, Auth is P4 and RLS/populated fixture verification is P5b. Full matrix/flow evidence remains required during waves and P9.
+- Schema/Storage provisioning is P5a, Auth is P4 and RLS/populated fixture verification is P5b. P7/P8 wave evidence is retained; P9 full parity/release acceptance remains required.
 - GitHub's protected parity-test environment remains optional until hosted capture execution is desired. No hosted workflow run is claimed.
 
 ## Setup and commands

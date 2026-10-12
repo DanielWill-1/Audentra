@@ -10,3 +10,7 @@
 - The browser run used one fixed synthetic principal and did not persist. The hosted check used the real Django routes and did not upload/download a Storage object. The prior hosted P5 record covers Storage/RLS contracts at the service boundary; no P7 route-level Storage transfer is claimed.
 
 Evidence: [browser results](evidence/w5/post-wave-review-20261012/django/browser-results.json), [desktop](evidence/w5/post-wave-review-20261012/django/templates-desktop.png), [mobile](evidence/w5/post-wave-review-20261012/django/templates-mobile.png), [builder interaction](evidence/w5/post-wave-review-20261012/django/templates-builder-desktop.png). Current-source capture: [legacy](evidence/w5/post-wave-review-20261012/legacy/).
+
+## 2026-10-13 combined P7/P8 closeout
+
+Recorded browser run: PASS. Full P7 acceptance is reopened by [review](P7_P8_SESSION_REVIEW_2026-10-13.md) for uncovered source-parity requirements; W6 also has a reproduced settings bug. The current W5 run recorded 2 route/page captures and 2 exercised interactions using actual Django application plus hosted Storage/share/review probe. Desktop 1440x900 and mobile 390x844 checks reported no overflow or unexpected browser errors. Evidence: docs/pages/evidence/w5/closeout-20261012/django/ and docs/pages/evidence/w5/closeout-20261012/hosted-route-results.json The complete combined results and boundaries are in docs/pages/P7_P8_CLOSURE_REPORT.md and docs/pages/P7_P8_CLOSURE_MATRIX.md.

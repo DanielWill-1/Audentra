@@ -16,7 +16,7 @@ from supabase import ClientOptions, create_client
 from apps.accounts.principals import SupabaseUser
 from apps.accounts.services.tokens import access_token_for_verified_request
 from apps.db.rls import require_rls_context, rls_context
-from apps.templates_app.models import Template
+from apps.templates_app.models import Template, TemplateShare
 
 BUCKET = "template-files"
 MAX_FILE_BYTES = 20 * 1024 * 1024
@@ -190,6 +190,13 @@ def download_template_file(
         template = Template.objects.using("supabase").filter(id=template_id).first()
         if template is None or not template.uploaded_file:
             raise ValueError("Template file is not available.")
+        if template.created_by != user.id and not (
+            TemplateShare.objects.using("supabase")
+            .filter(template_id=template_id, recipient_id=user.id)
+            .exists()
+        ):
+            # Public visibility grants template discovery, not private file access.
+            raise ValueError("Template file is not available.")
         path = _validated_path(template.uploaded_file, template_id)
         extension = path.rsplit(".", 1)[-1].lower()
         # Storage's CDN may retain this private response for the same user
@@ -234,3 +241,10 @@ def delete_template_file(request: Any, user: SupabaseUser, template_id: UUID) ->
             cleanup_path=path,
         ) from error
     return True
+
+
+def remove_template_object(request: Any, user: SupabaseUser, template_id: UUID, path: str) -> None:
+    """Remove a verified template-scoped object during owner template deletion."""
+    token = access_token_for_verified_request(request, user)
+    object_path = _validated_path(path, template_id)
+    _storage_request(token, lambda bucket: bucket.remove([object_path]))

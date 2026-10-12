@@ -1,0 +1,206 @@
+{
+  "captured_at": "2026-10-12T21:08:53.005Z",
+  "source_boundary": "Current React Scheduler with intercepted synthetic Supabase responses and frozen browser Date",
+  "django_boundary": "Django scheduler page with isolated synthetic data and browser-only frozen UTC request header",
+  "contract": "P5 stores entered date/time values and derives date boundaries in UTC. React calendar labels/today are browser-local; month matching calls toISOString on local midnight.",
+  "cases": [
+    {
+      "id": "utc-midnight",
+      "frozen_instant_utc": "2026-10-13T00:30:00.000Z",
+      "browser_zone": "UTC",
+      "p5_utc_calendar_date": "2026-10-13",
+      "source": {
+        "local_date": "2026-10-13",
+        "month": "October 2026",
+        "highlighted_today_day": 13,
+        "event_days": [
+          13
+        ],
+        "browser_zone_label": "10/13/2026, UTC",
+        "screenshot": "source-utc-midnight.png"
+      },
+      "django": {
+        "month": "October 2026",
+        "selected_today_link": "?date=2026-10-13&view=week&q=&type=all",
+        "selected_today_label": "Show week containing October 13, 2026",
+        "event_dates": [
+          "2026-10-13"
+        ],
+        "today_target": null,
+        "local_date": "2026-10-13",
+        "screenshot": "django-utc-midnight.png"
+      },
+      "browser_errors": {
+        "source": [],
+        "django": []
+      },
+      "observed_difference": "Source local Today and the Django/P5 UTC Today date agree.",
+      "source_event_day_difference": "Source and Django show the date-only event on the stored calendar day."
+    },
+    {
+      "id": "positive-offset-midnight",
+      "frozen_instant_utc": "2026-10-12T20:30:00.000Z",
+      "browser_zone": "Asia/Kolkata",
+      "p5_utc_calendar_date": "2026-10-12",
+      "source": {
+        "local_date": "2026-10-13",
+        "month": "October 2026",
+        "highlighted_today_day": 13,
+        "event_days": [
+          13
+        ],
+        "browser_zone_label": "10/13/2026, GMT+5:30",
+        "screenshot": "source-positive-offset-midnight.png"
+      },
+      "django": {
+        "month": "October 2026",
+        "selected_today_link": "?date=2026-10-12&view=week&q=&type=all",
+        "selected_today_label": "Show week containing October 12, 2026",
+        "event_dates": [
+          "2026-10-12"
+        ],
+        "today_target": null,
+        "local_date": "2026-10-13",
+        "screenshot": "django-positive-offset-midnight.png"
+      },
+      "browser_errors": {
+        "source": [],
+        "django": []
+      },
+      "observed_difference": "Source local Today is 2026-10-13; Django/P5 UTC Today is 2026-10-12.",
+      "source_event_day_difference": "Source places the UTC date-only event on local day 13."
+    },
+    {
+      "id": "negative-offset-midnight",
+      "frozen_instant_utc": "2026-10-13T00:30:00.000Z",
+      "browser_zone": "America/Los_Angeles",
+      "p5_utc_calendar_date": "2026-10-13",
+      "source": {
+        "local_date": "2026-10-12",
+        "month": "October 2026",
+        "highlighted_today_day": 12,
+        "event_days": [
+          13
+        ],
+        "browser_zone_label": "10/12/2026, PDT",
+        "screenshot": "source-negative-offset-midnight.png"
+      },
+      "django": {
+        "month": "October 2026",
+        "selected_today_link": "?date=2026-10-13&view=week&q=&type=all",
+        "selected_today_label": "Show week containing October 13, 2026",
+        "event_dates": [
+          "2026-10-13"
+        ],
+        "today_target": null,
+        "local_date": "2026-10-12",
+        "screenshot": "django-negative-offset-midnight.png"
+      },
+      "browser_errors": {
+        "source": [],
+        "django": []
+      },
+      "observed_difference": "Source local Today is 2026-10-12; Django/P5 UTC Today is 2026-10-13.",
+      "source_event_day_difference": "Source and Django show the date-only event on the stored calendar day."
+    },
+    {
+      "id": "spring-before-transition",
+      "frozen_instant_utc": "2026-03-08T09:30:00.000Z",
+      "browser_zone": "America/Los_Angeles",
+      "p5_utc_calendar_date": "2026-03-08",
+      "source": {
+        "local_date": "2026-03-08",
+        "month": "March 2026",
+        "highlighted_today_day": 8,
+        "event_days": [
+          8
+        ],
+        "browser_zone_label": "3/8/2026, PST",
+        "screenshot": "source-spring-before-transition.png"
+      },
+      "django": {
+        "month": "March 2026",
+        "selected_today_link": "?date=2026-03-08&view=week&q=&type=all",
+        "selected_today_label": "Show week containing March 8, 2026",
+        "event_dates": [
+          "2026-03-08"
+        ],
+        "today_target": null,
+        "local_date": "2026-03-08",
+        "screenshot": "django-spring-before-transition.png"
+      },
+      "browser_errors": {
+        "source": [],
+        "django": []
+      },
+      "observed_difference": "Source local Today and the Django/P5 UTC Today date agree.",
+      "source_event_day_difference": "Source and Django show the date-only event on the stored calendar day."
+    },
+    {
+      "id": "spring-after-transition",
+      "frozen_instant_utc": "2026-03-08T10:30:00.000Z",
+      "browser_zone": "America/Los_Angeles",
+      "p5_utc_calendar_date": "2026-03-08",
+      "source": {
+        "local_date": "2026-03-08",
+        "month": "March 2026",
+        "highlighted_today_day": 8,
+        "event_days": [
+          8
+        ],
+        "browser_zone_label": "3/8/2026, PDT",
+        "screenshot": "source-spring-after-transition.png"
+      },
+      "django": {
+        "month": "March 2026",
+        "selected_today_link": "?date=2026-03-08&view=week&q=&type=all",
+        "selected_today_label": "Show week containing March 8, 2026",
+        "event_dates": [
+          "2026-03-08"
+        ],
+        "today_target": null,
+        "local_date": "2026-03-08",
+        "screenshot": "django-spring-after-transition.png"
+      },
+      "browser_errors": {
+        "source": [],
+        "django": []
+      },
+      "observed_difference": "Source local Today and the Django/P5 UTC Today date agree.",
+      "source_event_day_difference": "Source and Django show the date-only event on the stored calendar day."
+    },
+    {
+      "id": "fall-after-transition",
+      "frozen_instant_utc": "2026-11-01T08:30:00.000Z",
+      "browser_zone": "America/Los_Angeles",
+      "p5_utc_calendar_date": "2026-11-01",
+      "source": {
+        "local_date": "2026-11-01",
+        "month": "November 2026",
+        "highlighted_today_day": 1,
+        "event_days": [
+          1
+        ],
+        "browser_zone_label": "11/1/2026, PDT",
+        "screenshot": "source-fall-after-transition.png"
+      },
+      "django": {
+        "month": "November 2026",
+        "selected_today_link": "?date=2026-11-01&view=week&q=&type=all",
+        "selected_today_label": "Show week containing November 1, 2026",
+        "event_dates": [
+          "2026-11-01"
+        ],
+        "today_target": null,
+        "local_date": "2026-11-01",
+        "screenshot": "django-fall-after-transition.png"
+      },
+      "browser_errors": {
+        "source": [],
+        "django": []
+      },
+      "observed_difference": "Source local Today and the Django/P5 UTC Today date agree.",
+      "source_event_day_difference": "Source and Django show the date-only event on the stored calendar day."
+    }
+  ]
+}

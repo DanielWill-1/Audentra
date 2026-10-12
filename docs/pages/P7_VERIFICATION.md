@@ -1,5 +1,10 @@
 # P7 aggregate verification
 
+> **Current verification - 2026-10-13:** SR-1 through SR-4 are closed; see [P7 finding closeout](P7_SR_CLOSEOUT_2026-10-13.md) for the final strict W3-W7 runs, visual sheets, settings regression, timezone matrix, and aggregate checks. P9 has started after its acceptance matrix was created.
+
+
+> **Review-time correction - 2026-10-13:** At the time of the independent review, P7 acceptance was open for SR-1 through SR-4. The later [P7 finding closeout](P7_SR_CLOSEOUT_2026-10-13.md) closed them; P8 deterministic acceptance is complete. Use the [current handoff](../../HANDOFF_2026-10-13_033145_IST.md) and [P7/P8 matrix](P7_P8_CLOSURE_MATRIX.md) for present status.
+
 **Review correction — 2026-10-12 02:03:54 IST:** These passing results retain their stated boundaries. They do not establish every required flow or P8 resource lifecycle. Fresh review passed 145 tests/Django check but reproduced media bugs; see [P7 review](P7_REVIEW_2026-10-12.md) and [P8 review](../services/P8_REVIEW_2026-10-12.md).
 
 **Run date:** 2026-10-12. **Disposition:** all seven P7 waves and the P8 prerequisite passed within the development/testing scope described by the [master brief](../../prompt.md).
@@ -54,3 +59,9 @@ The runtime registry and Django URL resolver cover all 25 manifest paths; effect
 Source/Django copy, local-only states, Auth limits, synthetic data, date/time behavior, and provider/device boundaries are itemized in [P7_DIFFERENCES.md](P7_DIFFERENCES.md). The earlier P6 fresh Vite production-build temporary-cleanup limitation remains historical; current source references came from the development server, and the approved compiled legacy rollback was tested independently. No quantitative pixel score was claimed.
 
 P9 parity/release acceptance, live provider/device checks, and the P7 route-level Storage transfer remain future evidence gates. P10 deployment/soak and P11 legacy retirement were not performed or authorized by this P7/P8 brief.
+
+## 2026-10-13 combined closeout verification
+
+Final verification passed 167 isolated pytest tests, Django check, configured mypy across apps/config/tests (93 files), Ruff across apps/config/tests/scripts, the P7 W1/W2 check-only suite (26 captures, 9 interactions), the P7 W3–W7 application suite (24 captures, 20 interactions), P8 fake-media checks (16), the actual-page voice journey (12), and the hosted synthetic Django route probe. The hosted JSON records cleanup_ok=true, three generated accounts and zero emails. Pinned Tailwind build, token validation and collectstatic also passed; their asset digest and limits are documented in the closure report.
+
+Evidence is stored under evidence/w1..w7/closeout-20261012/ and ../services/evidence/p8/closeout-20261012/. Current route inventory remains 25 owners, zero normal fallback, manifest SHA-256 ada8836ff8ba323888f1b99d42e7d720b66823c3975e008af104789d3923c9b7. Physical device/live provider, P9, P10 and P11 remain unrun. See P7_P8_CLOSURE_REPORT.md for exact commands and fixture boundaries.

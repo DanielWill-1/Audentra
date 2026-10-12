@@ -1,3 +1,13 @@
 {% extends "accounts/base.html" %}
 {% block title %}{{ title }} · Audentra{% endblock %}
-{% block content %}<h1>{{ title }}</h1><p>{{ message }}</p><nav><a href="{% url 'login' %}">Sign in</a><a href="{% url 'signup' %}">Create an account</a></nav>{% endblock %}
+{% block body_class %}auth-message-page{% endblock %}
+{% block content %}
+<div class="login-shell message-shell">
+  <a class="login-brand" href="/" aria-label="Audentra home"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span>Audentra</span></a>
+  <section class="message-panel">
+    <h1>{{ title }}</h1>
+    <p>{{ message }}</p>
+    <nav><a href="{% url 'login' %}">Sign in</a>{% if show_signup %}<a href="{% url 'signup' %}">Create an account</a>{% endif %}</nav>
+  </section>
+</div>
+{% endblock %}

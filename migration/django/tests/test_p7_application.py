@@ -2,9 +2,13 @@ from __future__ import annotations
 
 import json
 import re
-from datetime import date, time
+from collections.abc import Callable
+from datetime import UTC, date, datetime, time
+from html import unescape
 from unittest.mock import patch
+from urllib.parse import parse_qs, urlsplit
 from uuid import UUID
+from zoneinfo import ZoneInfo
 
 import pytest
 from apps.accounts import profile_selectors, profile_services
@@ -14,13 +18,16 @@ from apps.accounts.services.tokens import _principal
 from apps.ai import services as ai_services
 from apps.scheduler import selectors as schedule_selectors
 from apps.scheduler import services as schedule_services
+from apps.storage import services as storage_services
 from apps.templates_app import selectors as template_selectors
 from apps.templates_app import services as template_services
 from apps.voice import filled_services
 from apps.voice import selectors as filled_selectors
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.db import DatabaseError
 from django.test import Client, override_settings
 from django.urls import resolve
+from django.utils import timezone
 
 USER_ID = UUID("11111111-1111-4111-8111-111111111111")
 OTHER_ID = UUID("22222222-2222-4222-8222-222222222222")
@@ -114,6 +121,17 @@ def test_all_protected_pages_render_for_a_verified_session(
             "highPriority": 0,
         },
     )
+    monkeypatch.setattr(
+        schedule_selectors,
+        "manage_event_stats",
+        lambda _user: {
+            "total": 0,
+            "scheduled": 0,
+            "completed": 0,
+            "cancelled": 0,
+            "high_priority": 0,
+        },
+    )
     monkeypatch.setattr(schedule_selectors, "list_events", lambda *_args, **_kwargs: [SAMPLE_EVENT])
     monkeypatch.setattr(
         schedule_selectors, "search_events", lambda *_args, **_kwargs: [SAMPLE_EVENT]
@@ -124,9 +142,9 @@ def test_all_protected_pages_render_for_a_verified_session(
         ("/dashboard", "What would you like to work on?"),
         ("/templates", "Templates"),
         ("/scheduler", "Scheduler"),
-        ("/manage-schedules", "Manage schedules"),
+        ("/manage-schedules", "Manage All Schedules"),
         ("/scheduler-settings", "Scheduler settings"),
-        ("/AIVoiceAutoFill", "AI voice form"),
+        ("/AIVoiceAutoFill", "AI Voice Auto-Fill"),
         ("/filledtemplates", "Filled templates"),
         ("/activitylog", "Activity log"),
     ):
@@ -134,7 +152,7 @@ def test_all_protected_pages_render_for_a_verified_session(
         assert response.status_code == 200, route
         assert heading.encode() in response.content, route
         assert response.headers["Cache-Control"] == "no-store"
-        assert response.headers["Referrer-Policy"] == "no-referrer"
+        assert response.headers["Referrer-Policy"] == "same-origin"
         assert b'id="root"' not in response.content
         assert b"/assets/index-" not in response.content
         assert (resolve(route).url_name or "").startswith("app-")
@@ -329,9 +347,121 @@ def test_share_and_review_management_actions_use_their_own_record_ids(
     set_role.assert_called_once_with(VERIFIED_USER, SHARE_ID, "editor")
     remove_share.assert_called_once_with(VERIFIED_USER, SHARE_ID)
     hide_share.assert_called_once_with(VERIFIED_USER, SHARE_ID, True)
-    update_review.assert_called_once_with(
-        VERIFIED_USER, REVIEW_ID, {"status": "approved"}
+    update_review.assert_called_once_with(VERIFIED_USER, REVIEW_ID, {"status": "approved"})
+
+
+@pytest.mark.django_db(databases=[])
+def test_review_author_can_edit_own_content_through_template_route(
+    authenticated_client: Client,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _template_reads(monkeypatch)
+    review = {
+        "id": REVIEW_ID,
+        "reviewer_id": USER_ID,
+        "reviewer_name": "Demo",
+        "rating": 3,
+        "comment": "Initial synthetic review",
+        "status": "pending",
+    }
+    template = {**SAMPLE_TEMPLATE, "reviews": [review]}
+    monkeypatch.setattr(template_selectors, "list_templates", lambda *_args, **_kwargs: [template])
+    with patch.object(
+        template_services, "update_review", return_value={**review, "rating": 5}
+    ) as update:
+        page = authenticated_client.get("/templates")
+        assert b"Save my review" in page.content
+        response = authenticated_client.post(
+            "/templates",
+            {
+                "action": "update-review",
+                "review_id": str(REVIEW_ID),
+                "rating": "5",
+                "comment": "Revised synthetic review",
+            },
+        )
+    assert response.status_code == 200
+    assert b"Review updated." in response.content
+    update.assert_called_once_with(
+        VERIFIED_USER,
+        REVIEW_ID,
+        {"rating": 5, "comment": "Revised synthetic review"},
     )
+
+
+@pytest.mark.django_db(databases=[])
+def test_template_replacement_reports_pending_private_file_cleanup(
+    authenticated_client: Client,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _template_reads(monkeypatch)
+    cleanup_path = f"templates/{TEMPLATE_ID}/{UUID('88888888-8888-4888-8888-888888888888')}.json"
+    with patch.object(
+        storage_services,
+        "upload_template_file",
+        return_value={
+            "path": f"templates/{TEMPLATE_ID}/{RECORD_ID}.json",
+            "content_type": "application/json",
+            "cleanup_pending": True,
+            "cleanup_path": cleanup_path,
+        },
+    ) as upload:
+        response = authenticated_client.post(
+            "/templates",
+            {
+                "action": "upload",
+                "template_id": str(TEMPLATE_ID),
+                "template_file": SimpleUploadedFile("replacement.json", b"{}"),
+            },
+        )
+    assert response.status_code == 200
+    assert b"Private file saved. The previous private file needs cleanup." in response.content
+    upload.assert_called_once()
+
+
+@pytest.mark.django_db(databases=[])
+def test_unavailable_private_file_route_returns_not_found(
+    authenticated_client: Client,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def unavailable(*_args: object, **_kwargs: object) -> tuple[bytes, str, str]:
+        raise ValueError("Template file is not available.")
+
+    monkeypatch.setattr(storage_services, "download_template_file", unavailable)
+
+    response = authenticated_client.get("/templates", {"file": str(TEMPLATE_ID)})
+
+    assert response.status_code == 404
+
+
+@pytest.mark.django_db(databases=[])
+def test_template_delete_passes_exact_private_object_to_storage_cleanup(
+    authenticated_client: Client,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _template_reads(monkeypatch)
+    uploaded_path = f"templates/{TEMPLATE_ID}/{RECORD_ID}.json"
+
+    def delete_with_file_cleanup(
+        user: SupabaseUser,
+        template_id: UUID,
+        *,
+        delete_file: Callable[[str], None] | None = None,
+    ) -> bool:
+        assert user == VERIFIED_USER
+        assert template_id == TEMPLATE_ID
+        assert delete_file is not None
+        delete_file(uploaded_path)
+        return True
+
+    monkeypatch.setattr(template_services, "delete_template", delete_with_file_cleanup)
+    with patch.object(storage_services, "remove_template_object") as remove:
+        response = authenticated_client.post(
+            "/templates", {"action": "delete", "template_id": str(TEMPLATE_ID)}
+        )
+    assert response.status_code == 200
+    assert b"Template deleted." in response.content
+    remove.assert_called_once_with(response.wsgi_request, VERIFIED_USER, TEMPLATE_ID, uploaded_path)
 
 
 @pytest.mark.django_db(databases=[])
@@ -355,6 +485,17 @@ def test_schedule_filters_and_selected_export_are_principal_scoped(
         lambda user, event_id: (
             SAMPLE_EVENT if user.id == USER_ID and event_id == EVENT_ID else None
         ),
+    )
+    monkeypatch.setattr(
+        schedule_selectors,
+        "manage_event_stats",
+        lambda _user: {
+            "total": 1,
+            "scheduled": 1,
+            "completed": 0,
+            "cancelled": 0,
+            "high_priority": 1,
+        },
     )
     filtered = authenticated_client.get(
         "/manage-schedules?q=review&type=form_review&status=scheduled&sort=priority&order=desc"
@@ -381,6 +522,228 @@ def test_schedule_filters_and_selected_export_are_principal_scoped(
     assert denied.status_code == 200
     assert b"selected schedules could not be updated" in denied.content
     delete_event.assert_not_called()
+
+
+@pytest.mark.django_db(databases=[])
+@pytest.mark.parametrize(
+    ("instant", "active_zone", "expected_date"),
+    [
+        (datetime(2026, 10, 31, 23, 59, tzinfo=UTC), "Asia/Kolkata", "2026-10-31"),
+        (datetime(2026, 11, 1, 0, 1, tzinfo=UTC), "America/Los_Angeles", "2026-11-01"),
+        (datetime(2026, 3, 8, 6, 59, tzinfo=UTC), "America/New_York", "2026-03-08"),
+        (datetime(2026, 3, 8, 7, 1, tzinfo=UTC), "America/New_York", "2026-03-08"),
+    ],
+)
+def test_scheduler_today_and_export_use_utc_calendar_boundaries(
+    authenticated_client: Client,
+    monkeypatch: pytest.MonkeyPatch,
+    instant: datetime,
+    active_zone: str,
+    expected_date: str,
+) -> None:
+    _template_reads(monkeypatch)
+    monkeypatch.setattr(schedule_selectors, "list_events", lambda *_args, **_kwargs: [])
+    monkeypatch.setattr(schedule_selectors, "upcoming_events", lambda *_args, **_kwargs: [])
+    monkeypatch.setattr(
+        schedule_selectors,
+        "event_stats",
+        lambda *_args, **_kwargs: {"total": 0, "completed": 0, "upcoming": 0, "highPriority": 0},
+    )
+    monkeypatch.setattr("apps.application.views.timezone.now", lambda: instant)
+
+    with timezone.override(ZoneInfo(active_zone)):
+        response = authenticated_client.get("/scheduler", {"view": "week"})
+        assert response.status_code == 200
+        today_link = re.search(rb'<a\b[^>]*href="([^"]+)"[^>]*>\s*Today\s*</a>', response.content)
+        assert today_link is not None
+        today_query = parse_qs(
+            urlsplit(unescape(today_link.group(1).decode())).query,
+            keep_blank_values=True,
+        )
+        assert today_query == {
+            "date": [expected_date],
+            "view": ["week"],
+            "q": [""],
+            "type": ["all"],
+        }
+        selected = date.fromisoformat(expected_date)
+        day_label = f"{selected:%B} {selected.day}, {selected.year}"
+        assert f"Show week containing {day_label}".encode() in response.content
+
+        with patch.object(schedule_selectors, "get_event", return_value=SAMPLE_EVENT):
+            exported = authenticated_client.post(
+                "/manage-schedules",
+                {"action": "export", "selected_ids": str(EVENT_ID)},
+            )
+    assert exported.status_code == 200
+    payload = json.loads(exported.content)
+    assert payload["exported_at"] == instant.isoformat().replace("+00:00", "Z")
+    assert exported["Content-Disposition"].endswith(f'events_export_{expected_date}.json"')
+
+
+@pytest.mark.django_db(databases=[])
+@pytest.mark.parametrize(
+    ("active_zone", "now", "create_day", "create_clock", "edit_day", "edit_clock"),
+    [
+        (
+            "Asia/Kolkata",
+            datetime(2026, 10, 31, 23, 59, tzinfo=UTC),
+            "2026-11-01",
+            "00:15",
+            "2026-11-01",
+            "01:45",
+        ),
+        (
+            "America/Los_Angeles",
+            datetime(2026, 3, 8, 6, 59, tzinfo=UTC),
+            "2026-03-08",
+            "01:30",
+            "2026-03-08",
+            "02:30",
+        ),
+        (
+            "America/Los_Angeles",
+            datetime(2026, 11, 1, 7, 0, tzinfo=UTC),
+            "2026-11-01",
+            "00:30",
+            "2026-11-01",
+            "01:30",
+        ),
+    ],
+)
+def test_scheduler_routes_preserve_entered_date_time_through_create_edit_filter_export(
+    authenticated_client: Client,
+    monkeypatch: pytest.MonkeyPatch,
+    active_zone: str,
+    now: datetime,
+    create_day: str,
+    create_clock: str,
+    edit_day: str,
+    edit_clock: str,
+) -> None:
+    _template_reads(monkeypatch)
+    stored: dict[UUID, dict[str, object]] = {}
+
+    def create_event(_user: SupabaseUser, values: dict[str, object]) -> dict[str, object]:
+        row = {"id": EVENT_ID, "created_by": USER_ID, "status": "scheduled", **values}
+        stored[EVENT_ID] = row
+        return row
+
+    def update_event(
+        _user: SupabaseUser, event_id: UUID, values: dict[str, object]
+    ) -> dict[str, object] | None:
+        row = stored.get(event_id)
+        if row is None:
+            return None
+        row.update(values)
+        return row
+
+    def matching_events(
+        _user: SupabaseUser,
+        *,
+        start_date: date | None = None,
+        end_date: date | None = None,
+        **_kwargs: object,
+    ) -> list[dict[str, object]]:
+        matching: list[dict[str, object]] = []
+        for row in stored.values():
+            event_date = row.get("date")
+            if not isinstance(event_date, date):
+                continue
+            if start_date is not None and event_date < start_date:
+                continue
+            if end_date is not None and event_date > end_date:
+                continue
+            matching.append(row)
+        return matching
+
+    monkeypatch.setattr(schedule_services, "create_event", create_event)
+    monkeypatch.setattr(schedule_services, "update_event", update_event)
+    monkeypatch.setattr(
+        schedule_selectors,
+        "get_event",
+        lambda _user, event_id: stored.get(event_id),
+    )
+    monkeypatch.setattr(schedule_selectors, "list_events", matching_events)
+    monkeypatch.setattr(
+        schedule_selectors,
+        "search_events",
+        lambda _user, _term, **_kwargs: list(stored.values()),
+    )
+    monkeypatch.setattr(schedule_selectors, "upcoming_events", lambda *_args, **_kwargs: [])
+    monkeypatch.setattr(
+        schedule_selectors,
+        "event_stats",
+        lambda *_args, **_kwargs: {"total": 1, "completed": 0, "upcoming": 1, "highPriority": 1},
+    )
+    monkeypatch.setattr(
+        schedule_selectors,
+        "manage_event_stats",
+        lambda *_args, **_kwargs: {
+            "total": 1,
+            "scheduled": 1,
+            "completed": 0,
+            "cancelled": 0,
+            "high_priority": 1,
+        },
+    )
+    monkeypatch.setattr("apps.application.views.timezone.now", lambda: now)
+
+    create_data = {
+        "action": "create",
+        "title": "Boundary UTC date fixture",
+        "description": "Entered date and time must remain intact.",
+        "date": create_day,
+        "time": create_clock,
+        "duration": "30",
+        "type": "form_review",
+        "priority": "high",
+        "attendees": "Synthetic reviewer",
+        "location": "Boundary room",
+        "form_id": "",
+        "reminder_minutes": "0",
+    }
+    with timezone.override(ZoneInfo(active_zone)):
+        created = authenticated_client.post("/scheduler", create_data)
+        assert created.status_code == 200
+        assert b"Schedule created." in created.content
+        assert stored[EVENT_ID]["date"] == date.fromisoformat(create_day)
+        assert stored[EVENT_ID]["time"] == time.fromisoformat(create_clock)
+
+        calendar = authenticated_client.get("/scheduler", {"view": "week", "date": create_day})
+        assert calendar.status_code == 200
+        assert b"Boundary UTC date fixture" in calendar.content
+        assert create_day.encode() in calendar.content
+
+        edit_data = {
+            **create_data,
+            "action": "update",
+            "event_id": str(EVENT_ID),
+            "date": edit_day,
+            "time": edit_clock,
+        }
+        updated = authenticated_client.post("/scheduler", edit_data)
+        assert updated.status_code == 200
+        assert b"Schedule updated." in updated.content
+        assert stored[EVENT_ID]["date"] == date.fromisoformat(edit_day)
+        assert stored[EVENT_ID]["time"] == time.fromisoformat(edit_clock)
+
+        filtered = authenticated_client.get(
+            "/manage-schedules",
+            {"q": "Boundary", "type": "form_review", "status": "scheduled", "sort": "date"},
+        )
+        assert filtered.status_code == 200
+        assert b"Boundary UTC date fixture" in filtered.content
+        edited_date = date.fromisoformat(edit_day)
+        expected_display = f"{edited_date.strftime('%b ')}{edited_date.day}, {edited_date.year}"
+        assert expected_display.encode() in filtered.content
+
+        exported = authenticated_client.post(
+            "/manage-schedules", {"action": "export", "selected_ids": str(EVENT_ID)}
+        )
+    payload = json.loads(exported.content)
+    assert payload["events"][0]["date"] == edit_day
+    assert payload["events"][0]["time"] == f"{edit_clock}:00"
 
 
 @pytest.mark.django_db(databases=[])
@@ -476,14 +839,28 @@ def test_filled_forms_are_owner_scoped_and_delete_uses_service(
 
 
 @pytest.mark.django_db(databases=[])
+def test_filled_forms_report_a_read_failure_without_rendering_stale_records(
+    authenticated_client: Client,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def unavailable(*_args: object, **_kwargs: object) -> list[dict[str, object]]:
+        raise DatabaseError("synthetic filled-list failure")
+
+    monkeypatch.setattr(filled_selectors, "list_filled", unavailable)
+    response = authenticated_client.get("/filledtemplates")
+    assert response.status_code == 200
+    assert b"Filled forms are temporarily unavailable." in response.content
+    assert b'role="alert"' in response.content
+    assert b"Sample Patient" not in response.content
+
+
+@pytest.mark.django_db(databases=[])
 def test_voice_form_media_transcription_to_filled_record_flow_is_deterministic(
     authenticated_client: Client,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     _template_reads(monkeypatch)
-    monkeypatch.setattr(
-        "apps.api.middleware.authenticate_bearer", lambda _token: VERIFIED_USER
-    )
+    monkeypatch.setattr("apps.api.middleware.authenticate_bearer", lambda _token: VERIFIED_USER)
     received_audio: dict[str, object] = {}
 
     def transcribe(audio: bytes, mime_type: str) -> str:
@@ -601,10 +978,11 @@ def test_voice_form_denies_another_principal_when_template_is_unreadable(
 
     monkeypatch.setattr(template_selectors, "get_template", unreadable)
     stranger = Client(HTTP_HOST="localhost")
-    with patch.object(ai_services, "extract") as extract, patch.object(
-        filled_services, "save_filled"
-    ) as save:
-        denied = stranger.post(
+    with (
+        patch.object(ai_services, "extract") as extract,
+        patch.object(filled_services, "save_filled") as save,
+    ):
+        denied_extract = stranger.post(
             "/AIVoiceAutoFill",
             {
                 "action": "extract",
@@ -614,8 +992,18 @@ def test_voice_form_denies_another_principal_when_template_is_unreadable(
                 "message": "The patient name is Ana Rivera.",
             },
         )
-    assert denied.status_code == 200
-    assert b"This template is no longer available to your account." in denied.content
+        denied_save = stranger.post(
+            "/AIVoiceAutoFill",
+            {
+                "action": "save",
+                "template_id": str(TEMPLATE_ID),
+                "conversation_json": "[]",
+                "field_patient_name": "Ana Rivera",
+            },
+        )
+    for response in (denied_extract, denied_save):
+        assert response.status_code == 200
+        assert b"This template is no longer available to your account." in response.content
     extract.assert_not_called()
     save.assert_not_called()
 

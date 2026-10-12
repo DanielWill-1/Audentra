@@ -9,3 +9,7 @@
 - The hosted route run verifies schedule creation, management read, selected JSON export contents, route deletion, and exact fixture removal; its sanitized result is [here](evidence/w5/post-wave-review-20261012/hosted-route-results.json). DST/device-local timezone behavior and reminder delivery were not exercised. No reminder or integration service is claimed.
 
 Evidence: [browser results](evidence/w6/post-wave-review-20261012/django/browser-results.json), [Scheduler desktop](evidence/w6/post-wave-review-20261012/django/scheduler-desktop.png), [management mobile](evidence/w6/post-wave-review-20261012/django/manage-schedules-mobile.png), [settings desktop](evidence/w6/post-wave-review-20261012/django/scheduler-settings-desktop.png), and [source comparison](evidence/w6/post-wave-review-20261012/legacy/capture-results.json).
+
+## 2026-10-13 combined P7/P8 closeout
+
+Recorded browser run: PASS. Full P7 acceptance is reopened by [review](P7_P8_SESSION_REVIEW_2026-10-13.md) for uncovered source-parity requirements; W6 also has a reproduced settings bug. The current W6 run recorded 6 route/page captures and 4 exercised interactions using actual Django application with timezone-boundary fixtures. Desktop 1440x900 and mobile 390x844 checks reported no overflow or unexpected browser errors. Evidence: docs/pages/evidence/w6/closeout-20261012/django/ The complete combined results and boundaries are in docs/pages/P7_P8_CLOSURE_REPORT.md and docs/pages/P7_P8_CLOSURE_MATRIX.md.

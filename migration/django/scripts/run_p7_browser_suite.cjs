@@ -7,13 +7,20 @@ const repoRoot = path.resolve(djangoRoot, '..', '..');
 const python = path.join(djangoRoot, '.venv-p2', 'Scripts', 'python.exe');
 const reactPort = 15573;
 const djangoPort = 18875;
+const browserDatabase = path.join(djangoRoot, `.p7-browser-${process.pid}.sqlite3`);
+const browserEnvironment = {
+  DJANGO_SETTINGS_MODULE: 'config.settings.browser',
+  P7_BROWSER_DB_PATH: browserDatabase,
+};
 const serverOutput = new Map();
 const mediaOnly = process.argv.includes('--media-only');
 const checkOnly = process.argv.includes('--check-only');
 const appOnly = process.argv.includes('--app-only');
 const sourceOnly = process.argv.includes('--source-only');
+const voiceOnly = process.argv.includes('--voice-only');
+const timezoneOnly = process.argv.includes('--timezone-only');
 
-if ([mediaOnly, checkOnly, appOnly, sourceOnly].filter(Boolean).length > 1) {
+if ([mediaOnly, checkOnly, appOnly, sourceOnly, voiceOnly, timezoneOnly].filter(Boolean).length > 1) {
   throw new Error('Choose only one browser-suite mode.');
 }
 
@@ -70,7 +77,27 @@ function runNode(script, args, env) {
   if (result.stdout) process.stdout.write(result.stdout);
   if (result.stderr) process.stderr.write(result.stderr);
   if (result.error) throw result.error;
-  if (result.status !== 0) throw new Error(`${path.basename(script)} exited with ${result.status}.`);
+  if (result.status !== 0) {
+    const djangoDiagnostics = serverOutput.get('Django') || '';
+    throw new Error(
+      `${path.basename(script)} exited with ${result.status}.` +
+      (djangoDiagnostics ? `\nDjango server diagnostics:\n${djangoDiagnostics}` : ''),
+    );
+  }
+}
+
+function migrateBrowserDatabase() {
+  const result = spawnSync(python, ['manage.py', 'migrate', '--noinput'], {
+    cwd: djangoRoot,
+    env: { ...process.env, ...browserEnvironment },
+    encoding: 'utf8',
+    maxBuffer: 8 * 1024 * 1024,
+    windowsHide: true,
+  });
+  if (result.stdout) process.stdout.write(result.stdout);
+  if (result.stderr) process.stderr.write(result.stderr);
+  if (result.error) throw result.error;
+  if (result.status !== 0) throw new Error(`Isolated browser database migration failed (${result.status}).`);
 }
 
 async function stop(child) {
@@ -84,6 +111,7 @@ async function stop(child) {
 }
 
 async function main() {
+  if (!sourceOnly) migrateBrowserDatabase();
   const django = sourceOnly ? null : start(
     'Django',
     python,
@@ -95,9 +123,9 @@ async function main() {
       '--insecure',
     ],
     djangoRoot,
-    { DJANGO_SETTINGS_MODULE: 'config.settings.browser' },
+    browserEnvironment,
   );
-  const vite = mediaOnly || checkOnly || appOnly ? null : start(
+  const vite = mediaOnly || checkOnly || appOnly || voiceOnly ? null : start(
     'Vite',
     process.execPath,
     [path.join(repoRoot, 'node_modules', 'vite', 'bin', 'vite.js'), '--host=127.0.0.1', `--port=${reactPort}`, '--strictPort'],
@@ -130,6 +158,36 @@ async function main() {
     if (mediaOnly) {
       runNode(path.join(djangoRoot, 'scripts', 'p8_media_check.cjs'), [], {
         P7_DJANGO_BASE_URL: `http://127.0.0.1:${djangoPort}`,
+      });
+      return;
+    }
+    if (voiceOnly) {
+      runNode(path.join(djangoRoot, 'scripts', 'p8_voice_check.cjs'), [], {
+        P7_DJANGO_BASE_URL: `http://127.0.0.1:${djangoPort}`,
+        P8_VOICE_EVIDENCE_DIR: process.env.P8_VOICE_EVIDENCE_DIR || path.join(
+          repoRoot,
+          'docs',
+          'pages',
+          'evidence',
+          'w7',
+          process.env.P7_EVIDENCE_RUN || 'closeout-20261012',
+        ),
+      });
+      return;
+    }
+    if (timezoneOnly) {
+      await waitFor(`http://127.0.0.1:${reactPort}/`, vite, 'Vite');
+      runNode(path.join(djangoRoot, 'scripts', 'p7_timezone_browser_check.cjs'), [], {
+        P7_DJANGO_BASE_URL: `http://127.0.0.1:${djangoPort}`,
+        P7_REACT_BASE_URL: `http://127.0.0.1:${reactPort}`,
+        P7_TIMEZONE_EVIDENCE_DIR: process.env.P7_TIMEZONE_EVIDENCE_DIR || path.join(
+          repoRoot,
+          'docs',
+          'pages',
+          'evidence',
+          'w6',
+          'p7-timezone-20261013',
+        ),
       });
       return;
     }
@@ -173,6 +231,12 @@ async function main() {
     runNode(mediaCheck, [], { P7_DJANGO_BASE_URL: djangoBase });
   } finally {
     await Promise.all([...(django ? [stop(django)] : []), ...(vite ? [stop(vite)] : [])]);
+    for (const suffix of ['', '-journal', '-wal', '-shm']) {
+      const temporaryFile = `${browserDatabase}${suffix}`;
+      if (path.dirname(path.resolve(temporaryFile)) === path.resolve(djangoRoot) && fs.existsSync(temporaryFile)) {
+        fs.unlinkSync(temporaryFile);
+      }
+    }
   }
 }
 

@@ -7,7 +7,6 @@
   const list = root.querySelector("[data-activity-list]");
   const filter = root.querySelector("[data-activity-filter]");
   const status = root.querySelector("[data-activity-status]");
-  const legacyKey = "recentActivity";
   const types = {
     form_completed: "Form completed",
     template_created: "Template created",
@@ -25,6 +24,8 @@
     ["6", "form_completed", "Employee Onboarding - Maria Garcia", "Completed in 2:15 minutes", 72],
     ["7", "template_reviewed", "Safety Inspection Checklist reviewed", "Approved with 5-star rating", 96],
   ];
+  let storageError = false;
+  let storageErrorMessage = "";
 
   function seedExamples() {
     return samples.map(([id, type, title, description, hours]) => ({
@@ -45,19 +46,20 @@
       : null;
   }
   function load() {
+    storageError = false;
+    storageErrorMessage = "";
     try {
       const saved = localStorage.getItem(key);
       if (saved !== null) {
         const parsed = validItems(JSON.parse(saved));
         if (parsed) return parsed;
       }
-      const legacy = localStorage.getItem(legacyKey);
-      const prior = legacy === null ? null : validItems(JSON.parse(legacy));
-      const initial = prior || seedExamples();
+      const initial = seedExamples();
       localStorage.setItem(key, JSON.stringify(initial));
       return initial;
     } catch {
-      announce("Activity could not be read from this browser. Check local storage and refresh.");
+      storageError = true;
+      storageErrorMessage = "Activity could not be read from this browser. Check local storage and refresh.";
       return [];
     }
   }
@@ -70,6 +72,8 @@
       localStorage.setItem(key, JSON.stringify(items));
       return true;
     } catch {
+      storageError = true;
+      storageErrorMessage = "Activity could not be saved in this browser.";
       announce("Activity could not be saved in this browser.");
       return false;
     }
@@ -151,6 +155,10 @@
       empty.className = "p-8 text-center text-sm text-text-secondary";
       empty.textContent = items.length ? "No activity matches these filters." : "No activity found. Start using the platform to see activity here.";
       list.append(empty);
+    }
+    if (storageError) {
+      announce(storageErrorMessage);
+      return;
     }
     announce(visible.length + (visible.length === 1 ? " activity item shown." : " activity items shown."));
   }

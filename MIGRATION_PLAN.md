@@ -1,8 +1,8 @@
 # Migration plan and scope controls
 
-**Version:** 2.1
-**Updated:** 2026-10-12
-**Current task:** Owner-requested combined P7/P8 closure prompt prepared 2026-10-12 02:19:14 IST. All 25 route paths have local owners and fallback zero, but acceptance/repair remains open. Root [prompt.md](prompt.md) now closes all remaining P7/P8 requirements before preparing the P9 brief. See the [dated handoff](HANDOFF_2026-10-12_020354_IST.md), [P7 review](docs/pages/P7_REVIEW_2026-10-12.md) and [P8 review](docs/services/P8_REVIEW_2026-10-12.md). No repairs were executed by this update; P9 execution/P10/P11 remain separate.
+**Version:** 2.2
+**Updated:** 2026-10-13
+**Current task:** P7 SR-1 through SR-4 are closed; P8 deterministic acceptance is complete; physical-device and live-provider checks remain P9 work; P9 is in progress. The [P7/P8 matrix](docs/pages/P7_P8_CLOSURE_MATRIX.md), [P7 finding closeout](docs/pages/P7_SR_CLOSEOUT_2026-10-13.md), [P9 acceptance matrix](docs/parity/P9_ACCEPTANCE_MATRIX.md), [P9 report](docs/parity/P9_REPORT.md), and [current handoff](HANDOFF_2026-10-13_033145_IST.md) record the state. Initial P9 route reconciliation passed 25/25; end-to-end acceptance remains open.
 
 **Owner scope revision:** The owner's 2026-10-11 request replaces the earlier SMTP/legacy-account/React compatibility gates. Supabase Python SDK + Django + HTMX signup/login/session/refresh/password-change/logout passed against fresh hosted accounts. The project remains development-only and signup confirmation is disabled with authorization; email recovery is separate.
 
@@ -14,7 +14,7 @@
 **Archived P5 closure brief:** [P5_CLOSURE_PROMPT.md](docs/data/P5_CLOSURE_PROMPT.md) — hosted shared transaction-pooler gate passed; P5 is complete
 **P6 implementation evidence:** [archived brief](docs/rendering/P6_IMPLEMENTATION_PROMPT.md), [report](docs/rendering/P6_REPORT.md), [verification](docs/rendering/P6_VERIFICATION.md), [review](docs/rendering/P6_REVIEW.md), [route ownership](docs/rendering/P6_ROUTE_OWNERSHIP.json), [asset inventory](docs/rendering/P6_ASSET_INVENTORY.md), [rollback](docs/rendering/P6_ROLLBACK.md)
 **P7 W1 result:** The [W1 report](docs/pages/P7_W1_REPORT.md), [verification](docs/pages/P7_W1_VERIFICATION.md), [review](docs/pages/P7_W1_REVIEW.md), [asset provenance](docs/pages/P7_W1_ASSETS.md) and [route ownership](docs/pages/P7_W1_ROUTE_OWNERSHIP.json) record the delivered wave. Its [executed brief](docs/pages/P7_W1_IMPLEMENTATION_PROMPT.md) is archived.
-**P7/P8 execution and review:** The [executed master brief](docs/pages/P7_P8_IMPLEMENTATION_PROMPT.md) is archived. Reports/evidence remain intact, but their unconditional completion claim is superseded by the dated reviews above. Root [prompt.md](prompt.md) prepares complete P7/P8 closure before P9. P8 is a separate prerequisite, not W8.
+**P7/P8 closeout review:** Preserve the [master brief](docs/pages/P7_P8_IMPLEMENTATION_PROMPT.md), [executed closeout prompt](docs/pages/P7_P8_CLOSEOUT_PROMPT.md) and prior evidence. The [review](docs/pages/P7_P8_SESSION_REVIEW_2026-10-13.md) supersedes unconditional closure. Repair SR-1–SR-4 within P7 before P9; P8 is a separate prerequisite, not W8.
 **P3 evidence:** [P3_REPORT.md](docs/services/P3_REPORT.md), [P3_CONTRACTS.md](docs/services/P3_CONTRACTS.md), [P3_REVIEW.md](docs/services/P3_REVIEW.md)
 **P2 evidence:** [P2_REPORT.md](docs/foundation/P2_REPORT.md), [P2_REVIEW.md](docs/foundation/P2_REVIEW.md)
 
@@ -271,7 +271,7 @@ The repair proposal is limited to the P0 paths, history, scanner gate and incide
 
 ### P7: seven page waves
 
-The [archived master brief](docs/pages/P7_P8_IMPLEMENTATION_PROMPT.md) supplied route/file scope and preserved-flow defaults for W1–W7/P8. Routes are locally delivered; complete acceptance is open per the [dated P7 review](docs/pages/P7_REVIEW_2026-10-12.md). Keep comparison, UI/route, timezone and integrated voice gates in P7 rather than silently moving them to P9. New schema/product behavior remains outside this scope.
+The [archived master brief](docs/pages/P7_P8_IMPLEMENTATION_PROMPT.md) defines W1–W7/P8 source-preservation and acceptance requirements. Routes and substantial flows are implemented, but [review](docs/pages/P7_P8_SESSION_REVIEW_2026-10-13.md) reopens comparisons/layouts, invalid settings and source/browser timezone proof. These remain P7 work.
 
 | Wave | Routes | Entry dependencies |
 |---|---|---|
@@ -289,7 +289,7 @@ The [archived master brief](docs/pages/P7_P8_IMPLEMENTATION_PROMPT.md) supplied 
 
 ### P8: media bridge
 
-**Current review:** Existing bridge needs P8-R1–R6 repair/closeout; see [P8 review](docs/services/P8_REVIEW_2026-10-12.md) and root [prompt.md](prompt.md). The 12-check isolated fake-media result is retained; it does not cover the reproduced races or actual-page session integration.
+**Disposition:** P8-R1–R6 are closed within deterministic and development-session boundaries; see [P8 verification](docs/services/P8_VERIFICATION.md), [review addendum](docs/services/P8_REVIEW_2026-10-12.md#2026-10-13-final-disposition) and [device checklist](docs/services/P8_DEVICE_CHECKLIST.md). Physical device/live provider checks remain explicitly not run and are assigned to P9.
 
 **Entry:** P3/P6; complete before W7.
 
@@ -301,9 +301,9 @@ The [archived master brief](docs/pages/P7_P8_IMPLEMENTATION_PROMPT.md) supplied 
 
 ### P9: full parity gate
 
-**Entry:** Harness grows from P1; full completion requires all waves/P8.
+**Entry:** P7 SR-1 through SR-4 are closed with evidence in the [P7 closeout](docs/pages/P7_SR_CLOSEOUT_2026-10-13.md); P8 deterministic prerequisites pass. P9 is in progress. Its [acceptance matrix](docs/parity/P9_ACCEPTANCE_MATRIX.md) was created before execution, and the initial local route inventory passed 25/25. End-to-end route, security, hosted schema/data, and applicable device/provider checks remain open.
 
-**Scope / exit:** CI/release report covers routes, visuals, behavior, data, RLS, provider contracts and schema. Use real Supabase semantics for auth/Storage/RLS; label mocks/live checks. Test migrated flows with legacy session cleared. Resolve tolerances/differences.
+**Scope / exit:** Follow the active [P9 implementation prompt](docs/parity/P9_IMPLEMENTATION_PROMPT.md) and update the [P9 report](docs/parity/P9_REPORT.md) and verification ledger with linked evidence. Acceptance covers route ownership, source/Django visuals and behavior, sessions/security/rollback, hosted data/RLS/Storage/schema, and truthful provider/device boundaries. P9 passes only when every required matrix row passes or has an explicit owner-approved exception.
 
 **Limits:** Verification findings do not authorize general refactoring or features.
 
@@ -386,11 +386,13 @@ Completion requires stated gates or a user-accepted bounded exception. Missing e
 
 ## 7. Change control and handoffs
 
+**Current status (2026-10-13):** P7 SR-1 through SR-4 are closed; P8 deterministic regressions pass; P9 is in progress. See the [P7 closeout](docs/pages/P7_SR_CLOSEOUT_2026-10-13.md), [P9 report](docs/parity/P9_REPORT.md), and [current handoff](HANDOFF_2026-10-13_033145_IST.md). Older reviews remain dated historical evidence.
+
 Before expanding scope, record trigger, affected files/routes/data, necessity, alternatives, checks, recovery and user authorization. Update the brief after approval. Keep unrelated work in a backlog.
 
 Each handoff reads state/plan/prompt, preserves completed work/user changes, refreshes stale evidence and executes only the authorized task. An old prompt cannot authorize a new phase.
 
-Current handoff: **P5/P6 remain delivered; P7 routes are implemented with fallback zero, while P7 acceptance and P8 repairs remain open.** W1 R1–R4 remain closed. The [dated handoff](HANDOFF_2026-10-12_020354_IST.md) and [P7](docs/pages/P7_REVIEW_2026-10-12.md)/[P8](docs/services/P8_REVIEW_2026-10-12.md) reviews supersede unconditional completion claims; root [prompt.md](prompt.md) prepares complete P7/P8 closeout. Preserve existing aggregate/per-wave evidence and original folders. P9–P11, P1 exceptions and P4 recovery/security follow-ups remain separate.
+Current handoff: P7 is closed within the documented boundaries; P8 deterministic checks pass. P9 started with a pre-execution matrix and a passing 25-route local inventory. [Current handoff](HANDOFF_2026-10-13_033145_IST.md), [P9 matrix](docs/parity/P9_ACCEPTANCE_MATRIX.md), and [P9 report](docs/parity/P9_REPORT.md) define current status. P9 browser/hosted acceptance is open; P10/P11 remain later.
 
 ## 8. Corrections to older documents
 

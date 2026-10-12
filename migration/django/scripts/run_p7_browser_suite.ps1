@@ -2,6 +2,8 @@ $mediaOnly = $args -contains '--media-only'
 $checkOnly = $args -contains '--check-only'
 $appOnly = $args -contains '--app-only'
 $sourceOnly = $args -contains '--source-only'
+$voiceOnly = $args -contains '--voice-only'
+$timezoneOnly = $args -contains '--timezone-only'
 $ErrorActionPreference = 'Stop'
 $runner = Join-Path $PSScriptRoot 'run_p7_browser_suite.cjs'
 if ($mediaOnly) {
@@ -21,6 +23,10 @@ if ($mediaOnly) {
     } else {
         & node $runner --source-only
     }
+} elseif ($voiceOnly) {
+    & node $runner --voice-only
+} elseif ($timezoneOnly) {
+    & node $runner --timezone-only
 } else {
     & node $runner
 }

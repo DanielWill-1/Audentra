@@ -1,0 +1,2329 @@
+{
+  "wave": "W6",
+  "captured_at": "2026-10-12T19:08:36.895Z",
+  "source": "Django DEBUG=False browser settings with isolated synthetic identity/data fixtures",
+  "fixture_identity": "11111111-1111-4111-8111-111111111111 (non-hosted synthetic account)",
+  "fixture_data": "Patient intake template, one schedule, one filled-form row; no database or provider writes",
+  "base_url": "http://127.0.0.1:18875",
+  "browser": "148.0.7778.96",
+  "pages": [
+    {
+      "route": "/scheduler",
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "response_status": 200,
+      "title": "Scheduler · Audentra",
+      "heading": "Scheduler",
+      "document_width": 1440,
+      "viewport_width": 1440,
+      "has_react_root": false,
+      "has_react_bootstrap": false,
+      "console_errors": [],
+      "expected_local_404_diagnostic": false,
+      "responses": [
+        {
+          "path": "/scheduler",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_scheduler.js",
+          "status": 200
+        },
+        {
+          "path": "/scheduler",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_scheduler.js",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/scheduler",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_scheduler.js",
+          "status": 200
+        },
+        {
+          "path": "/scheduler",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_scheduler.js",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/scheduler",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_scheduler.js",
+          "status": 200
+        },
+        {
+          "path": "/scheduler",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_scheduler.js",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/scheduler",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_scheduler.js",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/scheduler",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_scheduler.js",
+          "status": 200
+        },
+        {
+          "path": "/scheduler",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_scheduler.js",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/scheduler",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_scheduler.js",
+          "status": 200
+        },
+        {
+          "path": "/scheduler",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_scheduler.js",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/scheduler",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_scheduler.js",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/scheduler",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_scheduler.js",
+          "status": 200
+        },
+        {
+          "path": "/scheduler",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_scheduler.js",
+          "status": 200
+        },
+        {
+          "path": "/scheduler",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_scheduler.js",
+          "status": 200
+        },
+        {
+          "path": "/scheduler",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_scheduler.js",
+          "status": 200
+        },
+        {
+          "path": "/scheduler",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_scheduler.js",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/scheduler",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_scheduler.js",
+          "status": 200
+        }
+      ],
+      "screenshot": "scheduler-desktop.png",
+      "comparison": {
+        "source_heading": "Scheduler",
+        "django_heading": "Scheduler",
+        "source_text_characters": 510,
+        "django_text_characters": 901,
+        "normalized_text_exact_match": false,
+        "source_section_headings": [
+          "October 2026",
+          "Upcoming Events",
+          "This Month",
+          "Event Types"
+        ],
+        "django_section_headings": [
+          "October 2026",
+          "Upcoming Events",
+          "This Month",
+          "Event Types"
+        ],
+        "source_field_names": [],
+        "django_field_names": [
+          "action",
+          "action",
+          "action",
+          "action",
+          "action",
+          "attendees",
+          "attendees",
+          "csrfmiddlewaretoken",
+          "csrfmiddlewaretoken",
+          "csrfmiddlewaretoken",
+          "csrfmiddlewaretoken",
+          "csrfmiddlewaretoken",
+          "date",
+          "date",
+          "date",
+          "description",
+          "description",
+          "duration",
+          "duration",
+          "event_id",
+          "event_id",
+          "event_id",
+          "event_id",
+          "form_id",
+          "form_id",
+          "location",
+          "location",
+          "month",
+          "priority",
+          "priority",
+          "q",
+          "reminder_minutes",
+          "reminder_minutes",
+          "time",
+          "time",
+          "title",
+          "title",
+          "type",
+          "type",
+          "type",
+          "view"
+        ],
+        "source_field_names_missing_from_django": [],
+        "source_button_labels": [
+          "Month",
+          "Schedule Event",
+          "Today",
+          "Week"
+        ],
+        "django_button_labels": [
+          "Cancel",
+          "Complete",
+          "Delete",
+          "Filter",
+          "Save changes",
+          "Save schedule"
+        ],
+        "source_button_labels_missing_from_django": [
+          "Month",
+          "Schedule Event",
+          "Today",
+          "Week"
+        ],
+        "source_local_destinations": [
+          "/dashboard",
+          "/manage-schedules",
+          "/scheduler-settings"
+        ],
+        "django_local_destinations": [
+          "/dashboard",
+          "/manage-schedules",
+          "/scheduler-settings",
+          "/scheduler?date=2026-09-27&view=week&q=&type=all",
+          "/scheduler?date=2026-09-28&view=week&q=&type=all",
+          "/scheduler?date=2026-09-29&view=week&q=&type=all",
+          "/scheduler?date=2026-09-30&view=week&q=&type=all",
+          "/scheduler?date=2026-10-01&view=week&q=&type=all",
+          "/scheduler?date=2026-10-02&view=week&q=&type=all",
+          "/scheduler?date=2026-10-03&view=week&q=&type=all",
+          "/scheduler?date=2026-10-04&view=week&q=&type=all",
+          "/scheduler?date=2026-10-05&view=week&q=&type=all",
+          "/scheduler?date=2026-10-06&view=week&q=&type=all",
+          "/scheduler?date=2026-10-07&view=week&q=&type=all",
+          "/scheduler?date=2026-10-08&view=week&q=&type=all",
+          "/scheduler?date=2026-10-09&view=week&q=&type=all",
+          "/scheduler?date=2026-10-10&view=week&q=&type=all",
+          "/scheduler?date=2026-10-11&view=week&q=&type=all",
+          "/scheduler?date=2026-10-12&view=week&q=&type=all",
+          "/scheduler?date=2026-10-12&view=week&q=&type=all",
+          "/scheduler?date=2026-10-13&view=week&q=&type=all",
+          "/scheduler?date=2026-10-14&view=week&q=&type=all",
+          "/scheduler?date=2026-10-15&view=week&q=&type=all",
+          "/scheduler?date=2026-10-16&view=week&q=&type=all",
+          "/scheduler?date=2026-10-17&view=week&q=&type=all",
+          "/scheduler?date=2026-10-18&view=week&q=&type=all",
+          "/scheduler?date=2026-10-19&view=week&q=&type=all",
+          "/scheduler?date=2026-10-20&view=week&q=&type=all",
+          "/scheduler?date=2026-10-21&view=week&q=&type=all",
+          "/scheduler?date=2026-10-22&view=week&q=&type=all",
+          "/scheduler?date=2026-10-23&view=week&q=&type=all",
+          "/scheduler?date=2026-10-24&view=week&q=&type=all",
+          "/scheduler?date=2026-10-25&view=week&q=&type=all",
+          "/scheduler?date=2026-10-26&view=week&q=&type=all",
+          "/scheduler?date=2026-10-27&view=week&q=&type=all",
+          "/scheduler?date=2026-10-28&view=week&q=&type=all",
+          "/scheduler?date=2026-10-29&view=week&q=&type=all",
+          "/scheduler?date=2026-10-30&view=week&q=&type=all",
+          "/scheduler?date=2026-10-31&view=week&q=&type=all",
+          "/scheduler?edit=44444444-4444-4444-8444-444444444444",
+          "/scheduler?month=2026-09&view=month&q=&type=all",
+          "/scheduler?month=2026-10&date=2026-10-12&view=month&q=&type=all",
+          "/scheduler?month=2026-10&view=month&q=&type=all",
+          "/scheduler?month=2026-11&view=month&q=&type=all"
+        ],
+        "django_link_labels": [
+          "Back to dashboard",
+          "Edit schedule",
+          "Manage schedules",
+          "Month",
+          "Next month",
+          "Previous month",
+          "Scheduler settings",
+          "Show week containing October 1, 2026",
+          "Show week containing October 10, 2026",
+          "Show week containing October 11, 2026",
+          "Show week containing October 12, 2026",
+          "Show week containing October 13, 2026",
+          "Show week containing October 14, 2026",
+          "Show week containing October 15, 2026",
+          "Show week containing October 16, 2026",
+          "Show week containing October 17, 2026",
+          "Show week containing October 18, 2026",
+          "Show week containing October 19, 2026",
+          "Show week containing October 2, 2026",
+          "Show week containing October 20, 2026",
+          "Show week containing October 21, 2026",
+          "Show week containing October 22, 2026",
+          "Show week containing October 23, 2026",
+          "Show week containing October 24, 2026",
+          "Show week containing October 25, 2026",
+          "Show week containing October 26, 2026",
+          "Show week containing October 27, 2026",
+          "Show week containing October 28, 2026",
+          "Show week containing October 29, 2026",
+          "Show week containing October 3, 2026",
+          "Show week containing October 30, 2026",
+          "Show week containing October 31, 2026",
+          "Show week containing October 4, 2026",
+          "Show week containing October 5, 2026",
+          "Show week containing October 6, 2026",
+          "Show week containing October 7, 2026",
+          "Show week containing October 8, 2026",
+          "Show week containing October 9, 2026",
+          "Show week containing September 27, 2026",
+          "Show week containing September 28, 2026",
+          "Show week containing September 29, 2026",
+          "Show week containing September 30, 2026",
+          "Today",
+          "Week"
+        ],
+        "source_local_destinations_missing_from_django": [],
+        "source_text_tokens_missing_from_django": [
+          "SchedulerManage",
+          "form-related",
+          "events",
+          "tasksManage",
+          "All",
+          "SchedulesSchedule",
+          "EventOctober",
+          "2026TodayMonthWeekAll",
+          "ReviewTeam",
+          "ReviewTeam",
+          "MeetingTraining",
+          "MeetingTraining",
+          "SessionSystem",
+          "SessionSystem",
+          "MaintenanceOtherSunMonTueWedThuFriSat27282930123456789101112139:30",
+          "intake1415161718192021222324252627282930311234567Upcoming",
+          "scheduleOct",
+          "129:30",
+          "AMhighThis",
+          "Events1Completed1Upcoming1High",
+          "Priority1Event",
+          "MaintenanceOther"
+        ],
+        "django_text_tokens_added": [
+          "Plan",
+          "reviews,",
+          "meetings,",
+          "trainingSchedulerBack",
+          "to",
+          "dashboardScheduler",
+          "settingsManage",
+          "schedules",
+          "Search",
+          "eventsEvent",
+          "typeAll",
+          "reviewTeam",
+          "reviewTeam",
+          "reviewTeam",
+          "meetingTrainingMaintenanceOtherFilter",
+          "‹Today›October",
+          "2026MonthWeek",
+          "SunMonTueWedThuFriSat",
+          "272829301234567891011129:30",
+          "AM",
+          "schedule30",
+          "minutes",
+          "·",
+          "·",
+          "·",
+          "High",
+          "priority",
+          "ScheduledEdit",
+          "scheduleTitleDateTimeDurationSave",
+          "changesCompleteCancelDelete13141516171819202122232425262728293031",
+          "Upcoming",
+          "intakeOct",
+          "12,",
+          "2026",
+          "at",
+          "9:30",
+          "Form",
+          "reviewEdit",
+          "schedule",
+          "schedule",
+          "This",
+          "events1Completed0Upcoming1High",
+          "priority1",
+          "Event",
+          "meetingTrainingMaintenanceOther",
+          "Create",
+          "a",
+          "scheduleTitleTypeForm",
+          "meetingTrainingMaintenanceOtherDateTimeDuration",
+          "(minutes)PriorityLowMediumHighLocationReminder",
+          "(minutes)DescriptionAttendees",
+          "(one",
+          "per",
+          "line)Related",
+          "templateNo",
+          "templatePatient",
+          "intakeSave"
+        ]
+      }
+    },
+    {
+      "route": "/scheduler",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "response_status": 200,
+      "title": "Scheduler · Audentra",
+      "heading": "Scheduler",
+      "document_width": 390,
+      "viewport_width": 390,
+      "has_react_root": false,
+      "has_react_bootstrap": false,
+      "console_errors": [],
+      "expected_local_404_diagnostic": false,
+      "responses": [
+        {
+          "path": "/scheduler",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_scheduler.js",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        }
+      ],
+      "screenshot": "scheduler-mobile.png",
+      "comparison": {
+        "source_heading": "Scheduler",
+        "django_heading": "Scheduler",
+        "source_text_characters": 510,
+        "django_text_characters": 901,
+        "normalized_text_exact_match": false,
+        "source_section_headings": [
+          "October 2026",
+          "Upcoming Events",
+          "This Month",
+          "Event Types"
+        ],
+        "django_section_headings": [
+          "October 2026",
+          "Upcoming Events",
+          "This Month",
+          "Event Types"
+        ],
+        "source_field_names": [],
+        "django_field_names": [
+          "action",
+          "action",
+          "action",
+          "action",
+          "action",
+          "attendees",
+          "attendees",
+          "csrfmiddlewaretoken",
+          "csrfmiddlewaretoken",
+          "csrfmiddlewaretoken",
+          "csrfmiddlewaretoken",
+          "csrfmiddlewaretoken",
+          "date",
+          "date",
+          "date",
+          "description",
+          "description",
+          "duration",
+          "duration",
+          "event_id",
+          "event_id",
+          "event_id",
+          "event_id",
+          "form_id",
+          "form_id",
+          "location",
+          "location",
+          "month",
+          "priority",
+          "priority",
+          "q",
+          "reminder_minutes",
+          "reminder_minutes",
+          "time",
+          "time",
+          "title",
+          "title",
+          "type",
+          "type",
+          "type",
+          "view"
+        ],
+        "source_field_names_missing_from_django": [],
+        "source_button_labels": [
+          "Month",
+          "Schedule Event",
+          "Today",
+          "Week"
+        ],
+        "django_button_labels": [
+          "Cancel",
+          "Complete",
+          "Delete",
+          "Filter",
+          "Save changes",
+          "Save schedule"
+        ],
+        "source_button_labels_missing_from_django": [
+          "Month",
+          "Schedule Event",
+          "Today",
+          "Week"
+        ],
+        "source_local_destinations": [
+          "/dashboard",
+          "/manage-schedules",
+          "/scheduler-settings"
+        ],
+        "django_local_destinations": [
+          "/dashboard",
+          "/manage-schedules",
+          "/scheduler-settings",
+          "/scheduler?date=2026-09-27&view=week&q=&type=all",
+          "/scheduler?date=2026-09-28&view=week&q=&type=all",
+          "/scheduler?date=2026-09-29&view=week&q=&type=all",
+          "/scheduler?date=2026-09-30&view=week&q=&type=all",
+          "/scheduler?date=2026-10-01&view=week&q=&type=all",
+          "/scheduler?date=2026-10-02&view=week&q=&type=all",
+          "/scheduler?date=2026-10-03&view=week&q=&type=all",
+          "/scheduler?date=2026-10-04&view=week&q=&type=all",
+          "/scheduler?date=2026-10-05&view=week&q=&type=all",
+          "/scheduler?date=2026-10-06&view=week&q=&type=all",
+          "/scheduler?date=2026-10-07&view=week&q=&type=all",
+          "/scheduler?date=2026-10-08&view=week&q=&type=all",
+          "/scheduler?date=2026-10-09&view=week&q=&type=all",
+          "/scheduler?date=2026-10-10&view=week&q=&type=all",
+          "/scheduler?date=2026-10-11&view=week&q=&type=all",
+          "/scheduler?date=2026-10-12&view=week&q=&type=all",
+          "/scheduler?date=2026-10-12&view=week&q=&type=all",
+          "/scheduler?date=2026-10-13&view=week&q=&type=all",
+          "/scheduler?date=2026-10-14&view=week&q=&type=all",
+          "/scheduler?date=2026-10-15&view=week&q=&type=all",
+          "/scheduler?date=2026-10-16&view=week&q=&type=all",
+          "/scheduler?date=2026-10-17&view=week&q=&type=all",
+          "/scheduler?date=2026-10-18&view=week&q=&type=all",
+          "/scheduler?date=2026-10-19&view=week&q=&type=all",
+          "/scheduler?date=2026-10-20&view=week&q=&type=all",
+          "/scheduler?date=2026-10-21&view=week&q=&type=all",
+          "/scheduler?date=2026-10-22&view=week&q=&type=all",
+          "/scheduler?date=2026-10-23&view=week&q=&type=all",
+          "/scheduler?date=2026-10-24&view=week&q=&type=all",
+          "/scheduler?date=2026-10-25&view=week&q=&type=all",
+          "/scheduler?date=2026-10-26&view=week&q=&type=all",
+          "/scheduler?date=2026-10-27&view=week&q=&type=all",
+          "/scheduler?date=2026-10-28&view=week&q=&type=all",
+          "/scheduler?date=2026-10-29&view=week&q=&type=all",
+          "/scheduler?date=2026-10-30&view=week&q=&type=all",
+          "/scheduler?date=2026-10-31&view=week&q=&type=all",
+          "/scheduler?edit=44444444-4444-4444-8444-444444444444",
+          "/scheduler?month=2026-09&view=month&q=&type=all",
+          "/scheduler?month=2026-10&date=2026-10-12&view=month&q=&type=all",
+          "/scheduler?month=2026-10&view=month&q=&type=all",
+          "/scheduler?month=2026-11&view=month&q=&type=all"
+        ],
+        "django_link_labels": [
+          "Back to dashboard",
+          "Edit schedule",
+          "Manage schedules",
+          "Month",
+          "Next month",
+          "Previous month",
+          "Scheduler settings",
+          "Show week containing October 1, 2026",
+          "Show week containing October 10, 2026",
+          "Show week containing October 11, 2026",
+          "Show week containing October 12, 2026",
+          "Show week containing October 13, 2026",
+          "Show week containing October 14, 2026",
+          "Show week containing October 15, 2026",
+          "Show week containing October 16, 2026",
+          "Show week containing October 17, 2026",
+          "Show week containing October 18, 2026",
+          "Show week containing October 19, 2026",
+          "Show week containing October 2, 2026",
+          "Show week containing October 20, 2026",
+          "Show week containing October 21, 2026",
+          "Show week containing October 22, 2026",
+          "Show week containing October 23, 2026",
+          "Show week containing October 24, 2026",
+          "Show week containing October 25, 2026",
+          "Show week containing October 26, 2026",
+          "Show week containing October 27, 2026",
+          "Show week containing October 28, 2026",
+          "Show week containing October 29, 2026",
+          "Show week containing October 3, 2026",
+          "Show week containing October 30, 2026",
+          "Show week containing October 31, 2026",
+          "Show week containing October 4, 2026",
+          "Show week containing October 5, 2026",
+          "Show week containing October 6, 2026",
+          "Show week containing October 7, 2026",
+          "Show week containing October 8, 2026",
+          "Show week containing October 9, 2026",
+          "Show week containing September 27, 2026",
+          "Show week containing September 28, 2026",
+          "Show week containing September 29, 2026",
+          "Show week containing September 30, 2026",
+          "Today",
+          "Week"
+        ],
+        "source_local_destinations_missing_from_django": [],
+        "source_text_tokens_missing_from_django": [
+          "SchedulerManage",
+          "form-related",
+          "events",
+          "tasksManage",
+          "All",
+          "SchedulesSchedule",
+          "EventOctober",
+          "2026TodayMonthWeekAll",
+          "ReviewTeam",
+          "ReviewTeam",
+          "MeetingTraining",
+          "MeetingTraining",
+          "SessionSystem",
+          "SessionSystem",
+          "MaintenanceOtherSunMonTueWedThuFriSat27282930123456789101112139:30",
+          "intake1415161718192021222324252627282930311234567Upcoming",
+          "scheduleOct",
+          "129:30",
+          "AMhighThis",
+          "Events1Completed1Upcoming1High",
+          "Priority1Event",
+          "MaintenanceOther"
+        ],
+        "django_text_tokens_added": [
+          "Plan",
+          "reviews,",
+          "meetings,",
+          "trainingSchedulerBack",
+          "to",
+          "dashboardScheduler",
+          "settingsManage",
+          "schedules",
+          "Search",
+          "eventsEvent",
+          "typeAll",
+          "reviewTeam",
+          "reviewTeam",
+          "reviewTeam",
+          "meetingTrainingMaintenanceOtherFilter",
+          "‹Today›October",
+          "2026MonthWeek",
+          "SunMonTueWedThuFriSat",
+          "272829301234567891011129:30",
+          "AM",
+          "schedule30",
+          "minutes",
+          "·",
+          "·",
+          "·",
+          "High",
+          "priority",
+          "ScheduledEdit",
+          "scheduleTitleDateTimeDurationSave",
+          "changesCompleteCancelDelete13141516171819202122232425262728293031",
+          "Upcoming",
+          "intakeOct",
+          "12,",
+          "2026",
+          "at",
+          "9:30",
+          "Form",
+          "reviewEdit",
+          "schedule",
+          "schedule",
+          "This",
+          "events1Completed0Upcoming1High",
+          "priority1",
+          "Event",
+          "meetingTrainingMaintenanceOther",
+          "Create",
+          "a",
+          "scheduleTitleTypeForm",
+          "meetingTrainingMaintenanceOtherDateTimeDuration",
+          "(minutes)PriorityLowMediumHighLocationReminder",
+          "(minutes)DescriptionAttendees",
+          "(one",
+          "per",
+          "line)Related",
+          "templateNo",
+          "templatePatient",
+          "intakeSave"
+        ]
+      }
+    },
+    {
+      "route": "/manage-schedules",
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "response_status": 200,
+      "title": "Manage schedules · Audentra",
+      "heading": "Manage schedules",
+      "document_width": 1440,
+      "viewport_width": 1440,
+      "has_react_root": false,
+      "has_react_bootstrap": false,
+      "console_errors": [],
+      "expected_local_404_diagnostic": false,
+      "responses": [
+        {
+          "path": "/manage-schedules",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/manage-schedules",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/manage-schedules",
+          "status": 200
+        },
+        {
+          "path": "/manage-schedules",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/manage-schedules",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/manage-schedules",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/manage-schedules",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        }
+      ],
+      "screenshot": "manage-schedules-desktop.png",
+      "comparison": {
+        "source_heading": "Manage All Schedules",
+        "django_heading": "Manage schedules",
+        "source_text_characters": 430,
+        "django_text_characters": 611,
+        "normalized_text_exact_match": false,
+        "source_section_headings": [],
+        "django_section_headings": [
+          "Schedules (1)"
+        ],
+        "source_field_names": [],
+        "django_field_names": [
+          "action",
+          "action",
+          "action",
+          "action",
+          "action",
+          "attendees",
+          "csrfmiddlewaretoken",
+          "csrfmiddlewaretoken",
+          "csrfmiddlewaretoken",
+          "csrfmiddlewaretoken",
+          "csrfmiddlewaretoken",
+          "date",
+          "description",
+          "duration",
+          "event_id",
+          "event_id",
+          "event_id",
+          "event_id",
+          "form_id",
+          "location",
+          "order",
+          "priority",
+          "q",
+          "reminder_minutes",
+          "selected_ids",
+          "sort",
+          "status",
+          "time",
+          "title",
+          "type",
+          "type"
+        ],
+        "source_field_names_missing_from_django": [],
+        "source_button_labels": [],
+        "django_button_labels": [
+          "Apply",
+          "Apply filters",
+          "Cancel",
+          "Complete",
+          "Delete",
+          "Save"
+        ],
+        "source_button_labels_missing_from_django": [],
+        "source_local_destinations": [
+          "/scheduler",
+          "/scheduler",
+          "/scheduler-settings",
+          "/scheduler?edit=44444444-4444-4444-8444-444444444444"
+        ],
+        "django_local_destinations": [
+          "/scheduler",
+          "/scheduler-settings",
+          "/scheduler?edit=44444444-4444-4444-8444-444444444444"
+        ],
+        "django_link_labels": [
+          "Back to scheduler",
+          "Edit in scheduler",
+          "Scheduler settings"
+        ],
+        "source_local_destinations_missing_from_django": [],
+        "source_text_tokens_missing_from_django": [
+          "Manage",
+          "All",
+          "SchedulesView,",
+          "edit,",
+          "manage",
+          "all",
+          "scheduled",
+          "eventsNew",
+          "EventTotal",
+          "Events1Scheduled1Completed0Cancelled0High",
+          "Priority1All",
+          "TypesForm",
+          "ReviewTeam",
+          "MeetingTraining",
+          "SessionSystem",
+          "MaintenanceOtherAll",
+          "StatusScheduledIn",
+          "ProgressCompletedCancelled1",
+          "of",
+          "1",
+          "eventsEvent",
+          "Date",
+          "Time",
+          "↑TypePriority",
+          "Status",
+          "LocationActionsReview",
+          "intakeSynthetic",
+          "browser-capture",
+          "scheduleOct",
+          "AM",
+          "(30m)form",
+          "reviewhighscheduledReview",
+          "room"
+        ],
+        "django_text_tokens_added": [
+          "Search,",
+          "filter,",
+          "update",
+          "your",
+          "your",
+          "eventsManage",
+          "schedulesBack",
+          "to",
+          "schedulerScheduler",
+          "settings",
+          "SearchTypeAll",
+          "typesForm",
+          "reviewTeam",
+          "meetingTrainingMaintenanceOtherStatusAll",
+          "statusesScheduledIn",
+          "progressCompletedCancelledSort",
+          "byDateTitlePriorityStatusTypeDirectionAscendingDescendingApply",
+          "filters",
+          "Schedules",
+          "(1)Bulk",
+          "actions",
+          "verify",
+          "every",
+          "selected",
+          "schedule",
+          "against",
+          "account.",
+          "Selected",
+          "schedules:Mark",
+          "completeCancelExport",
+          "selectedDeleteApply",
+          "TitleDate",
+          "timeTypePriorityStatusActionsReview",
+          "intakeEdit",
+          "detailsTitleDateTimeDurationSaveEdit",
+          "in",
+          "schedulerOct",
+          "AMForm",
+          "reviewHighScheduledCompleteCancelDelete"
+        ]
+      }
+    },
+    {
+      "route": "/manage-schedules",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "response_status": 200,
+      "title": "Manage schedules · Audentra",
+      "heading": "Manage schedules",
+      "document_width": 390,
+      "viewport_width": 390,
+      "has_react_root": false,
+      "has_react_bootstrap": false,
+      "console_errors": [],
+      "expected_local_404_diagnostic": false,
+      "responses": [
+        {
+          "path": "/manage-schedules",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        }
+      ],
+      "screenshot": "manage-schedules-mobile.png",
+      "comparison": {
+        "source_heading": "Manage All Schedules",
+        "django_heading": "Manage schedules",
+        "source_text_characters": 430,
+        "django_text_characters": 611,
+        "normalized_text_exact_match": false,
+        "source_section_headings": [],
+        "django_section_headings": [
+          "Schedules (1)"
+        ],
+        "source_field_names": [],
+        "django_field_names": [
+          "action",
+          "action",
+          "action",
+          "action",
+          "action",
+          "attendees",
+          "csrfmiddlewaretoken",
+          "csrfmiddlewaretoken",
+          "csrfmiddlewaretoken",
+          "csrfmiddlewaretoken",
+          "csrfmiddlewaretoken",
+          "date",
+          "description",
+          "duration",
+          "event_id",
+          "event_id",
+          "event_id",
+          "event_id",
+          "form_id",
+          "location",
+          "order",
+          "priority",
+          "q",
+          "reminder_minutes",
+          "selected_ids",
+          "sort",
+          "status",
+          "time",
+          "title",
+          "type",
+          "type"
+        ],
+        "source_field_names_missing_from_django": [],
+        "source_button_labels": [],
+        "django_button_labels": [
+          "Apply",
+          "Apply filters",
+          "Cancel",
+          "Complete",
+          "Delete",
+          "Save"
+        ],
+        "source_button_labels_missing_from_django": [],
+        "source_local_destinations": [
+          "/scheduler",
+          "/scheduler",
+          "/scheduler-settings",
+          "/scheduler?edit=44444444-4444-4444-8444-444444444444"
+        ],
+        "django_local_destinations": [
+          "/scheduler",
+          "/scheduler-settings",
+          "/scheduler?edit=44444444-4444-4444-8444-444444444444"
+        ],
+        "django_link_labels": [
+          "Back to scheduler",
+          "Edit in scheduler",
+          "Scheduler settings"
+        ],
+        "source_local_destinations_missing_from_django": [],
+        "source_text_tokens_missing_from_django": [
+          "Manage",
+          "All",
+          "SchedulesView,",
+          "edit,",
+          "manage",
+          "all",
+          "scheduled",
+          "eventsNew",
+          "EventTotal",
+          "Events1Scheduled1Completed0Cancelled0High",
+          "Priority1All",
+          "TypesForm",
+          "ReviewTeam",
+          "MeetingTraining",
+          "SessionSystem",
+          "MaintenanceOtherAll",
+          "StatusScheduledIn",
+          "ProgressCompletedCancelled1",
+          "of",
+          "1",
+          "eventsEvent",
+          "Date",
+          "Time",
+          "↑TypePriority",
+          "Status",
+          "LocationActionsReview",
+          "intakeSynthetic",
+          "browser-capture",
+          "scheduleOct",
+          "AM",
+          "(30m)form",
+          "reviewhighscheduledReview",
+          "room"
+        ],
+        "django_text_tokens_added": [
+          "Search,",
+          "filter,",
+          "update",
+          "your",
+          "your",
+          "eventsManage",
+          "schedulesBack",
+          "to",
+          "schedulerScheduler",
+          "settings",
+          "SearchTypeAll",
+          "typesForm",
+          "reviewTeam",
+          "meetingTrainingMaintenanceOtherStatusAll",
+          "statusesScheduledIn",
+          "progressCompletedCancelledSort",
+          "byDateTitlePriorityStatusTypeDirectionAscendingDescendingApply",
+          "filters",
+          "Schedules",
+          "(1)Bulk",
+          "actions",
+          "verify",
+          "every",
+          "selected",
+          "schedule",
+          "against",
+          "account.",
+          "Selected",
+          "schedules:Mark",
+          "completeCancelExport",
+          "selectedDeleteApply",
+          "TitleDate",
+          "timeTypePriorityStatusActionsReview",
+          "intakeEdit",
+          "detailsTitleDateTimeDurationSaveEdit",
+          "in",
+          "schedulerOct",
+          "AMForm",
+          "reviewHighScheduledCompleteCancelDelete"
+        ]
+      }
+    },
+    {
+      "route": "/scheduler-settings",
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "response_status": 200,
+      "title": "Scheduler settings · Audentra",
+      "heading": "Scheduler settings",
+      "document_width": 1440,
+      "viewport_width": 1440,
+      "has_react_root": false,
+      "has_react_bootstrap": false,
+      "console_errors": [],
+      "expected_local_404_diagnostic": false,
+      "responses": [
+        {
+          "path": "/scheduler-settings",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_settings.js",
+          "status": 200
+        },
+        {
+          "path": "/scheduler-settings",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_settings.js",
+          "status": 200
+        }
+      ],
+      "screenshot": "scheduler-settings-desktop.png",
+      "comparison": {
+        "source_heading": "Scheduler Settings",
+        "django_heading": "Scheduler settings",
+        "source_text_characters": 565,
+        "django_text_characters": 1291,
+        "normalized_text_exact_match": false,
+        "source_section_headings": [
+          "General Settings",
+          "Working Hours",
+          "Working Days"
+        ],
+        "django_section_headings": [
+          "General Settings",
+          "Working Hours",
+          "Working Days"
+        ],
+        "source_field_names": [],
+        "django_field_names": [
+          "allowGuestInvites",
+          "colorScheme",
+          "compactView",
+          "dailyDigest",
+          "defaultDuration",
+          "defaultReminderMinutes",
+          "defaultView",
+          "emailNotifications",
+          "googleCalendarSync",
+          "outlookSync",
+          "pushNotifications",
+          "reminderNotifications",
+          "shareCalendar",
+          "showBusyTime",
+          "showDeclinedEvents",
+          "showWeekends",
+          "slackNotifications",
+          "teamsNotifications",
+          "theme",
+          "timezone",
+          "weekStartsOn",
+          "weeklyReport",
+          "workingDays",
+          "workingDays",
+          "workingDays",
+          "workingDays",
+          "workingDays",
+          "workingDays",
+          "workingDays",
+          "workingHours.end",
+          "workingHours.start"
+        ],
+        "source_field_names_missing_from_django": [],
+        "source_button_labels": [
+          "Appearance",
+          "Calendar",
+          "Export",
+          "General",
+          "Integrations",
+          "Notifications",
+          "Privacy",
+          "Reset",
+          "Save Changes"
+        ],
+        "django_button_labels": [
+          "Appearance",
+          "Calendar",
+          "Export JSON",
+          "General",
+          "Integrations",
+          "Notifications",
+          "Privacy",
+          "Reset defaults",
+          "Save settings"
+        ],
+        "source_button_labels_missing_from_django": [
+          "Export",
+          "Reset",
+          "Save Changes"
+        ],
+        "source_local_destinations": [
+          "/scheduler"
+        ],
+        "django_local_destinations": [
+          "/scheduler"
+        ],
+        "django_link_labels": [
+          "Back to scheduler"
+        ],
+        "source_local_destinations_missing_from_django": [],
+        "source_text_tokens_missing_from_django": [
+          "Scheduler",
+          "SettingsConfigure",
+          "scheduling",
+          "integrationsExportImportResetSave",
+          "ChangesGeneralNotificationsCalendarPrivacyAppearanceIntegrationsGeneral",
+          "SettingsDefault",
+          "Event",
+          "Duration",
+          "(minutes)Default",
+          "Reminder",
+          "(minutes",
+          "before)5",
+          "minutes10",
+          "minutes15",
+          "minutes30",
+          "minutes1",
+          "hour1",
+          "dayWorking",
+          "HoursStart",
+          "TimeEnd",
+          "TimeWorking",
+          "DaysMondayTuesdayWednesdayThursdayFridaySaturdaySundayTimezoneEastern",
+          "Time",
+          "Time",
+          "Time",
+          "Time",
+          "Time",
+          "Time",
+          "Time",
+          "Time",
+          "(ET)Central",
+          "(CT)Mountain",
+          "(MT)Pacific",
+          "(PT)Greenwich",
+          "Mean",
+          "(GMT)Central",
+          "European",
+          "(CET)Japan",
+          "Standard",
+          "(JST)Australian",
+          "Eastern",
+          "(AET)"
+        ],
+        "django_text_tokens_added": [
+          "Choose",
+          "how",
+          "your",
+          "calendar",
+          "calendar",
+          "calendar",
+          "calendar",
+          "behavesScheduler",
+          "settingsBack",
+          "to",
+          "scheduler",
+          "These",
+          "preferences",
+          "preferences",
+          "stay",
+          "in",
+          "this",
+          "this",
+          "browser",
+          "on",
+          "device.",
+          "Notification",
+          "and",
+          "integration",
+          "toggles",
+          "are",
+          "are",
+          "are",
+          "local",
+          "local",
+          "local",
+          "only;",
+          "no",
+          "reminders",
+          "or",
+          "or",
+          "external",
+          "external",
+          "sync",
+          "active.",
+          "General",
+          "General",
+          "Notifications",
+          "Calendar",
+          "Calendar",
+          "Privacy",
+          "Appearance",
+          "Integrations",
+          "Settings",
+          "Default",
+          "Default",
+          "Default",
+          "event",
+          "duration",
+          "(minutes)",
+          "(minutes)",
+          "reminder",
+          "Working",
+          "Working",
+          "Working",
+          "HoursWorking",
+          "day",
+          "day",
+          "starts",
+          "starts",
+          "ends",
+          "TimezoneAmerica/New_YorkAmerica/ChicagoAmerica/DenverAmerica/Los_AngelesEurope/LondonEurope/ParisAsia/TokyoAustralia/Sydney",
+          "DaysMondayTuesdayWednesdayThursdayFridaySaturdaySunday",
+          "Email",
+          "notificationsPush",
+          "notificationsReminder",
+          "notificationsDaily",
+          "digestWeekly",
+          "report",
+          "viewMonth",
+          "viewWeek",
+          "viewWeek",
+          "onSundayMondayShow",
+          "weekendsShow",
+          "cancelled",
+          "events",
+          "Share",
+          "preferenceAllow",
+          "guest",
+          "invites",
+          "preferenceShow",
+          "busy-time",
+          "preferenceThese",
+          "only",
+          "do",
+          "not",
+          "not",
+          "publish",
+          "data",
+          "send",
+          "invitations.",
+          "ThemeLightDarkAuto",
+          "(system)Color",
+          "schemeBlueEmeraldPurpleOrangePinkIndigoCompact",
+          "view",
+          "Switches",
+          "record",
+          "preference",
+          "preference",
+          "only.",
+          "A",
+          "change",
+          "here",
+          "does",
+          "connect",
+          "an",
+          "service.Google",
+          "preferenceOutlook",
+          "preferenceSlack",
+          "notification",
+          "notification",
+          "preferenceTeams",
+          "Save",
+          "settingsReset",
+          "defaultsExport",
+          "JSONImport",
+          "JSON"
+        ]
+      }
+    },
+    {
+      "route": "/scheduler-settings",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "response_status": 200,
+      "title": "Scheduler settings · Audentra",
+      "heading": "Scheduler settings",
+      "document_width": 390,
+      "viewport_width": 390,
+      "has_react_root": false,
+      "has_react_bootstrap": false,
+      "console_errors": [],
+      "expected_local_404_diagnostic": false,
+      "responses": [
+        {
+          "path": "/scheduler-settings",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_settings.js",
+          "status": 200
+        }
+      ],
+      "screenshot": "scheduler-settings-mobile.png",
+      "comparison": {
+        "source_heading": "Scheduler Settings",
+        "django_heading": "Scheduler settings",
+        "source_text_characters": 565,
+        "django_text_characters": 1291,
+        "normalized_text_exact_match": false,
+        "source_section_headings": [
+          "General Settings",
+          "Working Hours",
+          "Working Days"
+        ],
+        "django_section_headings": [
+          "General Settings",
+          "Working Hours",
+          "Working Days"
+        ],
+        "source_field_names": [],
+        "django_field_names": [
+          "allowGuestInvites",
+          "colorScheme",
+          "compactView",
+          "dailyDigest",
+          "defaultDuration",
+          "defaultReminderMinutes",
+          "defaultView",
+          "emailNotifications",
+          "googleCalendarSync",
+          "outlookSync",
+          "pushNotifications",
+          "reminderNotifications",
+          "shareCalendar",
+          "showBusyTime",
+          "showDeclinedEvents",
+          "showWeekends",
+          "slackNotifications",
+          "teamsNotifications",
+          "theme",
+          "timezone",
+          "weekStartsOn",
+          "weeklyReport",
+          "workingDays",
+          "workingDays",
+          "workingDays",
+          "workingDays",
+          "workingDays",
+          "workingDays",
+          "workingDays",
+          "workingHours.end",
+          "workingHours.start"
+        ],
+        "source_field_names_missing_from_django": [],
+        "source_button_labels": [
+          "Appearance",
+          "Calendar",
+          "Export",
+          "General",
+          "Integrations",
+          "Notifications",
+          "Privacy",
+          "Reset",
+          "Save Changes"
+        ],
+        "django_button_labels": [
+          "Appearance",
+          "Calendar",
+          "Export JSON",
+          "General",
+          "Integrations",
+          "Notifications",
+          "Privacy",
+          "Reset defaults",
+          "Save settings"
+        ],
+        "source_button_labels_missing_from_django": [
+          "Export",
+          "Reset",
+          "Save Changes"
+        ],
+        "source_local_destinations": [
+          "/scheduler"
+        ],
+        "django_local_destinations": [
+          "/scheduler"
+        ],
+        "django_link_labels": [
+          "Back to scheduler"
+        ],
+        "source_local_destinations_missing_from_django": [],
+        "source_text_tokens_missing_from_django": [
+          "Scheduler",
+          "SettingsConfigure",
+          "scheduling",
+          "integrationsExportImportResetSave",
+          "ChangesGeneralNotificationsCalendarPrivacyAppearanceIntegrationsGeneral",
+          "SettingsDefault",
+          "Event",
+          "Duration",
+          "(minutes)Default",
+          "Reminder",
+          "(minutes",
+          "before)5",
+          "minutes10",
+          "minutes15",
+          "minutes30",
+          "minutes1",
+          "hour1",
+          "dayWorking",
+          "HoursStart",
+          "TimeEnd",
+          "TimeWorking",
+          "DaysMondayTuesdayWednesdayThursdayFridaySaturdaySundayTimezoneEastern",
+          "Time",
+          "Time",
+          "Time",
+          "Time",
+          "Time",
+          "Time",
+          "Time",
+          "Time",
+          "(ET)Central",
+          "(CT)Mountain",
+          "(MT)Pacific",
+          "(PT)Greenwich",
+          "Mean",
+          "(GMT)Central",
+          "European",
+          "(CET)Japan",
+          "Standard",
+          "(JST)Australian",
+          "Eastern",
+          "(AET)"
+        ],
+        "django_text_tokens_added": [
+          "Choose",
+          "how",
+          "your",
+          "calendar",
+          "calendar",
+          "calendar",
+          "calendar",
+          "behavesScheduler",
+          "settingsBack",
+          "to",
+          "scheduler",
+          "These",
+          "preferences",
+          "preferences",
+          "stay",
+          "in",
+          "this",
+          "this",
+          "browser",
+          "on",
+          "device.",
+          "Notification",
+          "and",
+          "integration",
+          "toggles",
+          "are",
+          "are",
+          "are",
+          "local",
+          "local",
+          "local",
+          "only;",
+          "no",
+          "reminders",
+          "or",
+          "or",
+          "external",
+          "external",
+          "sync",
+          "active.",
+          "General",
+          "General",
+          "Notifications",
+          "Calendar",
+          "Calendar",
+          "Privacy",
+          "Appearance",
+          "Integrations",
+          "Settings",
+          "Default",
+          "Default",
+          "Default",
+          "event",
+          "duration",
+          "(minutes)",
+          "(minutes)",
+          "reminder",
+          "Working",
+          "Working",
+          "Working",
+          "HoursWorking",
+          "day",
+          "day",
+          "starts",
+          "starts",
+          "ends",
+          "TimezoneAmerica/New_YorkAmerica/ChicagoAmerica/DenverAmerica/Los_AngelesEurope/LondonEurope/ParisAsia/TokyoAustralia/Sydney",
+          "DaysMondayTuesdayWednesdayThursdayFridaySaturdaySunday",
+          "Email",
+          "notificationsPush",
+          "notificationsReminder",
+          "notificationsDaily",
+          "digestWeekly",
+          "report",
+          "viewMonth",
+          "viewWeek",
+          "viewWeek",
+          "onSundayMondayShow",
+          "weekendsShow",
+          "cancelled",
+          "events",
+          "Share",
+          "preferenceAllow",
+          "guest",
+          "invites",
+          "preferenceShow",
+          "busy-time",
+          "preferenceThese",
+          "only",
+          "do",
+          "not",
+          "not",
+          "publish",
+          "data",
+          "send",
+          "invitations.",
+          "ThemeLightDarkAuto",
+          "(system)Color",
+          "schemeBlueEmeraldPurpleOrangePinkIndigoCompact",
+          "view",
+          "Switches",
+          "record",
+          "preference",
+          "preference",
+          "only.",
+          "A",
+          "change",
+          "here",
+          "does",
+          "connect",
+          "an",
+          "service.Google",
+          "preferenceOutlook",
+          "preferenceSlack",
+          "notification",
+          "notification",
+          "preferenceTeams",
+          "Save",
+          "settingsReset",
+          "defaultsExport",
+          "JSONImport",
+          "JSON"
+        ]
+      }
+    }
+  ],
+  "interactions": [
+    {
+      "route": "/scheduler",
+      "state": "search/type filters and empty state, month/week navigation, Today/date selection, create/edit/complete/cancel/confirmed-delete, upcoming events, and statistics work with a mutable synthetic schedule"
+    },
+    {
+      "route": "/manage-schedules",
+      "state": "search/type/status/sort filters, source edit/settings destinations, export bytes, bulk complete/cancel/delete, and empty result pass"
+    },
+    {
+      "route": "/scheduler-settings",
+      "state": "all six tabs, account-scoped save/reload/reset, local-only notification/privacy/integration toggles, JSON import roundtrip, invalid/unsupported import, and export bytes pass",
+      "download_name": "scheduler_settings_2026-10-12.json",
+      "verified_fields": [
+        "user_id",
+        "defaultDuration",
+        "timezone",
+        "workingDays"
+      ]
+    },
+    {
+      "route": "/scheduler-settings",
+      "state": "localStorage read/write failures announce a recoverable error and retain editable defaults"
+    }
+  ],
+  "route_contracts": [
+    {
+      "route": "/scheduler",
+      "viewport": "desktop",
+      "passed": true,
+      "source_heading": "Scheduler",
+      "expected_heading": "Scheduler",
+      "required_sections": [
+        "Upcoming Events",
+        "This Month",
+        "Event Types"
+      ],
+      "required_fields": [
+        "q",
+        "type",
+        "title",
+        "date",
+        "time",
+        "duration",
+        "priority",
+        "location",
+        "reminder_minutes",
+        "description",
+        "attendees",
+        "form_id"
+      ],
+      "required_controls": [
+        "Today",
+        "Month",
+        "Week",
+        "Filter",
+        "Save schedule",
+        "Save changes"
+      ],
+      "required_destinations": [
+        "/dashboard",
+        "/scheduler-settings",
+        "/manage-schedules"
+      ],
+      "accepted_source_differences": [
+        "Source search and event-type filters are usable and persist between month/week views.",
+        "Calendar weeks start on Sunday to match the source.",
+        "Stored schedule values retain the existing P5 UTC-derived date behavior."
+      ]
+    },
+    {
+      "route": "/scheduler",
+      "viewport": "mobile",
+      "passed": true,
+      "source_heading": "Scheduler",
+      "expected_heading": "Scheduler",
+      "required_sections": [
+        "Upcoming Events",
+        "This Month",
+        "Event Types"
+      ],
+      "required_fields": [
+        "q",
+        "type",
+        "title",
+        "date",
+        "time",
+        "duration",
+        "priority",
+        "location",
+        "reminder_minutes",
+        "description",
+        "attendees",
+        "form_id"
+      ],
+      "required_controls": [
+        "Today",
+        "Month",
+        "Week",
+        "Filter",
+        "Save schedule",
+        "Save changes"
+      ],
+      "required_destinations": [
+        "/dashboard",
+        "/scheduler-settings",
+        "/manage-schedules"
+      ],
+      "accepted_source_differences": [
+        "Source search and event-type filters are usable and persist between month/week views.",
+        "Calendar weeks start on Sunday to match the source.",
+        "Stored schedule values retain the existing P5 UTC-derived date behavior."
+      ]
+    },
+    {
+      "route": "/manage-schedules",
+      "viewport": "desktop",
+      "passed": true,
+      "source_heading": "Manage All Schedules",
+      "expected_heading": "Manage schedules",
+      "required_sections": [],
+      "required_fields": [
+        "q",
+        "type",
+        "status",
+        "sort",
+        "order",
+        "selected_ids",
+        "action"
+      ],
+      "required_controls": [
+        "Apply filters",
+        "Apply",
+        "Complete",
+        "Cancel",
+        "Delete"
+      ],
+      "required_destinations": [
+        "/scheduler",
+        "/scheduler-settings",
+        "/scheduler?edit=44444444-4444-4444-8444-444444444444"
+      ],
+      "accepted_source_differences": [
+        "Per-row source navigation opens the scheduler edit form for the selected owned event."
+      ]
+    },
+    {
+      "route": "/manage-schedules",
+      "viewport": "mobile",
+      "passed": true,
+      "source_heading": "Manage All Schedules",
+      "expected_heading": "Manage schedules",
+      "required_sections": [],
+      "required_fields": [
+        "q",
+        "type",
+        "status",
+        "sort",
+        "order",
+        "selected_ids",
+        "action"
+      ],
+      "required_controls": [
+        "Apply filters",
+        "Apply",
+        "Complete",
+        "Cancel",
+        "Delete"
+      ],
+      "required_destinations": [
+        "/scheduler",
+        "/scheduler-settings",
+        "/scheduler?edit=44444444-4444-4444-8444-444444444444"
+      ],
+      "accepted_source_differences": [
+        "Per-row source navigation opens the scheduler edit form for the selected owned event."
+      ]
+    },
+    {
+      "route": "/scheduler-settings",
+      "viewport": "desktop",
+      "passed": true,
+      "source_heading": "Scheduler Settings",
+      "expected_heading": "Scheduler settings",
+      "required_sections": [
+        "General Settings",
+        "Working Hours",
+        "Working Days"
+      ],
+      "required_fields": [
+        "defaultDuration",
+        "defaultReminderMinutes",
+        "workingHours.start",
+        "workingHours.end",
+        "timezone",
+        "workingDays",
+        "emailNotifications",
+        "pushNotifications",
+        "reminderNotifications",
+        "dailyDigest",
+        "weeklyReport",
+        "defaultView",
+        "weekStartsOn",
+        "showWeekends",
+        "showDeclinedEvents",
+        "shareCalendar",
+        "allowGuestInvites",
+        "showBusyTime",
+        "theme",
+        "colorScheme",
+        "compactView",
+        "googleCalendarSync",
+        "outlookSync",
+        "slackNotifications",
+        "teamsNotifications"
+      ],
+      "required_controls": [
+        "General",
+        "Notifications",
+        "Calendar",
+        "Privacy",
+        "Appearance",
+        "Integrations",
+        "Save settings",
+        "Reset defaults",
+        "Export JSON",
+        "Import JSON"
+      ],
+      "required_destinations": [
+        "/scheduler"
+      ],
+      "accepted_source_differences": [
+        "Source settings remain local preferences; integrations and notifications do not connect to external services."
+      ]
+    },
+    {
+      "route": "/scheduler-settings",
+      "viewport": "mobile",
+      "passed": true,
+      "source_heading": "Scheduler Settings",
+      "expected_heading": "Scheduler settings",
+      "required_sections": [
+        "General Settings",
+        "Working Hours",
+        "Working Days"
+      ],
+      "required_fields": [
+        "defaultDuration",
+        "defaultReminderMinutes",
+        "workingHours.start",
+        "workingHours.end",
+        "timezone",
+        "workingDays",
+        "emailNotifications",
+        "pushNotifications",
+        "reminderNotifications",
+        "dailyDigest",
+        "weeklyReport",
+        "defaultView",
+        "weekStartsOn",
+        "showWeekends",
+        "showDeclinedEvents",
+        "shareCalendar",
+        "allowGuestInvites",
+        "showBusyTime",
+        "theme",
+        "colorScheme",
+        "compactView",
+        "googleCalendarSync",
+        "outlookSync",
+        "slackNotifications",
+        "teamsNotifications"
+      ],
+      "required_controls": [
+        "General",
+        "Notifications",
+        "Calendar",
+        "Privacy",
+        "Appearance",
+        "Integrations",
+        "Save settings",
+        "Reset defaults",
+        "Export JSON",
+        "Import JSON"
+      ],
+      "required_destinations": [
+        "/scheduler"
+      ],
+      "accepted_source_differences": [
+        "Source settings remain local preferences; integrations and notifications do not connect to external services."
+      ]
+    }
+  ],
+  "negative_control_checks": {
+    "passed": true,
+    "removed_section": "rejected",
+    "removed_control": "rejected",
+    "removed_destination": "rejected",
+    "changed_field": "rejected"
+  }
+}

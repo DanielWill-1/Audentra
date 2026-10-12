@@ -2,11 +2,11 @@
 
 Open-source, voice-first structured-data automation. Speak naturally and Audentra turns the conversation into structured, validated form data — no typing, no rigid questionnaires.
 
-This repository preserves the original Vite + React + TypeScript and Node/Express application beside the implemented Django P7 page path. Supabase remains the Auth and data provider. The local P7 route inventory has zero normal legacy fallbacks; P7 acceptance and P8 review repairs remain open, with P9 release acceptance and production cutover separate.
+This repository preserves the React/Express source beside the Django migration. P7 SR-1 through SR-4 are closed and P8 deterministic acceptance is complete; physical-device and live-provider checks remain P9 work. P9 has started: its 25-route acceptance matrix is in place, and local manifest/registry/resolver reconciliation passed 25/25. P9 route, hosted schema/data, device, and provider acceptance remains in progress.
 
 ## Migration folder policy
 
-P7 W1–W7 routes and the separate P8 bridge are implemented. All 25 manifest routes resolve locally with zero normal fallback, but the [2026-10-12 P7 review](docs/pages/P7_REVIEW_2026-10-12.md) and [P8 review](docs/services/P8_REVIEW_2026-10-12.md) supersede earlier full-completion claims. See the [dated handoff](HANDOFF_2026-10-12_020354_IST.md) and root [P7/P8 closeout prompt](prompt.md). Existing [report](docs/pages/P7_REPORT.md), [verification](docs/pages/P7_VERIFICATION.md), [route inventory](docs/pages/P7_ROUTE_OWNERSHIP.json) and [differences](docs/pages/P7_DIFFERENCES.md) remain evidence; P9–P11 are separate gates.
+P7 W1-W7 routes and the P8 bridge are implemented. The P7 [finding closeout](docs/pages/P7_SR_CLOSEOUT_2026-10-13.md) supersedes the earlier review status. P9 is underway under the [acceptance matrix](docs/parity/P9_ACCEPTANCE_MATRIX.md) and [task prompt](docs/parity/P9_IMPLEMENTATION_PROMPT.md); see the [current handoff](HANDOFF_2026-10-13_033145_IST.md) and [status report](docs/parity/P9_REPORT.md).
 
 New migration work is additive: P1 tooling goes in `migration/parity/`, Django work in `migration/django/`, and comparison evidence stays under `docs/`. P1 is finalized with [accepted exceptions](docs/parity/P1_ACCEPTANCE.md). P2 is complete and [reviewed](docs/foundation/P2_REVIEW.md). P3 code findings are corrected, with live speech evidence still pending. P4 development authentication passed fresh hosted and PostgreSQL concurrency checks; see [P4_REPORT.md](docs/auth/P4_REPORT.md). P5 is complete with hosted shared-pooler isolation; see [P5_REPORT.md](docs/data/P5_REPORT.md) and [P5_VERIFICATION.md](docs/data/P5_VERIFICATION.md). P6 shared shells/rollback are complete; P7/P8 and their final evidence are linked above. The P7 activity page deliberately retains its source-supported browser-local/example feed rather than adding a new activity backend.
 
@@ -26,7 +26,7 @@ Old runtime cleanup belongs to the final P11 gate with a documented recovery ref
 
 ## Current status
 
-The project remains between implementation and release acceptance. The approved P7 local Django path now owns the full 25-route manifest, while the original React/Express runtime remains available for comparison and recovery. P8 verifies the browser media boundary with deterministic fakes; live speech-provider, physical-device, P9 release, P10 deployment/soak, and P11 retirement gates remain open. The `/documentation` page describes parts of the target architecture and does not by itself prove every described capability is shipped.
+The migrated Django path owns all 25 routes. Useful implementation and regression work is complete, while P7 full acceptance remains open for review findings. P8 deterministic media/session evidence passes; physical-device/live-provider and P9 release acceptance remain later gates. The original source remains available for comparison/recovery.
 
 Below is a precise record of what has shipped versus what remains.
 

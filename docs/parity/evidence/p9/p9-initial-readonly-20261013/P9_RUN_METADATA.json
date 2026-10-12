@@ -1,0 +1,28 @@
+{
+  "run_id": "p9-initial-readonly-20261013",
+  "started_at": "2026-10-13T03:21:29+05:30",
+  "phase": "P9 in progress; initial read-only route inventory",
+  "matrix_created_before_execution": "docs/parity/P9_ACCEPTANCE_MATRIX.md",
+  "p7_closeout": "docs/pages/P7_SR_CLOSEOUT_2026-10-13.md",
+  "runtime": {
+    "branch": "main",
+    "head": "4e3e5c7e0a3bc383cea5d8b6b4d2ce18693469a6",
+    "working_tree": "pre-existing dirty tree preserved",
+    "working_tree_entry_count": 156,
+    "working_tree_status_sha256": "01be58865c60021e0bc5425d771b750297e891b48519983ba579a8b7b2e479d6",
+    "source_run_id": "p7-sr-review-source-20261013a",
+    "source_git_revision": "4e3e5c7e0a3bc383cea5d8b6b4d2ce18693469a6",
+    "source_worktree_digest": "2f50c0fa03f6215104e5b1267bc9061447b7c851643328a4a0ec5a74ced68b1c",
+    "source_file_count": 71,
+    "django_content_digest_algorithm": "sha256 over sorted relative paths and file bytes for apps/config/templates/static/js/scripts/tests plus built CSS and Tailwind input; excludes caches and virtualenv",
+    "django_content_digest": "a61c878820cbc47043520b7e2092d084ae06745c8bf8e81cb56ca5297a930840",
+    "django_content_file_count": 183,
+    "manifest_sha256": "ada8836ff8ba323888f1b99d42e7d720b66823c3975e008af104789d3923c9b7",
+    "browser": "Chromium 148.0.7778.96",
+    "node": "v22.12.0",
+    "python": "Python 3.12.10",
+    "django": "5.2.18",
+    "playwright": "1.60.0",
+    "fixture_boundary": "P9 initial operation uses the local URL resolver under config.settings.test; no HTTP request, database query, hosted read/write, provider call or device use."
+  }
+}

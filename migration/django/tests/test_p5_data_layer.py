@@ -31,6 +31,7 @@ from config.settings.base import _database_from_url
 from django.core.files.uploadedfile import SimpleUploadedFile
 
 TEST_USER = UUID("11111111-1111-4111-8111-111111111111")
+OTHER_USER = UUID("22222222-2222-4222-8222-222222222222")
 PROJECT_REF = "pgtttjmqibxufvwehkyj"
 
 
@@ -206,6 +207,37 @@ def test_private_download_uses_a_fresh_cdn_cache_key_per_request(
     first_params, second_params = bucket.download_query_params
     assert first_params.keys() == second_params.keys() == {"cacheNonce"}
     assert first_params["cacheNonce"] != second_params["cacheNonce"]
+
+
+def test_public_template_does_not_grant_private_file_download(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    template_id = UUID("aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa")
+    path = f"templates/{template_id}/bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb.pdf"
+    template = SimpleNamespace(id=template_id, created_by=TEST_USER, uploaded_file=path)
+    monkeypatch.setattr(Template, "objects", _TemplateTestManager(template))
+
+    class NoShareQuery:
+        def exists(self) -> bool:
+            return False
+
+    class NoShareManager:
+        def using(self, _alias: str) -> NoShareManager:
+            return self
+
+        def filter(self, **_filters: object) -> NoShareQuery:
+            return NoShareQuery()
+
+    monkeypatch.setattr(TemplateShare, "objects", NoShareManager())
+    operations: list[tuple[str, object]] = []
+    _patch_storage_context(monkeypatch, operations, _StorageTestBucket(operations))
+    stranger = SupabaseUser(OTHER_USER, "stranger@example.test", {})
+    object.__setattr__(stranger, "_verified", True)
+
+    with pytest.raises(ValueError, match="Template file is not available"):
+        storage_services.download_template_file(SimpleNamespace(), stranger, template_id)
+
+    assert operations == []
 
 
 def _storage_test_user() -> SupabaseUser:

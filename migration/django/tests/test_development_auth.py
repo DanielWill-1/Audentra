@@ -50,7 +50,7 @@ def test_authenticated_password_change_is_csrf_protected_and_signs_out() -> None
 
 
 @pytest.mark.django_db
-def test_signup_only_needs_email_and_matching_password_and_supports_htmx() -> None:
+def test_signup_requires_terms_consent_and_supports_htmx() -> None:
     client = Client(enforce_csrf_checks=True)
     page = client.get("/signup/")
     assert b'hx-boost="true"' in page.content
@@ -73,6 +73,10 @@ def test_signup_only_needs_email_and_matching_password_and_supports_htmx() -> No
         }
         assert client.post("/signup/", values).status_code == 403
         auth.return_value.sign_up.assert_not_called()
+        no_consent = client.post("/signup/", values, HTTP_X_CSRFTOKEN=csrf)
+        assert no_consent.status_code == 400
+        auth.return_value.sign_up.assert_not_called()
+        values["accepted_terms"] = "on"
         signed_up = client.post("/signup/", values, HTTP_X_CSRFTOKEN=csrf, HTTP_HX_REQUEST="true")
     assert signed_up["HX-Redirect"] == "/auth/session/"
     assert client.session[AUTH_SESSION_KEY]["subject"] == SUBJECT
@@ -101,6 +105,7 @@ def test_signup_does_not_start_session_when_profile_provisioning_fails() -> None
                 "email": USER["email"],
                 "password": "secure passphrase",
                 "confirm_password": "secure passphrase",
+                "accepted_terms": "on",
             },
         )
 
@@ -118,6 +123,7 @@ def test_signup_does_not_claim_success_when_confirmation_has_been_reenabled() ->
                 "email": USER["email"],
                 "password": "secure passphrase",
                 "confirm_password": "secure passphrase",
+                "accepted_terms": "on",
             },
         )
     assert response.status_code == 503

@@ -137,3 +137,17 @@ def event_stats(user: SupabaseUser) -> dict[str, int]:
             "upcoming": counts["upcoming"] or 0,
             "highPriority": counts["high_priority"] or 0,
         }
+
+
+def manage_event_stats(user: SupabaseUser) -> dict[str, int]:
+    """Return all-time status totals shown on the schedule management page."""
+    with rls_context(user):
+        require_rls_context()
+        counts = ScheduledEvent.objects.using("supabase").aggregate(
+            total=Count("id"),
+            scheduled=Count("id", filter=Q(status="scheduled")),
+            completed=Count("id", filter=Q(status="completed")),
+            cancelled=Count("id", filter=Q(status="cancelled")),
+            high_priority=Count("id", filter=Q(priority="high")),
+        )
+        return {name: count or 0 for name, count in counts.items()}

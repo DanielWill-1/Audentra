@@ -1,15 +1,25 @@
 {% extends "accounts/base.html" %}
 {% block title %}Sign in · Audentra{% endblock %}
+{% block body_class %}auth-login-page{% endblock %}
 {% block content %}
-<h1>Sign in</h1>
-<p class="help">Sign in to your Audentra account.</p>
-{% if error %}<p class="error" role="alert">{{ error }}</p>{% endif %}
-<form method="post">{% csrf_token %}<input type="hidden" name="next" value="{{ next }}">
-  {{ form.non_field_errors }}
-  <label for="id_email">Email</label>{{ form.email }}{{ form.email.errors }}
-  <label for="id_password">Password</label>{{ form.password }}{{ form.password.errors }}
-  <label>{{ form.remember_me }} Keep me signed in</label>
-  <button type="submit">Sign in</button>
-</form>
-<nav><a href="{% url 'forgot-password' %}">Forgot password?</a><a href="{% url 'signup' %}">Create an account</a></nav>
+<div class="login-shell">
+  <a class="login-brand" href="/" aria-label="Audentra home"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span>Audentra</span></a>
+  <h1>Welcome back</h1>
+  <p class="login-subtitle">Sign in to access the hosted Audentra demo.</p>
+  {% if error %}<p class="login-error" role="alert">{{ error }}</p>{% endif %}
+  {% if form.non_field_errors %}<div class="login-error" role="alert">{{ form.non_field_errors }}</div>{% endif %}
+  <section class="login-panel" aria-label="Sign in options">
+    <button class="google-button" type="button" disabled aria-describedby="google-unavailable"><svg class="google-mark" viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M23.49 12.27c0-.79-.07-1.54-.19-2.27H12v4.51h6.47c-.29 1.48-1.14 2.73-2.4 3.58v3h3.86c2.26-2.09 3.56-5.17 3.56-8.82z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.86-3c-1.08.72-2.45 1.16-4.07 1.16-3.13 0-5.78-2.11-6.73-4.96H1.29v3.09C3.26 21.3 7.31 24 12 24z"/><path fill="#FBBC05" d="M5.27 14.29c-.25-.72-.38-1.49-.38-2.29s.14-1.57.38-2.29V6.62H1.29C.47 8.24 0 10.06 0 12s.47 3.76 1.29 5.38l3.98-3.09z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.26 2.7 1.29 6.62l3.98 3.09C6.22 6.86 8.87 4.75 12 4.75z"/></svg><span>Continue with Google</span></button>
+    <p id="google-unavailable" class="provider-note">Google sign-in is unavailable on this development site.</p>
+    <div class="login-divider"><span>or continue with email</span></div>
+    <form method="post" data-submit-once>{% csrf_token %}<input type="hidden" name="next" value="{{ next }}">
+      <div class="login-field"><label for="id_email">Email</label>{{ form.email }}{{ form.email.errors }}</div>
+      <div class="login-field"><div class="login-password-row"><label for="id_password">Password</label><a href="{% url 'forgot-password' %}">Forgot password?</a></div><div class="login-password-control">{{ form.password }}<button class="password-toggle" type="button" data-password-toggle="id_password">Show password</button></div>{{ form.password.errors }}</div>
+      <label class="login-remember">{{ form.remember_me }}<span>Keep me signed in</span></label>
+      <button class="login-submit" type="submit">Sign in</button>
+    </form>
+  </section>
+  <p class="login-footer">Don’t have an account? <a href="{% url 'signup' %}">Create account</a></p>
+  <p class="login-github"><a href="https://github.com/DanielWill-1/Audentra" target="_blank" rel="noopener noreferrer">View Audentra on GitHub →</a></p>
+</div>
 {% endblock %}

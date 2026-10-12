@@ -1,5 +1,10 @@
 # P7 source-to-Django differences and accepted boundaries
 
+> **Current disposition - 2026-10-13:** SR-1 through SR-4 are closed. Source mappings, P4/P5 boundaries, the repaired W3/W7 layouts, and the six timezone results are recorded in [P7 finding closeout](P7_SR_CLOSEOUT_2026-10-13.md). The dated difference entries below preserve earlier snapshots.
+
+
+> **Review-time correction - 2026-10-13:** At the time of the independent review, P7 acceptance was open for SR-1 through SR-4. The later [P7 finding closeout](P7_SR_CLOSEOUT_2026-10-13.md) closed them; P8 deterministic acceptance is complete. Use the [current handoff](../../HANDOFF_2026-10-13_033145_IST.md) and [P7/P8 matrix](P7_P8_CLOSURE_MATRIX.md) for present status.
+
 **Review correction — 2026-10-12 02:03:54 IST:** This is an implementation difference record, not blanket owner acceptance of every mismatch. Enforced application comparisons and requirement dispositions remain open per [P7 review](P7_REVIEW_2026-10-12.md).
 
 This record distinguishes deliberate development behavior from unfinished product integrations. Source references and Django captures are kept wave-by-wave under [evidence](evidence/); screenshots were inspected at 1440×900 and 390×844. No pixel-parity score or unapproved image threshold is claimed.
@@ -19,3 +24,7 @@ This record distinguishes deliberate development behavior from unfinished produc
 ## Follow-up gates
 
 P9 owns full release/parity acceptance, physical-device capture, and live speech/provider evidence. A P7 route-level private Storage transfer remains untested even though P5's hosted service/RLS and exact object cleanup passed. Email recovery, production signup/Auth policy, OAuth, credential follow-up, deployment/soak, and legacy retirement remain explicitly outside P7/P8.
+
+## 2026-10-13 closeout disposition
+
+The final enforced source/control comparisons passed for W1–W7, including required section/control/destination/field negative controls. The W5 hosted route run now transfers private Storage bytes and proves replacement, access revocation and deletion; UUID sharing and review transitions passed with owner/editor/viewer/admin/reviewer/unrelated principals. The earlier row above describing route-level file transfer as untested records the pre-closeout state and is superseded by this dated result: docs/pages/evidence/w5/closeout-20261012/hosted-route-results.json. Physical device and live-provider differences remain P9 work.

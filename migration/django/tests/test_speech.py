@@ -138,6 +138,41 @@ def test_google_stt_request_preserves_mounted_route_configuration(
     mock_client.close.assert_called_once()
 
 
+@pytest.mark.parametrize(
+    ("mime_type", "encoding", "sample_rate"),
+    [
+        ("audio/webm;codecs=opus", "WEBM_OPUS", 48000),
+        ("audio/ogg;codecs=opus", "OGG_OPUS", 48000),
+    ],
+)
+def test_google_stt_normalizes_supported_opus_mime_parameters(
+    mime_type: str, encoding: str, sample_rate: int
+) -> None:
+    mock_client = SimpleNamespace(
+        recognize=Mock(return_value=speech_v1.RecognizeResponse()), close=Mock()
+    )
+    with (
+        patch("apps.speech.backends.google._credentials", return_value=None),
+        patch("apps.speech.backends.google.speech_v1.SpeechClient", return_value=mock_client),
+    ):
+        assert google.transcribe(b"captured-bytes", mime_type) == ""
+    request = mock_client.recognize.call_args.kwargs["request"]
+    assert request.audio.content == b"captured-bytes"
+    assert request.config.encoding.name == encoding
+    assert request.config.sample_rate_hertz == sample_rate
+
+
+def test_google_stt_rejects_unknown_mime_parameters_before_provider_access() -> None:
+    with (
+        patch("apps.speech.backends.google._credentials") as credentials,
+        patch("apps.speech.backends.google.speech_v1.SpeechClient") as client,
+        pytest.raises(google.SpeechProviderError, match="Unsupported audio MIME parameters"),
+    ):
+        google.transcribe(b"captured-bytes", "audio/webm;codecs=vorbis")
+    credentials.assert_not_called()
+    client.assert_not_called()
+
+
 def test_tts_ascii_filter_and_terminal_punctuation() -> None:
     assert clean_tts_text("  Héllo—   world\u00a0!") == "Hllo world !"
     assert clean_tts_text("Already finished?") == "Already finished?"

@@ -1,9 +1,11 @@
 # P8 media repair and integration closeout
 
-**Archive:** Previous repository-root prompt, superseded by the owner-requested combined [P7/P8 closure prompt](../../prompt.md) on 2026-10-12 02:19:14 IST. Embedded repository paths retain their original root context; local Markdown links below are rebased for this archive location. This draft was not executed.
+**Archive:** Previous repository-root prompt, superseded by the owner-requested combined [P7/P8 closure prompt](../../prompt.md) on 2026-10-12 02:19:14 IST. This standalone draft was not executed verbatim; its deterministic repair scope was completed under the combined prompt. Embedded paths retain their original root context, and local links are rebased for this archive.
+
+**Later execution status:** The deterministic repair scope was completed under the combined [P7/P8 closeout prompt](../pages/P7_P8_CLOSEOUT_PROMPT.md). P8 device/provider checks remain NOT RUN in P9; see the [current handoff](../../HANDOFF_2026-10-13_033145_IST.md).
 
 **Prepared:** 2026-10-12 02:03:54 IST (Asia/Kolkata, UTC+05:30).
-**Status:** Ready for the next implementation request; not executed by the review turn.
+**Status:** Completed under the combined P7/P8 prompt. P8 device/provider checks remain NOT RUN in P9; see the [current P8 report](P8_REPORT.md) and [handoff](../../HANDOFF_2026-10-13_033145_IST.md).
 **Scope:** Finish the existing P8 bridge and its deterministic actual-page integration. P8 already exists; preserve it and repair the review findings. P7 has seven waves, with P8 as a separate prerequisite.
 **Baseline:** HEAD `acba9564752f1c121b81d17f59fca4d3f2b9b0f8` plus the preserved dirty tree. All 25 manifest routes have local owners; normal legacy fallback is zero. Fresh review passed 145 pytest tests and Django check. P7/P8 unconditional completion claims were superseded by dated reviews.
 

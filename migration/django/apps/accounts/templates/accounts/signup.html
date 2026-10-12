@@ -1,17 +1,31 @@
 {% extends "accounts/base.html" %}
 {% block title %}Create account · Audentra{% endblock %}
+{% block body_class %}auth-signup-page{% endblock %}
 {% block content %}
-<h1>Create your account</h1>
-<p class="help">Use your email address and set a password with at least eight characters.</p>
-{% if error %}<p class="error" role="alert">{{ error }}</p>{% endif %}
-<form method="post">{% csrf_token %}
-  {{ form.non_field_errors }}
-  <label for="id_first_name">First name</label>{{ form.first_name }}{{ form.first_name.errors }}
-  <label for="id_last_name">Last name</label>{{ form.last_name }}{{ form.last_name.errors }}
-  <label for="id_email">Email</label>{{ form.email }}{{ form.email.errors }}
-  <label for="id_password">Password</label>{{ form.password }}{{ form.password.errors }}
-  <label for="id_confirm_password">Confirm password</label>{{ form.confirm_password }}{{ form.confirm_password.errors }}
-  <button type="submit">Create account</button>
-</form>
-<nav><a href="{% url 'login' %}">Already have an account? Sign in</a></nav>
+<div class="login-shell signup-shell">
+  <a class="login-brand" href="/" aria-label="Audentra home"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><span>Audentra</span></a>
+  <h1>Create your account</h1>
+  <p class="login-subtitle">Use the hosted Audentra demo.</p>
+  {% if error %}<p class="login-error" role="alert">{{ error }}</p>{% endif %}
+  {% if form.non_field_errors %}<div class="login-error" role="alert">{{ form.non_field_errors }}</div>{% endif %}
+  <section class="login-panel" aria-label="Create account options">
+    <button class="google-button" type="button" disabled aria-describedby="google-unavailable"><svg class="google-mark" viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M23.49 12.27c0-.79-.07-1.54-.19-2.27H12v4.51h6.47c-.29 1.48-1.14 2.73-2.4 3.58v3h3.86c2.26-2.09 3.56-5.17 3.56-8.82z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.86-3c-1.08.72-2.45 1.16-4.07 1.16-3.13 0-5.78-2.11-6.73-4.96H1.29v3.09C3.26 21.3 7.31 24 12 24z"/><path fill="#FBBC05" d="M5.27 14.29c-.25-.72-.38-1.49-.38-2.29s.14-1.57.38-2.29V6.62H1.29C.47 8.24 0 10.06 0 12s.47 3.76 1.29 5.38l3.98-3.09z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.26 2.7 1.29 6.62l3.98 3.09C6.22 6.86 8.87 4.75 12 4.75z"/></svg><span>Continue with Google</span></button>
+    <p id="google-unavailable" class="provider-note">Google sign-in is unavailable on this development site.</p>
+    <div class="login-divider"><span>or create account with email</span></div>
+    <form method="post" data-submit-once>{% csrf_token %}
+      {{ form.non_field_errors }}
+      <div class="signup-name-fields">
+        <div class="login-field"><label for="id_first_name">First name</label>{{ form.first_name }}{{ form.first_name.errors }}</div>
+        <div class="login-field"><label for="id_last_name">Last name</label>{{ form.last_name }}{{ form.last_name.errors }}</div>
+      </div>
+      <div class="login-field"><label for="id_email">Email</label>{{ form.email }}{{ form.email.errors }}</div>
+      <div class="login-field"><label for="id_password">Password</label><div class="signup-password-control">{{ form.password }}<button class="password-toggle" type="button" data-password-toggle="id_password">Show password</button></div>{{ form.password.errors }}</div>
+      <div class="login-field"><label for="id_confirm_password">Confirm password</label><div class="signup-password-control">{{ form.confirm_password }}<button class="password-toggle" type="button" data-password-toggle="id_confirm_password">Show password</button></div>{{ form.confirm_password.errors }}</div>
+      <label class="terms-consent">{{ form.accepted_terms }}<span>I agree to the <a href="/terms">Terms of Service</a> and <a href="/privacy">Privacy Policy</a>.</span></label>{{ form.accepted_terms.errors }}
+      <button class="signup-submit" type="submit">Create account</button>
+    </form>
+  </section>
+  <p class="signup-footer">Already have an account? <a href="{% url 'login' %}" aria-label="Already have an account? Sign in">Sign in</a></p>
+  <p class="login-github"><a href="https://github.com/DanielWill-1/Audentra" target="_blank" rel="noopener noreferrer">View Audentra on GitHub →</a></p>
+</div>
 {% endblock %}

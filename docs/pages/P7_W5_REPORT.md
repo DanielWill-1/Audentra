@@ -9,3 +9,7 @@ The browser fixture verifies the builder's required-field control and serialized
 The browser fixture remains isolated and does not persist to Supabase. The hosted route test did not upload or download a real Storage object; the existing hosted P5 service/RLS checks remain the evidence for private file authorization and storage behavior.
 
 See [verification](P7_W5_VERIFICATION.md), [assets](P7_W5_ASSETS.md), and [route ownership](P7_W5_ROUTE_OWNERSHIP.json).
+
+## 2026-10-13 combined P7/P8 closeout
+
+Recorded browser run: PASS. Full P7 acceptance is reopened by [review](P7_P8_SESSION_REVIEW_2026-10-13.md) for uncovered source-parity requirements; W6 also has a reproduced settings bug. The current W5 run recorded 2 route/page captures and 2 exercised interactions using actual Django application plus hosted Storage/share/review probe. Desktop 1440x900 and mobile 390x844 checks reported no overflow or unexpected browser errors. Evidence: docs/pages/evidence/w5/closeout-20261012/django/ and docs/pages/evidence/w5/closeout-20261012/hosted-route-results.json The complete combined results and boundaries are in docs/pages/P7_P8_CLOSURE_REPORT.md and docs/pages/P7_P8_CLOSURE_MATRIX.md.

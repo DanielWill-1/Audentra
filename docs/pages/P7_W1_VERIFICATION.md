@@ -52,3 +52,7 @@ The compiled fallback proof is separate from the current-source Vite baseline. T
 The complete [W1 review corrections](P7_W1_REVIEW.md#dated-disposition--2026-10-12) now pass. A fresh Django browser run captured 22 viewports and six interactions in [post-wave-review-20261012](evidence/w1/post-wave-review-20261012/django/). It reused the preserved React source references. The current route-ownership rollback test also covers the protected `/dashboard` path and restoration; its transport response is synthetic MockTransport evidence, separate from the preserved compiled `/features` browser proof. Aggregate test/build/browser evidence is in [P7_VERIFICATION.md](P7_VERIFICATION.md).
 
 W1's functional implementation is delivered. The later [W1 review](P7_W1_REVIEW.md) found four assertion/evidence gaps without reproducing a runtime failure. They are assigned to root [prompt.md](../../prompt.md), which now covers all remaining P7 waves plus P8 continuously when execution is requested. W2-W7/P8 have not started; the original W1-only brief is archived.
+
+## 2026-10-13 combined P7/P8 closeout
+
+Final closeout disposition: PASS. The current W1 run recorded 22 route/page captures and 6 exercised interactions using source/page regression. Desktop 1440x900 and mobile 390x844 checks reported no overflow or unexpected browser errors. Evidence: docs/pages/evidence/w1/closeout-20261012/ The complete combined results and boundaries are in docs/pages/P7_P8_CLOSURE_REPORT.md and docs/pages/P7_P8_CLOSURE_MATRIX.md.

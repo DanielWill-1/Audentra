@@ -1,0 +1,52 @@
+{
+  "reviewed_at": "2026-10-12T19:30:56.002Z",
+  "boundary": "local synthetic browser fixtures; no hosted writes/providers",
+  "findings": [
+    {
+      "id": "SR-1",
+      "source_guard": "if (contract.source_heading) {\n    assert.equal(sourceInfo.heading, contract.source_heading, `${route} source heading changed without a reviewed contract`);\n  }",
+      "source_mutations_not_rejected": [
+        "removed_source_sections",
+        "removed_source_controls",
+        "removed_source_destinations",
+        "changed_source_fields",
+        "removed_source_copy"
+      ],
+      "existing_toy_negative_controls": {
+        "passed": true,
+        "removed_section": "rejected",
+        "removed_control": "rejected",
+        "removed_destination": "rejected",
+        "changed_field": "rejected"
+      },
+      "limit": "executes the exact source-side guard against recorded source metadata; not a whole Playwright rerun with edited source files"
+    },
+    {
+      "id": "SR-3a",
+      "entered_duration": 0,
+      "input_min": "1",
+      "saved_duration": 0,
+      "status": "Settings saved in this browser."
+    },
+    {
+      "id": "SR-3b",
+      "imported_start": "25:99",
+      "rendered_start": "",
+      "saved_hours": {
+        "start": "",
+        "end": "17:00"
+      },
+      "import_status": "Settings imported into this form. Save settings to keep them.",
+      "save_status": "Settings saved in this browser."
+    },
+    {
+      "id": "OBS-1",
+      "synthetic_persisted_page_events": {
+        "before": false,
+        "after": true
+      },
+      "limit": "does not prove browser BFCache eligibility or an actual back/forward restoration; P9 must exercise real navigation"
+    }
+  ],
+  "status": "review findings reproduced"
+}

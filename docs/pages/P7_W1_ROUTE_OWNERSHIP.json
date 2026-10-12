@@ -152,5 +152,14 @@
                        "category":  "application",
                        "owner":  "legacy-fallback"
                    }
-               ]
+               ],
+    "closeout_verification": {
+        "verified_at": "2026-10-13",
+        "status": "pass",
+        "page_captures": 22,
+        "interactions": 6,
+        "viewport_review": ["1440x900", "390x844"],
+        "evidence": "docs/pages/evidence/w1/closeout-20261012/",
+        "aggregate_closeout": "docs/pages/P7_P8_CLOSURE_REPORT.md"
+    }
 }

@@ -1,12 +1,12 @@
 # P7 complete page migration and P8 media bridge — master execution brief
 
-**Updated:** 2026-10-12
-**Status:** Complete. P7 W1–W7, W1 review corrections, P8, all 25 local route owners, aggregate reports and final verification were completed on 2026-10-12. The aggregate gate passed 145 tests, Django/mypy/Ruff/static checks, 50 desktop/mobile captures, 14 interactions, 12 deterministic media checks, and the hosted W5/W6 route probe with exact fixture cleanup. See [P7_REPORT.md](docs/pages/P7_REPORT.md) and [P7_VERIFICATION.md](docs/pages/P7_VERIFICATION.md).
+**Original update:** 2026-10-12
+**Status at the 2026-10-12 snapshot:** This brief recorded the then-current completion claim and its 145-test/50-capture evidence. The 2026-10-13 review reopened P7 SR-1 through SR-4; the later closeout closed those findings, and P8 deterministic acceptance is complete. See the [current P7/P8 matrix](P7_P8_CLOSURE_MATRIX.md) and [handoff](../../HANDOFF_2026-10-13_033145_IST.md).
 **Scope:** One continuous task covering the seven P7 waves and the required P8 bridge. Keep the existing seven P7 wave names; P8 is a separate phase, not W8.
-**Authority:** The owner authorized the complete all-wave brief. This execution record documents completion; P9–P11 remain separate phases and are not authorized here.
+**Authority at that snapshot:** The owner authorized the all-wave P7/P8 brief. P9 was a separate phase at that time and was later authorized; P9 is now in progress. P10/P11 remain separate.
 **Snapshot:** HEAD acba9564752f1c121b81d17f59fca4d3f2b9b0f8 plus the existing uncommitted P5/P6/P7 work. Preserve all of it.
 
-**Execution evidence:** Current source HEAD remained `acba9564752f1c121b81d17f59fca4d3f2b9b0f8`; the pre-existing dirty tree was preserved. Final owner/view inventory is [P7_ROUTE_OWNERSHIP.json](docs/pages/P7_ROUTE_OWNERSHIP.json), and documented source-to-Django boundaries are in [P7_DIFFERENCES.md](docs/pages/P7_DIFFERENCES.md). Live speech/device, P9 release acceptance, P10 deployment/soak and P11 legacy retirement remain open.
+**Historical execution evidence:** At the time of this brief, source HEAD was `acba9564752f1c121b81d17f59fca4d3f2b9b0f8`. Later P7 closeout evidence and current route ownership are linked from the [P7 report](P7_REPORT.md) and [handoff](../../HANDOFF_2026-10-13_033145_IST.md). Physical-device/live-provider and P9 release acceptance remain open.
 
 ## Objective and execution order
 

@@ -24,3 +24,7 @@ This compiled fallback is a separate source from the current React/Vite developm
 ## Browser evidence
 
 The current-source captures are in [evidence/w1/legacy](evidence/w1/legacy/). Django route and interaction captures are in [evidence/w1/django](evidence/w1/django/). Full check results and the browser environment distinction are recorded in [P7_W1_VERIFICATION.md](P7_W1_VERIFICATION.md).
+
+## 2026-10-13 combined P7/P8 closeout
+
+Final closeout disposition: PASS. The current W1 run recorded 22 route/page captures and 6 exercised interactions using source/page regression. Desktop 1440x900 and mobile 390x844 checks reported no overflow or unexpected browser errors. Evidence: docs/pages/evidence/w1/closeout-20261012/ The complete combined results and boundaries are in docs/pages/P7_P8_CLOSURE_REPORT.md and docs/pages/P7_P8_CLOSURE_MATRIX.md.

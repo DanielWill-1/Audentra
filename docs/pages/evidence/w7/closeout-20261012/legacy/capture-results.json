@@ -1,0 +1,117 @@
+{
+  "captured_at": "2026-10-12T15:43:01.852Z",
+  "source": "Current React/Vite routes with intercepted Supabase Auth/PostgREST synthetic fixture responses",
+  "fixture_identity": "11111111-1111-4111-8111-111111111111 (non-hosted synthetic account)",
+  "fixture_data": "Patient intake template, schedule, and filled-form row; all dummy-origin requests are intercepted",
+  "base_url": "http://127.0.0.1:15573",
+  "browser": "148.0.7778.96",
+  "waves": {
+    "w7": {
+      "wave": "W7",
+      "pages": [
+        {
+          "route": "/AIVoiceAutoFill?template=33333333-3333-4333-8333-333333333333",
+          "viewport": {
+            "name": "desktop",
+            "width": 1440,
+            "height": 900
+          },
+          "response_status": 200,
+          "url": "/AIVoiceAutoFill?template=33333333-3333-4333-8333-333333333333",
+          "title": "Audentra — Open-source voice-to-structured-data",
+          "heading": "AI Voice Auto-Fill",
+          "document_width": 1440,
+          "viewport_width": 1440,
+          "console_errors": [],
+          "failed_requests": [],
+          "screenshot": "voice-autofill-desktop.png"
+        },
+        {
+          "route": "/AIVoiceAutoFill?template=33333333-3333-4333-8333-333333333333",
+          "viewport": {
+            "name": "mobile",
+            "width": 390,
+            "height": 844
+          },
+          "response_status": 200,
+          "url": "/AIVoiceAutoFill?template=33333333-3333-4333-8333-333333333333",
+          "title": "Audentra — Open-source voice-to-structured-data",
+          "heading": "AI Voice Auto-Fill",
+          "document_width": 390,
+          "viewport_width": 390,
+          "console_errors": [],
+          "failed_requests": [],
+          "screenshot": "voice-autofill-mobile.png"
+        },
+        {
+          "route": "/filledtemplates",
+          "viewport": {
+            "name": "desktop",
+            "width": 1440,
+            "height": 900
+          },
+          "response_status": 200,
+          "url": "/filledtemplates",
+          "title": "Audentra — Open-source voice-to-structured-data",
+          "heading": "Your Filled Templates",
+          "document_width": 1440,
+          "viewport_width": 1440,
+          "console_errors": [],
+          "failed_requests": [],
+          "screenshot": "filled-templates-desktop.png"
+        },
+        {
+          "route": "/filledtemplates",
+          "viewport": {
+            "name": "mobile",
+            "width": 390,
+            "height": 844
+          },
+          "response_status": 200,
+          "url": "/filledtemplates",
+          "title": "Audentra — Open-source voice-to-structured-data",
+          "heading": "Your Filled Templates",
+          "document_width": 390,
+          "viewport_width": 390,
+          "console_errors": [],
+          "failed_requests": [],
+          "screenshot": "filled-templates-mobile.png"
+        },
+        {
+          "route": "/activitylog",
+          "viewport": {
+            "name": "desktop",
+            "width": 1440,
+            "height": 900
+          },
+          "response_status": 200,
+          "url": "/activitylog",
+          "title": "Audentra — Open-source voice-to-structured-data",
+          "heading": "Activity Log",
+          "document_width": 1440,
+          "viewport_width": 1440,
+          "console_errors": [],
+          "failed_requests": [],
+          "screenshot": "activity-log-desktop.png"
+        },
+        {
+          "route": "/activitylog",
+          "viewport": {
+            "name": "mobile",
+            "width": 390,
+            "height": 844
+          },
+          "response_status": 200,
+          "url": "/activitylog",
+          "title": "Audentra — Open-source voice-to-structured-data",
+          "heading": "Activity Log",
+          "document_width": 390,
+          "viewport_width": 390,
+          "console_errors": [],
+          "failed_requests": [],
+          "screenshot": "activity-log-mobile.png"
+        }
+      ]
+    }
+  }
+}

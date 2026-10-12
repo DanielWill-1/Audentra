@@ -5,7 +5,9 @@ const { chromium } = require('playwright');
 
 const root = path.resolve(__dirname, '..', '..', '..');
 const mediaScript = path.join(__dirname, '..', 'static', 'js', 'p7_media.js');
-const outputDir = path.join(root, 'docs', 'services', 'evidence', 'p8');
+const outputDir = process.env.P8_EVIDENCE_DIR
+  ? path.resolve(process.env.P8_EVIDENCE_DIR)
+  : path.join(root, 'docs', 'services', 'evidence', 'p8', 'closeout-20261012');
 const djangoBase = process.env.P7_DJANGO_BASE_URL || 'http://127.0.0.1:8875';
 const evidence = {
   captured_at: new Date().toISOString(),
@@ -46,13 +48,20 @@ async function setupPage(browser, options = {}) {
       revokedUrls: [],
       recorders: [],
       playCalls: 0,
-      resolveMedia: null,
+      mediaResolvers: [],
+      streams: [],
     };
     window.__p8 = fixture;
 
-    const makeStream = () => ({
-      getTracks: () => [{ stop: () => { fixture.stoppedTracks += 1; } }],
-    });
+    const makeStream = () => {
+      const stream = {
+        tracks: [{ stopped: false, stop() { this.stopped = true; fixture.stoppedTracks += 1; } }],
+        getTracks() { return this.tracks; },
+      };
+      fixture.streams.push(stream);
+      return stream;
+    };
+    fixture.makeStream = makeStream;
     Object.defineProperty(navigator, 'mediaDevices', {
       configurable: true,
       value: config.noMediaDevices ? undefined : {
@@ -67,7 +76,7 @@ async function setupPage(browser, options = {}) {
             return Promise.reject(error);
           }
           if (fixture.mode === 'pending') {
-            return new Promise((resolve) => { fixture.resolveMedia = resolve; });
+            return new Promise((resolve) => { fixture.mediaResolvers.push(resolve); });
           }
           return Promise.resolve(makeStream());
         },
@@ -89,13 +98,19 @@ async function setupPage(browser, options = {}) {
           fixture.recorders.push(this);
         }
         start() { this.state = 'recording'; }
+        emitData(size = fixture.bytes) {
+          const data = new Blob([new Uint8Array(size)], { type: this.mimeType });
+          this.dispatchEvent(Object.assign(new Event('dataavailable'), { data }));
+        }
         stop() {
           if (this.state === 'inactive') return;
           this.state = 'inactive';
-          const data = this.mimeType ? new Blob([new Uint8Array(fixture.bytes)], { type: this.mimeType }) : new Blob();
-          this.dispatchEvent(Object.assign(new Event('dataavailable'), { data }));
-          queueMicrotask(() => this.dispatchEvent(new Event('stop')));
+          this.emitData();
+          const finish = () => this.dispatchEvent(new Event('stop'));
+          if (config.deferStop) fixture.pendingStop = finish;
+          else queueMicrotask(finish);
         }
+        emitError() { this.dispatchEvent(Object.assign(new Event('error'), { error: new Error('Synthetic recorder failure') })); }
       };
     }
 
@@ -150,19 +165,99 @@ async function main() {
     }
 
     page = await setupPage(browser, { bytes: 0 });
+    let emptyUploads = 0;
+    await page.route('**/api/transcribe', async (route) => {
+      emptyUploads += 1;
+      await route.fulfill({ status: 200, contentType: 'application/json', body: '{"transcript":"stale"}' });
+    });
     await page.getByRole('button', { name: 'Record', exact: true }).click();
     await page.getByRole('button', { name: 'Stop' }).click();
     await page.locator('[data-media-status]').filter({ hasText: /recording was empty/i }).waitFor();
     assert.equal(await page.evaluate(() => window.__p8.stoppedTracks), 1);
     assert.equal(await page.getByRole('button', { name: 'Transcribe recording' }).isDisabled(), true);
+    assert.equal(await page.getByRole('button', { name: 'Stop' }).isDisabled(), true);
+    assert.equal(await page.getByRole('button', { name: 'Record', exact: true }).isDisabled(), false);
+    assert.equal(emptyUploads, 0);
     evidence.checks.push('empty recording is rejected and microphone tracks stop');
     await page.close();
 
+    page = await setupPage(browser, { mode: 'pending' });
+    await page.getByRole('button', { name: 'Record', exact: true }).click();
+    await page.evaluate(() => document.querySelector('[data-record-start]').click());
+    assert.equal(await page.evaluate(() => window.__p8.getUserMediaCalls), 1);
+    assert.equal(await page.getByRole('button', { name: 'Record', exact: true }).isDisabled(), true);
+    await page.close();
+
+    page = await setupPage(browser, { bytes: 4, deferStop: true });
+    await page.getByRole('button', { name: 'Record', exact: true }).click();
+    await page.getByRole('button', { name: 'Stop' }).click();
+    await page.getByRole('button', { name: 'Reset recording' }).click();
+    await page.getByRole('button', { name: 'Record', exact: true }).click();
+    await page.evaluate(() => window.__p8.recorders[0].emitData(99));
+    await page.evaluate(() => window.__p8.pendingStop());
+    assert.equal(await page.evaluate(() => window.__p8.streams[1].tracks[0].stopped), false);
+    assert.equal(await page.evaluate(() => window.__p8.recorders[1].state), 'recording');
+    await page.getByRole('button', { name: 'Stop' }).click();
+    await page.evaluate(() => window.__p8.pendingStop());
+    await page.locator('[data-media-status]').filter({ hasText: /recording ready/i }).waitFor();
+    assert.equal(await page.evaluate(() => window.__p8.createdUrls.at(-1).size), 4);
+    await page.evaluate(() => window.dispatchEvent(new Event('pagehide')));
+    assert.equal(await page.evaluate(() => window.__p8.streams[1].tracks[0].stopped), true);
+    evidence.checks.push('delayed data and stop events from a discarded recorder cannot mutate the newer attempt');
+    await page.close();
+
+    page = await setupPage(browser, { mode: 'pending' });
+    await page.getByRole('button', { name: 'Record', exact: true }).click();
+    await page.waitForFunction(() => window.__p8.mediaResolvers.length === 1);
+    await page.getByRole('button', { name: 'Reset recording' }).click();
+    await page.getByRole('button', { name: 'Record', exact: true }).click();
+    await page.waitForFunction(() => window.__p8.mediaResolvers.length === 2);
+    await page.evaluate(() => window.__p8.mediaResolvers[1](window.__p8.makeStream()));
+    await page.waitForFunction(() => window.__p8.recorders.length === 1);
+    await page.evaluate(() => window.__p8.mediaResolvers[0](window.__p8.makeStream()));
+    await page.waitForFunction(() => window.__p8.stoppedTracks === 1);
+    assert.equal(await page.evaluate(() => window.__p8.recorders[0].stream.getTracks()[0].stopped), false);
+    await page.evaluate(() => window.dispatchEvent(new Event('pagehide')));
+    assert.equal(await page.evaluate(() => window.__p8.recorders[0].stream.getTracks()[0].stopped), true);
+    evidence.checks.push('out-of-order permission results dispose only their own streams');
+    await page.close();
+
+    page = await setupPage(browser, { bytes: 4 });
+    let failedCaptureUploads = 0;
+    await page.route('**/api/transcribe', async (route) => {
+      failedCaptureUploads += 1;
+      await route.fulfill({ status: 200, contentType: 'application/json', body: '{"transcript":"stale"}' });
+    });
+    await page.getByRole('button', { name: 'Record', exact: true }).click();
+    await page.evaluate(() => window.__p8.recorders[0].emitError());
+    await page.locator('[data-media-status]').filter({ hasText: /recording failed/i }).waitFor();
+    assert.equal(await page.getByRole('button', { name: 'Stop' }).isDisabled(), true);
+    assert.equal(await page.getByRole('button', { name: 'Record', exact: true }).isDisabled(), false);
+    assert.equal(await page.getByRole('button', { name: 'Transcribe recording' }).isDisabled(), true);
+    assert.equal(await page.evaluate(() => window.__p8.streams[0].tracks[0].stopped), true);
+    assert.equal(failedCaptureUploads, 0);
+    await page.getByRole('button', { name: 'Record', exact: true }).click();
+    await page.getByRole('button', { name: 'Stop' }).click();
+    await page.locator('[data-media-status]').filter({ hasText: /recording ready/i }).waitFor();
+    assert.equal(await page.getByRole('button', { name: 'Transcribe recording' }).isDisabled(), false);
+    assert.equal(failedCaptureUploads, 0);
+    evidence.checks.push('asynchronous recorder error cleans its attempt, restores controls, and permits a clean retry');
+    await page.close();
+
     page = await setupPage(browser, { bytes: 12 });
+    let oversizedUploads = 0;
+    await page.route('**/api/transcribe', async (route) => {
+      oversizedUploads += 1;
+      await route.fulfill({ status: 200, contentType: 'application/json', body: '{"transcript":"stale"}' });
+    });
     await page.getByRole('button', { name: 'Record', exact: true }).click();
     await page.getByRole('button', { name: 'Stop' }).click();
     await page.locator('[data-media-status]').filter({ hasText: /recording is too large/i }).waitFor();
     assert.equal(await page.evaluate(() => window.__p8.stoppedTracks), 1);
+    assert.equal(await page.getByRole('button', { name: 'Stop' }).isDisabled(), true);
+    assert.equal(await page.getByRole('button', { name: 'Record', exact: true }).isDisabled(), false);
+    assert.equal(await page.getByRole('button', { name: 'Transcribe recording' }).isDisabled(), true);
+    assert.equal(oversizedUploads, 0);
     evidence.checks.push('oversized recording is rejected before multipart submission');
     await page.close();
 
@@ -215,6 +310,34 @@ async function main() {
     await page.close();
 
     page = await setupPage(browser, { bytes: 4 });
+    await page.evaluate(() => {
+      window.__p8.pendingTranscript = null;
+      window.__p8.transcriptParsed = false;
+      window.fetch = () => new Promise((resolve) => {
+        window.__p8.pendingTranscript = () => resolve({
+          ok: true,
+          json: async () => {
+            window.__p8.transcriptParsed = true;
+            return { transcript: 'Stale transcript must not be inserted.' };
+          },
+        });
+      });
+    });
+    await page.getByRole('button', { name: 'Record', exact: true }).click();
+    await page.getByRole('button', { name: 'Stop' }).click();
+    await page.getByRole('button', { name: 'Transcribe recording' }).click();
+    await page.waitForFunction(() => typeof window.__p8.pendingTranscript === 'function');
+    await page.getByRole('button', { name: 'Reset recording' }).click();
+    await page.locator('[data-voice-message]').fill('Keep this draft.');
+    await page.evaluate(() => window.__p8.pendingTranscript());
+    await page.waitForFunction(() => window.__p8.transcriptParsed);
+    assert.equal(await page.locator('[data-voice-message]').inputValue(), 'Keep this draft.');
+    assert.equal(await status(page), 'Recording reset. Ready to record again.');
+    assert.equal(await page.getByRole('button', { name: 'Transcribe recording' }).isDisabled(), true);
+    evidence.checks.push('late transcription response after reset cannot insert text or report stale success');
+    await page.close();
+
+    page = await setupPage(browser, { bytes: 4 });
     await page.getByRole('button', { name: 'Record', exact: true }).click();
     await page.getByRole('button', { name: 'Stop' }).click();
     await page.locator('[data-media-status]').filter({ hasText: /recording ready/i }).waitFor();
@@ -264,11 +387,11 @@ async function main() {
 
     page = await setupPage(browser, { mode: 'pending' });
     await page.getByRole('button', { name: 'Record', exact: true }).click();
-    await page.waitForFunction(() => typeof window.__p8.resolveMedia === 'function');
+    await page.waitForFunction(() => window.__p8.mediaResolvers.length === 1);
     await page.getByRole('button', { name: 'Reset recording' }).click();
-    await page.evaluate(() => {
-      window.__p8.resolveMedia({ getTracks: () => [{ stop: () => { window.__p8.stoppedTracks += 1; } }] });
-    });
+    await page.evaluate(() => window.__p8.mediaResolvers[0]({
+      getTracks: () => [{ stop: () => { window.__p8.stoppedTracks += 1; } }],
+    }));
     await page.waitForFunction(() => window.__p8.stoppedTracks === 1);
     assert.equal(await page.evaluate(() => window.__p8.recorders.length), 0);
     evidence.checks.push('late microphone permission result is stopped after reset and cannot start stale recording');

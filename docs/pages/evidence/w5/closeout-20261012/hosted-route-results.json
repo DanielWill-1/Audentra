@@ -1,0 +1,162 @@
+{
+  "run": "P7 W5/W6 protected Django routes against the development shared pooler",
+  "route_waves": [
+    "W5",
+    "W6"
+  ],
+  "source": "Fresh synthetic Auth accounts; django_data RLS context; exact fixture cleanup",
+  "status": "passed",
+  "accounts_created": 3,
+  "emails_sent": 0,
+  "checks": [
+    "restricted_app_and_data_database_roles_verified",
+    "development_signup_requires_no_email_delivery",
+    "three_fresh_accounts_authenticated_through_django",
+    "template_creation_persisted_for_owner_only",
+    "django_session_route_uploads_private_storage_bytes",
+    "django_route_replacement_serves_current_object_and_no_store_response",
+    "replacement_route_removes_only_the_prior_private_object",
+    "template_duplicate_preserves_form_content",
+    "template_visibility_toggle_changes_shared_listing",
+    "public_template_visibility_does_not_grant_private_file_access",
+    "template_json_export_contains_saved_name_and_fields",
+    "viewer_reads_owner_shared_hidden_template",
+    "shared_viewer_reads_private_file_through_django_route",
+    "unrelated_account_cannot_download_private_file_through_django_route",
+    "viewer_edit_and_unrelated_delete_export_denied",
+    "owner_promoted_viewer_to_editor_through_route",
+    "editor_saved_template_content_through_route",
+    "editor_update_persisted_and_visible_to_owner",
+    "review_request_route_persists_pending_item",
+    "review_author_route_edits_own_content_and_owner_can_read_it",
+    "unrelated_account_cannot_read_review_content",
+    "review_author_cannot_moderate_own_status",
+    "template_owner_route_moderates_review_status",
+    "admin_manages_shares_without_template_edit_rights",
+    "admin_and_owner_revocation_restore_expected_visibility",
+    "revoked_recipient_cannot_download_private_file_through_django_route",
+    "revoked_and_unrelated_voice_extract_and_save_denied_before_provider_or_persistence",
+    "schedule_route_create_persisted_owner_scoped_event",
+    "schedule_management_route_reads_persisted_event",
+    "schedule_export_contains_persisted_event_content",
+    "schedule_route_delete_removed_exact_fixture",
+    "voice_review_save_route_persists_filled_record",
+    "filled_record_list_route_is_owner_scoped",
+    "unrelated_account_cannot_delete_filled_record",
+    "owner_route_deletes_exact_filled_record",
+    "owner_template_delete_route_cleans_template_and_private_object",
+    "owner_route_deletes_generated_duplicate"
+  ],
+  "admin_revoke_html_diagnostic": {
+    "hidden_template_in_route_list": false,
+    "public_duplicate_in_route_list": true,
+    "unique_name_text_remains_outside_template_card": true,
+    "name_prefix_belongs_to_public_duplicate": true,
+    "matching_text_element_paths": [
+      [
+        {
+          "tag": "html"
+        },
+        {
+          "tag": "body",
+          "class": "min-h-screen bg-background font-body text-on-surface antialiased"
+        },
+        {
+          "tag": "div",
+          "class": "app-frame flex min-h-screen bg-background"
+        },
+        {
+          "tag": "div",
+          "class": "min-w-0 flex-1"
+        },
+        {
+          "tag": "main",
+          "id": "main-content",
+          "class": "min-h-screen min-w-0 pt-14 md:pt-0"
+        },
+        {
+          "tag": "div",
+          "class": "mx-auto max-w-7xl space-y-7 px-4 py-8 sm:px-6 lg:px-8"
+        },
+        {
+          "tag": "section",
+          "class": "space-y-4"
+        },
+        {
+          "tag": "div",
+          "class": "grid gap-4 sm:grid-cols-2 xl:grid-cols-3"
+        },
+        {
+          "tag": "article",
+          "class": "card space-y-4 p-5"
+        },
+        {
+          "tag": "div",
+          "class": "flex flex-wrap items-start justify-between gap-3"
+        },
+        {
+          "tag": "div"
+        },
+        {
+          "tag": "div",
+          "class": "flex flex-wrap items-center gap-2"
+        },
+        {
+          "tag": "h3",
+          "class": "text-lg font-semibold"
+        }
+      ]
+    ],
+    "route_context_template_ids": {
+      "templates": [
+        "6c70db90-61ea-4506-85bd-5366f44e66af"
+      ],
+      "received_shares": [],
+      "sent_shares": [],
+      "review_queue": []
+    },
+    "fixture_template_ids": {
+      "hidden_shared_template": "fe58cac3-5a7f-43a4-ad4e-28688553f40d",
+      "public_duplicate": "6c70db90-61ea-4506-85bd-5366f44e66af"
+    }
+  },
+  "fixtures": {
+    "account_ids": [
+      "b23d7773-38fb-4ec4-b93d-d7a852ee78f7",
+      "ec727371-187e-4954-8d7f-c591bb7794cc",
+      "ace8dd35-468b-4b72-8b31-ea96383ed2ad"
+    ],
+    "template_ids": [
+      "6c70db90-61ea-4506-85bd-5366f44e66af",
+      "fe58cac3-5a7f-43a4-ad4e-28688553f40d"
+    ],
+    "share_ids": [
+      "fba08dc2-6ebd-4d8c-8d10-17dfe7f612d2",
+      "02ac9899-ad05-4195-819b-92e3b928dbf6"
+    ],
+    "schedule_ids": [
+      "d6857eb5-05ad-469b-bce1-4657ee857239"
+    ],
+    "review_ids": [
+      "87272a63-18f4-4ee9-87c4-648b2a92f99d"
+    ],
+    "filled_record_ids": [
+      "3de9312d-31dd-4c79-8f87-400ad7e18faf"
+    ],
+    "storage_object_paths": [
+      "templates/fe58cac3-5a7f-43a4-ad4e-28688553f40d/28790dd9-d979-4a86-a9b3-e1bbf98502cf.json",
+      "templates/fe58cac3-5a7f-43a4-ad4e-28688553f40d/9186124b-11e4-479b-9653-8367d1cbd4c5.json"
+    ]
+  },
+  "cleanup": {
+    "generated_shares_removed": true,
+    "generated_templates_removed": true,
+    "generated_reviews_removed": true,
+    "generated_filled_records_removed": true,
+    "generated_storage_objects_removed": true,
+    "generated_schedules_removed": true,
+    "generated_accounts_deleted": true,
+    "tracked_sessions_deleted": true
+  },
+  "cleanup_ok": true
+}

@@ -39,7 +39,7 @@ def _template(
 ) -> HttpResponse:
     response = render(request, template, context, status=status)
     response["Cache-Control"] = "no-store"
-    response["Referrer-Policy"] = "no-referrer"
+    response["Referrer-Policy"] = "same-origin"
     return response
 
 
@@ -165,6 +165,7 @@ def forgot_password(request: HttpRequest) -> HttpResponse:
         "accounts/message.html",
         {
             "title": "Email recovery unavailable",
+            "show_signup": True,
             "message": (
                 "Email-based forgotten-password recovery is not configured for this development "
                 "site. If you can sign in, use Change password on your account page."
@@ -177,11 +178,12 @@ def forgot_password(request: HttpRequest) -> HttpResponse:
 @require_GET
 def reset_password(request: HttpRequest) -> HttpResponse:
     # Recovery tokens are deliberately not consumed, rendered, or sent to the legacy site.
-    return _template(
+    response = _template(
         request,
         "accounts/message.html",
         {
             "title": "Reset link unavailable",
+            "show_signup": False,
             "message": (
                 "Password reset links are not active on this development site. "
                 "Return to sign in or use Change password after signing in."
@@ -189,6 +191,8 @@ def reset_password(request: HttpRequest) -> HttpResponse:
         },
         404,
     )
+    response["Referrer-Policy"] = "no-referrer"
+    return response
 
 
 @never_cache

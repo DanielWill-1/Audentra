@@ -4,7 +4,7 @@ import json
 import re
 from calendar import Calendar
 from collections.abc import Callable
-from datetime import date, datetime, time, timedelta
+from datetime import UTC, date, datetime, time, timedelta
 from typing import Any
 from urllib.parse import urlencode
 from uuid import UUID
@@ -22,9 +22,10 @@ from apps.voice import selectors as filled_selectors
 from apps.voice import services as voice_services
 from django.conf import settings
 from django.db import DatabaseError
-from django.http import HttpRequest, HttpResponse, HttpResponseNotAllowed
+from django.http import Http404, HttpRequest, HttpResponse, HttpResponseNotAllowed
 from django.shortcuts import redirect, render
 from django.urls import reverse
+from django.utils import timezone
 from django.views.decorators.http import require_http_methods, require_safe
 
 APPLICATION_PAGE_VIEWS: dict[str, Callable[[HttpRequest], HttpResponse]] = {}
@@ -46,7 +47,7 @@ def _guard(request: HttpRequest, route: str) -> tuple[SupabaseUser | None, HttpR
             status=503,
         )
         response["Cache-Control"] = "no-store"
-        response["Referrer-Policy"] = "no-referrer"
+        response["Referrer-Policy"] = "same-origin"
         return None, response
     user = _principal(request)
     if user is None:
@@ -66,7 +67,7 @@ def _page(
     values = {"active_route": route, **(context or {})}
     response = render(request, template, values, status=status)
     response["Cache-Control"] = "no-store"
-    response["Referrer-Policy"] = "no-referrer"
+    response["Referrer-Policy"] = "same-origin"
     return response
 
 
@@ -100,6 +101,55 @@ def _json_download(filename: str, payload: dict[str, Any]) -> HttpResponse:
     return response
 
 
+_EVENT_TYPE_LABELS = {
+    "form_review": "Form review",
+    "team_meeting": "Team meeting",
+    "training": "Training",
+    "maintenance": "Maintenance",
+    "other": "Other",
+}
+
+
+def _label_schedule_events(events: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    labeled = []
+    for event in events:
+        event_type = event.get("type")
+        type_label = (
+            _EVENT_TYPE_LABELS.get(event_type, "Other")
+            if isinstance(event_type, str)
+            else "Other"
+        )
+        labeled.append({**event, "type_label": type_label})
+    return labeled
+
+
+def _filter_schedule_events(
+    events: list[dict[str, Any]], query: str, event_type: str
+) -> list[dict[str, Any]]:
+    folded_query = query.casefold()
+    return [
+        event
+        for event in events
+        if (
+            not folded_query
+            or folded_query
+            in " ".join(
+                str(event.get(key, "")) for key in ("title", "description", "type_label")
+            ).casefold()
+        )
+        and (event_type == "all" or event.get("type") == event_type)
+    ]
+
+
+def _dashboard_stats(stats: dict[str, int]) -> dict[str, int]:
+    return {
+        "Total": stats.get("total", 0),
+        "Completed": stats.get("completed", 0),
+        "Upcoming": stats.get("upcoming", 0),
+        "High priority": stats.get("highPriority", 0),
+    }
+
+
 @require_http_methods(["GET", "POST"])
 def dashboard(request: HttpRequest) -> HttpResponse:
     route = "/dashboard"
@@ -128,17 +178,23 @@ def dashboard(request: HttpRequest) -> HttpResponse:
         else:
             return HttpResponseNotAllowed(["GET", "POST"])
 
-    context: dict[str, Any] = {"notice": notice, "error": error}
+    context: dict[str, Any] = {
+        "notice": notice,
+        "error": error,
+        "activity_key": f"voiceform_activity_{user.id}",
+    }
     try:
         context["profile"] = profile_selectors.get_profile(user)
         context["templates"] = template_selectors.list_templates(user, limit=6)
-        context["upcoming_events"] = schedule_selectors.upcoming_events(user, limit=5)
-        context["stats"] = schedule_selectors.event_stats(user)
+        context["upcoming_events"] = _label_schedule_events(
+            schedule_selectors.upcoming_events(user, limit=5)
+        )
+        context["stats"] = _dashboard_stats(schedule_selectors.event_stats(user))
     except (DatabaseError, ValueError):
         context["data_error"] = "Workspace data is temporarily unavailable."
         context.setdefault("templates", [])
         context.setdefault("upcoming_events", [])
-        context.setdefault("stats", {"total": 0, "completed": 0, "upcoming": 0, "highPriority": 0})
+        context.setdefault("stats", _dashboard_stats({}))
         if "profile" not in context:
             context["profile"] = {
                 "first_name": "",
@@ -177,6 +233,18 @@ def templates_page(request: HttpRequest) -> HttpResponse:
                 template_id = _as_uuid(request.POST.get("template_id", ""))
             if action == "create":
                 form_data = _json_object(request.POST.get("form_data", "{}"))
+                uploaded = request.FILES.get("template_file")
+                method = request.POST.get("creation_method") or (
+                    "upload" if uploaded is not None else "manual"
+                )
+                if method not in {"manual", "upload"}:
+                    raise ValueError("Choose manual builder or private file upload.")
+                if method == "manual" and (
+                    not isinstance(form_data.get("fields"), list) or not form_data["fields"]
+                ):
+                    raise ValueError("Add at least one field before creating a voice-enabled form.")
+                if method == "upload" and uploaded is None:
+                    raise ValueError("Choose a JSON, CSV, PDF, XLS, or XLSX file.")
                 created = template_services.create_template(
                     user,
                     {
@@ -187,10 +255,16 @@ def templates_page(request: HttpRequest) -> HttpResponse:
                         "visibility": request.POST.get("visibility", "visible"),
                     },
                 )
-                uploaded = request.FILES.get("template_file")
                 if uploaded is not None:
-                    storage_services.upload_template_file(request, user, created["id"], uploaded)
-                notice = "Template created."
+                    storage_result = storage_services.upload_template_file(
+                        request, user, created["id"], uploaded
+                    )
+                    if storage_result["cleanup_pending"]:
+                        notice = "Template created. Its private file needs cleanup."
+                    else:
+                        notice = "Template created. Private file saved."
+                else:
+                    notice = "Template created."
             elif action == "update":
                 assert template_id is not None
                 form_data = _json_object(request.POST.get("form_data", "{}"))
@@ -234,10 +308,8 @@ def templates_page(request: HttpRequest) -> HttpResponse:
             elif action == "delete":
                 assert template_id is not None
 
-                def delete_current_file(_path: str) -> None:
-                    deleted_file = storage_services.delete_template_file(request, user, template_id)
-                    if not deleted_file:
-                        raise ValueError("The private template file could not be deleted.")
+                def delete_current_file(path: str) -> None:
+                    storage_services.remove_template_object(request, user, template_id, path)
 
                 deleted = template_services.delete_template(
                     user,
@@ -252,8 +324,14 @@ def templates_page(request: HttpRequest) -> HttpResponse:
                 uploaded = request.FILES.get("template_file")
                 if uploaded is None:
                     raise ValueError("Choose a JSON, CSV, PDF, XLS, or XLSX file.")
-                storage_services.upload_template_file(request, user, template_id, uploaded)
-                notice = "Private template file saved."
+                storage_result = storage_services.upload_template_file(
+                    request, user, template_id, uploaded
+                )
+                notice = (
+                    "Private file saved. The previous private file needs cleanup."
+                    if storage_result["cleanup_pending"]
+                    else "Private template file saved."
+                )
             elif action == "download":
                 assert template_id is not None
                 content, content_type, filename = storage_services.download_template_file(
@@ -318,6 +396,18 @@ def templates_page(request: HttpRequest) -> HttpResponse:
                     comment=request.POST.get("comment", ""),
                 )
                 notice = "Review submitted for the template owner."
+            elif action == "update-review":
+                updated = template_services.update_review(
+                    user,
+                    _as_uuid(request.POST.get("review_id", "")),
+                    {
+                        "rating": int(request.POST.get("rating", "0")),
+                        "comment": request.POST.get("comment", ""),
+                    },
+                )
+                if updated is None:
+                    raise ValueError("This review is no longer available to update.")
+                notice = "Review updated."
             elif action == "moderate-review":
                 status = request.POST.get("status", "")
                 if status not in {"approved", "rejected", "needs_changes"}:
@@ -362,9 +452,12 @@ def templates_page(request: HttpRequest) -> HttpResponse:
             )
             return _json_download(f"{filename}_template.json", payload)
         if request.GET.get("file"):
-            content, content_type, filename = storage_services.download_template_file(
-                request, user, _as_uuid(request.GET["file"])
-            )
+            try:
+                content, content_type, filename = storage_services.download_template_file(
+                    request, user, _as_uuid(request.GET["file"])
+                )
+            except ValueError as error:
+                raise Http404("Template file is not available.") from error
             response = HttpResponse(content, content_type=content_type)
             response["Content-Disposition"] = f'attachment; filename="{filename}"'
             response["Cache-Control"] = "no-store"
@@ -373,6 +466,10 @@ def templates_page(request: HttpRequest) -> HttpResponse:
         context["templates"] = template_selectors.list_templates(
             user, category=category, search=query, sort_by=sort_by, limit=100
         )
+        for template in context["templates"]:
+            for review in template.get("reviews", []):
+                review["can_edit"] = review.get("reviewer_id") == user.id
+                review["rating_options"] = (1, 2, 3, 4, 5)
         context["received_shares"] = template_selectors.list_received_shares(user)
         context["sent_shares"] = template_selectors.list_sent_shares(user)
         context["review_queue"] = template_selectors.list_review_queue(user)
@@ -384,6 +481,26 @@ def templates_page(request: HttpRequest) -> HttpResponse:
             "education",
             "realestate",
         )
+        category_labels = {
+            "healthcare": "Healthcare",
+            "fieldwork": "Field Work",
+            "hr": "Human Resources",
+            "legal": "Legal",
+            "education": "Education",
+            "realestate": "Real Estate",
+        }
+        all_templates = template_selectors.list_templates(user, limit=100)
+        context["category_choices"] = [
+            {"value": "all", "label": "All Templates", "count": len(all_templates)},
+            *[
+                {
+                    "value": item,
+                    "label": category_labels[item],
+                    "count": sum(template.get("category") == item for template in all_templates),
+                }
+                for item in context["categories"]
+            ],
+        ]
     except (DatabaseError, ValueError, storage_services.StorageServiceError):
         context["data_error"] = "Template data is temporarily unavailable."
         context.setdefault("templates", [])
@@ -425,6 +542,7 @@ def scheduler(request: HttpRequest) -> HttpResponse:
     assert user is not None
     notice = ""
     error = ""
+    edit_event = None
     if request.method == "POST":
         action = request.POST.get("action", "")
         try:
@@ -450,14 +568,34 @@ def scheduler(request: HttpRequest) -> HttpResponse:
                 return HttpResponseNotAllowed(["GET", "POST"])
         except (ValueError, DatabaseError):
             error = "The schedule could not be saved. Check the entered date, time and values."
+    elif request.GET.get("edit"):
+        try:
+            edit_event = schedule_selectors.get_event(user, _as_uuid(request.GET.get("edit", "")))
+            if edit_event is None:
+                error = "This schedule is not available to your account."
+        except ValueError:
+            error = "Choose a valid schedule to edit."
 
     requested_view = request.GET.get("view", "month")
     view = requested_view if requested_view in {"month", "week"} else "month"
+    search_query = request.GET.get("q", "").strip()[:120]
+    type_filter = request.GET.get("type", "all")
+    if type_filter not in {"all", *_EVENT_TYPE_LABELS}:
+        type_filter = "all"
+    today = timezone.now().date()
+    frozen_browser_now = request.headers.get("X-P7-Frozen-Now", "")
+    if getattr(settings, "P7_BROWSER_MODE", False) and frozen_browser_now:
+        try:
+            parsed_browser_now = datetime.fromisoformat(frozen_browser_now.replace("Z", "+00:00"))
+        except ValueError:
+            parsed_browser_now = None
+        if parsed_browser_now is not None and parsed_browser_now.tzinfo is not None:
+            today = parsed_browser_now.astimezone(UTC).date()
     raw_selected_date = request.GET.get("date", "")
     try:
-        selected_date = date.fromisoformat(raw_selected_date) if raw_selected_date else date.today()
+        selected_date = date.fromisoformat(raw_selected_date) if raw_selected_date else today
     except ValueError:
-        selected_date = date.today()
+        selected_date = today
         error = error or "Choose a valid schedule date."
     raw_month = request.GET.get("month", "")
     try:
@@ -472,23 +610,23 @@ def scheduler(request: HttpRequest) -> HttpResponse:
     next_month = (month_start.replace(day=28) + timedelta(days=4)).replace(day=1)
     previous_month = (month_start - timedelta(days=1)).replace(day=1)
     if view == "week":
-        week_start = selected_date - timedelta(days=selected_date.weekday())
+        week_start = selected_date - timedelta(days=(selected_date.weekday() + 1) % 7)
         calendar_days = [[week_start + timedelta(days=offset) for offset in range(7)]]
         first_day = week_start
         last_day = week_start + timedelta(days=6)
         previous_target = (week_start - timedelta(days=7)).isoformat()
         next_target = (week_start + timedelta(days=7)).isoformat()
-        today_target = date.today().isoformat()
+        today_target = today.isoformat()
     else:
         week_start = None
-        calendar_days = Calendar(firstweekday=0).monthdatescalendar(
+        calendar_days = Calendar(firstweekday=6).monthdatescalendar(
             month_start.year, month_start.month
         )
         first_day = min(day for week in calendar_days for day in week)
         last_day = max(day for week in calendar_days for day in week)
         previous_target = previous_month.strftime("%Y-%m")
         next_target = next_month.strftime("%Y-%m")
-        today_target = date.today().strftime("%Y-%m")
+        today_target = today.strftime("%Y-%m")
     context: dict[str, Any] = {
         "notice": notice,
         "error": error,
@@ -502,13 +640,34 @@ def scheduler(request: HttpRequest) -> HttpResponse:
         "weeks": calendar_days,
         "events_by_day": {},
         "calendar_weeks": [],
-        "weekdays": ("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"),
+        "weekdays": ("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"),
         "view": view,
+        "search_query": search_query,
+        "type_filter": type_filter,
+        "calendar_has_events": False,
         "templates": [],
+        "edit_event": edit_event,
+        "upcoming_events": [],
+        "stats": {"total": 0, "completed": 0, "upcoming": 0, "highPriority": 0},
+        "event_types": (
+            ("form_review", "Form review"),
+            ("team_meeting", "Team meeting"),
+            ("training", "Training"),
+            ("maintenance", "Maintenance"),
+            ("other", "Other"),
+        ),
     }
     try:
         events = schedule_selectors.list_events(user, start_date=first_day, end_date=last_day)
         context["templates"] = template_selectors.list_templates(user, limit=100)
+        context["upcoming_events"] = _filter_schedule_events(
+            _label_schedule_events(schedule_selectors.upcoming_events(user, limit=5)),
+            search_query,
+            type_filter,
+        )
+        context["stats"] = schedule_selectors.event_stats(user)
+        events = _filter_schedule_events(_label_schedule_events(events), search_query, type_filter)
+        context["calendar_has_events"] = bool(events)
         by_day: dict[date, list[dict[str, Any]]] = {}
         for event in events:
             by_day.setdefault(event["date"], []).append(event)
@@ -558,10 +717,11 @@ def manage_schedules(request: HttpRequest) -> HttpResponse:
                         raise ValueError("One or more selected schedules are not available.")
                     records.append(event)
                 if action == "export":
+                    exported_at = timezone.now()
                     return _json_download(
-                        f"events_export_{date.today().isoformat()}.json",
+                        f"events_export_{exported_at.date().isoformat()}.json",
                         {
-                            "exported_at": datetime.now().astimezone().isoformat(),
+                            "exported_at": exported_at.isoformat().replace("+00:00", "Z"),
                             "events": records,
                         },
                     )
@@ -608,6 +768,7 @@ def manage_schedules(request: HttpRequest) -> HttpResponse:
         "error": error,
     }
     try:
+        context["event_stats"] = schedule_selectors.manage_event_stats(user)
         rows = (
             schedule_selectors.search_events(user, query)
             if query
@@ -641,9 +802,16 @@ def manage_schedules(request: HttpRequest) -> HttpResponse:
                 )
         else:
             context["error"] = context["error"] or "Choose a supported sort column."
-        context["events"] = rows
+        context["events"] = _label_schedule_events(rows)
     except (DatabaseError, ValueError):
         context["events"] = []
+        context["event_stats"] = {
+            "total": 0,
+            "scheduled": 0,
+            "completed": 0,
+            "cancelled": 0,
+            "high_priority": 0,
+        }
         context["data_error"] = "Schedules are temporarily unavailable."
     return _page(request, route, "application/manage_schedules.html", context)
 
@@ -785,6 +953,11 @@ def voice_autofill(request: HttpRequest) -> HttpResponse:
                     return redirect("/filledtemplates")
             elif action == "select":
                 return redirect(f"/AIVoiceAutoFill?template={template_id}")
+            elif action == "return":
+                conversation = _conversation_values(request.POST.get("conversation_json", "[]"))
+                form_data = _json_object(
+                    request.POST.get("form_data", "{}"), max_bytes=100_000
+                )
             else:
                 return HttpResponseNotAllowed(["GET", "POST"])
         except (ValueError, DatabaseError) as exception:

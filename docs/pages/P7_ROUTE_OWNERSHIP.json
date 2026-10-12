@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "status": "final route registry verified",
-  "generated": "2026-10-12",
+  "status": "final route registry verified; P7 SR-1 through SR-4 closed on 2026-10-13",
+  "generated": "2026-10-13",
   "source_manifest": "docs/parity/route-manifest.json",
   "source_manifest_sha256": "ada8836ff8ba323888f1b99d42e7d720b66823c3975e008af104789d3923c9b7",
   "route_count": 25,
@@ -246,5 +246,21 @@
       "effective_fallback_count": 0
     }
   ],
-  "runtime_resolution_verified": true
+  "runtime_resolution_verified": true,
+  "closeout_verification": {
+    "verified_at": "2026-10-13",
+    "route_count": 25,
+    "owner_counts": {
+      "django-page": 13,
+      "django-auth-excluded": 3,
+      "local-404": 1,
+      "django-app": 8,
+      "legacy-fallback": 0
+    },
+    "effective_fallback_count": 0,
+    "manifest_sha256": "ada8836ff8ba323888f1b99d42e7d720b66823c3975e008af104789d3923c9b7",
+    "report": "docs/pages/P7_P8_CLOSURE_REPORT.md",
+    "acceptance_review": "docs/pages/P7_P8_SESSION_REVIEW_2026-10-13.md"
+  },
+  "closeout_report": "docs/pages/P7_SR_CLOSEOUT_2026-10-13.md"
 }

@@ -1,4 +1,4 @@
-﻿{
+{
     "schema_version":  1,
     "wave":  "W7",
     "generated":  "2026-10-12",
@@ -163,5 +163,15 @@
                        "category":  "application",
                        "owner":  "django-app"
                    }
-               ]
+               ],
+    "closeout_verification": {
+        "verified_at": "2026-10-13",
+        "status": "pass",
+        "acceptance_status": "recorded runner passed; full P7 acceptance open under SR-1-SR-4",
+        "page_captures": 6,
+        "interactions": 4,
+        "viewport_review": ["1440x900", "390x844"],
+        "evidence": "docs/pages/evidence/w7/closeout-20261012/django/; voice results: docs/pages/evidence/w7/closeout-20261012/voice-integration-results.json",
+        "aggregate_closeout": "docs/pages/P7_P8_CLOSURE_REPORT.md"
+    }
 }

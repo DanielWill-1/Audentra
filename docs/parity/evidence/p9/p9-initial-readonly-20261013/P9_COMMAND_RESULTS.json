@@ -1,0 +1,23 @@
+{
+  "run_id": "p9-initial-readonly-20261013",
+  "matrix_precedes_execution": true,
+  "commands": [
+    {
+      "command": "python migration/django/scripts/p9_local_route_inventory.py",
+      "result": "PASS ? 25/25 manifest paths match the P6 owner registry, P7 route report, and Django URL resolver; no HTTP or database access.",
+      "artifact": "docs/parity/P9_ROUTE_OWNERSHIP.json"
+    },
+    {
+      "command": "python -m pytest -q -p no:cacheprovider; python manage.py check",
+      "result": "P7 closeout verification: 167 passed; system check no issues. Retained as P7 verification, not a P9 end-to-end pass.",
+      "artifact": "docs/pages/P7_SR_CLOSEOUT_2026-10-13.md"
+    }
+  ],
+  "not_run": [
+    "P9 source/Django route captures and interactions",
+    "hosted data/RLS/Storage writes",
+    "read-only hosted schema query",
+    "physical device checks",
+    "live provider calls"
+  ]
+}

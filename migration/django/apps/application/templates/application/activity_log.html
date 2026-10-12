@@ -1,12 +1,15 @@
-{% extends "base_app.html" %}
+{% extends "base_scheduler.html" %}
 {% load static %}
-{% block page_title %}Activity · Audentra{% endblock %}
+{% block title %}Activity Log · Audentra{% endblock %}
 {% block extra_head %}<script src="{% static 'js/p7_activity.js' %}" defer></script>{% endblock %}
 {% block content %}
-<div class="mx-auto max-w-6xl space-y-6 px-4 py-8 sm:px-6 lg:px-8" data-activity-root data-activity-key="{{ activity_key }}">
-  <header class="flex flex-wrap items-end justify-between gap-4"><div><p class="text-sm text-text-secondary">Browser-local activity example feed</p><h1 class="mt-1 text-3xl font-semibold">Activity log</h1><p class="mt-2 text-sm text-text-secondary">This page uses the existing local activity feed; it is not a server audit log.</p></div><button class="button-secondary" type="button" data-activity-refresh>Refresh</button></header>
+<div data-activity-root data-activity-key="{{ activity_key }}">
+<header class="border-b border-border bg-surface"><div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-4 py-6 sm:px-6 lg:px-8"><div class="flex items-center gap-4"><a class="icon-button" href="/dashboard" aria-label="Back to dashboard">←</a><div><h1 class="text-2xl font-bold text-text-primary">Activity log</h1><p class="text-text-secondary">View all your recent activity and actions</p></div></div><button class="icon-button" type="button" aria-label="Refresh" title="Refresh" data-activity-refresh>↻</button></div></header>
+<div class="mx-auto max-w-7xl space-y-6 px-4 py-8 sm:px-6 lg:px-8">
+  <p class="text-sm text-text-secondary">This page uses the existing local activity feed; it is not a server audit log.</p>
   <div data-activity-status class="sr-only" role="status" aria-live="polite"></div>
-  <form data-activity-filter class="card grid gap-3 p-4 sm:grid-cols-3" role="search"><label class="field-label">Search activity<input class="field-input" type="search" name="q" placeholder="Search title, description, or user"></label><label class="field-label">Type<select class="field-input" name="type"><option value="all">All activity</option><option value="form_completed">Form completed</option><option value="template_created">Template created</option><option value="team_invite">Team invitation</option><option value="template_shared">Template shared</option><option value="form_started">Form started</option><option value="template_reviewed">Template reviewed</option></select></label><label class="field-label">Date range<select class="field-input" name="range"><option value="all">All time</option><option value="today">Today</option><option value="7">Last 7 days</option><option value="30">Last 30 days</option></select></label></form>
-  <section class="card divide-y divide-border" data-activity-list aria-label="Activity items"></section>
+  <form data-activity-filter class="card grid gap-3 p-4 sm:grid-cols-3" role="search"><label class="field-label">Search activity<input class="field-input" type="text" name="q" placeholder="Search title, description, or user"></label><label class="field-label">Type<select class="field-input" name="type"><option value="all">All activity</option><option value="form_completed">Form completed</option><option value="template_created">Template created</option><option value="team_invite">Team invitation</option><option value="template_shared">Template shared</option><option value="form_started">Form started</option><option value="template_reviewed">Template reviewed</option></select></label><label class="field-label">Date range<select class="field-input" name="range"><option value="all">All time</option><option value="today">Today</option><option value="7">Last 7 days</option><option value="30">Last 30 days</option></select></label></form>
+  <section class="card divide-y divide-border"><div class="border-b border-border p-5"><h2 class="text-lg font-semibold">Activity Log</h2><p class="mt-1 text-sm text-text-secondary">Showing your recent activity and actions</p></div><div data-activity-list aria-label="Activity items"></div></section>
+</div>
 </div>
 {% endblock %}

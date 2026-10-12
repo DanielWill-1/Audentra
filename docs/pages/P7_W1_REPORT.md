@@ -55,3 +55,7 @@ No W2 route, Auth flow, application page, P8 media flow, deployment or legacy cl
 The W1 review gaps are closed; see the dated dispositions in [P7_W1_REVIEW.md](P7_W1_REVIEW.md). W1 browser regressions passed again with 22 captures/six interactions and no overflow or unexpected browser/network errors. Current-source references remain the preserved original captures, rather than fresh source recaptures. The rest of P7/P8 is recorded in the [aggregate report](P7_REPORT.md) and [verification](P7_VERIFICATION.md); this dated addendum supersedes the historical “not started” statement above.
 
 The later [W1 review](P7_W1_REVIEW.md) preserves this delivered result and assigns four regression/evidence corrections to the full P7/P8 master brief. No later-wave application code changed during that review.
+
+## 2026-10-13 combined P7/P8 closeout
+
+Final closeout disposition: PASS. The current W1 run recorded 22 route/page captures and 6 exercised interactions using source/page regression. Desktop 1440x900 and mobile 390x844 checks reported no overflow or unexpected browser errors. Evidence: docs/pages/evidence/w1/closeout-20261012/ The complete combined results and boundaries are in docs/pages/P7_P8_CLOSURE_REPORT.md and docs/pages/P7_P8_CLOSURE_MATRIX.md.

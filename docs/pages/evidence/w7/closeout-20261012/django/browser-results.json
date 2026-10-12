@@ -1,0 +1,1250 @@
+{
+  "wave": "W7",
+  "captured_at": "2026-10-12T19:08:58.898Z",
+  "source": "Django DEBUG=False browser settings with isolated synthetic identity/data fixtures",
+  "fixture_identity": "11111111-1111-4111-8111-111111111111 (non-hosted synthetic account)",
+  "fixture_data": "Patient intake template, one schedule, one filled-form row; no database or provider writes",
+  "base_url": "http://127.0.0.1:18875",
+  "browser": "148.0.7778.96",
+  "pages": [
+    {
+      "route": "/AIVoiceAutoFill",
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "response_status": 200,
+      "title": "Voice form · Audentra",
+      "heading": "AI Voice Auto-Fill",
+      "document_width": 1440,
+      "viewport_width": 1440,
+      "has_react_root": false,
+      "has_react_bootstrap": false,
+      "console_errors": [],
+      "expected_local_404_diagnostic": false,
+      "responses": [
+        {
+          "path": "/AIVoiceAutoFill",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_voice.js",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_media.js",
+          "status": 200
+        },
+        {
+          "path": "/AIVoiceAutoFill",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_voice.js",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_media.js",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        }
+      ],
+      "screenshot": "voice-autofill-desktop.png",
+      "comparison": {
+        "source_heading": "AI Voice Auto-Fill",
+        "django_heading": "AI Voice Auto-Fill",
+        "source_text_characters": 228,
+        "django_text_characters": 276,
+        "normalized_text_exact_match": false,
+        "source_section_headings": [
+          "Choose a Form Template",
+          "Patient intake"
+        ],
+        "django_section_headings": [
+          "Choose a Form Template",
+          "Patient intake"
+        ],
+        "source_field_names": [],
+        "django_field_names": [],
+        "source_field_names_missing_from_django": [],
+        "source_button_labels": [],
+        "django_button_labels": [],
+        "source_button_labels_missing_from_django": [],
+        "source_local_destinations": [
+          "/dashboard"
+        ],
+        "django_local_destinations": [
+          "/AIVoiceAutoFill?template=33333333-3333-4333-8333-333333333333",
+          "/dashboard"
+        ],
+        "django_link_labels": [
+          "Back to Dashboard",
+          "Use template"
+        ],
+        "source_local_destinations_missing_from_django": [],
+        "source_text_tokens_missing_from_django": [
+          "AI",
+          "Auto-FillSpeak",
+          "PoweredChoose",
+          "intakehealthcareSynthetic",
+          "template2",
+          "fieldsAI",
+          "Ready"
+        ],
+        "django_text_tokens_added": [
+          "Speak",
+          "to",
+          "Auto-FillRecord",
+          "or",
+          "type,",
+          "then",
+          "review",
+          "every",
+          "field",
+          "before",
+          "saving.Back",
+          "Dashboard",
+          "Choose",
+          "template",
+          "intakeSynthetic",
+          "templateUse"
+        ]
+      }
+    },
+    {
+      "route": "/AIVoiceAutoFill",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "response_status": 200,
+      "title": "Voice form · Audentra",
+      "heading": "AI Voice Auto-Fill",
+      "document_width": 390,
+      "viewport_width": 390,
+      "has_react_root": false,
+      "has_react_bootstrap": false,
+      "console_errors": [],
+      "expected_local_404_diagnostic": false,
+      "responses": [
+        {
+          "path": "/AIVoiceAutoFill",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_media.js",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_voice.js",
+          "status": 200
+        }
+      ],
+      "screenshot": "voice-autofill-mobile.png",
+      "comparison": {
+        "source_heading": "AI Voice Auto-Fill",
+        "django_heading": "AI Voice Auto-Fill",
+        "source_text_characters": 228,
+        "django_text_characters": 276,
+        "normalized_text_exact_match": false,
+        "source_section_headings": [
+          "Choose a Form Template",
+          "Patient intake"
+        ],
+        "django_section_headings": [
+          "Choose a Form Template",
+          "Patient intake"
+        ],
+        "source_field_names": [],
+        "django_field_names": [],
+        "source_field_names_missing_from_django": [],
+        "source_button_labels": [],
+        "django_button_labels": [],
+        "source_button_labels_missing_from_django": [],
+        "source_local_destinations": [
+          "/dashboard"
+        ],
+        "django_local_destinations": [
+          "/AIVoiceAutoFill?template=33333333-3333-4333-8333-333333333333",
+          "/dashboard"
+        ],
+        "django_link_labels": [
+          "Back to Dashboard",
+          "Use template"
+        ],
+        "source_local_destinations_missing_from_django": [],
+        "source_text_tokens_missing_from_django": [
+          "AI",
+          "Auto-FillSpeak",
+          "PoweredChoose",
+          "intakehealthcareSynthetic",
+          "template2",
+          "fieldsAI",
+          "Ready"
+        ],
+        "django_text_tokens_added": [
+          "Speak",
+          "to",
+          "Auto-FillRecord",
+          "or",
+          "type,",
+          "then",
+          "review",
+          "every",
+          "field",
+          "before",
+          "saving.Back",
+          "Dashboard",
+          "Choose",
+          "template",
+          "intakeSynthetic",
+          "templateUse"
+        ]
+      }
+    },
+    {
+      "route": "/filledtemplates",
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "response_status": 200,
+      "title": "Filled forms · Audentra",
+      "heading": "Filled templates",
+      "document_width": 1440,
+      "viewport_width": 1440,
+      "has_react_root": false,
+      "has_react_bootstrap": false,
+      "console_errors": [],
+      "expected_local_404_diagnostic": false,
+      "responses": [
+        {
+          "path": "/filledtemplates",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        }
+      ],
+      "screenshot": "filled-templates-desktop.png",
+      "comparison": {
+        "source_heading": "Your Filled Templates",
+        "django_heading": "Filled templates",
+        "source_text_characters": 215,
+        "django_text_characters": 201,
+        "normalized_text_exact_match": false,
+        "source_section_headings": [
+          "Form Data:"
+        ],
+        "django_section_headings": [
+          "Patient intake"
+        ],
+        "source_field_names": [],
+        "django_field_names": [
+          "action",
+          "csrfmiddlewaretoken",
+          "record_id"
+        ],
+        "source_field_names_missing_from_django": [],
+        "source_button_labels": [
+          "Back to Dashboard"
+        ],
+        "django_button_labels": [
+          "Delete"
+        ],
+        "source_button_labels_missing_from_django": [
+          "Back to Dashboard"
+        ],
+        "source_local_destinations": [],
+        "django_local_destinations": [
+          "/AIVoiceAutoFill",
+          "/dashboard"
+        ],
+        "django_link_labels": [
+          "Back to Dashboard",
+          "Fill a template"
+        ],
+        "source_local_destinations_missing_from_django": [],
+        "source_text_tokens_missing_from_django": [
+          "Your",
+          "Filled",
+          "TemplatesManage",
+          "all",
+          "previously",
+          "filled",
+          "templates",
+          "here.Back",
+          "DashboardTemplate",
+          "Name:",
+          "intakeFilled",
+          "on:",
+          "12/10/2026,",
+          "13:30:00Form",
+          "Data:patient_name:",
+          "Sample",
+          "Patientemail:",
+          "patient@example.invalid"
+        ],
+        "django_text_tokens_added": [
+          "Saved",
+          "submissions",
+          "for",
+          "accountFilled",
+          "templatesBack",
+          "DashboardFill",
+          "a",
+          "template",
+          "intakeSaved",
+          "Oct",
+          "12,",
+          "2026",
+          "8:00",
+          "AMDeleteView",
+          "saved",
+          "answerspatient_nameSample",
+          "Patientemailpatient@example.invalid"
+        ]
+      }
+    },
+    {
+      "route": "/filledtemplates",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "response_status": 200,
+      "title": "Filled forms · Audentra",
+      "heading": "Filled templates",
+      "document_width": 390,
+      "viewport_width": 390,
+      "has_react_root": false,
+      "has_react_bootstrap": false,
+      "console_errors": [],
+      "expected_local_404_diagnostic": false,
+      "responses": [
+        {
+          "path": "/filledtemplates",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/filledtemplates",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/AIVoiceAutoFill",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_voice.js",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_media.js",
+          "status": 200
+        }
+      ],
+      "screenshot": "filled-templates-mobile.png",
+      "comparison": {
+        "source_heading": "Your Filled Templates",
+        "django_heading": "Filled templates",
+        "source_text_characters": 215,
+        "django_text_characters": 201,
+        "normalized_text_exact_match": false,
+        "source_section_headings": [
+          "Form Data:"
+        ],
+        "django_section_headings": [
+          "Patient intake"
+        ],
+        "source_field_names": [],
+        "django_field_names": [
+          "action",
+          "csrfmiddlewaretoken",
+          "record_id"
+        ],
+        "source_field_names_missing_from_django": [],
+        "source_button_labels": [
+          "Back to Dashboard"
+        ],
+        "django_button_labels": [
+          "Delete"
+        ],
+        "source_button_labels_missing_from_django": [
+          "Back to Dashboard"
+        ],
+        "source_local_destinations": [],
+        "django_local_destinations": [
+          "/AIVoiceAutoFill",
+          "/dashboard"
+        ],
+        "django_link_labels": [
+          "Back to Dashboard",
+          "Fill a template"
+        ],
+        "source_local_destinations_missing_from_django": [],
+        "source_text_tokens_missing_from_django": [
+          "Your",
+          "Filled",
+          "TemplatesManage",
+          "all",
+          "previously",
+          "filled",
+          "templates",
+          "here.Back",
+          "DashboardTemplate",
+          "Name:",
+          "intakeFilled",
+          "on:",
+          "12/10/2026,",
+          "13:30:00Form",
+          "Data:patient_name:",
+          "Sample",
+          "Patientemail:",
+          "patient@example.invalid"
+        ],
+        "django_text_tokens_added": [
+          "Saved",
+          "submissions",
+          "for",
+          "accountFilled",
+          "templatesBack",
+          "DashboardFill",
+          "a",
+          "template",
+          "intakeSaved",
+          "Oct",
+          "12,",
+          "2026",
+          "8:00",
+          "AMDeleteView",
+          "saved",
+          "answerspatient_nameSample",
+          "Patientemailpatient@example.invalid"
+        ]
+      }
+    },
+    {
+      "route": "/activitylog",
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "response_status": 200,
+      "title": "Activity · Audentra",
+      "heading": "Activity log",
+      "document_width": 1440,
+      "viewport_width": 1440,
+      "has_react_root": false,
+      "has_react_bootstrap": false,
+      "console_errors": [],
+      "expected_local_404_diagnostic": false,
+      "responses": [
+        {
+          "path": "/activitylog",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_activity.js",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/activitylog",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_activity.js",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/activitylog",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_activity.js",
+          "status": 200
+        }
+      ],
+      "screenshot": "activity-log-desktop.png",
+      "comparison": {
+        "source_heading": "Activity Log",
+        "django_heading": "Activity log",
+        "source_text_characters": 962,
+        "django_text_characters": 1063,
+        "normalized_text_exact_match": false,
+        "source_section_headings": [
+          "Activity Log",
+          "Patient Intake - John Smith",
+          "Safety Inspection Report",
+          "HR Onboarding Template",
+          "Alex Chen joined your team",
+          "Patient Intake Form shared",
+          "Employee Onboarding - Maria Garcia",
+          "Safety Inspection Checklist reviewed"
+        ],
+        "django_section_headings": [
+          "Patient Intake - John Smith",
+          "Safety Inspection Report",
+          "HR Onboarding Template",
+          "Alex Chen joined your team",
+          "Patient Intake Form shared",
+          "Employee Onboarding - Maria Garcia",
+          "Safety Inspection Checklist reviewed"
+        ],
+        "source_field_names": [],
+        "django_field_names": [
+          "q",
+          "range",
+          "type"
+        ],
+        "source_field_names_missing_from_django": [],
+        "source_button_labels": [],
+        "django_button_labels": [
+          "Continue (unavailable)",
+          "Delete Alex Chen joined your team",
+          "Delete Employee Onboarding - Maria Garcia",
+          "Delete HR Onboarding Template",
+          "Delete Patient Intake - John Smith",
+          "Delete Patient Intake Form shared",
+          "Delete Safety Inspection Checklist reviewed",
+          "Delete Safety Inspection Report",
+          "Download (unavailable)",
+          "Download (unavailable)",
+          "Refresh"
+        ],
+        "source_button_labels_missing_from_django": [],
+        "source_local_destinations": [
+          "/dashboard"
+        ],
+        "django_local_destinations": [
+          "/dashboard"
+        ],
+        "django_link_labels": [
+          "Back to Dashboard"
+        ],
+        "source_local_destinations_missing_from_django": [],
+        "source_text_tokens_missing_from_django": [
+          "Activity",
+          "LogView",
+          "all",
+          "your",
+          "your",
+          "recent",
+          "recent",
+          "and",
+          "and",
+          "actionsAll",
+          "TypesForm",
+          "CompletedTemplate",
+          "CreatedTeam",
+          "InvitationsTemplate",
+          "SharedForm",
+          "StartedTemplate",
+          "ReviewedAll",
+          "TimeTodayLast",
+          "DaysLast",
+          "Days7",
+          "activitiesActivity",
+          "LogShowing",
+          "actionsPatient",
+          "SmithCompletedCompleted",
+          "minutesOct",
+          "minutesOct",
+          "11,",
+          "11,",
+          "11,",
+          "11,",
+          "2026,",
+          "2026,",
+          "2026,",
+          "2026,",
+          "2026,",
+          "2026,",
+          "2026,",
+          "10:20",
+          "PMYouForm",
+          "PMYouForm",
+          "CompletedSafety",
+          "CompletedSafety",
+          "ReportIn",
+          "ProgressStarted",
+          "agoOct",
+          "11:50",
+          "StartedHR",
+          "TemplateCreatedNew",
+          "createdOct",
+          "08:20",
+          "PMYouTemplate",
+          "CreatedAlex",
+          "teamJoinedAccepted",
+          "invitationOct",
+          "12:20",
+          "12:20",
+          "12:20",
+          "12:20",
+          "AMSystemTeam",
+          "InvitationPatient",
+          "sharedSharedShared",
+          "membersOct",
+          "10,",
+          "AMYouTemplate",
+          "SharedEmployee",
+          "GarciaCompletedCompleted",
+          "9,",
+          "AMAlex",
+          "ChenForm",
+          "reviewedReviewedApproved",
+          "ratingOct",
+          "8,",
+          "AMMaria",
+          "JohnsonTemplate",
+          "Reviewed"
+        ],
+        "django_text_tokens_added": [
+          "Browser-local",
+          "example",
+          "feedActivity",
+          "logThis",
+          "page",
+          "uses",
+          "the",
+          "existing",
+          "local",
+          "feed;",
+          "it",
+          "is",
+          "not",
+          "a",
+          "server",
+          "audit",
+          "log.Back",
+          "to",
+          "DashboardRefresh",
+          "Search",
+          "activityTypeAll",
+          "activityForm",
+          "completedTemplate",
+          "createdTeam",
+          "invitationTemplate",
+          "sharedForm",
+          "startedTemplate",
+          "reviewedDate",
+          "rangeAll",
+          "timeTodayLast",
+          "daysLast",
+          "days",
+          "Patient",
+          "SmithCompleted",
+          "minutes12/10/2026,",
+          "22:39:04",
+          "·",
+          "·",
+          "·",
+          "·",
+          "·",
+          "·",
+          "·",
+          "·",
+          "·",
+          "·",
+          "·",
+          "·",
+          "·",
+          "·",
+          "You",
+          "You",
+          "You",
+          "You",
+          "Form",
+          "Form",
+          "Form",
+          "completedDownloadDeleteSafety",
+          "completedDownloadDeleteSafety",
+          "ReportStarted",
+          "ago13/10/2026,",
+          "00:09:04",
+          "startedContinueDeleteHR",
+          "TemplateNew",
+          "created12/10/2026,",
+          "20:39:04",
+          "Template",
+          "Template",
+          "Template",
+          "createdDeleteAlex",
+          "Chen",
+          "Chen",
+          "teamAccepted",
+          "invitation12/10/2026,",
+          "00:39:04",
+          "00:39:04",
+          "00:39:04",
+          "00:39:04",
+          "System",
+          "Team",
+          "invitationDeletePatient",
+          "sharedShared",
+          "members11/10/2026,",
+          "sharedDeleteEmployee",
+          "GarciaCompleted",
+          "minutes10/10/2026,",
+          "Alex",
+          "Alex",
+          "reviewedApproved",
+          "rating09/10/2026,",
+          "reviewedDelete"
+        ]
+      }
+    },
+    {
+      "route": "/activitylog",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "response_status": 200,
+      "title": "Activity · Audentra",
+      "heading": "Activity log",
+      "document_width": 390,
+      "viewport_width": 390,
+      "has_react_root": false,
+      "has_react_bootstrap": false,
+      "console_errors": [],
+      "expected_local_404_diagnostic": false,
+      "responses": [
+        {
+          "path": "/activitylog",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_activity.js",
+          "status": 200
+        }
+      ],
+      "screenshot": "activity-log-mobile.png",
+      "comparison": {
+        "source_heading": "Activity Log",
+        "django_heading": "Activity log",
+        "source_text_characters": 962,
+        "django_text_characters": 1063,
+        "normalized_text_exact_match": false,
+        "source_section_headings": [
+          "Activity Log",
+          "Patient Intake - John Smith",
+          "Safety Inspection Report",
+          "HR Onboarding Template",
+          "Alex Chen joined your team",
+          "Patient Intake Form shared",
+          "Employee Onboarding - Maria Garcia",
+          "Safety Inspection Checklist reviewed"
+        ],
+        "django_section_headings": [
+          "Patient Intake - John Smith",
+          "Safety Inspection Report",
+          "HR Onboarding Template",
+          "Alex Chen joined your team",
+          "Patient Intake Form shared",
+          "Employee Onboarding - Maria Garcia",
+          "Safety Inspection Checklist reviewed"
+        ],
+        "source_field_names": [],
+        "django_field_names": [
+          "q",
+          "range",
+          "type"
+        ],
+        "source_field_names_missing_from_django": [],
+        "source_button_labels": [],
+        "django_button_labels": [
+          "Continue (unavailable)",
+          "Delete Alex Chen joined your team",
+          "Delete Employee Onboarding - Maria Garcia",
+          "Delete HR Onboarding Template",
+          "Delete Patient Intake - John Smith",
+          "Delete Patient Intake Form shared",
+          "Delete Safety Inspection Checklist reviewed",
+          "Delete Safety Inspection Report",
+          "Download (unavailable)",
+          "Download (unavailable)",
+          "Refresh"
+        ],
+        "source_button_labels_missing_from_django": [],
+        "source_local_destinations": [
+          "/dashboard"
+        ],
+        "django_local_destinations": [
+          "/dashboard"
+        ],
+        "django_link_labels": [
+          "Back to Dashboard"
+        ],
+        "source_local_destinations_missing_from_django": [],
+        "source_text_tokens_missing_from_django": [
+          "Activity",
+          "LogView",
+          "all",
+          "your",
+          "your",
+          "recent",
+          "recent",
+          "and",
+          "and",
+          "actionsAll",
+          "TypesForm",
+          "CompletedTemplate",
+          "CreatedTeam",
+          "InvitationsTemplate",
+          "SharedForm",
+          "StartedTemplate",
+          "ReviewedAll",
+          "TimeTodayLast",
+          "DaysLast",
+          "Days7",
+          "activitiesActivity",
+          "LogShowing",
+          "actionsPatient",
+          "SmithCompletedCompleted",
+          "minutesOct",
+          "minutesOct",
+          "11,",
+          "11,",
+          "11,",
+          "11,",
+          "2026,",
+          "2026,",
+          "2026,",
+          "2026,",
+          "2026,",
+          "2026,",
+          "2026,",
+          "10:20",
+          "PMYouForm",
+          "PMYouForm",
+          "CompletedSafety",
+          "CompletedSafety",
+          "ReportIn",
+          "ProgressStarted",
+          "agoOct",
+          "11:50",
+          "StartedHR",
+          "TemplateCreatedNew",
+          "createdOct",
+          "08:20",
+          "PMYouTemplate",
+          "CreatedAlex",
+          "teamJoinedAccepted",
+          "invitationOct",
+          "12:20",
+          "12:20",
+          "12:20",
+          "12:20",
+          "AMSystemTeam",
+          "InvitationPatient",
+          "sharedSharedShared",
+          "membersOct",
+          "10,",
+          "AMYouTemplate",
+          "SharedEmployee",
+          "GarciaCompletedCompleted",
+          "9,",
+          "AMAlex",
+          "ChenForm",
+          "reviewedReviewedApproved",
+          "ratingOct",
+          "8,",
+          "AMMaria",
+          "JohnsonTemplate",
+          "Reviewed"
+        ],
+        "django_text_tokens_added": [
+          "Browser-local",
+          "example",
+          "feedActivity",
+          "logThis",
+          "page",
+          "uses",
+          "the",
+          "existing",
+          "local",
+          "feed;",
+          "it",
+          "is",
+          "not",
+          "a",
+          "server",
+          "audit",
+          "log.Back",
+          "to",
+          "DashboardRefresh",
+          "Search",
+          "activityTypeAll",
+          "activityForm",
+          "completedTemplate",
+          "createdTeam",
+          "invitationTemplate",
+          "sharedForm",
+          "startedTemplate",
+          "reviewedDate",
+          "rangeAll",
+          "timeTodayLast",
+          "daysLast",
+          "days",
+          "Patient",
+          "SmithCompleted",
+          "minutes12/10/2026,",
+          "22:39:06",
+          "·",
+          "·",
+          "·",
+          "·",
+          "·",
+          "·",
+          "·",
+          "·",
+          "·",
+          "·",
+          "·",
+          "·",
+          "·",
+          "·",
+          "You",
+          "You",
+          "You",
+          "You",
+          "Form",
+          "Form",
+          "Form",
+          "completedDownloadDeleteSafety",
+          "completedDownloadDeleteSafety",
+          "ReportStarted",
+          "ago13/10/2026,",
+          "00:09:06",
+          "startedContinueDeleteHR",
+          "TemplateNew",
+          "created12/10/2026,",
+          "20:39:06",
+          "Template",
+          "Template",
+          "Template",
+          "createdDeleteAlex",
+          "Chen",
+          "Chen",
+          "teamAccepted",
+          "invitation12/10/2026,",
+          "00:39:06",
+          "00:39:06",
+          "00:39:06",
+          "00:39:06",
+          "System",
+          "Team",
+          "invitationDeletePatient",
+          "sharedShared",
+          "members11/10/2026,",
+          "sharedDeleteEmployee",
+          "GarciaCompleted",
+          "minutes10/10/2026,",
+          "Alex",
+          "Alex",
+          "reviewedApproved",
+          "rating09/10/2026,",
+          "reviewedDelete"
+        ]
+      }
+    }
+  ],
+  "interactions": [
+    {
+      "route": "/AIVoiceAutoFill",
+      "state": "template chooser opens the selected synthetic template and exposes the review, assistant, recorder, and save paths"
+    },
+    {
+      "route": "/filledtemplates",
+      "state": "populated saved answers open, confirmed delete reaches the empty state, and the fixed Start a form link returns to the template chooser"
+    },
+    {
+      "route": "/activitylog",
+      "state": "account-scoped activity ignores but preserves unscoped legacy activity data"
+    },
+    {
+      "route": "/activitylog",
+      "state": "search/type/date filters, XSS-safe text, confirmed deletion, refresh, and empty state work on account-scoped records"
+    }
+  ],
+  "route_contracts": [
+    {
+      "route": "/AIVoiceAutoFill",
+      "viewport": "desktop",
+      "passed": true,
+      "source_heading": "AI Voice Auto-Fill",
+      "expected_heading": "AI Voice Auto-Fill",
+      "required_sections": [
+        "Choose a Form Template"
+      ],
+      "required_fields": [],
+      "required_controls": [
+        "Use template"
+      ],
+      "required_destinations": [
+        "/dashboard",
+        "/AIVoiceAutoFill?template=33333333-3333-4333-8333-333333333333"
+      ],
+      "accepted_source_differences": [
+        "The source and Django captures both start at template selection; selected-template review is captured and tested separately.",
+        "Browser API interception is synthetic and does not establish live provider or hosted persistence."
+      ]
+    },
+    {
+      "route": "/AIVoiceAutoFill",
+      "viewport": "mobile",
+      "passed": true,
+      "source_heading": "AI Voice Auto-Fill",
+      "expected_heading": "AI Voice Auto-Fill",
+      "required_sections": [
+        "Choose a Form Template"
+      ],
+      "required_fields": [],
+      "required_controls": [
+        "Use template"
+      ],
+      "required_destinations": [
+        "/dashboard",
+        "/AIVoiceAutoFill?template=33333333-3333-4333-8333-333333333333"
+      ],
+      "accepted_source_differences": [
+        "The source and Django captures both start at template selection; selected-template review is captured and tested separately.",
+        "Browser API interception is synthetic and does not establish live provider or hosted persistence."
+      ]
+    },
+    {
+      "route": "/filledtemplates",
+      "viewport": "desktop",
+      "passed": true,
+      "source_heading": "Your Filled Templates",
+      "expected_heading": "Filled templates",
+      "required_sections": [],
+      "required_fields": [
+        "action",
+        "record_id"
+      ],
+      "required_controls": [
+        "Delete"
+      ],
+      "required_destinations": [
+        "/dashboard",
+        "/AIVoiceAutoFill"
+      ],
+      "accepted_source_differences": [
+        "Source title capitalization is normalized.",
+        "Saved rows are account-owned data; browser examples are distinguished from hosted persistence evidence."
+      ]
+    },
+    {
+      "route": "/filledtemplates",
+      "viewport": "mobile",
+      "passed": true,
+      "source_heading": "Your Filled Templates",
+      "expected_heading": "Filled templates",
+      "required_sections": [],
+      "required_fields": [
+        "action",
+        "record_id"
+      ],
+      "required_controls": [
+        "Delete"
+      ],
+      "required_destinations": [
+        "/dashboard",
+        "/AIVoiceAutoFill"
+      ],
+      "accepted_source_differences": [
+        "Source title capitalization is normalized.",
+        "Saved rows are account-owned data; browser examples are distinguished from hosted persistence evidence."
+      ]
+    },
+    {
+      "route": "/activitylog",
+      "viewport": "desktop",
+      "passed": true,
+      "source_heading": "Activity Log",
+      "expected_heading": "Activity log",
+      "required_sections": [],
+      "required_fields": [
+        "q",
+        "type",
+        "range"
+      ],
+      "required_controls": [
+        "Refresh"
+      ],
+      "required_destinations": [
+        "/dashboard"
+      ],
+      "accepted_source_differences": [
+        "Source Activity Log capitalization is normalized.",
+        "The feed remains local browser data and is not represented as a server audit log."
+      ]
+    },
+    {
+      "route": "/activitylog",
+      "viewport": "mobile",
+      "passed": true,
+      "source_heading": "Activity Log",
+      "expected_heading": "Activity log",
+      "required_sections": [],
+      "required_fields": [
+        "q",
+        "type",
+        "range"
+      ],
+      "required_controls": [
+        "Refresh"
+      ],
+      "required_destinations": [
+        "/dashboard"
+      ],
+      "accepted_source_differences": [
+        "Source Activity Log capitalization is normalized.",
+        "The feed remains local browser data and is not represented as a server audit log."
+      ]
+    }
+  ],
+  "negative_control_checks": {
+    "passed": true,
+    "removed_section": "rejected",
+    "removed_control": "rejected",
+    "removed_destination": "rejected",
+    "changed_field": "rejected"
+  }
+}

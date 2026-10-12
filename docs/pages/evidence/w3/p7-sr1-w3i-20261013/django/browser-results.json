@@ -1,0 +1,1436 @@
+{
+  "wave": "W3",
+  "captured_at": "2026-10-12T20:46:02.618Z",
+  "source": "Django DEBUG=False browser settings with isolated synthetic identity/data fixtures",
+  "fixture_identity": "11111111-1111-4111-8111-111111111111 (non-hosted synthetic account)",
+  "fixture_data": "Patient intake template, one schedule, one filled-form row; no database or provider writes",
+  "base_url": "http://127.0.0.1:18875",
+  "source_reference": {
+    "run_id": "p7-sr-review-source-20261013a",
+    "captured_at": "2026-10-12T20:40:04.151Z",
+    "git_revision": "4e3e5c7e0a3bc383cea5d8b6b4d2ce18693469a6",
+    "worktree_digest": "2f50c0fa03f6215104e5b1267bc9061447b7c851643328a4a0ec5a74ced68b1c",
+    "file_count": 71,
+    "source_manifest_sha256": "e0c66d2cdf0b378d7e7621296ceea3efd2fd505f2c2e80313140489686ef637f"
+  },
+  "browser": "148.0.7778.96",
+  "pages": [
+    {
+      "route": "/login",
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "response_status": 200,
+      "title": "Sign in · Audentra",
+      "heading": "Welcome back",
+      "document_width": 1440,
+      "viewport_width": 1440,
+      "has_react_root": false,
+      "has_react_bootstrap": false,
+      "console_errors": [],
+      "expected_local_404_diagnostic": false,
+      "responses": [
+        {
+          "path": "/login",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_auth_forms.js",
+          "status": 200
+        },
+        {
+          "path": "/static/vendor/htmx-2.0.8.min.js",
+          "status": 200
+        }
+      ],
+      "screenshot": "login-desktop.png",
+      "comparison": {
+        "source_heading": "Welcome back",
+        "django_heading": "Welcome back",
+        "source_text_characters": 220,
+        "django_text_characters": 308,
+        "normalized_text_exact_match": false,
+        "source_section_headings": [],
+        "django_section_headings": [],
+        "source_field_names": [
+          "email",
+          "password",
+          "remember-me"
+        ],
+        "django_field_names": [
+          "csrfmiddlewaretoken",
+          "email",
+          "next",
+          "password",
+          "remember_me"
+        ],
+        "source_field_names_missing_from_django": [
+          "remember-me"
+        ],
+        "source_button_labels": [
+          "Continue with Google",
+          "Show password",
+          "Sign in"
+        ],
+        "django_button_labels": [
+          "Continue with Google",
+          "Show password",
+          "Sign in"
+        ],
+        "source_button_labels_missing_from_django": [],
+        "source_local_destinations": [
+          "/",
+          "/forgot-password",
+          "/signup"
+        ],
+        "django_local_destinations": [
+          "/",
+          "/",
+          "/forgot-password",
+          "/signup"
+        ],
+        "django_link_labels": [
+          "Audentra home",
+          "Audentra home",
+          "Create account",
+          "Forgot password?",
+          "View Audentra on GitHub →"
+        ],
+        "source_local_destinations_missing_from_django": [],
+        "source_text_tokens_missing_from_django": [
+          "AudentraWelcome",
+          "backSign",
+          "demo.Continue",
+          "Googleor",
+          "emailEmailPasswordForgot",
+          "password?Keep",
+          "inSign",
+          "inDon’t",
+          "accountView"
+        ],
+        "django_text_tokens_added": [
+          "Audentra",
+          "Audentra",
+          "Welcome",
+          "back",
+          "Sign",
+          "Sign",
+          "in",
+          "in",
+          "demo.",
+          "Continue",
+          "Google",
+          "Google",
+          "sign-in",
+          "is",
+          "unavailable",
+          "on",
+          "this",
+          "development",
+          "site.",
+          "or",
+          "email",
+          "Email",
+          "PasswordForgot",
+          "password?Show",
+          "password",
+          "Keep",
+          "Don’t",
+          "account",
+          "View"
+        ]
+      }
+    },
+    {
+      "route": "/login",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "response_status": 200,
+      "title": "Sign in · Audentra",
+      "heading": "Welcome back",
+      "document_width": 390,
+      "viewport_width": 390,
+      "has_react_root": false,
+      "has_react_bootstrap": false,
+      "console_errors": [],
+      "expected_local_404_diagnostic": false,
+      "responses": [
+        {
+          "path": "/login",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_auth_forms.js",
+          "status": 200
+        },
+        {
+          "path": "/static/vendor/htmx-2.0.8.min.js",
+          "status": 200
+        }
+      ],
+      "screenshot": "login-mobile.png",
+      "comparison": {
+        "source_heading": "Welcome back",
+        "django_heading": "Welcome back",
+        "source_text_characters": 220,
+        "django_text_characters": 308,
+        "normalized_text_exact_match": false,
+        "source_section_headings": [],
+        "django_section_headings": [],
+        "source_field_names": [
+          "email",
+          "password",
+          "remember-me"
+        ],
+        "django_field_names": [
+          "csrfmiddlewaretoken",
+          "email",
+          "next",
+          "password",
+          "remember_me"
+        ],
+        "source_field_names_missing_from_django": [
+          "remember-me"
+        ],
+        "source_button_labels": [
+          "Continue with Google",
+          "Show password",
+          "Sign in"
+        ],
+        "django_button_labels": [
+          "Continue with Google",
+          "Show password",
+          "Sign in"
+        ],
+        "source_button_labels_missing_from_django": [],
+        "source_local_destinations": [
+          "/",
+          "/forgot-password",
+          "/signup"
+        ],
+        "django_local_destinations": [
+          "/",
+          "/",
+          "/forgot-password",
+          "/signup"
+        ],
+        "django_link_labels": [
+          "Audentra home",
+          "Audentra home",
+          "Create account",
+          "Forgot password?",
+          "View Audentra on GitHub →"
+        ],
+        "source_local_destinations_missing_from_django": [],
+        "source_text_tokens_missing_from_django": [
+          "AudentraWelcome",
+          "backSign",
+          "demo.Continue",
+          "Googleor",
+          "emailEmailPasswordForgot",
+          "password?Keep",
+          "inSign",
+          "inDon’t",
+          "accountView"
+        ],
+        "django_text_tokens_added": [
+          "Audentra",
+          "Audentra",
+          "Welcome",
+          "back",
+          "Sign",
+          "Sign",
+          "in",
+          "in",
+          "demo.",
+          "Continue",
+          "Google",
+          "Google",
+          "sign-in",
+          "is",
+          "unavailable",
+          "on",
+          "this",
+          "development",
+          "site.",
+          "or",
+          "email",
+          "Email",
+          "PasswordForgot",
+          "password?Show",
+          "password",
+          "Keep",
+          "Don’t",
+          "account",
+          "View"
+        ]
+      }
+    },
+    {
+      "route": "/signup",
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "response_status": 200,
+      "title": "Create account · Audentra",
+      "heading": "Create your account",
+      "document_width": 1440,
+      "viewport_width": 1440,
+      "has_react_root": false,
+      "has_react_bootstrap": false,
+      "console_errors": [],
+      "expected_local_404_diagnostic": false,
+      "responses": [
+        {
+          "path": "/signup",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_auth_forms.js",
+          "status": 200
+        },
+        {
+          "path": "/static/vendor/htmx-2.0.8.min.js",
+          "status": 200
+        }
+      ],
+      "screenshot": "signup-desktop.png",
+      "comparison": {
+        "source_heading": "Create your account",
+        "django_heading": "Create your account",
+        "source_text_characters": 271,
+        "django_text_characters": 337,
+        "normalized_text_exact_match": false,
+        "source_section_headings": [],
+        "django_section_headings": [],
+        "source_field_names": [
+          "acceptedTerms",
+          "confirmPassword",
+          "email",
+          "firstName",
+          "lastName",
+          "password"
+        ],
+        "django_field_names": [
+          "accepted_terms",
+          "confirm_password",
+          "csrfmiddlewaretoken",
+          "email",
+          "first_name",
+          "last_name",
+          "password"
+        ],
+        "source_field_names_missing_from_django": [
+          "acceptedTerms",
+          "confirmPassword",
+          "firstName",
+          "lastName"
+        ],
+        "source_button_labels": [
+          "Continue with Google",
+          "Create account",
+          "Show password",
+          "Show password"
+        ],
+        "django_button_labels": [
+          "Create account",
+          "Show password",
+          "Show password"
+        ],
+        "source_button_labels_missing_from_django": [
+          "Continue with Google"
+        ],
+        "source_local_destinations": [
+          "/",
+          "/login",
+          "/privacy",
+          "/terms"
+        ],
+        "django_local_destinations": [
+          "/",
+          "/login",
+          "/privacy",
+          "/terms"
+        ],
+        "django_link_labels": [
+          "Already have an account? Sign in",
+          "Audentra home",
+          "Privacy Policy",
+          "Terms of Service",
+          "View Audentra on GitHub →"
+        ],
+        "source_local_destinations_missing_from_django": [],
+        "source_text_tokens_missing_from_django": [
+          "AudentraCreate",
+          "accountUse",
+          "demo.Continue",
+          "with",
+          "Googleor",
+          "create",
+          "emailFirst",
+          "nameLast",
+          "nameEmailPasswordConfirm",
+          "passwordI",
+          "PolicyCreate",
+          "accountAlready",
+          "inView",
+          "source"
+        ],
+        "django_text_tokens_added": [
+          "Audentra",
+          "Audentra",
+          "Create",
+          "Create",
+          "your",
+          "account",
+          "Use",
+          "Use",
+          "demo.",
+          "email",
+          "address",
+          "and",
+          "set",
+          "a",
+          "password",
+          "password",
+          "password",
+          "at",
+          "least",
+          "eight",
+          "characters.",
+          "First",
+          "name",
+          "name",
+          "Last",
+          "Email",
+          "PasswordShow",
+          "Confirm",
+          "passwordShow",
+          "I",
+          "Policy.",
+          "Already",
+          "in",
+          "View"
+        ]
+      }
+    },
+    {
+      "route": "/signup",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "response_status": 200,
+      "title": "Create account · Audentra",
+      "heading": "Create your account",
+      "document_width": 390,
+      "viewport_width": 390,
+      "has_react_root": false,
+      "has_react_bootstrap": false,
+      "console_errors": [],
+      "expected_local_404_diagnostic": false,
+      "responses": [
+        {
+          "path": "/signup",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_auth_forms.js",
+          "status": 200
+        },
+        {
+          "path": "/static/vendor/htmx-2.0.8.min.js",
+          "status": 200
+        }
+      ],
+      "screenshot": "signup-mobile.png",
+      "comparison": {
+        "source_heading": "Create your account",
+        "django_heading": "Create your account",
+        "source_text_characters": 271,
+        "django_text_characters": 337,
+        "normalized_text_exact_match": false,
+        "source_section_headings": [],
+        "django_section_headings": [],
+        "source_field_names": [
+          "acceptedTerms",
+          "confirmPassword",
+          "email",
+          "firstName",
+          "lastName",
+          "password"
+        ],
+        "django_field_names": [
+          "accepted_terms",
+          "confirm_password",
+          "csrfmiddlewaretoken",
+          "email",
+          "first_name",
+          "last_name",
+          "password"
+        ],
+        "source_field_names_missing_from_django": [
+          "acceptedTerms",
+          "confirmPassword",
+          "firstName",
+          "lastName"
+        ],
+        "source_button_labels": [
+          "Continue with Google",
+          "Create account",
+          "Show password",
+          "Show password"
+        ],
+        "django_button_labels": [
+          "Create account",
+          "Show password",
+          "Show password"
+        ],
+        "source_button_labels_missing_from_django": [
+          "Continue with Google"
+        ],
+        "source_local_destinations": [
+          "/",
+          "/login",
+          "/privacy",
+          "/terms"
+        ],
+        "django_local_destinations": [
+          "/",
+          "/login",
+          "/privacy",
+          "/terms"
+        ],
+        "django_link_labels": [
+          "Already have an account? Sign in",
+          "Audentra home",
+          "Privacy Policy",
+          "Terms of Service",
+          "View Audentra on GitHub →"
+        ],
+        "source_local_destinations_missing_from_django": [],
+        "source_text_tokens_missing_from_django": [
+          "AudentraCreate",
+          "accountUse",
+          "demo.Continue",
+          "with",
+          "Googleor",
+          "create",
+          "emailFirst",
+          "nameLast",
+          "nameEmailPasswordConfirm",
+          "passwordI",
+          "PolicyCreate",
+          "accountAlready",
+          "inView",
+          "source"
+        ],
+        "django_text_tokens_added": [
+          "Audentra",
+          "Audentra",
+          "Create",
+          "Create",
+          "your",
+          "account",
+          "Use",
+          "Use",
+          "demo.",
+          "email",
+          "address",
+          "and",
+          "set",
+          "a",
+          "password",
+          "password",
+          "password",
+          "at",
+          "least",
+          "eight",
+          "characters.",
+          "First",
+          "name",
+          "name",
+          "Last",
+          "Email",
+          "PasswordShow",
+          "Confirm",
+          "passwordShow",
+          "I",
+          "Policy.",
+          "Already",
+          "in",
+          "View"
+        ]
+      }
+    },
+    {
+      "route": "/forgot-password",
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "response_status": 200,
+      "title": "Email recovery unavailable · Audentra",
+      "heading": "Email recovery unavailable",
+      "document_width": 1440,
+      "viewport_width": 1440,
+      "has_react_root": false,
+      "has_react_bootstrap": false,
+      "console_errors": [],
+      "expected_local_404_diagnostic": false,
+      "responses": [
+        {
+          "path": "/forgot-password",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_auth_forms.js",
+          "status": 200
+        },
+        {
+          "path": "/static/vendor/htmx-2.0.8.min.js",
+          "status": 200
+        }
+      ],
+      "screenshot": "forgot-password-desktop.png",
+      "comparison": {
+        "source_heading": "Reset Your Password",
+        "django_heading": "Email recovery unavailable",
+        "source_text_characters": 187,
+        "django_text_characters": 204,
+        "normalized_text_exact_match": false,
+        "source_section_headings": [],
+        "django_section_headings": [],
+        "source_field_names": [
+          "email"
+        ],
+        "django_field_names": [],
+        "source_field_names_missing_from_django": [
+          "email"
+        ],
+        "source_button_labels": [
+          "Send Reset Link"
+        ],
+        "django_button_labels": [],
+        "source_button_labels_missing_from_django": [
+          "Send Reset Link"
+        ],
+        "source_local_destinations": [
+          "/",
+          "/login",
+          "/signup"
+        ],
+        "django_local_destinations": [
+          "/",
+          "/login",
+          "/signup"
+        ],
+        "django_link_labels": [
+          "Audentra home",
+          "Create an account",
+          "Sign in"
+        ],
+        "source_local_destinations_missing_from_django": [],
+        "source_text_tokens_missing_from_django": [
+          "VoiceForm",
+          "ProReset",
+          "Your",
+          "PasswordEnter",
+          "your",
+          "email",
+          "address",
+          "and",
+          "we'll",
+          "send",
+          "a",
+          "link",
+          "to",
+          "to",
+          "reset",
+          "password.Email",
+          "AddressSend",
+          "Reset",
+          "LinkBack",
+          "inDon't",
+          "have",
+          "account?",
+          "Create",
+          "one",
+          "here"
+        ],
+        "django_text_tokens_added": [
+          "AudentraEmail",
+          "recovery",
+          "recovery",
+          "unavailableEmail-based",
+          "forgotten-password",
+          "is",
+          "not",
+          "configured",
+          "for",
+          "this",
+          "development",
+          "site.",
+          "If",
+          "can",
+          "in,",
+          "use",
+          "Change",
+          "password",
+          "on",
+          "account",
+          "account",
+          "page.Sign",
+          "inCreate"
+        ]
+      }
+    },
+    {
+      "route": "/forgot-password",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "response_status": 200,
+      "title": "Email recovery unavailable · Audentra",
+      "heading": "Email recovery unavailable",
+      "document_width": 390,
+      "viewport_width": 390,
+      "has_react_root": false,
+      "has_react_bootstrap": false,
+      "console_errors": [],
+      "expected_local_404_diagnostic": false,
+      "responses": [
+        {
+          "path": "/forgot-password",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_auth_forms.js",
+          "status": 200
+        },
+        {
+          "path": "/static/vendor/htmx-2.0.8.min.js",
+          "status": 200
+        }
+      ],
+      "screenshot": "forgot-password-mobile.png",
+      "comparison": {
+        "source_heading": "Reset Your Password",
+        "django_heading": "Email recovery unavailable",
+        "source_text_characters": 187,
+        "django_text_characters": 204,
+        "normalized_text_exact_match": false,
+        "source_section_headings": [],
+        "django_section_headings": [],
+        "source_field_names": [
+          "email"
+        ],
+        "django_field_names": [],
+        "source_field_names_missing_from_django": [
+          "email"
+        ],
+        "source_button_labels": [
+          "Send Reset Link"
+        ],
+        "django_button_labels": [],
+        "source_button_labels_missing_from_django": [
+          "Send Reset Link"
+        ],
+        "source_local_destinations": [
+          "/",
+          "/login",
+          "/signup"
+        ],
+        "django_local_destinations": [
+          "/",
+          "/login",
+          "/signup"
+        ],
+        "django_link_labels": [
+          "Audentra home",
+          "Create an account",
+          "Sign in"
+        ],
+        "source_local_destinations_missing_from_django": [],
+        "source_text_tokens_missing_from_django": [
+          "VoiceForm",
+          "ProReset",
+          "Your",
+          "PasswordEnter",
+          "your",
+          "email",
+          "address",
+          "and",
+          "we'll",
+          "send",
+          "a",
+          "link",
+          "to",
+          "to",
+          "reset",
+          "password.Email",
+          "AddressSend",
+          "Reset",
+          "LinkBack",
+          "inDon't",
+          "have",
+          "account?",
+          "Create",
+          "one",
+          "here"
+        ],
+        "django_text_tokens_added": [
+          "AudentraEmail",
+          "recovery",
+          "recovery",
+          "unavailableEmail-based",
+          "forgotten-password",
+          "is",
+          "not",
+          "configured",
+          "for",
+          "this",
+          "development",
+          "site.",
+          "If",
+          "can",
+          "in,",
+          "use",
+          "Change",
+          "password",
+          "on",
+          "account",
+          "account",
+          "page.Sign",
+          "inCreate"
+        ]
+      }
+    },
+    {
+      "route": "/reset-password",
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "response_status": 404,
+      "title": "Reset link unavailable · Audentra",
+      "heading": "Reset link unavailable",
+      "document_width": 1440,
+      "viewport_width": 1440,
+      "has_react_root": false,
+      "has_react_bootstrap": false,
+      "console_errors": [
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ],
+      "expected_local_404_diagnostic": true,
+      "responses": [
+        {
+          "path": "/reset-password",
+          "status": 404
+        },
+        {
+          "path": "/static/js/p7_auth_forms.js",
+          "status": 200
+        },
+        {
+          "path": "/static/vendor/htmx-2.0.8.min.js",
+          "status": 200
+        }
+      ],
+      "screenshot": "reset-password-desktop.png",
+      "comparison": {
+        "source_heading": "Reset Your Password",
+        "django_heading": "Reset link unavailable",
+        "source_text_characters": 291,
+        "django_text_characters": 157,
+        "normalized_text_exact_match": false,
+        "source_section_headings": [],
+        "django_section_headings": [],
+        "source_field_names": [
+          "confirmPassword",
+          "password"
+        ],
+        "django_field_names": [],
+        "source_field_names_missing_from_django": [
+          "confirmPassword",
+          "password"
+        ],
+        "source_button_labels": [
+          "Update Password"
+        ],
+        "django_button_labels": [],
+        "source_button_labels_missing_from_django": [
+          "Update Password"
+        ],
+        "source_local_destinations": [
+          "/",
+          "/login"
+        ],
+        "django_local_destinations": [
+          "/",
+          "/login"
+        ],
+        "django_link_labels": [
+          "Audentra home",
+          "Sign in"
+        ],
+        "source_local_destinations_missing_from_django": [],
+        "source_text_tokens_missing_from_django": [
+          "VoiceForm",
+          "ProReset",
+          "Your",
+          "PasswordEnter",
+          "your",
+          "new",
+          "new",
+          "new",
+          "password",
+          "password",
+          "below",
+          "to",
+          "complete",
+          "the",
+          "reset",
+          "process.Invalid",
+          "link.",
+          "Please",
+          "request",
+          "a",
+          "reset.New",
+          "PasswordConfirm",
+          "New",
+          "PasswordUpdate",
+          "PasswordYour",
+          "will",
+          "be",
+          "encrypted",
+          "and",
+          "secured",
+          "with",
+          "enterprise-grade",
+          "protection.Back"
+        ],
+        "django_text_tokens_added": [
+          "AudentraReset",
+          "link",
+          "unavailablePassword",
+          "links",
+          "are",
+          "not",
+          "active",
+          "on",
+          "this",
+          "development",
+          "site.",
+          "Return",
+          "in",
+          "or",
+          "use",
+          "Change",
+          "after",
+          "signing",
+          "in.Sign"
+        ]
+      }
+    },
+    {
+      "route": "/reset-password",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "response_status": 404,
+      "title": "Reset link unavailable · Audentra",
+      "heading": "Reset link unavailable",
+      "document_width": 390,
+      "viewport_width": 390,
+      "has_react_root": false,
+      "has_react_bootstrap": false,
+      "console_errors": [
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ],
+      "expected_local_404_diagnostic": true,
+      "responses": [
+        {
+          "path": "/reset-password",
+          "status": 404
+        },
+        {
+          "path": "/static/js/p7_auth_forms.js",
+          "status": 200
+        },
+        {
+          "path": "/static/vendor/htmx-2.0.8.min.js",
+          "status": 200
+        }
+      ],
+      "screenshot": "reset-password-mobile.png",
+      "comparison": {
+        "source_heading": "Reset Your Password",
+        "django_heading": "Reset link unavailable",
+        "source_text_characters": 291,
+        "django_text_characters": 157,
+        "normalized_text_exact_match": false,
+        "source_section_headings": [],
+        "django_section_headings": [],
+        "source_field_names": [
+          "confirmPassword",
+          "password"
+        ],
+        "django_field_names": [],
+        "source_field_names_missing_from_django": [
+          "confirmPassword",
+          "password"
+        ],
+        "source_button_labels": [
+          "Update Password"
+        ],
+        "django_button_labels": [],
+        "source_button_labels_missing_from_django": [
+          "Update Password"
+        ],
+        "source_local_destinations": [
+          "/",
+          "/login"
+        ],
+        "django_local_destinations": [
+          "/",
+          "/login"
+        ],
+        "django_link_labels": [
+          "Audentra home",
+          "Sign in"
+        ],
+        "source_local_destinations_missing_from_django": [],
+        "source_text_tokens_missing_from_django": [
+          "VoiceForm",
+          "ProReset",
+          "Your",
+          "PasswordEnter",
+          "your",
+          "new",
+          "new",
+          "new",
+          "password",
+          "password",
+          "below",
+          "to",
+          "complete",
+          "the",
+          "reset",
+          "process.Invalid",
+          "link.",
+          "Please",
+          "request",
+          "a",
+          "reset.New",
+          "PasswordConfirm",
+          "New",
+          "PasswordUpdate",
+          "PasswordYour",
+          "will",
+          "be",
+          "encrypted",
+          "and",
+          "secured",
+          "with",
+          "enterprise-grade",
+          "protection.Back"
+        ],
+        "django_text_tokens_added": [
+          "AudentraReset",
+          "link",
+          "unavailablePassword",
+          "links",
+          "are",
+          "not",
+          "active",
+          "on",
+          "this",
+          "development",
+          "site.",
+          "Return",
+          "in",
+          "or",
+          "use",
+          "Change",
+          "after",
+          "signing",
+          "in.Sign"
+        ]
+      }
+    }
+  ],
+  "interactions": [
+    {
+      "route": "/login",
+      "state": "safe-next rejects an external URL; rapid duplicate click creates one synthetic sign-in call; remember-me produces a bounded persistent session cookie"
+    },
+    {
+      "route": "/change-password",
+      "state": "password update clears the old session and protected session route redirects to sign-in"
+    },
+    {
+      "route": "/signup",
+      "state": "valid signup creates a synthetic authenticated Django session without provider or email calls"
+    },
+    {
+      "route": "/logout",
+      "state": "logout clears the session and protected route requires sign-in again"
+    },
+    {
+      "route": "/login",
+      "state": "missing CSRF is rejected before sign-in; full-page and boosted HTMX invalid-credential responses show safe feedback, retain the email, and clear the password"
+    },
+    {
+      "route": "/login",
+      "state": "synthetic provider outage shows a safe retryable error without exposing credentials; recovery email and OAuth remain unavailable by contract"
+    }
+  ],
+  "route_contracts": [
+    {
+      "route": "/login",
+      "viewport": "desktop",
+      "passed": true,
+      "source_html_sha256": "39957190b7ffdedbceab0e098084692677a6a6ba49ae176a553a5795d3cea042",
+      "source_run_id": "p7-sr-review-source-20261013a",
+      "source_worktree_digest": "2f50c0fa03f6215104e5b1267bc9061447b7c851643328a4a0ec5a74ced68b1c",
+      "source_heading": "Welcome back",
+      "expected_heading": "Welcome back",
+      "required_sections": [],
+      "required_fields": [
+        "email",
+        "password",
+        "remember_me",
+        "next"
+      ],
+      "required_controls": [
+        "Continue with Google",
+        "Sign in",
+        "Show password"
+      ],
+      "required_destinations": [
+        "/",
+        "/forgot-password",
+        "/signup"
+      ],
+      "accepted_source_differences": [
+        "Google auth remains unavailable under P4 and the matching control is visibly disabled with an explanation.",
+        "Source remember-me field maps to Django remember_me; hidden next and CSRF fields support the authenticated route contract."
+      ],
+      "mapped_source_sections": {},
+      "mapped_source_fields": {
+        "remember-me": "remember_me"
+      },
+      "mapped_source_controls": {
+        "Audentra": "Audentra home"
+      },
+      "source_feature_counts": {
+        "sections": 0,
+        "fields": 3,
+        "controls": 7,
+        "destinations": 3,
+        "copy_blocks": 2
+      }
+    },
+    {
+      "route": "/login",
+      "viewport": "mobile",
+      "passed": true,
+      "source_html_sha256": "39957190b7ffdedbceab0e098084692677a6a6ba49ae176a553a5795d3cea042",
+      "source_run_id": "p7-sr-review-source-20261013a",
+      "source_worktree_digest": "2f50c0fa03f6215104e5b1267bc9061447b7c851643328a4a0ec5a74ced68b1c",
+      "source_heading": "Welcome back",
+      "expected_heading": "Welcome back",
+      "required_sections": [],
+      "required_fields": [
+        "email",
+        "password",
+        "remember_me",
+        "next"
+      ],
+      "required_controls": [
+        "Continue with Google",
+        "Sign in",
+        "Show password"
+      ],
+      "required_destinations": [
+        "/",
+        "/forgot-password",
+        "/signup"
+      ],
+      "accepted_source_differences": [
+        "Google auth remains unavailable under P4 and the matching control is visibly disabled with an explanation.",
+        "Source remember-me field maps to Django remember_me; hidden next and CSRF fields support the authenticated route contract."
+      ],
+      "mapped_source_sections": {},
+      "mapped_source_fields": {
+        "remember-me": "remember_me"
+      },
+      "mapped_source_controls": {
+        "Audentra": "Audentra home"
+      },
+      "source_feature_counts": {
+        "sections": 0,
+        "fields": 3,
+        "controls": 7,
+        "destinations": 3,
+        "copy_blocks": 2
+      }
+    },
+    {
+      "route": "/signup",
+      "viewport": "desktop",
+      "passed": true,
+      "source_html_sha256": "c42be5282860d50b19c82c78a98521a0db442e8be3b41c1749bb432ae4a48602",
+      "source_run_id": "p7-sr-review-source-20261013a",
+      "source_worktree_digest": "2f50c0fa03f6215104e5b1267bc9061447b7c851643328a4a0ec5a74ced68b1c",
+      "source_heading": "Create your account",
+      "expected_heading": "Create your account",
+      "required_sections": [],
+      "required_fields": [
+        "first_name",
+        "last_name",
+        "email",
+        "password",
+        "confirm_password",
+        "accepted_terms"
+      ],
+      "required_controls": [
+        "Create account",
+        "Show password"
+      ],
+      "required_destinations": [
+        "/",
+        "/login",
+        "/terms",
+        "/privacy"
+      ],
+      "accepted_source_differences": [
+        "Source Google OAuth is unavailable under P4.",
+        "Source camelCase fields map to Django snake_case fields.",
+        "Consent is retained and linked to the local Terms and Privacy routes."
+      ],
+      "mapped_source_sections": {},
+      "mapped_source_fields": {
+        "firstName": "first_name",
+        "lastName": "last_name",
+        "confirmPassword": "confirm_password",
+        "acceptedTerms": "accepted_terms"
+      },
+      "mapped_source_controls": {
+        "Audentra": "Audentra home",
+        "Sign in": "Already have an account? Sign in",
+        "View source on GitHub →": "View Audentra on GitHub →"
+      },
+      "source_feature_counts": {
+        "sections": 0,
+        "fields": 6,
+        "controls": 9,
+        "destinations": 4,
+        "copy_blocks": 2
+      }
+    },
+    {
+      "route": "/signup",
+      "viewport": "mobile",
+      "passed": true,
+      "source_html_sha256": "c42be5282860d50b19c82c78a98521a0db442e8be3b41c1749bb432ae4a48602",
+      "source_run_id": "p7-sr-review-source-20261013a",
+      "source_worktree_digest": "2f50c0fa03f6215104e5b1267bc9061447b7c851643328a4a0ec5a74ced68b1c",
+      "source_heading": "Create your account",
+      "expected_heading": "Create your account",
+      "required_sections": [],
+      "required_fields": [
+        "first_name",
+        "last_name",
+        "email",
+        "password",
+        "confirm_password",
+        "accepted_terms"
+      ],
+      "required_controls": [
+        "Create account",
+        "Show password"
+      ],
+      "required_destinations": [
+        "/",
+        "/login",
+        "/terms",
+        "/privacy"
+      ],
+      "accepted_source_differences": [
+        "Source Google OAuth is unavailable under P4.",
+        "Source camelCase fields map to Django snake_case fields.",
+        "Consent is retained and linked to the local Terms and Privacy routes."
+      ],
+      "mapped_source_sections": {},
+      "mapped_source_fields": {
+        "firstName": "first_name",
+        "lastName": "last_name",
+        "confirmPassword": "confirm_password",
+        "acceptedTerms": "accepted_terms"
+      },
+      "mapped_source_controls": {
+        "Audentra": "Audentra home",
+        "Sign in": "Already have an account? Sign in",
+        "View source on GitHub →": "View Audentra on GitHub →"
+      },
+      "source_feature_counts": {
+        "sections": 0,
+        "fields": 6,
+        "controls": 9,
+        "destinations": 4,
+        "copy_blocks": 2
+      }
+    },
+    {
+      "route": "/forgot-password",
+      "viewport": "desktop",
+      "passed": true,
+      "source_html_sha256": "4f0f893835859caefc780ddc4b1b3aef73d5b72b445081bb56adf9ef2bb2c10c",
+      "source_run_id": "p7-sr-review-source-20261013a",
+      "source_worktree_digest": "2f50c0fa03f6215104e5b1267bc9061447b7c851643328a4a0ec5a74ced68b1c",
+      "source_heading": "Reset Your Password",
+      "expected_heading": "Email recovery unavailable",
+      "required_sections": [],
+      "required_fields": [],
+      "required_controls": [],
+      "required_destinations": [
+        "/login",
+        "/signup"
+      ],
+      "accepted_source_differences": [
+        "Source recovery email form is unavailable under P4; no email delivery is implemented."
+      ],
+      "mapped_source_sections": {},
+      "mapped_source_fields": {},
+      "mapped_source_controls": {
+        "Audentra": "Audentra home",
+        "VoiceForm Pro": "Audentra home",
+        "Back to sign in": "Sign in",
+        "Create one here": "Create an account"
+      },
+      "source_feature_counts": {
+        "sections": 0,
+        "fields": 1,
+        "controls": 4,
+        "destinations": 3,
+        "copy_blocks": 2
+      }
+    },
+    {
+      "route": "/forgot-password",
+      "viewport": "mobile",
+      "passed": true,
+      "source_html_sha256": "4f0f893835859caefc780ddc4b1b3aef73d5b72b445081bb56adf9ef2bb2c10c",
+      "source_run_id": "p7-sr-review-source-20261013a",
+      "source_worktree_digest": "2f50c0fa03f6215104e5b1267bc9061447b7c851643328a4a0ec5a74ced68b1c",
+      "source_heading": "Reset Your Password",
+      "expected_heading": "Email recovery unavailable",
+      "required_sections": [],
+      "required_fields": [],
+      "required_controls": [],
+      "required_destinations": [
+        "/login",
+        "/signup"
+      ],
+      "accepted_source_differences": [
+        "Source recovery email form is unavailable under P4; no email delivery is implemented."
+      ],
+      "mapped_source_sections": {},
+      "mapped_source_fields": {},
+      "mapped_source_controls": {
+        "Audentra": "Audentra home",
+        "VoiceForm Pro": "Audentra home",
+        "Back to sign in": "Sign in",
+        "Create one here": "Create an account"
+      },
+      "source_feature_counts": {
+        "sections": 0,
+        "fields": 1,
+        "controls": 4,
+        "destinations": 3,
+        "copy_blocks": 2
+      }
+    },
+    {
+      "route": "/reset-password",
+      "viewport": "desktop",
+      "passed": true,
+      "source_html_sha256": "2eb9280cf426a49aae75452840048ed4dd76e9f0c2327a9eec1e1dda670981d7",
+      "source_run_id": "p7-sr-review-source-20261013a",
+      "source_worktree_digest": "2f50c0fa03f6215104e5b1267bc9061447b7c851643328a4a0ec5a74ced68b1c",
+      "source_heading": "Reset Your Password",
+      "expected_heading": "Reset link unavailable",
+      "required_sections": [],
+      "required_fields": [],
+      "required_controls": [],
+      "required_destinations": [
+        "/login"
+      ],
+      "accepted_source_differences": [
+        "Source reset form is unavailable under P4; reset tokens are not consumed or delivered."
+      ],
+      "mapped_source_sections": {},
+      "mapped_source_fields": {},
+      "mapped_source_controls": {
+        "VoiceForm Pro": "Audentra home",
+        "Back to sign in": "Sign in"
+      },
+      "source_feature_counts": {
+        "sections": 0,
+        "fields": 2,
+        "controls": 3,
+        "destinations": 2,
+        "copy_blocks": 2
+      }
+    },
+    {
+      "route": "/reset-password",
+      "viewport": "mobile",
+      "passed": true,
+      "source_html_sha256": "2eb9280cf426a49aae75452840048ed4dd76e9f0c2327a9eec1e1dda670981d7",
+      "source_run_id": "p7-sr-review-source-20261013a",
+      "source_worktree_digest": "2f50c0fa03f6215104e5b1267bc9061447b7c851643328a4a0ec5a74ced68b1c",
+      "source_heading": "Reset Your Password",
+      "expected_heading": "Reset link unavailable",
+      "required_sections": [],
+      "required_fields": [],
+      "required_controls": [],
+      "required_destinations": [
+        "/login"
+      ],
+      "accepted_source_differences": [
+        "Source reset form is unavailable under P4; reset tokens are not consumed or delivered."
+      ],
+      "mapped_source_sections": {},
+      "mapped_source_fields": {},
+      "mapped_source_controls": {
+        "VoiceForm Pro": "Audentra home",
+        "Back to sign in": "Sign in"
+      },
+      "source_feature_counts": {
+        "sections": 0,
+        "fields": 2,
+        "controls": 3,
+        "destinations": 2,
+        "copy_blocks": 2
+      }
+    }
+  ],
+  "negative_control_checks": []
+}

@@ -3,10 +3,15 @@
 from collections.abc import Callable
 from contextlib import ExitStack
 from datetime import UTC, date, datetime, time
+from time import time as unix_time
+from typing import Any
 from unittest.mock import patch
-from uuid import UUID
+from uuid import UUID, uuid4
 
-from apps.accounts.services.tokens import _principal
+from apps.accounts.principals import SupabaseUser
+from apps.accounts.services.gotrue import AuthServiceError, AuthTokens
+from apps.accounts.services.tokens import AUTH_SESSION_KEY, _principal
+from apps.storage import services as storage_services
 from django.conf import settings
 from django.http import HttpRequest, HttpResponse
 
@@ -15,7 +20,7 @@ FIXTURE_USER = _principal(
     "synthetic@example.invalid",
     {"first_name": "Demo", "last_name": "User"},
 )
-FIXTURE_TEMPLATE = {
+FIXTURE_TEMPLATE: dict[str, Any] = {
     "id": UUID("33333333-3333-4333-8333-333333333333"),
     "name": "Patient intake",
     "category": "healthcare",
@@ -34,7 +39,7 @@ FIXTURE_TEMPLATE = {
     "shared_with": [],
     "reviews": [],
 }
-FIXTURE_EVENT = {
+FIXTURE_EVENT: dict[str, Any] = {
     "id": UUID("44444444-4444-4444-8444-444444444444"),
     "title": "Review patient intake",
     "description": "Synthetic browser-capture schedule",
@@ -50,12 +55,398 @@ FIXTURE_EVENT = {
     "status": "scheduled",
     "created_by": FIXTURE_USER.id,
 }
-FIXTURE_FILLED = {
+FIXTURE_FILLED: dict[str, Any] = {
     "id": UUID("55555555-5555-4555-8555-555555555555"),
     "template_name": "Patient intake",
     "form_data": {"patient_name": "Sample Patient", "email": "patient@example.invalid"},
     "created_at": datetime(2026, 10, 12, 8, tzinfo=UTC),
 }
+_BROWSER_FILLED_RECORDS = [FIXTURE_FILLED]
+_BROWSER_SCHEDULE_EVENTS = [FIXTURE_EVENT]
+_BROWSER_TEMPLATES: list[dict[str, Any]] = []
+_BROWSER_TEMPLATE_FILES: dict[str, tuple[UUID, bytes, str]] = {}
+_AUTH_FLOW_SIGN_IN_CALLS = 0
+
+
+def _copy_fixture_template() -> dict[str, Any]:
+    return {
+        **FIXTURE_TEMPLATE,
+        "form_data": {"fields": [dict(field) for field in FIXTURE_TEMPLATE["form_data"]["fields"]]},
+        "shared_with": [],
+        "reviews": [],
+    }
+
+
+def _reset_browser_templates() -> None:
+    _BROWSER_TEMPLATES[:] = [_copy_fixture_template()]
+    _BROWSER_TEMPLATE_FILES.clear()
+
+
+def _list_fixture_templates(
+    user: SupabaseUser,
+    *,
+    category: str | None = None,
+    search: str | None = None,
+    sort_by: str = "created_at",
+    ascending: bool = False,
+    limit: int = 50,
+    offset: int = 0,
+) -> list[dict[str, Any]]:
+    if user.id != FIXTURE_USER.id:
+        return []
+    rows = list(_BROWSER_TEMPLATES)
+    if category not in {None, "all"}:
+        rows = [row for row in rows if row["category"] == category]
+    if search:
+        term = search.strip().casefold()
+        rows = [
+            row
+            for row in rows
+            if term
+            in " ".join((row["name"], row["category"], row.get("description") or "")).casefold()
+        ]
+    if sort_by in {"created_at", "name", "category"}:
+        rows.sort(key=lambda row: str(row.get(sort_by) or "").casefold(), reverse=not ascending)
+    return rows[offset : offset + limit]
+
+
+def _get_fixture_template(user: SupabaseUser, template_id: UUID) -> dict[str, Any] | None:
+    if user.id != FIXTURE_USER.id:
+        return None
+    return next((row for row in _BROWSER_TEMPLATES if row["id"] == template_id), None)
+
+
+def _create_fixture_template(user: SupabaseUser, values: dict[str, Any]) -> dict[str, Any]:
+    if user.id != FIXTURE_USER.id:
+        raise ValueError("The template is unavailable to this synthetic account.")
+    now = datetime.now(UTC)
+    row = {
+        "id": uuid4(),
+        "created_by": user.id,
+        "created_at": now,
+        "updated_at": now,
+        "description": "",
+        "form_data": {"fields": []},
+        "visibility": "visible",
+        "uploaded_file": None,
+        "shared_with": [],
+        "reviews": [],
+        **values,
+    }
+    _BROWSER_TEMPLATES.insert(0, row)
+    return row
+
+
+def _update_fixture_template(
+    user: SupabaseUser, template_id: UUID, values: dict[str, Any]
+) -> dict[str, Any] | None:
+    row = _get_fixture_template(user, template_id)
+    if row is None:
+        return None
+    row.update(values)
+    row["updated_at"] = datetime.now(UTC)
+    return row
+
+
+def _set_fixture_template_visibility(
+    user: SupabaseUser, template_id: UUID, visibility: str
+) -> dict[str, Any] | None:
+    if visibility not in {"visible", "hidden"}:
+        raise ValueError("Unsupported template visibility.")
+    return _update_fixture_template(user, template_id, {"visibility": visibility})
+
+
+def _delete_fixture_template(
+    user: SupabaseUser, template_id: UUID, *, delete_file: Callable[[str], None] | None = None
+) -> bool:
+    row = _get_fixture_template(user, template_id)
+    if row is None:
+        return False
+    if row.get("uploaded_file") and delete_file is not None:
+        delete_file(row["uploaded_file"])
+    _BROWSER_TEMPLATES.remove(row)
+    return True
+
+
+def _upload_fixture_template_file(
+    request: HttpRequest, user: SupabaseUser, template_id: UUID, upload: Any
+) -> dict[str, Any]:
+    row = _get_fixture_template(user, template_id)
+    if row is None or row["created_by"] != user.id:
+        raise ValueError("Template is not available for file upload.")
+    content, content_type = storage_services._file_details(upload)
+    extension = upload.name.rsplit(".", 1)[-1].lower()
+    old_path = row.get("uploaded_file")
+    path = f"templates/{template_id}/{uuid4()}.{extension}"
+    _BROWSER_TEMPLATE_FILES[path] = (template_id, content, content_type)
+    row["uploaded_file"] = path
+    if old_path:
+        _BROWSER_TEMPLATE_FILES.pop(old_path, None)
+    return {
+        "path": path,
+        "content_type": content_type,
+        "cleanup_pending": False,
+        "cleanup_path": None,
+    }
+
+
+def _download_fixture_template_file(
+    _request: HttpRequest, user: SupabaseUser, template_id: UUID
+) -> tuple[bytes, str, str]:
+    row = _get_fixture_template(user, template_id)
+    path = row.get("uploaded_file") if row is not None and row["created_by"] == user.id else None
+    stored = _BROWSER_TEMPLATE_FILES.get(path) if isinstance(path, str) else None
+    if not isinstance(path, str) or stored is None or stored[0] != template_id:
+        raise ValueError("Template file is not available.")
+    extension = path.rsplit(".", 1)[-1]
+    return stored[1], stored[2], f"template.{extension}"
+
+
+def _remove_fixture_template_object(
+    _request: HttpRequest, user: SupabaseUser, template_id: UUID, path: str
+) -> None:
+    stored = _BROWSER_TEMPLATE_FILES.get(path)
+    if user.id != FIXTURE_USER.id or stored is None or stored[0] != template_id:
+        raise ValueError("Private fixture object is unavailable.")
+    del _BROWSER_TEMPLATE_FILES[path]
+
+
+_reset_browser_templates()
+
+
+def _auth_flow_tokens(email: str, metadata: dict[str, Any] | None = None) -> AuthTokens:
+    return AuthTokens(
+        subject="66666666-6666-4666-8666-666666666666",
+        email=email,
+        user_metadata=metadata or {"first_name": "Auth", "last_name": "Fixture"},
+        access_token="synthetic-browser-auth-access",
+        refresh_token="synthetic-browser-auth-refresh",
+        expires_at=int(unix_time()) + 3600,
+    )
+
+
+def _authenticate_auth_flow(request: HttpRequest) -> SupabaseUser | None:
+    data = request.session.get(AUTH_SESSION_KEY)
+    if not isinstance(data, dict) or data.get("access_token") != "synthetic-browser-auth-access":
+        return None
+    subject = data.get("subject")
+    if not isinstance(subject, str):
+        return None
+    email = data.get("email")
+    metadata = data.get("user_metadata")
+    return _principal(
+        subject,
+        email if isinstance(email, str) else None,
+        metadata if isinstance(metadata, dict) else {},
+    )
+
+
+def _auth_flow_sign_in(_client: object, email: str, password: str) -> AuthTokens:
+    global _AUTH_FLOW_SIGN_IN_CALLS
+    _AUTH_FLOW_SIGN_IN_CALLS += 1
+    if password == "provider-down":
+        raise AuthServiceError("Synthetic provider outage", kind="unavailable")
+    if password != "synthetic-passphrase":
+        raise AuthServiceError("Synthetic credentials rejected", kind="invalid")
+    return _auth_flow_tokens(email)
+
+
+def _auth_flow_sign_up(
+    _client: object, email: str, _password: str, metadata: dict[str, str]
+) -> dict[str, Any]:
+    tokens = _auth_flow_tokens(email, metadata)
+    return {
+        "access_token": tokens.access_token,
+        "refresh_token": tokens.refresh_token,
+        "expires_in": 3600,
+        "user": {
+            "id": tokens.subject,
+            "email": email,
+            "user_metadata": metadata,
+        },
+    }
+
+
+def _enter_auth_patch(stack: ExitStack, target: str, replacement: object) -> None:
+    stack.enter_context(patch(target, replacement))
+
+
+def _save_fixture_filled(
+    user: SupabaseUser,
+    form_data: dict[str, Any],
+    *,
+    template_id: UUID | None = None,
+    template_name: str = "",
+) -> dict[str, Any]:
+    if user.id != FIXTURE_USER.id or template_id != FIXTURE_TEMPLATE["id"]:
+        raise ValueError("This template is unavailable to the synthetic browser account.")
+    row = {
+        "id": uuid4(),
+        "template_name": FIXTURE_TEMPLATE["name"],
+        "form_data": dict(form_data),
+        "created_at": datetime.now(UTC),
+    }
+    _BROWSER_FILLED_RECORDS.insert(0, row)
+    return row
+
+
+def _list_fixture_filled(
+    user: SupabaseUser, *, limit: int = 100, offset: int = 0
+) -> list[dict[str, Any]]:
+    if user.id != FIXTURE_USER.id:
+        return []
+    return _BROWSER_FILLED_RECORDS[offset : offset + limit]
+
+
+def _delete_fixture_filled(user: SupabaseUser, record_id: UUID) -> bool:
+    if user.id != FIXTURE_USER.id:
+        return False
+    for index, row in enumerate(_BROWSER_FILLED_RECORDS):
+        if row["id"] == record_id:
+            del _BROWSER_FILLED_RECORDS[index]
+            return True
+    return False
+
+
+def _schedule_rows(user: SupabaseUser) -> list[dict[str, Any]]:
+    return _BROWSER_SCHEDULE_EVENTS if user.id == FIXTURE_USER.id else []
+
+
+def _list_fixture_events(
+    user: SupabaseUser,
+    *,
+    start_date: date | None = None,
+    end_date: date | None = None,
+    event_type: str | None = None,
+    status: str | None = None,
+    limit: int = 100,
+    offset: int = 0,
+) -> list[dict[str, Any]]:
+    rows = [
+        row
+        for row in _schedule_rows(user)
+        if (start_date is None or row["date"] >= start_date)
+        and (end_date is None or row["date"] <= end_date)
+        and event_type in {None, "all", row["type"]}
+        and status in {None, "all", row["status"]}
+    ]
+    rows.sort(key=lambda row: (row["date"], row["time"], str(row["id"])))
+    return rows[offset : offset + limit]
+
+
+def _get_fixture_event(user: SupabaseUser, event_id: UUID) -> dict[str, Any] | None:
+    return next((row for row in _schedule_rows(user) if row["id"] == event_id), None)
+
+
+def _search_fixture_events(
+    user: SupabaseUser, term: str, *, limit: int = 100
+) -> list[dict[str, Any]]:
+    query = term.strip().casefold()
+    if not query:
+        return []
+    rows = [
+        row
+        for row in _schedule_rows(user)
+        if query in " ".join((row["title"], row["description"], row["location"])).casefold()
+    ]
+    return rows[:limit]
+
+
+def _upcoming_fixture_events(user: SupabaseUser, *, limit: int = 10) -> list[dict[str, Any]]:
+    today = datetime.now(UTC).date()
+    rows = [
+        row
+        for row in _schedule_rows(user)
+        if today <= row["date"] <= date.fromordinal(today.toordinal() + 7)
+        and row["status"] == "scheduled"
+    ]
+    rows.sort(key=lambda row: (row["date"], row["time"], str(row["id"])))
+    return rows[:limit]
+
+
+def _fixture_event_stats(user: SupabaseUser) -> dict[str, int]:
+    today = datetime.now(UTC).date()
+    start_month = today.replace(day=1)
+    rows = [row for row in _schedule_rows(user) if row["date"] >= start_month]
+    return {
+        "total": len(rows),
+        "completed": sum(row["status"] == "completed" for row in rows),
+        "upcoming": sum(row["date"] >= today and row["status"] == "scheduled" for row in rows),
+        "highPriority": sum(
+            row["date"] >= today and row["status"] == "scheduled" and row["priority"] == "high"
+            for row in rows
+        ),
+    }
+
+
+def _fixture_manage_event_stats(user: SupabaseUser) -> dict[str, int]:
+    rows = _schedule_rows(user)
+    return {
+        "total": len(rows),
+        "scheduled": sum(row["status"] == "scheduled" for row in rows),
+        "completed": sum(row["status"] == "completed" for row in rows),
+        "cancelled": sum(row["status"] == "cancelled" for row in rows),
+        "high_priority": sum(row["priority"] == "high" for row in rows),
+    }
+
+
+def _create_fixture_event(user: SupabaseUser, values: dict[str, Any]) -> dict[str, Any]:
+    if user.id != FIXTURE_USER.id:
+        raise ValueError("The schedule is unavailable to this synthetic account.")
+    now = datetime.now(UTC)
+    row = {
+        "id": uuid4(),
+        "created_by": user.id,
+        "created_at": now,
+        "updated_at": now,
+        "description": "",
+        "duration": 60,
+        "type": "other",
+        "priority": "medium",
+        "attendees": [],
+        "location": "",
+        "form_id": None,
+        "reminder_minutes": 15,
+        "status": "scheduled",
+        **values,
+    }
+    _BROWSER_SCHEDULE_EVENTS.append(row)
+    return row
+
+
+def _update_fixture_event(
+    user: SupabaseUser, event_id: UUID, values: dict[str, Any]
+) -> dict[str, Any] | None:
+    row = _get_fixture_event(user, event_id)
+    if row is None:
+        return None
+    row.update(values)
+    row["updated_at"] = datetime.now(UTC)
+    return row
+
+
+def _delete_fixture_event(user: SupabaseUser, event_id: UUID) -> bool:
+    row = _get_fixture_event(user, event_id)
+    if row is None:
+        return False
+    _BROWSER_SCHEDULE_EVENTS.remove(row)
+    return True
+
+
+def _set_fixture_event_status(
+    user: SupabaseUser, event_id: UUID, status: str
+) -> dict[str, Any] | None:
+    return _update_fixture_event(user, event_id, {"status": status})
+
+
+def _reset_browser_schedule_fixtures(event_date: str = "") -> None:
+    event = {**FIXTURE_EVENT, "attendees": list(FIXTURE_EVENT["attendees"])}
+    if event_date:
+        try:
+            event["date"] = date.fromisoformat(event_date)
+        except ValueError:
+            pass
+    _BROWSER_SCHEDULE_EVENTS[:] = [event]
 
 
 class P7FixtureAuthenticationMiddleware:
@@ -65,17 +456,74 @@ class P7FixtureAuthenticationMiddleware:
         self.get_response = get_response
 
     def __call__(self, request: HttpRequest) -> HttpResponse:
+        if (
+            request.headers.get("X-P7-Fixture-Reset") == "1"
+            and request.method == "GET"
+            and not request.GET
+        ):
+            fixture_event_date = (
+                request.headers.get("X-P7-Fixture-Event-Date", "")
+                if request.path_info.rstrip("/") == "/scheduler"
+                else ""
+            )
+            _reset_browser_schedule_fixtures(fixture_event_date)
+            if request.path_info.rstrip("/") == "/templates":
+                _reset_browser_templates()
+        session_auth = request.session.get(AUTH_SESSION_KEY)
+        synthetic_session = (
+            isinstance(session_auth, dict)
+            and session_auth.get("access_token") == "synthetic-browser-auth-access"
+        )
+        auth_flow = (
+            request.headers.get("X-P7-Auth-Flow") == "1"
+            or request.GET.get("p7_auth_flow") == "1"
+            or request.POST.get("p7_auth_flow") == "1"
+            or synthetic_session
+        )
+        if auth_flow and request.method == "GET" and request.path_info in {"/login", "/login/"}:
+            global _AUTH_FLOW_SIGN_IN_CALLS
+            _AUTH_FLOW_SIGN_IN_CALLS = 0
         with ExitStack() as stack:
             stack.enter_context(
                 patch(
                     "apps.accounts.middleware.authenticate_session",
-                    side_effect=lambda current: (
-                        FIXTURE_USER
-                        if current.path_info in settings.P7_PROTECTED_PATHS
-                        else None
+                    side_effect=(
+                        _authenticate_auth_flow
+                        if auth_flow
+                        else lambda current: (
+                            FIXTURE_USER
+                            if current.path_info in settings.P7_PROTECTED_PATHS
+                            else None
+                        )
                     ),
                 )
             )
+            if auth_flow:
+                _enter_auth_patch(
+                    stack,
+                    "apps.accounts.services.gotrue.GoTrueClient.sign_in",
+                    _auth_flow_sign_in,
+                )
+                _enter_auth_patch(
+                    stack,
+                    "apps.accounts.services.gotrue.GoTrueClient.sign_up",
+                    _auth_flow_sign_up,
+                )
+                _enter_auth_patch(
+                    stack,
+                    "apps.accounts.services.gotrue.GoTrueClient.update_password",
+                    lambda _client, *_args, **_kwargs: None,
+                )
+                _enter_auth_patch(
+                    stack,
+                    "apps.accounts.services.gotrue.GoTrueClient.sign_out_local",
+                    lambda _client, *_args, **_kwargs: None,
+                )
+                _enter_auth_patch(
+                    stack,
+                    "apps.accounts.views.ensure_profile",
+                    lambda *_args, **_kwargs: None,
+                )
             stack.enter_context(
                 patch(
                     "apps.application.views.profile_selectors.get_profile",
@@ -90,13 +538,13 @@ class P7FixtureAuthenticationMiddleware:
             stack.enter_context(
                 patch(
                     "apps.application.views.template_selectors.list_templates",
-                    return_value=[FIXTURE_TEMPLATE],
+                    side_effect=_list_fixture_templates,
                 )
             )
             stack.enter_context(
                 patch(
                     "apps.application.views.template_selectors.get_template",
-                    return_value=FIXTURE_TEMPLATE,
+                    side_effect=_get_fixture_template,
                 )
             )
             stack.enter_context(
@@ -119,38 +567,126 @@ class P7FixtureAuthenticationMiddleware:
             )
             stack.enter_context(
                 patch(
+                    "apps.application.views.template_services.create_template",
+                    side_effect=_create_fixture_template,
+                )
+            )
+            stack.enter_context(
+                patch(
+                    "apps.application.views.template_services.update_template",
+                    side_effect=_update_fixture_template,
+                )
+            )
+            stack.enter_context(
+                patch(
+                    "apps.application.views.template_services.set_template_visibility",
+                    side_effect=_set_fixture_template_visibility,
+                )
+            )
+            stack.enter_context(
+                patch(
+                    "apps.application.views.template_services.delete_template",
+                    side_effect=_delete_fixture_template,
+                )
+            )
+            stack.enter_context(
+                patch(
+                    "apps.application.views.storage_services.upload_template_file",
+                    side_effect=_upload_fixture_template_file,
+                )
+            )
+            stack.enter_context(
+                patch(
+                    "apps.application.views.storage_services.download_template_file",
+                    side_effect=_download_fixture_template_file,
+                )
+            )
+            stack.enter_context(
+                patch(
+                    "apps.application.views.storage_services.remove_template_object",
+                    side_effect=_remove_fixture_template_object,
+                )
+            )
+            stack.enter_context(
+                patch(
                     "apps.application.views.schedule_selectors.upcoming_events",
-                    return_value=[FIXTURE_EVENT],
+                    side_effect=_upcoming_fixture_events,
                 )
             )
             stack.enter_context(
                 patch(
                     "apps.application.views.schedule_selectors.event_stats",
-                    return_value={"total": 1, "completed": 0, "upcoming": 1, "highPriority": 1},
+                    side_effect=_fixture_event_stats,
+                )
+            )
+            stack.enter_context(
+                patch(
+                    "apps.application.views.schedule_selectors.manage_event_stats",
+                    side_effect=_fixture_manage_event_stats,
                 )
             )
             stack.enter_context(
                 patch(
                     "apps.application.views.schedule_selectors.list_events",
-                    return_value=[FIXTURE_EVENT],
+                    side_effect=_list_fixture_events,
                 )
             )
             stack.enter_context(
                 patch(
                     "apps.application.views.schedule_selectors.search_events",
-                    return_value=[FIXTURE_EVENT],
+                    side_effect=_search_fixture_events,
                 )
             )
             stack.enter_context(
                 patch(
                     "apps.application.views.schedule_selectors.get_event",
-                    return_value=FIXTURE_EVENT,
+                    side_effect=_get_fixture_event,
+                )
+            )
+            stack.enter_context(
+                patch(
+                    "apps.application.views.schedule_services.create_event",
+                    side_effect=_create_fixture_event,
+                )
+            )
+            stack.enter_context(
+                patch(
+                    "apps.application.views.schedule_services.update_event",
+                    side_effect=_update_fixture_event,
+                )
+            )
+            stack.enter_context(
+                patch(
+                    "apps.application.views.schedule_services.delete_event",
+                    side_effect=_delete_fixture_event,
+                )
+            )
+            stack.enter_context(
+                patch(
+                    "apps.application.views.schedule_services.set_event_status",
+                    side_effect=_set_fixture_event_status,
                 )
             )
             stack.enter_context(
                 patch(
                     "apps.application.views.filled_selectors.list_filled",
-                    return_value=[FIXTURE_FILLED],
+                    side_effect=_list_fixture_filled,
                 )
             )
-            return self.get_response(request)
+            stack.enter_context(
+                patch(
+                    "apps.application.views.filled_services.save_filled",
+                    side_effect=_save_fixture_filled,
+                )
+            )
+            stack.enter_context(
+                patch(
+                    "apps.application.views.filled_services.delete_filled",
+                    side_effect=_delete_fixture_filled,
+                )
+            )
+            response = self.get_response(request)
+            if auth_flow:
+                response["X-P7-Auth-Flow-Active"] = "true"
+                response["X-P7-Auth-Flow-Signin-Calls"] = str(_AUTH_FLOW_SIGN_IN_CALLS)
+            return response

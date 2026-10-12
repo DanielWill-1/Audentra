@@ -1,3 +1,4 @@
+from email.message import Message
 from pathlib import Path
 from typing import Any
 
@@ -44,17 +45,39 @@ def _credentials() -> Any:
         raise SpeechProviderError("Google Cloud credentials are unavailable", status=401) from error
 
 
+def _encoding_mime_type(mime_type: str) -> str:
+    parsed = Message()
+    parsed["content-type"] = mime_type
+    base_type = parsed.get_content_type().lower()
+    parameters = {
+        name.lower(): value
+        for name, value in (parsed.get_params() or [])[1:]
+        if isinstance(name, str)
+    }
+    if not parameters:
+        return mime_type
+    if (
+        base_type in {"audio/webm", "audio/ogg"}
+        and set(parameters) == {"codecs"}
+        and isinstance(parameters["codecs"], str)
+        and parameters["codecs"].strip().lower() == "opus"
+    ):
+        return base_type
+    raise SpeechProviderError("Unsupported audio MIME parameters", status=415)
+
+
 def transcribe(audio: bytes, mime_type: str) -> str:
+    encoding_mime_type = _encoding_mime_type(mime_type)
     encoding_type = getattr(
         speech_v1.RecognitionConfig.AudioEncoding,
-        ENCODING_NAMES.get(mime_type, "ENCODING_UNSPECIFIED"),
+        ENCODING_NAMES.get(encoding_mime_type, "ENCODING_UNSPECIFIED"),
     )
     config_args: dict[str, object] = {
         "encoding": encoding_type,
         "language_code": "en-US",
         "enable_automatic_punctuation": True,
     }
-    sample_rate = SAMPLE_RATES.get(mime_type)
+    sample_rate = SAMPLE_RATES.get(encoding_mime_type)
     if sample_rate:
         config_args["sample_rate_hertz"] = sample_rate
     request = speech_v1.RecognizeRequest(
@@ -73,9 +96,7 @@ def transcribe(audio: bytes, mime_type: str) -> str:
         if callable(close):
             close()
     return "\n".join(
-        result.alternatives[0].transcript
-        for result in response.results
-        if result.alternatives
+        result.alternatives[0].transcript for result in response.results if result.alternatives
     )
 
 

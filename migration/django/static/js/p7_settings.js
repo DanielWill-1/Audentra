@@ -34,7 +34,9 @@
       const value = raw[name];
       if (name === "workingHours") {
         if (!value || typeof value !== "object" || typeof value.start !== "string" || typeof value.end !== "string") throw new Error("Working hours are invalid.");
-        result.workingHours = { start: value.start.slice(0, 5), end: value.end.slice(0, 5) };
+        const validTime = (time) => /^(?:[01]\d|2[0-3]):[0-5]\d$/.test(time);
+        if (!validTime(value.start) || !validTime(value.end)) throw new Error("Working hours must use valid 24-hour times (HH:MM).");
+        result.workingHours = { start: value.start, end: value.end };
       } else if (name === "workingDays") {
         const days = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
         if (!Array.isArray(value) || value.length > 7 || value.some((day) => !days.includes(day))) throw new Error("Working days are invalid.");
@@ -42,8 +44,16 @@
       } else if (typeof defaults[name] === "boolean") {
         if (typeof value !== "boolean") throw new Error(name + " must be true or false.");
         result[name] = value;
+      } else if (name === "defaultDuration") {
+        if (!Number.isInteger(value) || value < 15 || value > 10080 || value % 15 !== 0) {
+          throw new Error("Default event duration must be a multiple of 15 minutes between 15 and 10080.");
+        }
+        result[name] = value;
+      } else if (name === "defaultReminderMinutes") {
+        if (![5, 10, 15, 30, 60, 1440].includes(value)) throw new Error("Choose a supported reminder interval.");
+        result[name] = value;
       } else if (typeof defaults[name] === "number") {
-        if (!Number.isFinite(value) || value < 0 || value > 10080) throw new Error(name + " is outside the supported range.");
+        if (!Number.isSafeInteger(value) || value < 0 || value > 10080) throw new Error(name + " is outside the supported range.");
         result[name] = value;
       } else if (typeof defaults[name] === "string") {
         if (typeof value !== "string" || value.length > 100) throw new Error(name + " is invalid.");
@@ -94,15 +104,45 @@
     apply(defaults);
     announce("Saved settings could not be read. Defaults are shown; saving will replace the unreadable value.");
   }
-  root.querySelectorAll("[data-settings-tab-button]").forEach((button) => {
-    button.addEventListener("click", () => {
-      const selected = button.dataset.settingsTabButton;
-      root.querySelectorAll("[data-settings-tab-button]").forEach((item) => item.setAttribute("aria-selected", String(item === button)));
-      root.querySelectorAll("[data-settings-panel]").forEach((panel) => {
-        panel.hidden = panel.dataset.settingsPanel !== selected;
-        panel.classList.toggle("hidden", panel.hidden);
-      });
+  const tabs = [...root.querySelectorAll("[data-settings-tab-button]")];
+  const panels = [...root.querySelectorAll("[data-settings-panel]")];
+  const selectTab = (button, moveFocus = false) => {
+    const selected = button.dataset.settingsTabButton;
+    tabs.forEach((item) => {
+      const active = item === button;
+      item.setAttribute("aria-selected", String(active));
+      item.tabIndex = active ? 0 : -1;
+      if (active && moveFocus) item.focus();
     });
+    panels.forEach((panel) => {
+      panel.hidden = panel.dataset.settingsPanel !== selected;
+      panel.classList.toggle("hidden", panel.hidden);
+    });
+  };
+  tabs.forEach((button) => {
+    const name = button.dataset.settingsTabButton;
+    const panel = panels.find((item) => item.dataset.settingsPanel === name);
+    button.id ||= `scheduler-settings-tab-${name}`;
+    if (panel) {
+      panel.id ||= `scheduler-settings-panel-${name}`;
+      button.setAttribute("aria-controls", panel.id);
+      panel.setAttribute("aria-labelledby", button.id);
+      panel.tabIndex = 0;
+    }
+    button.tabIndex = button.getAttribute("aria-selected") === "true" ? 0 : -1;
+    button.addEventListener("click", () => selectTab(button));
+  });
+  root.querySelector('[role="tablist"]')?.addEventListener("keydown", (event) => {
+    const current = tabs.indexOf(document.activeElement);
+    if (current < 0 || !tabs.length) return;
+    let next = current;
+    if (event.key === "ArrowRight") next = (current + 1) % tabs.length;
+    else if (event.key === "ArrowLeft") next = (current - 1 + tabs.length) % tabs.length;
+    else if (event.key === "Home") next = 0;
+    else if (event.key === "End") next = tabs.length - 1;
+    else return;
+    event.preventDefault();
+    selectTab(tabs[next], true);
   });
   root.querySelector("[data-settings-save]")?.addEventListener("click", () => {
     try {

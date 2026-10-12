@@ -1,0 +1,15 @@
+# P9 difference register
+
+**Status:** Initial register for `p9-initial-readonly-20261013`. Full source/Django route comparison is NOT RUN. The [P9 matrix](P9_ACCEPTANCE_MATRIX.md) remains authoritative for route outcomes.
+
+| ID | Difference or boundary | Current disposition | P9 evidence still needed |
+|---|---|---|---|
+| P9-D1 | P4 development Auth has no OAuth, email recovery, or reset-token flow; `/reset-password` deliberately returns an explanatory 404. | Retained P4 behavior; do not represent the unavailable flows as successful parity. | Compare their visible copy/layout at both viewports and exercise the accepted unavailable responses. A valid reset-token state remains optional and NOT RUN. |
+| P9-D2 | The source Scheduler uses browser-local “Today” while P5/Django selects date-only schedule boundaries in UTC. At offset boundaries, local and UTC calendar dates can differ. | P7 six-case evidence documents the behavior and preserves P5 semantics; see [timezone results](../pages/evidence/w6/p7-sr4-timezone-acceptance3-20261013/timezone-comparison-results.json). | Reuse the valid P7 evidence for its exact cases; P9 must add any route states not covered by that fixture without changing P5 semantics. |
+| P9-D3 | Source Voice Auto-Fill template cards are not exposed as links/buttons. Django adds a named **Use template** link so the action is accessible. | Explicit W7 mapping; chooser screenshots now follow the source-centered layout. | Include the mapping in the full P9 source contract and verify keyboard activation/destination. |
+| P9-D4 | Dashboard recent history and Activity are browser-local examples; they are not hosted submissions or a server audit log. | Explicit P5/W4/W7 boundary; synthetic local storage is not persistence evidence. | Verify account-key isolation and untrusted rendering locally; keep hosted data/RLS checks separate. |
+| P9-D5 | Browser template file operations in P7 use an in-memory Storage adapter. | Explicitly synthetic. Retained hosted route evidence separately verifies exact private Storage bytes and cleanup within its own boundary. | P9 must verify the hosted route, authorization and cleanup separately before claiming persistence. |
+| P9-D6 | A synthetic `pagehide`/`pageshow` sequence left Record disabled after return because the voice/media scripts retain disposed state. This did not establish real browser BFCache eligibility. | Review observation, not counted as P8 failure. | Exercise actual back/forward restoration on a real supported device/browser and capture the resulting state. |
+| P9-D7 | Device permission/MIME/blob behavior and live STT/TTS/extraction are not established by fake media or intercepted APIs. | NOT RUN. | Requires real device/provider execution with an approved provider and spend scope; see [device/provider results](P9_DEVICE_PROVIDER_RESULTS.md). |
+
+No other P9 source/Django difference has been accepted yet. Record new mismatches with route, viewport, source digest, target digest, exact control/copy/destination, impact, disposition and evidence. Do not add broad allowlists.

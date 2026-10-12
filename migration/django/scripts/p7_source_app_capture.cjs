@@ -1,12 +1,15 @@
 const assert = require('node:assert/strict');
+const crypto = require('node:crypto');
 const fs = require('node:fs/promises');
 const path = require('node:path');
 const { chromium } = require('playwright');
+const { captureSourceProvenance } = require('./p7_source_provenance.cjs');
 
 const root = path.resolve(__dirname, '..', '..', '..');
 const run = process.env.P7_EVIDENCE_RUN || 'post-wave-review-20261012';
 const baseUrl = process.env.P7_REACT_BASE_URL || 'http://127.0.0.1:15573';
 const outputRoot = path.join(root, 'docs', 'pages', 'evidence');
+const sourceProvenance = captureSourceProvenance(root);
 const userId = '11111111-1111-4111-8111-111111111111';
 const templateId = '33333333-3333-4333-8333-333333333333';
 const eventId = '44444444-4444-4444-8444-444444444444';
@@ -100,8 +103,10 @@ async function main() {
     authOnly ? wave === 'w3' : !process.argv.includes('--app-waves-only') || wave !== 'w3',
   );
   const summary = {
+    run_id: run,
     captured_at: new Date().toISOString(),
     source: 'Current React/Vite routes with intercepted Supabase Auth/PostgREST synthetic fixture responses',
+    source_provenance: sourceProvenance,
     fixture_identity: `${userId} (non-hosted synthetic account)`,
     fixture_data: 'Patient intake template, schedule, and filled-form row; all requests to the dummy Supabase origin are intercepted',
     base_url: baseUrl,
@@ -173,12 +178,27 @@ async function main() {
           assert.deepEqual(consoleErrors, [], `${route} should not emit console errors`);
           assert.deepEqual(failedRequests, [], `${route} should not fail requests`);
           const screenshot = `${slug}-${viewport.name}.png`;
-          await page.screenshot({ path: path.join(output, screenshot), fullPage: true });
-          await fs.writeFile(path.join(output, `${slug}-${viewport.name}.html`), await page.locator('#root').innerHTML(), 'utf8');
-          pages.push({ route, viewport, response_status: response.status(), ...info, console_errors: consoleErrors, failed_requests: failedRequests, screenshot });
+          await page.screenshot({ path: path.join(output, screenshot), fullPage: false });
+          const sourceMarkup = await page.locator('#root').innerHTML();
+          await fs.writeFile(path.join(output, `${slug}-${viewport.name}.html`), sourceMarkup, 'utf8');
+          pages.push({
+            route,
+            viewport,
+            response_status: response.status(),
+            ...info,
+            source_html_sha256: crypto.createHash('sha256').update(sourceMarkup).digest('hex'),
+            console_errors: consoleErrors,
+            failed_requests: failedRequests,
+            screenshot,
+          });
           await context.close();
         }
       }
+      assert.deepEqual(
+        captureSourceProvenance(root),
+        sourceProvenance,
+        'source files changed during browser capture; repeat the source run against a stable working tree',
+      );
       const waveResult = { wave: wave.toUpperCase(), pages };
       summary.waves[wave] = waveResult;
       await fs.writeFile(path.join(output, 'capture-results.json'), `${JSON.stringify({ ...summary, waves: { [wave]: waveResult } }, null, 2)}\n`);

@@ -1,0 +1,1212 @@
+{
+  "wave": "W5",
+  "captured_at": "2026-10-12T19:08:26.881Z",
+  "source": "Django DEBUG=False browser settings with isolated synthetic identity/data fixtures",
+  "fixture_identity": "11111111-1111-4111-8111-111111111111 (non-hosted synthetic account)",
+  "fixture_data": "Patient intake template, one schedule, one filled-form row; no database or provider writes",
+  "base_url": "http://127.0.0.1:18875",
+  "browser": "148.0.7778.96",
+  "pages": [
+    {
+      "route": "/templates",
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "response_status": 200,
+      "title": "Templates · Audentra",
+      "heading": "Templates",
+      "document_width": 1440,
+      "viewport_width": 1440,
+      "has_react_root": false,
+      "has_react_bootstrap": false,
+      "console_errors": [],
+      "expected_local_404_diagnostic": false,
+      "responses": [
+        {
+          "path": "/templates",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_templates.js",
+          "status": 200
+        },
+        {
+          "path": "/templates",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_templates.js",
+          "status": 200
+        },
+        {
+          "path": "/templates",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_templates.js",
+          "status": 200
+        },
+        {
+          "path": "/templates",
+          "status": 200
+        },
+        {
+          "path": "/templates",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_templates.js",
+          "status": 200
+        },
+        {
+          "path": "/templates",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_templates.js",
+          "status": 200
+        },
+        {
+          "path": "/templates",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_templates.js",
+          "status": 200
+        },
+        {
+          "path": "/templates",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_templates.js",
+          "status": 200
+        },
+        {
+          "path": "/templates",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_templates.js",
+          "status": 200
+        },
+        {
+          "path": "/templates",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_templates.js",
+          "status": 200
+        },
+        {
+          "path": "/templates",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_templates.js",
+          "status": 200
+        },
+        {
+          "path": "/templates",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_templates.js",
+          "status": 200
+        },
+        {
+          "path": "/templates",
+          "status": 200
+        },
+        {
+          "path": "/templates",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_templates.js",
+          "status": 200
+        },
+        {
+          "path": "/templates",
+          "status": 200
+        },
+        {
+          "path": "/templates",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_templates.js",
+          "status": 200
+        }
+      ],
+      "screenshot": "templates-desktop.png",
+      "comparison": {
+        "source_heading": "Templates",
+        "django_heading": "Templates",
+        "source_text_characters": 369,
+        "django_text_characters": 1909,
+        "normalized_text_exact_match": false,
+        "source_section_headings": [
+          "Categories",
+          "Patient intake"
+        ],
+        "django_section_headings": [
+          "Create a template",
+          "Choose a creation method",
+          "Form fields",
+          "Your templates",
+          "Patient intake",
+          "Form fields",
+          "Received shares",
+          "Sent shares and review queue"
+        ],
+        "source_field_names": [],
+        "django_field_names": [
+          "action",
+          "action",
+          "action",
+          "action",
+          "action",
+          "action",
+          "action",
+          "action",
+          "action",
+          "category",
+          "category",
+          "comment",
+          "creation_method",
+          "creation_method",
+          "csrfmiddlewaretoken",
+          "csrfmiddlewaretoken",
+          "csrfmiddlewaretoken",
+          "csrfmiddlewaretoken",
+          "csrfmiddlewaretoken",
+          "csrfmiddlewaretoken",
+          "csrfmiddlewaretoken",
+          "csrfmiddlewaretoken",
+          "csrfmiddlewaretoken",
+          "description",
+          "description",
+          "field_identifier_preview",
+          "field_identifier_preview",
+          "field_label_preview",
+          "field_label_preview",
+          "field_options_preview",
+          "field_options_preview",
+          "field_placeholder_preview",
+          "field_placeholder_preview",
+          "form_data",
+          "form_data",
+          "message",
+          "name",
+          "name",
+          "q",
+          "rating",
+          "recipient_ids",
+          "role",
+          "sort",
+          "template_file",
+          "template_file",
+          "template_id",
+          "template_id",
+          "template_id",
+          "template_id",
+          "template_id",
+          "template_id",
+          "template_id",
+          "template_id",
+          "visibility",
+          "visibility",
+          "visibility"
+        ],
+        "source_field_names_missing_from_django": [],
+        "source_button_labels": [
+          "All Templates1",
+          "Create Template",
+          "Education0",
+          "Field Work0",
+          "Filters",
+          "Healthcare1",
+          "Human Resources0",
+          "Legal0",
+          "Real Estate0"
+        ],
+        "django_button_labels": [
+          "Add field",
+          "Add field",
+          "Back",
+          "Close template builder",
+          "Create template",
+          "Delete",
+          "Duplicate",
+          "Filter",
+          "Grid view",
+          "List view",
+          "Make hidden",
+          "Move down",
+          "Move down",
+          "Move up",
+          "Move up",
+          "Next",
+          "Remove field",
+          "Remove field",
+          "Request review",
+          "Save changes",
+          "Save share",
+          "Save template",
+          "Submit review to the owner",
+          "Upload privately"
+        ],
+        "source_button_labels_missing_from_django": [
+          "All Templates1",
+          "Create Template",
+          "Education0",
+          "Field Work0",
+          "Filters",
+          "Healthcare1",
+          "Human Resources0",
+          "Legal0",
+          "Real Estate0"
+        ],
+        "source_local_destinations": [
+          "/dashboard"
+        ],
+        "django_local_destinations": [
+          "/AIVoiceAutoFill?template=33333333-3333-4333-8333-333333333333",
+          "/dashboard",
+          "/templates?export=template&id=33333333-3333-4333-8333-333333333333"
+        ],
+        "django_link_labels": [
+          "Back to dashboard",
+          "Export template JSON",
+          "Use template"
+        ],
+        "source_local_destinations_missing_from_django": [],
+        "source_text_tokens_missing_from_django": [
+          "TemplatesCreate,",
+          "templatesCreate",
+          "TemplateCategoriesAll",
+          "Templates1Healthcare1Field",
+          "Work0Human",
+          "Resources0Legal0Education0Real",
+          "Estate0Filters1",
+          "foundSort",
+          "by:",
+          "by:",
+          "by:",
+          "by:",
+          "by:",
+          "Oldest",
+          "FirstSort",
+          "Name",
+          "Name",
+          "(A-Z)Sort",
+          "(A-Z)Sort",
+          "(Z-A)Sort",
+          "Category",
+          "Category",
+          "(Z-A)",
+          "intakeSynthetic",
+          "fields8h",
+          "agohealthcare"
+        ],
+        "django_text_tokens_added": [
+          "Build",
+          "Build",
+          "and",
+          "and",
+          "and",
+          "and",
+          "manage",
+          "your",
+          "your",
+          "formsTemplatesCreate,",
+          "share",
+          "form",
+          "form",
+          "form",
+          "templates.Back",
+          "to",
+          "to",
+          "to",
+          "to",
+          "to",
+          "dashboardCreate",
+          "template",
+          "template",
+          "template",
+          "template",
+          "Search",
+          "templatesCategoryAll",
+          "categoriesHealthcareFieldworkHrLegalEducationRealestateSortRecently",
+          "updatedNameCategoryFilter",
+          "Create",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "templateAdd",
+          "fields",
+          "fields",
+          "fields",
+          "in",
+          "order,",
+          "mark",
+          "required",
+          "fields,",
+          "then",
+          "save.Close",
+          "1.",
+          "Basic",
+          "information2.",
+          "Creation",
+          "method3.",
+          "Template",
+          "nameCategorySelect",
+          "categoryHealthcareFieldworkHrLegalEducationRealestateDescription",
+          "VisibilityVisibleHidden",
+          "Choose",
+          "creation",
+          "methodBuild",
+          "manuallyBuild",
+          "step",
+          "step",
+          "by",
+          "using",
+          "the",
+          "the",
+          "visual",
+          "builder.Upload",
+          "existing",
+          "existing",
+          "existing",
+          "formStore",
+          "private",
+          "source",
+          "source",
+          "file.",
+          "This",
+          "development",
+          "site",
+          "does",
+          "not",
+          "not",
+          "convert",
+          "file",
+          "contents",
+          "contents",
+          "into",
+          "into",
+          "fields.",
+          "fields.",
+          "Form",
+          "fieldsAdd",
+          "fieldAdd",
+          "at",
+          "least",
+          "one",
+          "field",
+          "create",
+          "voice-enabled",
+          "form.",
+          "Private",
+          "Private",
+          "fileJSON,",
+          "CSV,",
+          "PDF,",
+          "XLS,",
+          "XLSX",
+          "files",
+          "are",
+          "are",
+          "are",
+          "stored",
+          "privately",
+          "privately",
+          "(up",
+          "20",
+          "MiB).",
+          "The",
+          "parsed",
+          "or",
+          "or",
+          "or",
+          "or",
+          "converted",
+          "BackNextSave",
+          "Your",
+          "templatesGrid",
+          "viewList",
+          "view",
+          "intakeHealthcareVisibleSynthetic",
+          "browser-capture",
+          "·",
+          "Updated",
+          "Oct",
+          "11,",
+          "2026",
+          "10:00",
+          "AMUse",
+          "Make",
+          "hiddenDuplicateExport",
+          "JSONDelete",
+          "Edit",
+          "details",
+          "NameVisibilityVisibleHiddenDescriptionSynthetic",
+          "templateForm",
+          "fieldstextemailnumberdatetextareaselectradiocheckboxRequired↑↓RemovetextemailnumberdatetextareaselectradiocheckboxRequired↑↓RemoveAdd",
+          "fieldSave",
+          "changes",
+          "fileReplace",
+          "add",
+          "fileUpload",
+          "Share",
+          "with",
+          "with",
+          "accountsRecipient",
+          "account",
+          "UUIDsRoleViewerEditorAdminMessageSave",
+          "shareRecipient",
+          "UUIDs",
+          "must",
+          "belong",
+          "accounts.",
+          "No",
+          "No",
+          "invite",
+          "email",
+          "anonymous",
+          "link",
+          "is",
+          "created.",
+          "Request",
+          "submit",
+          "reviewRequest",
+          "reviewRating1",
+          "star2",
+          "stars3",
+          "stars4",
+          "stars5",
+          "starsCommentSubmit",
+          "review",
+          "review",
+          "owner",
+          "Received",
+          "sharesNo",
+          "templates",
+          "have",
+          "been",
+          "shared",
+          "this",
+          "account.",
+          "Sent",
+          "shares",
+          "queueNo",
+          "outgoing",
+          "shares.",
+          "reviews",
+          "waiting",
+          "for",
+          "decision."
+        ]
+      }
+    },
+    {
+      "route": "/templates",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "response_status": 200,
+      "title": "Templates · Audentra",
+      "heading": "Templates",
+      "document_width": 390,
+      "viewport_width": 390,
+      "has_react_root": false,
+      "has_react_bootstrap": false,
+      "console_errors": [],
+      "expected_local_404_diagnostic": false,
+      "responses": [
+        {
+          "path": "/templates",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_templates.js",
+          "status": 200
+        }
+      ],
+      "screenshot": "templates-mobile.png",
+      "comparison": {
+        "source_heading": "Templates",
+        "django_heading": "Templates",
+        "source_text_characters": 369,
+        "django_text_characters": 1909,
+        "normalized_text_exact_match": false,
+        "source_section_headings": [
+          "Categories",
+          "Patient intake"
+        ],
+        "django_section_headings": [
+          "Create a template",
+          "Choose a creation method",
+          "Form fields",
+          "Your templates",
+          "Patient intake",
+          "Form fields",
+          "Received shares",
+          "Sent shares and review queue"
+        ],
+        "source_field_names": [],
+        "django_field_names": [
+          "action",
+          "action",
+          "action",
+          "action",
+          "action",
+          "action",
+          "action",
+          "action",
+          "action",
+          "category",
+          "category",
+          "comment",
+          "creation_method",
+          "creation_method",
+          "csrfmiddlewaretoken",
+          "csrfmiddlewaretoken",
+          "csrfmiddlewaretoken",
+          "csrfmiddlewaretoken",
+          "csrfmiddlewaretoken",
+          "csrfmiddlewaretoken",
+          "csrfmiddlewaretoken",
+          "csrfmiddlewaretoken",
+          "csrfmiddlewaretoken",
+          "description",
+          "description",
+          "field_identifier_preview",
+          "field_identifier_preview",
+          "field_label_preview",
+          "field_label_preview",
+          "field_options_preview",
+          "field_options_preview",
+          "field_placeholder_preview",
+          "field_placeholder_preview",
+          "form_data",
+          "form_data",
+          "message",
+          "name",
+          "name",
+          "q",
+          "rating",
+          "recipient_ids",
+          "role",
+          "sort",
+          "template_file",
+          "template_file",
+          "template_id",
+          "template_id",
+          "template_id",
+          "template_id",
+          "template_id",
+          "template_id",
+          "template_id",
+          "template_id",
+          "visibility",
+          "visibility",
+          "visibility"
+        ],
+        "source_field_names_missing_from_django": [],
+        "source_button_labels": [
+          "All Templates1",
+          "Create Template",
+          "Education0",
+          "Field Work0",
+          "Filters",
+          "Healthcare1",
+          "Human Resources0",
+          "Legal0",
+          "Real Estate0"
+        ],
+        "django_button_labels": [
+          "Add field",
+          "Add field",
+          "Back",
+          "Close template builder",
+          "Create template",
+          "Delete",
+          "Duplicate",
+          "Filter",
+          "Grid view",
+          "List view",
+          "Make hidden",
+          "Move down",
+          "Move down",
+          "Move up",
+          "Move up",
+          "Next",
+          "Remove field",
+          "Remove field",
+          "Request review",
+          "Save changes",
+          "Save share",
+          "Save template",
+          "Submit review to the owner",
+          "Upload privately"
+        ],
+        "source_button_labels_missing_from_django": [
+          "All Templates1",
+          "Create Template",
+          "Education0",
+          "Field Work0",
+          "Filters",
+          "Healthcare1",
+          "Human Resources0",
+          "Legal0",
+          "Real Estate0"
+        ],
+        "source_local_destinations": [
+          "/dashboard"
+        ],
+        "django_local_destinations": [
+          "/AIVoiceAutoFill?template=33333333-3333-4333-8333-333333333333",
+          "/dashboard",
+          "/templates?export=template&id=33333333-3333-4333-8333-333333333333"
+        ],
+        "django_link_labels": [
+          "Back to dashboard",
+          "Export template JSON",
+          "Use template"
+        ],
+        "source_local_destinations_missing_from_django": [],
+        "source_text_tokens_missing_from_django": [
+          "TemplatesCreate,",
+          "templatesCreate",
+          "TemplateCategoriesAll",
+          "Templates1Healthcare1Field",
+          "Work0Human",
+          "Resources0Legal0Education0Real",
+          "Estate0Filters1",
+          "foundSort",
+          "by:",
+          "by:",
+          "by:",
+          "by:",
+          "by:",
+          "Oldest",
+          "FirstSort",
+          "Name",
+          "Name",
+          "(A-Z)Sort",
+          "(A-Z)Sort",
+          "(Z-A)Sort",
+          "Category",
+          "Category",
+          "(Z-A)",
+          "intakeSynthetic",
+          "fields8h",
+          "agohealthcare"
+        ],
+        "django_text_tokens_added": [
+          "Build",
+          "Build",
+          "and",
+          "and",
+          "and",
+          "and",
+          "manage",
+          "your",
+          "your",
+          "formsTemplatesCreate,",
+          "share",
+          "form",
+          "form",
+          "form",
+          "templates.Back",
+          "to",
+          "to",
+          "to",
+          "to",
+          "to",
+          "dashboardCreate",
+          "template",
+          "template",
+          "template",
+          "template",
+          "Search",
+          "templatesCategoryAll",
+          "categoriesHealthcareFieldworkHrLegalEducationRealestateSortRecently",
+          "updatedNameCategoryFilter",
+          "Create",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "templateAdd",
+          "fields",
+          "fields",
+          "fields",
+          "in",
+          "order,",
+          "mark",
+          "required",
+          "fields,",
+          "then",
+          "save.Close",
+          "1.",
+          "Basic",
+          "information2.",
+          "Creation",
+          "method3.",
+          "Template",
+          "nameCategorySelect",
+          "categoryHealthcareFieldworkHrLegalEducationRealestateDescription",
+          "VisibilityVisibleHidden",
+          "Choose",
+          "creation",
+          "methodBuild",
+          "manuallyBuild",
+          "step",
+          "step",
+          "by",
+          "using",
+          "the",
+          "the",
+          "visual",
+          "builder.Upload",
+          "existing",
+          "existing",
+          "existing",
+          "formStore",
+          "private",
+          "source",
+          "source",
+          "file.",
+          "This",
+          "development",
+          "site",
+          "does",
+          "not",
+          "not",
+          "convert",
+          "file",
+          "contents",
+          "contents",
+          "into",
+          "into",
+          "fields.",
+          "fields.",
+          "Form",
+          "fieldsAdd",
+          "fieldAdd",
+          "at",
+          "least",
+          "one",
+          "field",
+          "create",
+          "voice-enabled",
+          "form.",
+          "Private",
+          "Private",
+          "fileJSON,",
+          "CSV,",
+          "PDF,",
+          "XLS,",
+          "XLSX",
+          "files",
+          "are",
+          "are",
+          "are",
+          "stored",
+          "privately",
+          "privately",
+          "(up",
+          "20",
+          "MiB).",
+          "The",
+          "parsed",
+          "or",
+          "or",
+          "or",
+          "or",
+          "converted",
+          "BackNextSave",
+          "Your",
+          "templatesGrid",
+          "viewList",
+          "view",
+          "intakeHealthcareVisibleSynthetic",
+          "browser-capture",
+          "·",
+          "Updated",
+          "Oct",
+          "11,",
+          "2026",
+          "10:00",
+          "AMUse",
+          "Make",
+          "hiddenDuplicateExport",
+          "JSONDelete",
+          "Edit",
+          "details",
+          "NameVisibilityVisibleHiddenDescriptionSynthetic",
+          "templateForm",
+          "fieldstextemailnumberdatetextareaselectradiocheckboxRequired↑↓RemovetextemailnumberdatetextareaselectradiocheckboxRequired↑↓RemoveAdd",
+          "fieldSave",
+          "changes",
+          "fileReplace",
+          "add",
+          "fileUpload",
+          "Share",
+          "with",
+          "with",
+          "accountsRecipient",
+          "account",
+          "UUIDsRoleViewerEditorAdminMessageSave",
+          "shareRecipient",
+          "UUIDs",
+          "must",
+          "belong",
+          "accounts.",
+          "No",
+          "No",
+          "invite",
+          "email",
+          "anonymous",
+          "link",
+          "is",
+          "created.",
+          "Request",
+          "submit",
+          "reviewRequest",
+          "reviewRating1",
+          "star2",
+          "stars3",
+          "stars4",
+          "stars5",
+          "starsCommentSubmit",
+          "review",
+          "review",
+          "owner",
+          "Received",
+          "sharesNo",
+          "templates",
+          "have",
+          "been",
+          "shared",
+          "this",
+          "account.",
+          "Sent",
+          "shares",
+          "queueNo",
+          "outgoing",
+          "shares.",
+          "reviews",
+          "waiting",
+          "for",
+          "decision."
+        ]
+      }
+    }
+  ],
+  "interactions": [
+    {
+      "route": "/templates",
+      "state": "grid/list display, category/search/sort and empty state, three-step manual/upload flow, add/reorder/remove/required/options builder, create/edit/duplicate/visibility/confirmed-delete, JSON export bytes, private upload/download/replacement/delete bytes pass through the actual Django page with mutable synthetic fixtures",
+      "exported_template_name": "Synthetic browser template edited",
+      "exported_field": "Patient name",
+      "created_id": "82dea4e8-3c1c-4f2b-ba69-23ea2c89edba",
+      "duplicate_id": "955e6bb6-b5cf-4810-a8cb-7169a11dd09d",
+      "uploaded_template_id": "445736b0-f434-441d-8f64-2d157fecd3ac",
+      "first_private_file_bytes_verified": 33,
+      "replacement_private_file_bytes_verified": 35,
+      "storage_boundary": "The browser route uses an in-memory synthetic Storage adapter; hosted route probe separately verifies real private Storage behavior."
+    },
+    {
+      "route": "/templates",
+      "state": "manual builder stepper is reachable at 390px without overflow"
+    }
+  ],
+  "route_contracts": [
+    {
+      "route": "/templates",
+      "viewport": "desktop",
+      "passed": true,
+      "source_heading": "Templates",
+      "expected_heading": "Templates",
+      "required_sections": [
+        "Create a template",
+        "Your templates",
+        "Received shares",
+        "Sent shares and review queue"
+      ],
+      "required_fields": [
+        "q",
+        "category",
+        "sort",
+        "name",
+        "form_data",
+        "template_file",
+        "recipient_ids",
+        "role",
+        "creation_method"
+      ],
+      "required_controls": [
+        "Filter",
+        "Create template",
+        "Close template builder",
+        "Grid view",
+        "List view",
+        "Next",
+        "Back",
+        "Add field",
+        "Save template",
+        "Duplicate",
+        "Request review",
+        "Save share",
+        "Delete"
+      ],
+      "required_destinations": [
+        "/dashboard",
+        "/AIVoiceAutoFill?template=33333333-3333-4333-8333-333333333333"
+      ],
+      "accepted_source_differences": [
+        "Source category chips map to the accessible category select.",
+        "Grid/list controls use accessible labels while preserving the source card content.",
+        "Upload stores a private source file and does not parse its contents.",
+        "No invite email or anonymous share link is created."
+      ]
+    },
+    {
+      "route": "/templates",
+      "viewport": "mobile",
+      "passed": true,
+      "source_heading": "Templates",
+      "expected_heading": "Templates",
+      "required_sections": [
+        "Create a template",
+        "Your templates",
+        "Received shares",
+        "Sent shares and review queue"
+      ],
+      "required_fields": [
+        "q",
+        "category",
+        "sort",
+        "name",
+        "form_data",
+        "template_file",
+        "recipient_ids",
+        "role",
+        "creation_method"
+      ],
+      "required_controls": [
+        "Filter",
+        "Create template",
+        "Close template builder",
+        "Grid view",
+        "List view",
+        "Next",
+        "Back",
+        "Add field",
+        "Save template",
+        "Duplicate",
+        "Request review",
+        "Save share",
+        "Delete"
+      ],
+      "required_destinations": [
+        "/dashboard",
+        "/AIVoiceAutoFill?template=33333333-3333-4333-8333-333333333333"
+      ],
+      "accepted_source_differences": [
+        "Source category chips map to the accessible category select.",
+        "Grid/list controls use accessible labels while preserving the source card content.",
+        "Upload stores a private source file and does not parse its contents.",
+        "No invite email or anonymous share link is created."
+      ]
+    }
+  ],
+  "negative_control_checks": {
+    "passed": true,
+    "removed_section": "rejected",
+    "removed_control": "rejected",
+    "removed_destination": "rejected",
+    "changed_field": "rejected"
+  }
+}

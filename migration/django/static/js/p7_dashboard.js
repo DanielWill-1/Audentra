@@ -1,6 +1,29 @@
 (() => {
   "use strict";
 
+  const dashboardPanels = [...document.querySelectorAll("[data-dashboard-panel]")];
+  const dashboardViewLinks = [...document.querySelectorAll('a[href^="/dashboard#"]')];
+  const selectDashboardPanel = () => {
+    const requested = window.location.hash.slice(1);
+    const selected = ["team", "settings"].includes(requested) ? requested : "home";
+    dashboardPanels.forEach((panel) => {
+      const active = panel.dataset.dashboardPanel === selected;
+      panel.hidden = !active;
+      panel.classList.toggle("hidden", !active);
+    });
+    dashboardViewLinks.forEach((link) => {
+      if (link.getAttribute("href") === `/dashboard#${selected}` && selected !== "home") {
+        link.setAttribute("aria-current", "page");
+      } else if (link.hasAttribute("aria-current")) {
+        link.removeAttribute("aria-current");
+      }
+    });
+  };
+  window.addEventListener("hashchange", selectDashboardPanel);
+  selectDashboardPanel();
+
+  const dashboardRoot = document.querySelector("[data-dashboard-activity-key]");
+  const recentFormsKey = dashboardRoot?.dataset.dashboardActivityKey || "";
   const recentFormsRoot = document.querySelector("[data-dashboard-recent-forms-root]");
   const recentFormsList = recentFormsRoot?.querySelector("[data-dashboard-recent-forms]");
   const recentFormsEmpty = recentFormsRoot?.querySelector("[data-dashboard-recent-forms-empty]");
@@ -34,12 +57,15 @@
       const time = document.createElement("p");
       time.className = "mt-1 text-xs text-text-muted";
       const elapsedMinutes = Math.max(0, Math.floor((Date.now() - Date.parse(form.time)) / 60000));
+      const elapsedDays = Math.floor(elapsedMinutes / 1440);
       time.textContent = elapsedMinutes < 1
         ? "Just now"
         : elapsedMinutes < 60
           ? `${elapsedMinutes} minute${elapsedMinutes === 1 ? "" : "s"} ago`
           : elapsedMinutes < 1440
             ? `${Math.floor(elapsedMinutes / 60)} hour${Math.floor(elapsedMinutes / 60) === 1 ? "" : "s"} ago`
+            : elapsedMinutes < 7 * 1440
+              ? `${elapsedDays} day${elapsedDays === 1 ? "" : "s"} ago`
             : new Date(form.time).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
       details.append(title, time);
 
@@ -72,9 +98,14 @@
         title: "Safety Inspection Report",
         time: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
       },
+      {
+        type: "form_completed",
+        title: "Employee Onboarding - Maria Garcia",
+        time: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
+      },
     ];
     try {
-      const raw = localStorage.getItem("recentActivity");
+      const raw = recentFormsKey ? localStorage.getItem(recentFormsKey) : null;
       renderRecentForms(raw === null ? exampleForms : JSON.parse(raw));
     } catch {
       renderRecentForms([]);

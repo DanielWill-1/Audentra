@@ -257,7 +257,7 @@ def test_django_auth_pages_do_not_render_browser_auth_storage_or_tokens() -> Non
     for path in ("/login/", "/signup/", "/forgot-password/", "/change-password/"):
         response = client.get(path)
         assert response["Cache-Control"] == "no-store"
-        assert response["Referrer-Policy"] == "no-referrer"
+        assert response["Referrer-Policy"] == "same-origin"
         assert b"localStorage" not in response.content
         assert b"sb-" not in response.content
         assert ACCESS.encode() not in response.content
@@ -455,16 +455,17 @@ def test_signup_provisions_profile_before_session_without_confirmation() -> None
             "expires_in": 3600,
             "user": {"id": SUBJECT, "email": "synthetic@example.test", "user_metadata": {}},
         }
-        response = client.post(
-            "/signup/",
-            {
-                "first_name": "Test",
-                "last_name": "Account",
-                "email": "synthetic@example.test",
-                "password": "correct horse battery staple",
-                "confirm_password": "correct horse battery staple",
-            },
-        )
+        signup_values = {
+            "first_name": "Test",
+            "last_name": "Account",
+            "email": "synthetic@example.test",
+            "password": "correct horse battery staple",
+            "confirm_password": "correct horse battery staple",
+        }
+        missing_acceptance = client.post("/signup/", signup_values)
+        assert missing_acceptance.status_code == 400
+        auth.return_value.sign_up.assert_not_called()
+        response = client.post("/signup/", {**signup_values, "accepted_terms": "on"})
 
     assert response.status_code == 302
     assert response["Location"] == "/auth/session/"

@@ -1,0 +1,139 @@
+{
+  "captured_at": "2026-10-12T18:19:42.576Z",
+  "browser": "148.0.7778.96",
+  "boundary": "Actual Django voice page and scripts; browser media/STT/AI/TTS APIs intercepted; save/list/delete use synthetic browser fixture middleware, not hosted persistence.",
+  "viewports": [
+    {
+      "viewport": "1440x900",
+      "overflow": false,
+      "selected_template": true,
+      "transcript_and_review_visible": true
+    },
+    {
+      "viewport": "390x844",
+      "overflow": false,
+      "selected_template": true,
+      "transcript_and_review_visible": true
+    }
+  ],
+  "api": {
+    "transcription": [
+      {
+        "method": "POST",
+        "multipart": true,
+        "csrf_header_present": true,
+        "marker_present": true,
+        "authorization_header_present": false,
+        "filename_present": true,
+        "mime_type": "audio/webm;codecs=opus",
+        "audio_payload_present": true
+      }
+    ],
+    "extraction": [
+      {
+        "csrf_header_present": true,
+        "marker_present": true,
+        "authorization_header_present": false,
+        "current_patient_name": "",
+        "prior_messages": 1,
+        "user_message_present": true
+      },
+      {
+        "csrf_header_present": true,
+        "marker_present": true,
+        "authorization_header_present": false,
+        "current_patient_name": "Grace Hopper",
+        "prior_messages": 3,
+        "user_message_present": true
+      },
+      {
+        "csrf_header_present": true,
+        "marker_present": true,
+        "authorization_header_present": false,
+        "current_patient_name": "",
+        "prior_messages": 1,
+        "user_message_present": true
+      },
+      {
+        "csrf_header_present": true,
+        "marker_present": true,
+        "authorization_header_present": false,
+        "current_patient_name": "",
+        "prior_messages": 1,
+        "user_message_present": true
+      }
+    ],
+    "tts": [
+      {
+        "method": "POST",
+        "csrf_header_present": true,
+        "marker_present": true,
+        "authorization_header_present": false
+      },
+      {
+        "method": "POST",
+        "csrf_header_present": true,
+        "marker_present": true,
+        "authorization_header_present": false
+      },
+      {
+        "method": "POST",
+        "csrf_header_present": true,
+        "marker_present": true,
+        "authorization_header_present": false
+      },
+      {
+        "method": "POST",
+        "csrf_header_present": true,
+        "marker_present": true,
+        "authorization_header_present": false
+      },
+      {
+        "method": "POST",
+        "csrf_header_present": true,
+        "marker_present": true,
+        "authorization_header_present": false
+      },
+      {
+        "method": "POST",
+        "csrf_header_present": true,
+        "marker_present": true,
+        "authorization_header_present": false
+      }
+    ]
+  },
+  "journey": [
+    "selected accessible template on actual Django page; loaded both shipped scripts without React bootstrap",
+    "recorded, stopped, previewed and received deterministic multipart transcript through the actual page",
+    "duplicate chat submission was ignored while busy; extraction matched a field, then preserved a reviewed edit and conversation across the next request",
+    "required-field browser validation blocks an incomplete save",
+    "Return to chat preserved conversation and reviewed field values across the Django form navigation",
+    "saved reviewed values through the actual Django page and rendered the synthetic filled-list fixture",
+    "confirmed deletion updated the synthetic filled-list fixture",
+    "pagehide cancelled a delayed extraction and suppressed its stale answer and field update",
+    "a replaced pending TTS response was suppressed; the current response played once",
+    "previous TTS audio was paused and released; rejected playback stayed visible",
+    "invalid TTS response was rejected without creating audio",
+    "pagehide cancelled pending TTS and prevented a stale audio response"
+  ],
+  "browser_errors": [],
+  "expected_request_cancellations": [
+    {
+      "path": "Google Fonts resource",
+      "reason": "net::ERR_ABORTED",
+      "cause": "document navigation canceled a pending font request"
+    },
+    {
+      "path": "/api/ai/extract",
+      "reason": "net::ERR_ABORTED"
+    },
+    {
+      "path": "/api/tts",
+      "reason": "net::ERR_ABORTED"
+    },
+    {
+      "path": "/api/tts",
+      "reason": "net::ERR_ABORTED"
+    }
+  ]
+}

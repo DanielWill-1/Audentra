@@ -1,0 +1,43 @@
+{
+  "captured_at": "2026-10-12T19:31:30.373Z",
+  "source": "Playwright Chromium with deterministic fake MediaDevices/MediaRecorder and mocked same-origin API responses",
+  "django_test_origin": "http://127.0.0.1:18875",
+  "browser": "148.0.7778.96",
+  "checks": [
+    "unsupported browser exposes typed-input fallback",
+    "unsupported codecs are rejected before microphone access",
+    "denied microphone path exposes an accessible fallback",
+    "missing microphone path exposes an accessible fallback",
+    "empty recording is rejected and microphone tracks stop",
+    "delayed data and stop events from a discarded recorder cannot mutate the newer attempt",
+    "out-of-order permission results dispose only their own streams",
+    "asynchronous recorder error cleans its attempt, restores controls, and permits a clean retry",
+    "oversized recording is rejected before multipart submission",
+    "supported codec creates a preview and same-origin multipart transcript request",
+    "late transcription response after reset cannot insert text or report stale success",
+    "reset clears recording state, stops tracks and revokes its blob URL",
+    "replacement and pagehide release active tracks, recorder and object URLs",
+    "navigation during active capture stops the live microphone track",
+    "late microphone permission result is stopped after reset and cannot start stale recording",
+    "provider failure remains visible and does not report transcription success"
+  ],
+  "transport": {
+    "method": "POST",
+    "content_type": "multipart/form-data with boundary",
+    "audio_filename": "recording.webm",
+    "mime_type": "audio/webm;codecs=opus",
+    "csrf_header_present": true,
+    "request_marker_present": true,
+    "authorization_header_present": false,
+    "transcript_inserted_for_review": true,
+    "preview_audio_control_present": true,
+    "preview_play_action_exercised": true
+  },
+  "resources": {
+    "tracks_stopped_across_replacement_and_navigation": 2,
+    "replaced_preview_revoked": true,
+    "active_preview_revoked_on_navigation": true,
+    "recorder_state_after_navigation": "inactive",
+    "navigation_during_capture_stops_live_track": true
+  }
+}

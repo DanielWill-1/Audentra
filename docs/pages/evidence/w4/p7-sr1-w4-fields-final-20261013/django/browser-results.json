@@ -1,0 +1,993 @@
+{
+  "wave": "W4",
+  "captured_at": "2026-10-12T21:29:24.875Z",
+  "source": "Django DEBUG=False browser settings with isolated synthetic identity/data fixtures",
+  "fixture_identity": "11111111-1111-4111-8111-111111111111 (non-hosted synthetic account)",
+  "fixture_data": "Patient intake template, one schedule, one filled-form row; no database or provider writes",
+  "base_url": "http://127.0.0.1:18875",
+  "source_reference": {
+    "run_id": "p7-sr-review-source-20261013a",
+    "captured_at": "2026-10-12T20:27:32.968Z",
+    "git_revision": "4e3e5c7e0a3bc383cea5d8b6b4d2ce18693469a6",
+    "worktree_digest": "2f50c0fa03f6215104e5b1267bc9061447b7c851643328a4a0ec5a74ced68b1c",
+    "file_count": 71,
+    "source_manifest_sha256": "2716d16a3994414338a4dc8089544a075c7ee0d0044eb6b5f46202c12e219f2c"
+  },
+  "browser": "148.0.7778.96",
+  "pages": [
+    {
+      "route": "/dashboard",
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "response_status": 200,
+      "title": "Home · Audentra",
+      "heading": "What would you like to work on?",
+      "document_width": 1440,
+      "viewport_width": 1440,
+      "has_react_root": false,
+      "has_react_bootstrap": false,
+      "console_errors": [],
+      "expected_local_404_diagnostic": false,
+      "responses": [
+        {
+          "path": "/dashboard",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_dashboard.js",
+          "status": 200
+        },
+        {
+          "path": "/dashboard",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_dashboard.js",
+          "status": 200
+        },
+        {
+          "path": "/templates",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_templates.js",
+          "status": 200
+        },
+        {
+          "path": "/dashboard",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_dashboard.js",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        }
+      ],
+      "screenshot": "dashboard-desktop.png",
+      "comparison": {
+        "source_heading": "What would you like to work on?",
+        "django_heading": "What would you like to work on?",
+        "source_text_characters": 699,
+        "django_text_characters": 1839,
+        "normalized_text_exact_match": false,
+        "source_section_headings": [
+          "Start with your voice",
+          "Recent forms",
+          "Templates",
+          "Upcoming",
+          "Team"
+        ],
+        "django_section_headings": [
+          "Start with your voice",
+          "Choose template",
+          "Filled forms",
+          "Create template",
+          "Recent forms",
+          "Recent templates",
+          "Patient intake",
+          "Upcoming schedule",
+          "Profile settings",
+          "Team workspace",
+          "Voice & AI settings",
+          "Choose a supported action"
+        ],
+        "source_field_names": [],
+        "django_field_names": [
+          "action",
+          "aiProcessingSpeed",
+          "company",
+          "csrfmiddlewaretoken",
+          "first_name",
+          "industry",
+          "industrySpecialization",
+          "language",
+          "last_name",
+          "voiceSensitivity"
+        ],
+        "source_field_names_missing_from_django": [],
+        "source_button_labels": [
+          "Invite",
+          "Manage team →",
+          "Reviews",
+          "Share"
+        ],
+        "django_button_labels": [
+          "Close",
+          "Save profile",
+          "Team options"
+        ],
+        "source_button_labels_missing_from_django": [
+          "Invite",
+          "Manage team →",
+          "Reviews",
+          "Share"
+        ],
+        "source_local_destinations": [
+          "/AIVoiceAutoFill",
+          "/AIVoiceAutoFill",
+          "/filledtemplates",
+          "/filledtemplates",
+          "/filledtemplates",
+          "/filledtemplates",
+          "/scheduler",
+          "/templates",
+          "/templates",
+          "/templates",
+          "/templates",
+          "/templates"
+        ],
+        "django_local_destinations": [
+          "/AIVoiceAutoFill",
+          "/AIVoiceAutoFill",
+          "/AIVoiceAutoFill?template=33333333-3333-4333-8333-333333333333",
+          "/filledtemplates",
+          "/filledtemplates",
+          "/filledtemplates",
+          "/filledtemplates",
+          "/scheduler",
+          "/templates",
+          "/templates",
+          "/templates",
+          "/templates#collaboration",
+          "/templates#collaboration",
+          "/templates#collaboration",
+          "/templates#create-template"
+        ],
+        "django_link_labels": [
+          "Choose a template",
+          "Choose templateBrowse your schemas",
+          "Create templateJSON Schema or Pydantic",
+          "Filled formsInspect completed records",
+          "Open reviews",
+          "Open scheduler",
+          "Open sharing and reviews",
+          "Resume",
+          "Share with an existing account",
+          "Start voice form",
+          "Use template",
+          "View",
+          "View",
+          "View all",
+          "View all forms"
+        ],
+        "source_local_destinations_missing_from_django": [],
+        "source_text_tokens_missing_from_django": [
+          "Audentra/HomeWhat",
+          "you",
+          "you",
+          "on?Welcome",
+          "User.Ready",
+          "templateChoose",
+          "PydanticRecent",
+          "formsView",
+          "→Patient",
+          "→Patient",
+          "ProgressResumeEmployee",
+          "agoCompletedViewTemplatesBrowse",
+          "library",
+          "intakehealthcareUseUpcoming+",
+          "AddReview",
+          "intake2026-10-12",
+          "·",
+          "09:30:00TeamManage",
+          "team",
+          "→0",
+          "shared",
+          "shared",
+          "0",
+          "Invite",
+          "Share",
+          "Reviews"
+        ],
+        "django_text_tokens_added": [
+          "AudentraHome",
+          "What",
+          "to",
+          "on?",
+          "Welcome",
+          "User.",
+          "Ready",
+          "with",
+          "your",
+          "and",
+          "and",
+          "and",
+          "and",
+          "and",
+          "and",
+          "the",
+          "the",
+          "form",
+          "voice",
+          "a",
+          "a",
+          "a",
+          "template",
+          "template",
+          "template",
+          "Choose",
+          "or",
+          "Pydantic",
+          "Recent",
+          "Recent",
+          "formsBrowser-local",
+          "examples",
+          "history;",
+          "they",
+          "do",
+          "do",
+          "not",
+          "not",
+          "change",
+          "change",
+          "change",
+          "saved",
+          "saved",
+          "forms.View",
+          "all",
+          "forms",
+          "Patient",
+          "progressResumeEmployee",
+          "agoCompletedViewNo",
+          "recent",
+          "yet.",
+          "Start",
+          "see",
+          "it",
+          "here.",
+          "templatesView",
+          "healthcarePatient",
+          "intakeSynthetic",
+          "browser-capture",
+          "templateUse",
+          "Upcoming",
+          "scheduleYour",
+          "next",
+          "scheduled",
+          "events.Open",
+          "scheduler",
+          "Review",
+          "intakeOct",
+          "12,",
+          "2026",
+          "at",
+          "9:30",
+          "AM",
+          "Form",
+          "reviewScheduled",
+          "Profile",
+          "settingsUpdate",
+          "account",
+          "account",
+          "profile.",
+          "First",
+          "nameLast",
+          "name",
+          "CompanyIndustry",
+          "Save",
+          "profile",
+          "AudentraTeamTeam",
+          "collaboration",
+          "Team",
+          "Team",
+          "workspaceTeam",
+          "membership",
+          "membership",
+          "stays",
+          "demo",
+          "state.",
+          "Sharing",
+          "reviews",
+          "reviews",
+          "use",
+          "use",
+          "existing",
+          "existing",
+          "existing",
+          "workspace.Team",
+          "optionsShare",
+          "an",
+          "accountOpen",
+          "AudentraSettingsSettings",
+          "Browser",
+          "preferencesVoice",
+          "&",
+          "&",
+          "AI",
+          "settingsThese",
+          "preferences",
+          "are",
+          "are",
+          "are",
+          "in",
+          "this",
+          "this",
+          "browser",
+          "provider",
+          "settings.",
+          "LanguageEnglish",
+          "(US)English",
+          "(UK)SpanishFrenchGerman",
+          "Processing",
+          "speedReal-time",
+          "(Recommended)FastBalancedAccurate",
+          "Industry",
+          "specializationHealthcareField",
+          "Work",
+          "ConstructionHuman",
+          "ResourcesLegal",
+          "ServicesEducationGeneral",
+          "Business",
+          "Voice",
+          "sensitivity",
+          "7",
+          "Preferences",
+          "ready.",
+          "collaborationChoose",
+          "supported",
+          "actionClose",
+          "Membership",
+          "directories",
+          "email",
+          "invitations",
+          "unavailable.",
+          "You",
+          "can",
+          "share",
+          "templates",
+          "UUIDs",
+          "review",
+          "queue.Open",
+          "sharing",
+          "reviewsNo",
+          "invitation",
+          "is",
+          "created",
+          "dialog."
+        ]
+      }
+    },
+    {
+      "route": "/dashboard",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "response_status": 200,
+      "title": "Home · Audentra",
+      "heading": "What would you like to work on?",
+      "document_width": 390,
+      "viewport_width": 390,
+      "has_react_root": false,
+      "has_react_bootstrap": false,
+      "console_errors": [],
+      "expected_local_404_diagnostic": false,
+      "responses": [
+        {
+          "path": "/dashboard",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_dashboard.js",
+          "status": 200
+        },
+        {
+          "path": "/templates",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_templates.js",
+          "status": 200
+        },
+        {
+          "path": "/dashboard",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_dashboard.js",
+          "status": 200
+        },
+        {
+          "path": "/dashboard",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_dashboard.js",
+          "status": 200
+        }
+      ],
+      "screenshot": "dashboard-mobile.png",
+      "comparison": {
+        "source_heading": "What would you like to work on?",
+        "django_heading": "What would you like to work on?",
+        "source_text_characters": 699,
+        "django_text_characters": 1839,
+        "normalized_text_exact_match": false,
+        "source_section_headings": [
+          "Start with your voice",
+          "Recent forms",
+          "Templates",
+          "Upcoming",
+          "Team"
+        ],
+        "django_section_headings": [
+          "Start with your voice",
+          "Choose template",
+          "Filled forms",
+          "Create template",
+          "Recent forms",
+          "Recent templates",
+          "Patient intake",
+          "Upcoming schedule",
+          "Profile settings",
+          "Team workspace",
+          "Voice & AI settings",
+          "Choose a supported action"
+        ],
+        "source_field_names": [],
+        "django_field_names": [
+          "action",
+          "aiProcessingSpeed",
+          "company",
+          "csrfmiddlewaretoken",
+          "first_name",
+          "industry",
+          "industrySpecialization",
+          "language",
+          "last_name",
+          "voiceSensitivity"
+        ],
+        "source_field_names_missing_from_django": [],
+        "source_button_labels": [
+          "Invite",
+          "Manage team →",
+          "Reviews",
+          "Share"
+        ],
+        "django_button_labels": [
+          "Close",
+          "Save profile",
+          "Team options"
+        ],
+        "source_button_labels_missing_from_django": [
+          "Invite",
+          "Manage team →",
+          "Reviews",
+          "Share"
+        ],
+        "source_local_destinations": [
+          "/AIVoiceAutoFill",
+          "/AIVoiceAutoFill",
+          "/filledtemplates",
+          "/filledtemplates",
+          "/filledtemplates",
+          "/filledtemplates",
+          "/scheduler",
+          "/templates",
+          "/templates",
+          "/templates",
+          "/templates",
+          "/templates"
+        ],
+        "django_local_destinations": [
+          "/AIVoiceAutoFill",
+          "/AIVoiceAutoFill",
+          "/AIVoiceAutoFill?template=33333333-3333-4333-8333-333333333333",
+          "/filledtemplates",
+          "/filledtemplates",
+          "/filledtemplates",
+          "/filledtemplates",
+          "/scheduler",
+          "/templates",
+          "/templates",
+          "/templates",
+          "/templates#collaboration",
+          "/templates#collaboration",
+          "/templates#collaboration",
+          "/templates#create-template"
+        ],
+        "django_link_labels": [
+          "Choose a template",
+          "Choose templateBrowse your schemas",
+          "Create templateJSON Schema or Pydantic",
+          "Filled formsInspect completed records",
+          "Open reviews",
+          "Open scheduler",
+          "Open sharing and reviews",
+          "Resume",
+          "Share with an existing account",
+          "Start voice form",
+          "Use template",
+          "View",
+          "View",
+          "View all",
+          "View all forms"
+        ],
+        "source_local_destinations_missing_from_django": [],
+        "source_text_tokens_missing_from_django": [
+          "Audentra/HomeWhat",
+          "you",
+          "you",
+          "on?Welcome",
+          "User.Ready",
+          "templateChoose",
+          "PydanticRecent",
+          "formsView",
+          "→Patient",
+          "→Patient",
+          "ProgressResumeEmployee",
+          "agoCompletedViewTemplatesBrowse",
+          "library",
+          "intakehealthcareUseUpcoming+",
+          "AddReview",
+          "intake2026-10-12",
+          "·",
+          "09:30:00TeamManage",
+          "team",
+          "→0",
+          "shared",
+          "shared",
+          "0",
+          "Invite",
+          "Share",
+          "Reviews"
+        ],
+        "django_text_tokens_added": [
+          "AudentraHome",
+          "What",
+          "to",
+          "on?",
+          "Welcome",
+          "User.",
+          "Ready",
+          "with",
+          "your",
+          "and",
+          "and",
+          "and",
+          "and",
+          "and",
+          "and",
+          "the",
+          "the",
+          "form",
+          "voice",
+          "a",
+          "a",
+          "a",
+          "template",
+          "template",
+          "template",
+          "Choose",
+          "or",
+          "Pydantic",
+          "Recent",
+          "Recent",
+          "formsBrowser-local",
+          "examples",
+          "history;",
+          "they",
+          "do",
+          "do",
+          "not",
+          "not",
+          "change",
+          "change",
+          "change",
+          "saved",
+          "saved",
+          "forms.View",
+          "all",
+          "forms",
+          "Patient",
+          "progressResumeEmployee",
+          "agoCompletedViewNo",
+          "recent",
+          "yet.",
+          "Start",
+          "see",
+          "it",
+          "here.",
+          "templatesView",
+          "healthcarePatient",
+          "intakeSynthetic",
+          "browser-capture",
+          "templateUse",
+          "Upcoming",
+          "scheduleYour",
+          "next",
+          "scheduled",
+          "events.Open",
+          "scheduler",
+          "Review",
+          "intakeOct",
+          "12,",
+          "2026",
+          "at",
+          "9:30",
+          "AM",
+          "Form",
+          "reviewScheduled",
+          "Profile",
+          "settingsUpdate",
+          "account",
+          "account",
+          "profile.",
+          "First",
+          "nameLast",
+          "name",
+          "CompanyIndustry",
+          "Save",
+          "profile",
+          "AudentraTeamTeam",
+          "collaboration",
+          "Team",
+          "Team",
+          "workspaceTeam",
+          "membership",
+          "membership",
+          "stays",
+          "demo",
+          "state.",
+          "Sharing",
+          "reviews",
+          "reviews",
+          "use",
+          "use",
+          "existing",
+          "existing",
+          "existing",
+          "workspace.Team",
+          "optionsShare",
+          "an",
+          "accountOpen",
+          "AudentraSettingsSettings",
+          "Browser",
+          "preferencesVoice",
+          "&",
+          "&",
+          "AI",
+          "settingsThese",
+          "preferences",
+          "are",
+          "are",
+          "are",
+          "in",
+          "this",
+          "this",
+          "browser",
+          "provider",
+          "settings.",
+          "LanguageEnglish",
+          "(US)English",
+          "(UK)SpanishFrenchGerman",
+          "Processing",
+          "speedReal-time",
+          "(Recommended)FastBalancedAccurate",
+          "Industry",
+          "specializationHealthcareField",
+          "Work",
+          "ConstructionHuman",
+          "ResourcesLegal",
+          "ServicesEducationGeneral",
+          "Business",
+          "Voice",
+          "sensitivity",
+          "7",
+          "Preferences",
+          "ready.",
+          "collaborationChoose",
+          "supported",
+          "actionClose",
+          "Membership",
+          "directories",
+          "email",
+          "invitations",
+          "unavailable.",
+          "You",
+          "can",
+          "share",
+          "templates",
+          "UUIDs",
+          "review",
+          "queue.Open",
+          "sharing",
+          "reviewsNo",
+          "invitation",
+          "is",
+          "created",
+          "dialog."
+        ]
+      }
+    }
+  ],
+  "interactions": [
+    {
+      "route": "/dashboard",
+      "state": "reads current-account browser history, ignores the unscoped prior-account key, and uses a fixed resume destination"
+    },
+    {
+      "route": "/dashboard",
+      "state": "Team and Settings navigation links work by click and keyboard activation; the team dialog closes on Escape and restores focus"
+    },
+    {
+      "route": "/dashboard",
+      "state": "mobile navigation drawer opens, closes on Escape with focus restored, and reaches Templates through its fixed local link"
+    },
+    {
+      "route": "/dashboard",
+      "state": "Home, Team and Settings are reachable from the mobile drawer without overflow"
+    }
+  ],
+  "route_contracts": [
+    {
+      "route": "/dashboard",
+      "viewport": "desktop",
+      "passed": true,
+      "source_html_sha256": "7bae923b8230181849e0400ad0a6b510e20ed8290a18e56e48896069c485c3ed",
+      "source_run_id": "p7-sr-review-source-20261013a",
+      "source_worktree_digest": "2f50c0fa03f6215104e5b1267bc9061447b7c851643328a4a0ec5a74ced68b1c",
+      "source_heading": "What would you like to work on?",
+      "expected_heading": "What would you like to work on?",
+      "required_sections": [
+        "Start with your voice",
+        "Recent forms",
+        "Recent templates",
+        "Upcoming schedule",
+        "Team workspace"
+      ],
+      "required_fields": [
+        "first_name",
+        "last_name",
+        "company",
+        "industry",
+        "language",
+        "aiProcessingSpeed",
+        "industrySpecialization",
+        "voiceSensitivity"
+      ],
+      "required_controls": [
+        "Start voice form",
+        "Choose a template",
+        "View all forms",
+        "Save profile",
+        "Team options",
+        "Open reviews"
+      ],
+      "required_destinations": [
+        "/AIVoiceAutoFill",
+        "/templates",
+        "/filledtemplates",
+        "/scheduler",
+        "/templates#collaboration"
+      ],
+      "accepted_source_differences": [
+        "Home, Team and Settings are workspace navigation destinations in both implementations.",
+        "Recent activity is browser-local and account-key scoped.",
+        "Invite/member management remains unavailable; sharing and reviews route to P5-backed template flows."
+      ],
+      "mapped_source_sections": {
+        "Upcoming": "Upcoming schedule",
+        "Templates": "Recent templates",
+        "Team": "Team workspace"
+      },
+      "mapped_source_fields": {},
+      "mapped_source_field_types": {},
+      "mapped_source_field_labels": {},
+      "mapped_source_controls": {
+        "Reviews": "Open reviews",
+        "Share": "Share with an existing account",
+        "+ Add": "Open scheduler",
+        "Browse library →": "View all",
+        "Use": "Use template"
+      },
+      "source_feature_counts": {
+        "sections": 5,
+        "fields": 0,
+        "controls": 16,
+        "destinations": 12,
+        "copy_blocks": 8
+      }
+    },
+    {
+      "route": "/dashboard",
+      "viewport": "mobile",
+      "passed": true,
+      "source_html_sha256": "7bae923b8230181849e0400ad0a6b510e20ed8290a18e56e48896069c485c3ed",
+      "source_run_id": "p7-sr-review-source-20261013a",
+      "source_worktree_digest": "2f50c0fa03f6215104e5b1267bc9061447b7c851643328a4a0ec5a74ced68b1c",
+      "source_heading": "What would you like to work on?",
+      "expected_heading": "What would you like to work on?",
+      "required_sections": [
+        "Start with your voice",
+        "Recent forms",
+        "Recent templates",
+        "Upcoming schedule",
+        "Team workspace"
+      ],
+      "required_fields": [
+        "first_name",
+        "last_name",
+        "company",
+        "industry",
+        "language",
+        "aiProcessingSpeed",
+        "industrySpecialization",
+        "voiceSensitivity"
+      ],
+      "required_controls": [
+        "Start voice form",
+        "Choose a template",
+        "View all forms",
+        "Save profile",
+        "Team options",
+        "Open reviews"
+      ],
+      "required_destinations": [
+        "/AIVoiceAutoFill",
+        "/templates",
+        "/filledtemplates",
+        "/scheduler",
+        "/templates#collaboration"
+      ],
+      "accepted_source_differences": [
+        "Home, Team and Settings are workspace navigation destinations in both implementations.",
+        "Recent activity is browser-local and account-key scoped.",
+        "Invite/member management remains unavailable; sharing and reviews route to P5-backed template flows."
+      ],
+      "mapped_source_sections": {
+        "Upcoming": "Upcoming schedule",
+        "Templates": "Recent templates",
+        "Team": "Team workspace"
+      },
+      "mapped_source_fields": {},
+      "mapped_source_field_types": {},
+      "mapped_source_field_labels": {},
+      "mapped_source_controls": {
+        "Reviews": "Open reviews",
+        "Share": "Share with an existing account",
+        "+ Add": "Open scheduler",
+        "Browse library →": "View all",
+        "Use": "Use template"
+      },
+      "source_feature_counts": {
+        "sections": 5,
+        "fields": 0,
+        "controls": 16,
+        "destinations": 12,
+        "copy_blocks": 8
+      }
+    }
+  ],
+  "negative_control_checks": [
+    {
+      "route": "/dashboard (desktop)",
+      "passed": true,
+      "mutations_rejected": [
+        "removed required source/Django section rejected",
+        "removed required source/Django control rejected",
+        "removed required source/Django destination rejected",
+        "removed required source/Django copy rejected"
+      ]
+    }
+  ]
+}
