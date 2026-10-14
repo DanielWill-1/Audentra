@@ -94,6 +94,92 @@ def _template_reads(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(template_selectors, "list_review_queue", lambda *_args, **_kwargs: [])
 
 
+@pytest.mark.parametrize(
+    ("sort", "sort_by", "ascending"),
+    [
+        ("created_at-desc", "created_at", False),
+        ("created_at-asc", "created_at", True),
+        ("name-asc", "name", True),
+        ("name-desc", "name", False),
+        ("category-asc", "category", True),
+        ("category-desc", "category", False),
+    ],
+)
+@pytest.mark.django_db(databases=[])
+def test_templates_route_maps_sort_options_to_selector_order(
+    authenticated_client: Client,
+    monkeypatch: pytest.MonkeyPatch,
+    sort: str,
+    sort_by: str,
+    ascending: bool,
+) -> None:
+    _template_reads(monkeypatch)
+    with patch.object(
+        template_selectors,
+        "list_templates",
+        return_value=[SAMPLE_TEMPLATE],
+    ) as listing:
+        response = authenticated_client.get(f"/templates?sort={sort}")
+
+    assert response.status_code == 200
+    assert f'value="{sort}" selected'.encode() in response.content
+    listing.assert_any_call(
+        VERIFIED_USER,
+        category="all",
+        search="",
+        sort_by=sort_by,
+        ascending=ascending,
+        limit=100,
+    )
+
+
+@pytest.mark.django_db(databases=[])
+def test_templates_route_uses_newest_first_for_missing_or_invalid_sort(
+    authenticated_client: Client,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _template_reads(monkeypatch)
+    with patch.object(
+        template_selectors,
+        "list_templates",
+        return_value=[SAMPLE_TEMPLATE],
+    ) as listing:
+        response = authenticated_client.get("/templates?sort=unsupported")
+
+    assert response.status_code == 200
+    assert b'value="created_at-desc" selected' in response.content
+    listing.assert_any_call(
+        VERIFIED_USER,
+        category="all",
+        search="",
+        sort_by="created_at",
+        ascending=False,
+        limit=100,
+    )
+
+
+@pytest.mark.django_db(databases=[])
+def test_template_card_management_actions_start_inside_a_collapsed_overflow_disclosure(
+    authenticated_client: Client,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _template_reads(monkeypatch)
+
+    response = authenticated_client.get("/templates")
+
+    assert response.status_code == 200
+    disclosure = re.search(rb"<details\b[^>]*data-template-actions[^>]*>", response.content)
+    assert disclosure, "template actions should live in the card overflow disclosure"
+    assert not re.search(rb"\bopen(?:\s|>)", disclosure.group(0)), (
+        "the card's secondary actions should be collapsed in the source-matched default state"
+    )
+    assert b'aria-label="More actions for Patient intake"' in response.content
+    assert response.content.index(disclosure.group(0)) < response.content.index(
+        b'name="action" value="duplicate"'
+    )
+    assert b'href="/AIVoiceAutoFill?template=' in response.content
+
+
 @pytest.mark.django_db(databases=[])
 def test_all_protected_pages_render_for_a_verified_session(
     authenticated_client: Client,
@@ -145,8 +231,8 @@ def test_all_protected_pages_render_for_a_verified_session(
         ("/manage-schedules", "Manage All Schedules"),
         ("/scheduler-settings", "Scheduler settings"),
         ("/AIVoiceAutoFill", "AI Voice Auto-Fill"),
-        ("/filledtemplates", "Filled templates"),
-        ("/activitylog", "Activity log"),
+        ("/filledtemplates", "Your Filled Templates"),
+        ("/activitylog", "Activity Log"),
     ):
         response = authenticated_client.get(route)
         assert response.status_code == 200, route
@@ -1016,7 +1102,7 @@ def test_auth_next_can_return_to_protected_pages_but_not_external_destinations()
     assert b'value="/templates"' in safe.content
     external = client.get("/login?next=https%3A%2F%2Fevil.example%2F")
     assert external.status_code == 200
-    assert b'value="/auth/session/"' in external.content
+    assert b'value="/dashboard"' in external.content
 
 
 @pytest.mark.django_db(databases=[])

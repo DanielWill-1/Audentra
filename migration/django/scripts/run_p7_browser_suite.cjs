@@ -4,9 +4,9 @@ const path = require('node:path');
 
 const djangoRoot = path.resolve(__dirname, '..');
 const repoRoot = path.resolve(djangoRoot, '..', '..');
-const python = path.join(djangoRoot, '.venv-p2', 'Scripts', 'python.exe');
-const reactPort = 15573;
-const djangoPort = 18875;
+const python = process.env.P7_BROWSER_PYTHON || path.join(djangoRoot, '.venv-p2', 'Scripts', 'python.exe');
+const reactPort = process.env.P7_REACT_PORT || 15573;
+const djangoPort = process.env.P7_DJANGO_PORT || 18875;
 const browserDatabase = path.join(djangoRoot, `.p7-browser-${process.pid}.sqlite3`);
 const browserEnvironment = {
   DJANGO_SETTINGS_MODULE: 'config.settings.browser',
@@ -19,8 +19,11 @@ const appOnly = process.argv.includes('--app-only');
 const sourceOnly = process.argv.includes('--source-only');
 const voiceOnly = process.argv.includes('--voice-only');
 const timezoneOnly = process.argv.includes('--timezone-only');
+const desktopMicOnly = process.argv.includes('--desktop-mic-only');
+const focusOnly = process.argv.includes('--focus-only');
+const assetOnly = process.argv.includes('--asset-only');
 
-if ([mediaOnly, checkOnly, appOnly, sourceOnly, voiceOnly, timezoneOnly].filter(Boolean).length > 1) {
+if ([mediaOnly, checkOnly, appOnly, sourceOnly, voiceOnly, timezoneOnly, desktopMicOnly, focusOnly, assetOnly].filter(Boolean).length > 1) {
   throw new Error('Choose only one browser-suite mode.');
 }
 
@@ -66,22 +69,26 @@ async function waitFor(url, child, name) {
   throw new Error(`${name} did not become ready (${lastError}). ${serverOutput.get(name) || ''}`);
 }
 
-function runNode(script, args, env) {
+function runNode(script, args, env, timeout = 20 * 60 * 1000) {
   const result = spawnSync(process.execPath, [script, ...args], {
     cwd: repoRoot,
     env: { ...process.env, ...env },
     encoding: 'utf8',
     maxBuffer: 16 * 1024 * 1024,
+    timeout,
     windowsHide: true,
   });
   if (result.stdout) process.stdout.write(result.stdout);
   if (result.stderr) process.stderr.write(result.stderr);
   if (result.error) throw result.error;
   if (result.status !== 0) {
-    const djangoDiagnostics = serverOutput.get('Django') || '';
+    const diagnostics = [...serverOutput.entries()]
+      .filter(([, output]) => output)
+      .map(([name, output]) => `${name} server diagnostics:\n${output}`)
+      .join('\n');
     throw new Error(
       `${path.basename(script)} exited with ${result.status}.` +
-      (djangoDiagnostics ? `\nDjango server diagnostics:\n${djangoDiagnostics}` : ''),
+      (diagnostics ? `\n${diagnostics}` : ''),
     );
   }
 }
@@ -120,12 +127,13 @@ async function main() {
       'runserver',
       `127.0.0.1:${djangoPort}`,
       '--noreload',
+      '--nothreading',
       '--insecure',
     ],
     djangoRoot,
     browserEnvironment,
   );
-  const vite = mediaOnly || checkOnly || appOnly || voiceOnly ? null : start(
+  const vite = mediaOnly || checkOnly || appOnly || voiceOnly || desktopMicOnly || focusOnly ? null : start(
     'Vite',
     process.execPath,
     [path.join(repoRoot, 'node_modules', 'vite', 'bin', 'vite.js'), '--host=127.0.0.1', `--port=${reactPort}`, '--strictPort'],
@@ -138,8 +146,15 @@ async function main() {
   try {
     if (sourceOnly) {
       await waitFor(`http://127.0.0.1:${reactPort}/`, vite, 'Vite');
+      const requestedAppWave = process.argv.find((argument) => /^--app-wave=w[3-7]$/.test(argument))?.slice(11);
+      if (!requestedAppWave) {
+        const publicCapture = path.join(djangoRoot, 'scripts', 'p7_capture_react.cjs');
+        runNode(publicCapture, [], { P7_REACT_BASE_URL: `http://127.0.0.1:${reactPort}` });
+        runNode(publicCapture, ['--wave=w2'], { P7_REACT_BASE_URL: `http://127.0.0.1:${reactPort}` });
+      }
       const capture = path.join(djangoRoot, 'scripts', 'p7_source_app_capture.cjs');
-      const captureArgs = process.argv.includes('--auth-only') ? ['--auth-only'] : ['--app-waves-only'];
+      const captureArgs = process.argv.includes('--auth-only') ? ['--auth-only'] : [];
+      if (requestedAppWave) captureArgs.push(`--wave=${requestedAppWave}`);
       runNode(capture, captureArgs, { P7_REACT_BASE_URL: `http://127.0.0.1:${reactPort}` });
       return;
     }
@@ -155,10 +170,39 @@ async function main() {
         `${serverOutput.get('Django') || ''}`,
       );
     }
+    if (assetOnly) {
+      await waitFor(`http://127.0.0.1:${reactPort}/`, vite, 'Vite');
+      runNode(path.join(djangoRoot, 'scripts', 'p9_asset_check.cjs'), [], {
+        P7_DJANGO_BASE_URL: `http://127.0.0.1:${djangoPort}`,
+        P7_REACT_BASE_URL: `http://127.0.0.1:${reactPort}`,
+        P9_ASSET_EVIDENCE_DIR: process.env.P9_ASSET_EVIDENCE_DIR || '',
+        P7_EVIDENCE_RUN: process.env.P7_EVIDENCE_RUN || '',
+      }, 120_000);
+      return;
+    }
     if (mediaOnly) {
       runNode(path.join(djangoRoot, 'scripts', 'p8_media_check.cjs'), [], {
         P7_DJANGO_BASE_URL: `http://127.0.0.1:${djangoPort}`,
       });
+      return;
+    }
+    if (desktopMicOnly) {
+      const micCheck = path.join(djangoRoot, 'scripts', 'p9_desktop_mic_check.cjs');
+      runNode(micCheck, [], {
+        P7_DJANGO_BASE_URL: `http://127.0.0.1:${djangoPort}`,
+        P9_DEVICE_EVIDENCE_DIR: process.env.P9_DEVICE_EVIDENCE_DIR || '',
+      }, 120_000);
+      return;
+    }
+    if (focusOnly) {
+      const focusCheck = path.join(djangoRoot, 'scripts', 'p9_focus_check.cjs');
+      runNode(focusCheck, [], {
+        P7_DJANGO_BASE_URL: `http://127.0.0.1:${djangoPort}`,
+        P9_FOCUS_EVIDENCE_DIR: process.env.P9_FOCUS_EVIDENCE_DIR || '',
+        P9_FOCUS_KEYBOARD_ACTIVATION: process.env.P9_FOCUS_KEYBOARD_ACTIVATION || '',
+        P9_FOCUS_ROUTE: process.env.P9_FOCUS_ROUTE || '',
+        P9_FOCUS_VIEWPORT: process.env.P9_FOCUS_VIEWPORT || '',
+      }, 15 * 60 * 1000);
       return;
     }
     if (voiceOnly) {
@@ -208,9 +252,12 @@ async function main() {
       const appCheck = path.join(djangoRoot, 'scripts', 'p7_application_browser_check.cjs');
       const evidenceRun = process.env.P7_EVIDENCE_RUN || 'post-wave-review-20261012';
       const requestedWave = process.argv.find((argument) => /^--wave=w[3-7]$/.test(argument));
+      const requestedRoute = process.argv.find((argument) => argument.startsWith('--route='));
       const waves = requestedWave ? [requestedWave.slice(-2)] : ['w3', 'w4', 'w5', 'w6', 'w7'];
       for (const wave of waves) {
-        runNode(appCheck, [`--wave=${wave}`], {
+        const args = [`--wave=${wave}`];
+        if (requestedRoute) args.push(requestedRoute);
+        runNode(appCheck, args, {
           P7_DJANGO_BASE_URL: `http://127.0.0.1:${djangoPort}`,
           P7_EVIDENCE_RUN: evidenceRun,
         });

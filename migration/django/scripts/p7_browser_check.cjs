@@ -6,20 +6,25 @@ const { chromium } = require('playwright');
 const baseUrl = process.env.P7_DJANGO_BASE_URL || 'http://127.0.0.1:8000';
 const root = path.resolve(__dirname, '..', '..', '..');
 const wave = process.argv.includes('--wave=w2') ? 'w2' : 'w1';
-const legacyDir = path.join(root, 'docs', 'pages', 'evidence', wave, 'legacy');
+const p9EvidenceDir = process.env.P9_EVIDENCE_DIR ? path.resolve(process.env.P9_EVIDENCE_DIR) : null;
+const legacyDir = p9EvidenceDir
+  ? path.join(p9EvidenceDir, 'source', wave)
+  : path.join(root, 'docs', 'pages', 'evidence', wave, 'legacy');
 const evidenceRun = process.env.P7_EVIDENCE_RUN || '';
 if (evidenceRun && !/^[a-z0-9][a-z0-9_-]{0,47}$/i.test(evidenceRun)) {
   throw new Error('P7_EVIDENCE_RUN must be a short filesystem-safe label.');
 }
-const evidenceDir = path.join(
-  root,
-  'docs',
-  'pages',
-  'evidence',
-  wave,
-  ...(evidenceRun ? [evidenceRun] : []),
-  'django',
-);
+const evidenceDir = p9EvidenceDir
+  ? path.join(p9EvidenceDir, 'django', wave)
+  : path.join(
+      root,
+      'docs',
+      'pages',
+      'evidence',
+      wave,
+      ...(evidenceRun ? [evidenceRun] : []),
+      'django',
+    );
 const w1Routes = [
   ['terms', '/terms'],
   ['privacy', '/privacy'],
@@ -97,6 +102,111 @@ function verifyContentParityGuard() {
 
 async function saveScreenshot(page, filename) {
   await page.screenshot({ path: path.join(evidenceDir, filename), fullPage: true });
+}
+
+async function compareControlContracts(page, sourceMarkup, route) {
+  return page.evaluate(({ markup, currentRoute }) => {
+    const controls = (root) => [...root.querySelectorAll('input, select, textarea, button')]
+      .filter((element) => !(element instanceof HTMLInputElement && element.type === 'hidden'))
+      .map((element) => {
+        const tag = element.tagName.toLowerCase();
+        const labelText = [...(element.labels || [])]
+          .map((label) => label.innerText?.replace(/\s+/g, ' ').trim() || label.textContent?.replace(/\s+/g, ' ').trim() || '')
+          .filter(Boolean)
+          .join(' ');
+        const textContent = (node) => {
+          if (node.nodeType === Node.TEXT_NODE) return node.nodeValue || '';
+          if (node.nodeType !== Node.ELEMENT_NODE || node.tagName.toLowerCase() === 'svg') return '';
+          return [...node.childNodes].map(textContent).filter((value) => value.trim()).join(' ');
+        };
+        const text = textContent(element).replace(/\s+/g, ' ').trim();
+        const type = element.getAttribute('type') || (tag === 'input' ? 'text' : tag === 'button' ? 'submit' : null);
+        return {
+          tag,
+          type,
+          label: element.getAttribute('aria-label') || labelText || element.getAttribute('placeholder') || element.getAttribute('title') || text || null,
+          placeholder: element.getAttribute('placeholder'),
+          required: element.hasAttribute('required'),
+          disabled: element.hasAttribute('disabled'),
+          options: tag === 'select'
+            ? [...element.options].map((option) => ({ label: option.label, value: option.value }))
+            : [],
+        };
+      });
+    const sourceDocument = new DOMParser().parseFromString(markup, 'text/html');
+    const sourceRoot = sourceDocument.querySelector('#main-content') || sourceDocument.body;
+    const djangoRoot = document.querySelector('#main-content') || document.body;
+    const sourceControls = controls(sourceRoot);
+    const djangoControls = controls(djangoRoot);
+    const canonicalize = (control) => ({
+      tag: control.tag,
+      type: control.tag === 'button'
+        ? 'button'
+        : currentRoute === '/help-center' && control.tag === 'input'
+          ? 'search'
+          : control.type,
+      label: currentRoute === '/help-center' && control.tag === 'input'
+        ? control.placeholder
+        : control.label?.replace(/\s+/g, ' ').trim() || null,
+      placeholder: control.placeholder,
+      required: control.required,
+      disabled: control.disabled,
+      options: control.options,
+    });
+    const expectedTargetOnly = currentRoute === '/help-center'
+      ? [{ tag: 'button', type: 'button', label: 'Search', placeholder: null, required: false, disabled: false, options: [] }]
+      : [];
+    const canonicalSource = sourceControls.map(canonicalize);
+    const canonicalDjango = djangoControls.map(canonicalize);
+    const key = (control) => JSON.stringify(control);
+    const remaining = [...canonicalDjango];
+    const missingFromDjango = canonicalSource.filter((control) => {
+      const index = remaining.findIndex((candidate) => key(candidate) === key(control));
+      if (index < 0) return true;
+      remaining.splice(index, 1);
+      return false;
+    });
+    const observedAdded = [...remaining];
+    const missingMappings = [];
+    for (const allowed of expectedTargetOnly) {
+      const index = remaining.findIndex((candidate) => key(candidate) === key(allowed));
+      if (index >= 0) remaining.splice(index, 1);
+      else missingMappings.push(allowed);
+    }
+    const unreviewedAdded = remaining;
+    return {
+      source: sourceControls,
+      django: djangoControls,
+      exact_match: missingFromDjango.length === 0 && unreviewedAdded.length === 0 && missingMappings.length === 0,
+      accepted_mappings: [
+        'Button activation type is checked behaviorally; source default-submit and Django explicit-button markup are equivalent outside a form.',
+        ...(currentRoute === '/help-center' ? [
+          'The source text search input maps to a labeled native search field with the same placeholder; W1 verifies Enter search and category-filter behavior.',
+          'The target GET form adds one Search submit button; W1 verifies it filters the same reviewed results.',
+          'React category state maps to keyboard-operable GET category forms; W1 verifies the expected category results.',
+        ] : []),
+      ],
+      missing_from_django: missingFromDjango,
+      added_in_django: unreviewedAdded,
+      reviewed_target_only: observedAdded,
+      missing_mappings: missingMappings,
+    };
+  }, { markup: sourceMarkup, currentRoute: route });
+}
+
+async function compareSpecialDestinations(page, sourceMarkup) {
+  return page.evaluate((markup) => {
+    const destinations = (root) => [...root.querySelectorAll('a[href]')]
+      .map((anchor) => anchor.getAttribute('href'))
+      .filter((href) => href && /^(?:https?:|mailto:|tel:|#)/i.test(href))
+      .sort();
+    const sourceDocument = new DOMParser().parseFromString(markup, 'text/html');
+    const sourceRoot = sourceDocument.querySelector('#main-content') || sourceDocument.body;
+    const djangoRoot = document.querySelector('#main-content') || document.body;
+    const source = destinations(sourceRoot);
+    const django = destinations(djangoRoot);
+    return { source, django, exact_match: JSON.stringify(source) === JSON.stringify(django) };
+  }, sourceMarkup);
 }
 
 async function checkPage(browser, slug, route, viewport, references) {
@@ -186,6 +296,12 @@ async function checkPage(browser, slug, route, viewport, references) {
     };
   }, route);
   const djangoText = djangoTextResult.text;
+  const controlContract = await compareControlContracts(page, sourceMarkup, route);
+  const specialDestinations = await compareSpecialDestinations(page, sourceMarkup);
+  assert.equal(controlContract.exact_match, true,
+    `${route} field/control contract has an unmapped source difference: ${JSON.stringify(controlContract)}`);
+  assert.equal(specialDestinations.exact_match, true,
+    `${route} external/contact/fragment destinations differ: ${JSON.stringify(specialDestinations)}`);
   const sourceWords = sourceText.split(/\s+/);
   const djangoWords = djangoText.split(/\s+/);
   const sourceCounts = new Map();
@@ -231,6 +347,8 @@ async function checkPage(browser, slug, route, viewport, references) {
     local_link_destinations_missing_from_django: difference(sourceLinks, pageInfo.local_links),
     local_link_destinations_added_in_django: difference(pageInfo.local_links, sourceLinks),
     django_local_links: pageInfo.local_links,
+    control_contract: controlContract,
+    special_destination_contract: specialDestinations,
     console_errors: consoleErrors,
     failed_requests: failedRequests,
     local_responses: localResponses,
@@ -251,104 +369,215 @@ async function checkPage(browser, slug, route, viewport, references) {
 }
 
 async function checkPrivacy(browser) {
-  const context = await browser.newContext({ permissions: ['clipboard-read', 'clipboard-write'] });
-  const successPage = await context.newPage({ viewport: viewports[0] });
-  const response = await successPage.goto(`${baseUrl}/privacy`, { waitUntil: 'domcontentloaded' });
-  assert.equal(response?.status(), 200);
-  const copyButton = successPage.getByRole('button', { name: /Copy PGP Key/i });
-  await copyButton.click();
-  await successPage.getByText('Copied', { exact: true }).waitFor({ timeout: 3000 });
-  await saveScreenshot(successPage, 'privacy-copy-success.png');
-  results.interactions.push({ route: '/privacy', state: 'clipboard write succeeds and transient success is shown' });
-
-  const deniedPage = await context.newPage({ viewport: viewports[0] });
-  await deniedPage.addInitScript(() => {
-    Object.defineProperty(navigator, 'clipboard', {
-      configurable: true,
-      value: { writeText: () => Promise.reject(new DOMException('denied', 'NotAllowedError')) },
+  for (const viewport of viewports) {
+    const context = await browser.newContext({
+      permissions: ['clipboard-read', 'clipboard-write'],
+      viewport: { width: viewport.width, height: viewport.height },
     });
-  });
-  await deniedPage.goto(`${baseUrl}/privacy`, { waitUntil: 'domcontentloaded' });
-  await deniedPage.getByRole('button', { name: /Copy PGP Key/i }).click();
-  await deniedPage.getByText('Copy failed. Select and copy the key above.', { exact: true }).waitFor();
-  await saveScreenshot(deniedPage, 'privacy-copy-denied.png');
-  results.interactions.push({ route: '/privacy', state: 'clipboard denial gives accessible recovery feedback' });
+    const successPage = await context.newPage();
+    const response = await successPage.goto(`${baseUrl}/privacy`, { waitUntil: 'domcontentloaded' });
+    assert.equal(response?.status(), 200);
+    const copyButton = successPage.getByRole('button', { name: /Copy PGP Key/i });
+    await copyButton.focus();
+    await successPage.keyboard.press('Enter');
+    await successPage.getByText('Copied', { exact: true }).waitFor({ timeout: 3000 });
+    const successFeedback = successPage.locator('#pgp-copy-feedback');
+    assert.equal(await successFeedback.getAttribute('role'), 'status');
+    assert.equal(await successFeedback.getAttribute('aria-live'), 'polite');
+    assert.equal(await copyButton.evaluate((element) => document.activeElement === element), true,
+      'Privacy clipboard success must preserve focus on its trigger');
+    await saveScreenshot(successPage, `privacy-copy-success-${viewport.name}.png`);
+    results.interactions.push({ route: '/privacy', viewport: viewport.name, activation: 'Enter', state: 'clipboard write succeeds and transient success is shown' });
 
-  const toc = successPage.locator('#main-content a[href^="#"]').first();
-  assert.ok(await toc.count(), 'Privacy Notice should provide table-of-contents links');
-  const href = await toc.getAttribute('href');
-  await toc.focus();
-  assert.equal(await toc.evaluate((element) => document.activeElement === element), true);
-  await toc.press('Enter');
-  assert.equal(new URL(successPage.url()).hash, href, 'Privacy table-of-contents link should navigate to its anchor');
-  results.interactions.push({ route: '/privacy', state: 'keyboard-focusable table-of-contents anchor navigation' });
-  await context.close();
+    const deniedPage = await context.newPage();
+    await deniedPage.addInitScript(() => {
+      Object.defineProperty(navigator, 'clipboard', {
+        configurable: true,
+        value: { writeText: () => Promise.reject(new DOMException('denied', 'NotAllowedError')) },
+      });
+    });
+    await deniedPage.goto(`${baseUrl}/privacy`, { waitUntil: 'domcontentloaded' });
+    const deniedCopyButton = deniedPage.getByRole('button', { name: /Copy PGP Key/i });
+    await deniedCopyButton.focus();
+    await deniedPage.keyboard.press('Space');
+    await deniedPage.getByText('Copy failed. Select and copy the key above.', { exact: true }).waitFor();
+    const deniedFeedback = deniedPage.locator('#pgp-copy-feedback');
+    assert.equal(await deniedFeedback.getAttribute('role'), 'status');
+    assert.equal(await deniedFeedback.getAttribute('aria-live'), 'polite');
+    assert.equal(await deniedCopyButton.evaluate((element) => document.activeElement === element), true,
+      'Privacy clipboard denial must preserve focus on its trigger');
+    await saveScreenshot(deniedPage, `privacy-copy-denied-${viewport.name}.png`);
+    results.interactions.push({ route: '/privacy', viewport: viewport.name, activation: 'Space', state: 'clipboard denial gives accessible recovery feedback' });
+
+    const toc = successPage.locator('#main-content a[href^="#"]').first();
+    assert.ok(await toc.count(), 'Privacy Notice should provide table-of-contents links');
+    const href = await toc.getAttribute('href');
+    await toc.focus();
+    assert.equal(await toc.evaluate((element) => document.activeElement === element), true);
+    await toc.press('Enter');
+    assert.equal(new URL(successPage.url()).hash, href, 'Privacy table-of-contents link should navigate to its anchor');
+    results.interactions.push({ route: '/privacy', viewport: viewport.name, activation: 'Enter', state: 'keyboard-focusable table-of-contents anchor navigation' });
+    await context.close();
+  }
 }
 
 async function checkHelpCenter(browser) {
-  const page = await browser.newPage({ viewport: viewports[0] });
-  await page.goto(`${baseUrl}/help-center`, { waitUntil: 'domcontentloaded' });
-  assert.equal(await page.getByText('6 articles found', { exact: true }).count(), 1);
-  await saveScreenshot(page, 'help-center-default.png');
+  for (const viewport of viewports) {
+    const page = await browser.newPage({ viewport: { width: viewport.width, height: viewport.height } });
+    await page.goto(`${baseUrl}/help-center`, { waitUntil: 'domcontentloaded' });
+    assert.equal(await page.getByText('6 articles found', { exact: true }).count(), 1);
+    await saveScreenshot(page, `help-center-default-${viewport.name}.png`);
 
-  await page.locator('#help-search').fill('first voice form');
-  await page.locator('#help-search').press('Enter');
-  await page.getByText('1 articles found', { exact: true }).waitFor();
-  assert.equal(await page.getByRole('heading', { name: 'How to create your first voice form' }).count(), 1);
-  await page.locator('form[aria-label="Filter help articles by category"] button[value="getting-started"]').click();
-  await page.getByText('1 articles found', { exact: true }).waitFor();
-  assert.match(page.url(), /category=getting-started/);
-  assert.match(page.url(), /q=first\+voice\+form/);
-  await saveScreenshot(page, 'help-center-search-category.png');
-  results.interactions.push({ route: '/help-center', state: 'case-insensitive title search combined with category; count is 1' });
+    await page.locator('#help-search').fill('first voice form');
+    await page.locator('#help-search').focus();
+    await page.keyboard.press('Enter');
+    await page.getByText('1 articles found', { exact: true }).waitFor();
+    assert.equal(await page.getByRole('heading', { name: 'How to create your first voice form' }).count(), 1);
+    const searchButton = page.getByRole('button', { name: 'Search', exact: true });
+    await searchButton.focus();
+    await page.keyboard.press('Space');
+    await page.getByText('1 articles found', { exact: true }).waitFor();
+    const category = page.locator('form[aria-label="Filter help articles by category"] button[value="getting-started"]');
+    await category.focus();
+    await page.keyboard.press('Space');
+    await page.getByText('1 articles found', { exact: true }).waitFor();
+    assert.match(page.url(), /category=getting-started/);
+    assert.match(page.url(), /q=first\+voice\+form/);
+    await saveScreenshot(page, `help-center-search-category-${viewport.name}.png`);
+    results.interactions.push({ route: '/help-center', viewport: viewport.name, activation: 'Enter search; Space category', state: 'case-insensitive title search combined with category; count is 1' });
 
-  await page.goto(`${baseUrl}/help-center?category=voice-features`, { waitUntil: 'domcontentloaded' });
-  await page.getByText('2 articles found', { exact: true }).waitFor();
-  results.interactions.push({ route: '/help-center', state: 'category filter returns two reviewed Voice Features items' });
+    await page.goto(`${baseUrl}/help-center?category=voice-features`, { waitUntil: 'domcontentloaded' });
+    await page.getByText('2 articles found', { exact: true }).waitFor();
+    results.interactions.push({ route: '/help-center', viewport: viewport.name, state: 'category filter returns two reviewed Voice Features items' });
 
-  await page.goto(`${baseUrl}/help-center?q=no-such-title`, { waitUntil: 'domcontentloaded' });
-  await page.getByRole('heading', { name: 'No articles found' }).waitFor();
-  await saveScreenshot(page, 'help-center-no-results.png');
-  await page.getByRole('link', { name: 'Browse All Articles' }).click();
-  await page.getByText('6 articles found', { exact: true }).waitFor();
-  assert.equal(new URL(page.url()).search, '');
-  results.interactions.push({ route: '/help-center', state: 'no-match state and browse-all reset' });
-  await page.close();
+    await page.goto(`${baseUrl}/help-center?q=no-such-title`, { waitUntil: 'domcontentloaded' });
+    await page.getByRole('heading', { name: 'No articles found' }).waitFor();
+    await saveScreenshot(page, `help-center-no-results-${viewport.name}.png`);
+    const browseAll = page.getByRole('link', { name: 'Browse All Articles' });
+    await browseAll.focus();
+    await page.keyboard.press('Enter');
+    await page.getByText('6 articles found', { exact: true }).waitFor();
+    assert.equal(new URL(page.url()).search, '');
+    results.interactions.push({ route: '/help-center', viewport: viewport.name, activation: 'Enter', state: 'no-match state and browse-all reset' });
+    await page.close();
+  }
+}
+
+async function checkSourceInactiveControls(browser) {
+  const controls = [
+    { route: '/', names: ['Microphone'] },
+    { route: '/features', names: ['Microphone', 'Submit form'] },
+    { route: '/industries', names: ['Start Your Free Trial'] },
+    { route: '/pricing', names: ['Start Free Trial', 'Contact Sales', 'Start Your Free Trial'] },
+    { route: '/status', names: ['Subscribe'] },
+    {
+      route: '/help-center',
+      names: ['Browse Videos', 'Start Chat', 'Contact Us', 'Book Demo', 'Helpful', 'Not helpful', 'Read Article →', 'Start Live Chat', 'Email Support'],
+    },
+    { route: '/documentation', names: ['Download full template →'] },
+  ];
+  for (const viewport of viewports) {
+    for (const routeControls of controls) {
+      const page = await browser.newPage({ viewport: { width: viewport.width, height: viewport.height } });
+      await page.goto(`${baseUrl}${routeControls.route}`, { waitUntil: 'domcontentloaded' });
+      for (const name of routeControls.names) {
+        const matches = await page.getByRole('button', { name, exact: true }).all();
+        assert.ok(matches.length, `${routeControls.route} should render the source-inactive ${name} control`);
+        for (let index = 0; index < matches.length; index += 1) {
+          const button = page.getByRole('button', { name, exact: true }).nth(index);
+          const probe = `${viewport.name}-${routeControls.route}-${name}-${index}`;
+          assert.equal(await button.isDisabled(), false, `${routeControls.route} ${name} should remain keyboard reachable`);
+          const startUrl = page.url();
+          const startText = await page.locator('#main-content').innerText();
+          await button.evaluate((element, key) => {
+            window.__p9ControlKeyboardClicks ||= {};
+            window.__p9ControlKeyboardClicks[key] = 0;
+            element.addEventListener('click', () => { window.__p9ControlKeyboardClicks[key] += 1; });
+          }, probe);
+          await button.focus();
+          assert.equal(await button.evaluate((element) => document.activeElement === element), true);
+          for (const key of ['Enter', 'Space']) {
+            await page.keyboard.press(key);
+            assert.equal(
+              await page.evaluate((value) => window.__p9ControlKeyboardClicks[value], probe),
+              key === 'Enter' ? 1 : 2,
+              `${routeControls.route} ${name} should dispatch a native click from ${key}`,
+            );
+            assert.equal(page.url(), startUrl, `${routeControls.route} ${name} is a source-inactive demonstration control`);
+            assert.equal(await page.locator('#main-content').innerText(), startText,
+              `${routeControls.route} ${name} should keep its source-inactive demonstration state`);
+          }
+          results.interactions.push({
+            route: routeControls.route,
+            viewport: viewport.name,
+            control: name,
+            activation: ['Enter', 'Space'],
+            state: 'native keyboard activation dispatches once per key and preserves the source-inactive demonstration state',
+          });
+        }
+      }
+      await page.close();
+    }
+  }
 }
 
 async function checkDocumentation(browser) {
-  const context = await browser.newContext({ permissions: ['clipboard-read', 'clipboard-write'] });
-  const successPage = await context.newPage({ viewport: viewports[0] });
-  await successPage.goto(`${baseUrl}/documentation`, { waitUntil: 'domcontentloaded' });
-  const copyButton = successPage.getByRole('button', { name: 'Copy' }).first();
-  const displayedCode = await successPage.locator('pre code').first().textContent();
-  await copyButton.click();
-  await successPage.getByRole('button', { name: 'Copied' }).first().waitFor();
-  await successPage.getByText('Copied code to clipboard.', { exact: true }).waitFor();
-  const copiedCode = await successPage.evaluate(() => navigator.clipboard.readText());
-  assert.equal(copiedCode.replace(/\r\n/g, '\n'), (displayedCode || '').replace(/\r\n/g, '\n'));
-  await saveScreenshot(successPage, 'documentation-copy-success.png');
-  results.interactions.push({ route: '/documentation', state: 'copy preserves displayed code and reports clipboard success' });
-
-  const deniedPage = await context.newPage({ viewport: viewports[0] });
-  await deniedPage.addInitScript(() => {
-    Object.defineProperty(navigator, 'clipboard', {
-      configurable: true,
-      value: { writeText: () => Promise.reject(new DOMException('denied', 'NotAllowedError')) },
+  for (const viewport of viewports) {
+    const context = await browser.newContext({
+      permissions: ['clipboard-read', 'clipboard-write'],
+      viewport: { width: viewport.width, height: viewport.height },
     });
-  });
-  await deniedPage.goto(`${baseUrl}/documentation`, { waitUntil: 'domcontentloaded' });
-  await deniedPage.getByRole('button', { name: 'Copy' }).first().click();
-  await deniedPage.getByText('Copy failed. Select and copy this block above.', { exact: true }).waitFor();
-  await saveScreenshot(deniedPage, 'documentation-copy-denied.png');
-  results.interactions.push({ route: '/documentation', state: 'clipboard denial exposes accessible recovery feedback' });
+    const successPage = await context.newPage();
+    await successPage.goto(`${baseUrl}/documentation`, { waitUntil: 'domcontentloaded' });
+    const copyButton = successPage.getByRole('button', { name: 'Copy' }).first();
+    const displayedCode = await successPage.locator('pre code').first().textContent();
+    await copyButton.focus();
+    await successPage.keyboard.press('Enter');
+    const copiedButton = successPage.getByRole('button', { name: 'Copied' }).first();
+    await copiedButton.waitFor();
+    await successPage.getByText('Copied code to clipboard.', { exact: true }).waitFor();
+    const successFeedback = successPage.locator('[data-copy-feedback]').first();
+    assert.equal(await successFeedback.getAttribute('aria-live'), 'polite');
+    assert.equal(await copiedButton.evaluate((element) => document.activeElement === element), true,
+      'Documentation clipboard success must preserve focus on its trigger');
+    const copiedCode = await successPage.evaluate(() => navigator.clipboard.readText());
+    assert.equal(copiedCode.replace(/\r\n/g, '\n'), (displayedCode || '').replace(/\r\n/g, '\n'));
+    await saveScreenshot(successPage, `documentation-copy-success-${viewport.name}.png`);
+    results.interactions.push({ route: '/documentation', viewport: viewport.name, activation: 'Enter', state: 'copy preserves displayed code and reports clipboard success' });
 
-  const toc = successPage.locator('a[href="#pipeline"]').first();
-  await toc.focus();
-  await toc.press('Enter');
-  assert.equal(new URL(successPage.url()).hash, '#pipeline');
-  results.interactions.push({ route: '/documentation', state: 'keyboard-operable section navigation' });
-  await context.close();
+    const deniedPage = await context.newPage();
+    await deniedPage.addInitScript(() => {
+      Object.defineProperty(navigator, 'clipboard', {
+        configurable: true,
+        value: { writeText: () => Promise.reject(new DOMException('denied', 'NotAllowedError')) },
+      });
+    });
+    await deniedPage.goto(`${baseUrl}/documentation`, { waitUntil: 'domcontentloaded' });
+    const deniedCopy = deniedPage.getByRole('button', { name: 'Copy' }).first();
+    await deniedCopy.focus();
+    await deniedPage.keyboard.press('Space');
+    await deniedPage.getByText('Copy failed. Select and copy this block above.', { exact: true }).waitFor();
+    const deniedFeedback = deniedPage.locator('[data-copy-feedback]').first();
+    assert.equal(await deniedFeedback.getAttribute('aria-live'), 'polite');
+    assert.equal(await deniedPage.getByRole('button', { name: 'Copy' }).first()
+      .evaluate((element) => document.activeElement === element), true,
+    'Documentation clipboard denial must preserve focus on its trigger');
+    await saveScreenshot(deniedPage, `documentation-copy-denied-${viewport.name}.png`);
+    results.interactions.push({ route: '/documentation', viewport: viewport.name, activation: 'Space', state: 'clipboard denial exposes accessible recovery feedback' });
+
+    if (viewport.name === 'desktop') {
+      const toc = successPage.locator('a[href="#pipeline"]').first();
+      await toc.focus();
+      await toc.press('Enter');
+      assert.equal(new URL(successPage.url()).hash, '#pipeline');
+      results.interactions.push({ route: '/documentation', viewport: viewport.name, activation: 'Enter', state: 'keyboard-operable section navigation' });
+    } else {
+      assert.equal(await successPage.locator('aside a[href="#pipeline"]').isVisible().catch(() => false), false,
+        'mobile documentation must not leave the desktop-only section index focusable');
+      results.interactions.push({ route: '/documentation', viewport: viewport.name, state: 'desktop-only section index is hidden on mobile; visible links are covered by the cross-route keyboard destination audit' });
+    }
+    await context.close();
+  }
 }
 
 async function checkLocalDenials(browser) {
@@ -481,6 +710,7 @@ async function main() {
     if (wave === 'w1') {
       await checkPrivacy(browser);
       await checkHelpCenter(browser);
+      await checkSourceInactiveControls(browser);
       await checkLocalDenials(browser);
     } else {
       await checkDocumentation(browser);

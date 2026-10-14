@@ -427,12 +427,24 @@ def templates_page(request: HttpRequest) -> HttpResponse:
                 error = "The template action could not be completed."
     query = request.GET.get("q", "")[:120]
     category = request.GET.get("category", "all")
-    sort_by = request.GET.get("sort", "created_at")
+    sort_options = {
+        "created_at-desc": ("created_at", False),
+        "created_at-asc": ("created_at", True),
+        "name-asc": ("name", True),
+        "name-desc": ("name", False),
+        "category-asc": ("category", True),
+        "category-desc": ("category", False),
+    }
+    sort = request.GET.get("sort", "created_at-desc")
+    if sort not in sort_options:
+        sort = "created_at-desc"
+    sort_by, sort_ascending = sort_options[sort]
     context: dict[str, Any] = {
         "notice": notice,
         "error": error,
         "query": query,
         "category": category,
+        "sort": sort,
     }
     try:
         if request.GET.get("export") == "template":
@@ -464,7 +476,12 @@ def templates_page(request: HttpRequest) -> HttpResponse:
             response["Referrer-Policy"] = "no-referrer"
             return response
         context["templates"] = template_selectors.list_templates(
-            user, category=category, search=query, sort_by=sort_by, limit=100
+            user,
+            category=category,
+            search=query,
+            sort_by=sort_by,
+            ascending=sort_ascending,
+            limit=100,
         )
         for template in context["templates"]:
             for review in template.get("reviews", []):

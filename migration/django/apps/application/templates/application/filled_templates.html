@@ -1,9 +1,37 @@
 {% extends "base_scheduler.html" %}
 {% block title %}Filled templates · Audentra{% endblock %}
 {% block content %}
-<header class="border-b border-border bg-surface"><div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-4 py-6 sm:px-6 lg:px-8"><div><h1 class="text-2xl font-bold text-text-primary">Filled templates</h1><p class="text-text-secondary">Manage all your previously filled templates here.</p></div><a class="button-secondary" href="/dashboard">Back to Dashboard</a></div></header>
-<div class="mx-auto max-w-7xl space-y-6 px-4 py-8 sm:px-6 lg:px-8">
+<header class="border-b border-border bg-surface"><div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-6 sm:px-6 lg:px-8"><div><h1 class="text-2xl font-bold text-text-primary">Your Filled Templates</h1><p class="text-text-secondary">Manage all your previously filled templates here.</p></div><a class="flex items-center rounded-full bg-blue-50 px-3 py-1 text-sm text-blue-600 transition-colors hover:bg-blue-100" href="/dashboard"><svg class="mr-2 h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>Back to Dashboard</a></div></header>
+<div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
   {% if notice %}<p class="notice-success" role="status">{{ notice }}</p>{% endif %}{% if error %}<p class="notice-error" role="alert">{{ error }}</p>{% endif %}
-  <section class="space-y-4" aria-label="Saved filled forms">{% for item in filled %}<article class="card p-5"><div class="flex flex-wrap items-start justify-between gap-3"><div><h2 class="text-lg font-semibold">{{ item.template_name }}</h2><p class="mt-1 text-sm text-text-secondary">Saved {{ item.created_at|date:"M j, Y g:i A" }}</p></div><form method="post" onsubmit="return confirm('Delete this saved form?')">{% csrf_token %}<input type="hidden" name="action" value="delete"><input type="hidden" name="record_id" value="{{ item.id }}"><button class="button-danger" type="submit">Delete</button></form></div><details class="mt-4" open><summary class="cursor-pointer text-sm font-medium">View saved answers</summary><h3 class="mt-3 font-medium">Form Data:</h3><dl class="mt-2 grid gap-3 sm:grid-cols-2">{% for key,value in item.form_data.items %}<div class="rounded-lg bg-surface-subtle p-3"><dt class="text-xs font-medium text-text-muted">{{ key }}</dt><dd class="mt-1 break-words text-sm">{{ value }}</dd></div>{% empty %}<p class="text-sm text-text-secondary">No answers were saved.</p>{% endfor %}</dl></details></article>{% empty %}<div class="card p-8 text-center"><h2 class="text-lg font-semibold">No filled forms yet</h2><p class="mt-2 text-sm text-text-secondary">Saved submissions will appear here.</p><a class="button-primary mt-4" href="/AIVoiceAutoFill">Start a form</a></div>{% endfor %}</section>
+  {% if filled %}
+  <section class="grid gap-6 md:grid-cols-2 lg:grid-cols-3" aria-label="Saved filled forms">
+    {% for item in filled %}
+    <article class="card relative rounded-2xl p-6 shadow-sm">
+      <form method="post" onsubmit="return confirm('Delete this saved form?')">
+        {% csrf_token %}<input type="hidden" name="action" value="delete"><input type="hidden" name="record_id" value="{{ item.id }}">
+        <button class="absolute right-4 top-4 text-red-600 hover:text-red-800" type="submit" title="Delete Template" aria-label="Delete">
+          <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="m19 6-1 14H6L5 6"/><path d="M10 11v5M14 11v5"/></svg>
+        </button>
+      </form>
+      <div class="mb-2 text-lg font-semibold text-gray-800">Template Name: <span class="text-purple-600">{{ item.template_name }}</span></div>
+      <p class="mb-4 text-sm text-text-muted">Filled on: <time datetime="{{ item.created_at|date:'c' }}" data-local-datetime>{{ item.created_at|date:"n/j/Y, H:i:s" }}</time></p>
+      <div class="overflow-x-auto rounded border border-border bg-gray-50 p-4 text-sm">
+        <h2 class="mb-2 font-medium text-gray-700">Form Data:</h2>
+        <ul class="space-y-2 text-gray-600">
+          {% for key,value in item.form_data.items %}<li><span class="font-semibold text-gray-800">{{ key }}:</span> {{ value|default:"N/A" }}</li>{% empty %}<li>No answers were saved.</li>{% endfor %}
+        </ul>
+      </div>
+    </article>
+    {% endfor %}
+  </section>
+  {% else %}
+  <div class="py-12 text-center">
+    <svg class="mx-auto mb-4 h-12 w-12 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h8"/></svg>
+    <h2 class="mb-2 text-lg font-medium text-gray-900">No filled templates found</h2>
+    <p class="mb-6 text-gray-600">You haven’t filled any templates yet. Start by creating a new form.</p>
+    <a class="rounded-lg bg-blue-600 px-6 py-2 text-white transition-colors hover:bg-blue-700" href="/templates">Choose a Template</a>
+  </div>
+  {% endif %}
 </div>
 {% endblock %}

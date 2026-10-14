@@ -1,19 +1,30 @@
 # P9 read-only schema acceptance
 
-**Status:** NOT RUN in P9. The initial P9 route inventory used `config.settings.test` and made no database connection. This file is the prepared read-only checklist, not a claim about current hosted schema.
+**Status:** Incomplete. The P9 schema inspection completed against the accepted P5 baseline using the restricted project-scoped `django_data` identity. All inspected schema/security comparisons passed. Storage bucket privacy and limits could not be read with the restricted identity, so overall acceptance remains open; this is not recorded as schema drift or an owner-approved exception.
 
-## Accepted baseline
+## Run and boundaries
 
-Use the accepted P5 schema and security references: [P5 contracts](../data/P5_CONTRACTS.md), [P5 verification](../data/P5_VERIFICATION.md), [schema reconciliation](../schema-reconciliation.md), and the unchanged migrations under `migration/django/apps/*/migrations/` and `supabase/migrations/`. P9 must record the exact read-only target identity/project and timestamp without exposing credentials. Do not run DDL, migrations, policy/grant changes, or row copies as part of this inspection.
+- Run: `p9-full-20261014-0723-utc`
+- Result: [attempt 04](evidence/p9/p9-full-20261014-0723-utc/P9_SCHEMA_ACCEPTANCE_ATTEMPT_04.json)
+- Hosted route probe that supplied the read-only metadata attempt: [P9_HOSTED_ROUTE_RESULTS.json](evidence/p9/p9-full-20261014-0723-utc/P9_HOSTED_ROUTE_RESULTS.json)
+- Target: Audentra development project `pgtttjmqibxufvwehkyj`, shared transaction pooler, restricted `django_data` identity.
+- Read-only: no DDL, migrations, policy/grant changes, row reads or row copies were performed by this schema inspection.
 
-## Inspection rows
+## Accepted baseline comparison
 
-| Area | Read-only comparison | P9 result |
+| Area | Result | P5 baseline / observed |
 |---|---|---|
-| Tables and columns | Names, SQL types, nullability, defaults, generated/identity behavior, constraints, foreign keys and indexes versus accepted P5 migrations. | NOT RUN |
-| Ownership and RLS | Table owner, RLS enabled/forced state, policy predicates/roles, grants and restricted `django_data`/`django_app` boundaries. | NOT RUN |
-| Storage | Bucket privacy, object size/MIME limits, policies, object owner/path rules and Django private-file authorization. | NOT RUN |
-| Django database aliases | Default session/migration alias versus Supabase application-data alias; role/search-path separation and transaction-local authenticated context. | NOT RUN |
-| Drift | Exact object and migration differences, effect on runtime/acceptance, and proposed owner decision if remediation is needed. | NOT RUN |
+| Public application tables and RLS | PASS | 6/6 tables; RLS enabled on each; all owners `postgres`. |
+| Columns | PASS | 57/57 names, types, nullability, defaults and generated/identity attributes. |
+| Constraints and indexes | PASS | 30/30 constraints and 19/19 indexes. |
+| Policies, triggers and security-definer functions | PASS | 23/23 application policies, 10/10 triggers, 7/7 functions. |
+| Restricted roles and memberships | PASS | 4/4 roles, 1/1 membership, 6/6 schema privileges; role restrictions match the accepted baseline. |
+| Django alias separation | PASS | Default connects as `django_app` on `django`; Supabase alias connects as `django_data` on `public`; PostgreSQL 17.6. |
+| Storage object security | PASS | Authenticated role sees the expected RLS/grants and 4/4 object policies. |
+| Storage bucket privacy and limits | NOT RUN | Authenticated synthetic-owner Storage API GET returned HTTP 400; bucket `public`, size limit and MIME allowlist were not visible to this restricted identity. |
 
-Read-only hosted inspection is separate from synthetic route writes. Any mutation required to correct drift needs a concrete scope and approval; do not modify schema during acceptance review.
+The complete comparison and connection details are in [P9_SCHEMA_ACCEPTANCE_ATTEMPT_04.json](evidence/p9/p9-full-20261014-0723-utc/P9_SCHEMA_ACCEPTANCE_ATTEMPT_04.json). The result status is `drift_or_incomplete` only because bucket metadata was unavailable; no difference was found in the visible P5 baseline objects.
+
+## Remaining acceptance
+
+Obtain read-only bucket privacy/size/MIME metadata through an owner-authorized nonprivileged method, or have the owner explicitly accept that exact unobservable item as a P9 exception. Do not retry with an admin/service-role credential and do not change the bucket or policies as part of this inspection. P9 as a whole remains open until this item and the remaining device/provider and route-matrix gates are resolved.

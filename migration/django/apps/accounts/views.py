@@ -53,17 +53,18 @@ def _redirect(request: HttpRequest, destination: str) -> HttpResponse:
 
 
 def _safe_next(request: HttpRequest, candidate: str | None) -> str:
+    fallback = reverse("app-dashboard")
     if not candidate or "\\" in candidate or candidate.startswith("//"):
-        return reverse("auth-session")
+        return fallback
     if not url_has_allowed_host_and_scheme(
         candidate, allowed_hosts={request.get_host()}, require_https=request.is_secure()
     ):
-        return reverse("auth-session")
+        return fallback
     try:
         route = resolve(urlsplit(candidate).path)
     except Resolver404:
-        return reverse("auth-session")
-    return candidate if route.url_name in SAFE_NEXT_NAMES else reverse("auth-session")
+        return fallback
+    return candidate if route.url_name in SAFE_NEXT_NAMES else fallback
 
 
 def _set_authenticated_session(
@@ -91,7 +92,7 @@ def login(request: HttpRequest) -> HttpResponse:
         request, request.POST.get("next") if request.method == "POST" else request.GET.get("next")
     )
     if request.method == "GET" and getattr(request.user, "is_authenticated", False):
-        return _redirect(request, next_path)
+        return _redirect(request, reverse("app-dashboard"))
     form = LoginForm(request.POST if request.method == "POST" else None)
     context: dict[str, object] = {"form": form, "next": next_path}
     status = 200
@@ -116,6 +117,8 @@ def login(request: HttpRequest) -> HttpResponse:
 @never_cache
 @require_http_methods(["GET", "POST"])
 def signup(request: HttpRequest) -> HttpResponse:
+    if request.method == "GET" and getattr(request.user, "is_authenticated", False):
+        return _redirect(request, reverse("app-dashboard"))
     form = SignupForm(request.POST if request.method == "POST" else None)
     context: dict[str, object] = {"form": form}
     status = 200
@@ -130,7 +133,7 @@ def signup(request: HttpRequest) -> HttpResponse:
                     tokens = parse_tokens(result)
                     ensure_profile(_principal(tokens.subject, tokens.email, tokens.user_metadata))
                     _set_authenticated_session(request, tokens, remember_me=False)
-                    return _redirect(request, "auth-session")
+                    return _redirect(request, reverse("app-dashboard"))
             except AuthServiceError as error:
                 context["error"] = _error_text(error)
                 status = _error_status(error)

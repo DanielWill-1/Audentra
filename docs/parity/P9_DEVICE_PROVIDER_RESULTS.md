@@ -1,12 +1,56 @@
 # P9 device and provider results
 
-**Status:** NOT RUN. The P9 initial route inventory used no device, microphone, camera, or live provider. P7/P8 fake-media and intercepted-provider results remain deterministic-only evidence.
+**Status:** Partial. Desktop microphone recording, browser permission denial, and a real recording accepted by the isolated local mock transcription endpoint are evidenced. Attempt 11 also exposed a failed navigation cleanup: one microphone track remained live at `pagehide`. A cleanup fix was then added to `p7_media.js`, but it has not been rerun. A separate real Chromium lifecycle check confirms BFCache is prevented by the voice and dashboard `Cache-Control: no-store` responses. Physical mobile, no-device, empty/oversize capture, human audibility, live providers, and retest of navigation cleanup remain open; the owner provided desktop mic access only and instructed that there be no provider calls. On 2026-10-15 the owner explicitly chose to keep every remaining P9 gate open; no `APPROVED EXCEPTION` was granted. See the [P9 report](P9_REPORT.md).
 
-| Check | Result | Required evidence |
+## Desktop microphone run
+
+Earlier evidence: [desktop attempt 04](evidence/p9/p9-full-20261014-0723-utc/device/desktop-mic/attempt-04/P9_DESKTOP_MIC_RESULTS.json). Fresh run: [desktop microphone results](evidence/p9/p9-lifecycle-followup-20261015/device/desktop-mic/attempt-01/P9_DESKTOP_MIC_RESULTS.json), [preview screenshot](evidence/p9/p9-lifecycle-followup-20261015/device/desktop-mic/attempt-01/desktop-mic-preview.png), and [back/forward screenshot](evidence/p9/p9-lifecycle-followup-20261015/device/desktop-mic/attempt-01/desktop-mic-back-forward.png). BFCache-specific result: [P9_BFCACHE_RESULTS.json](evidence/p9/p9-lifecycle-followup-20261015/attempt-02/P9_BFCACHE_RESULTS.json) and [command ledger](evidence/p9/p9-lifecycle-followup-20261015/attempt-02/P9_BFCACHE_COMMAND_RESULTS.json).
+
+| Check | Result | Evidence / limit |
 |---|---|---|
-| Desktop browser/device | NOT RUN | Device/OS/browser version, secure context, permission allow/deny/no-device, recorder MIME, actual blob bytes/metadata, playback, stop/reset/repeat, errors, navigation and back/forward restoration. |
-| Mobile browser/device | NOT RUN | Same checks on a real mobile browser, including background/foreground and layout/keyboard behavior. |
-| Actual microphone/recorder lifecycle | NOT RUN | Real permission flow, MIME support, captured bytes, empty/oversize handling, track release, preview/TTS audio and real navigation/BFCache observation. |
-| Live transcription/extraction/TTS | NOT RUN | Requires an explicitly selected existing provider and authorized spend. Preserve P3 request, model, prompt, input and MIME semantics; record sanitized payload/result, transcript/field correctness, audio output and failure feedback. |
+| Desktop OS/browser and secure context | PASS | Windows NT 10.0, build 26200, x64; Chromium 148.0.7778.96; local `http://127.0.0.1:18875` reported a secure context. Four audio inputs were enumerated without saving device labels. |
+| Microphone permission and recorder support | PASS, programmatically granted | Browser permission state was `granted`; no browser permission prompt was clicked. `getUserMedia` and `MediaRecorder` were available; WebM/Opus was supported. |
+| Real recording, MIME and nonempty bytes | PASS | Two recordings produced `audio/webm;codecs=opus` chunks of 29,157 and 16,583 bytes. The captured audio itself was not written to disk. |
+| Stop, reset and repeat | PASS | Both completed streams ended; Reset left the stream ended and cleared the preview. A fresh stream completed the second recording. |
+| Preview playback | PARTIAL | The local preview's `play()` promise resolved. No human listening check was performed, so audibility remains unverified. |
+| Navigate away and back | PASS for full-reload fallback; BFCache remains open | The fresh headed run removed Playwright's BFCache-disabling argument. Leaving the voice page ended every track and back navigation returned to a usable recorder by full reload. A separate real Chromium navigation reports `pageshow.persisted: false`; the browser gives `response-cache-control-no-store` as a not-restored reason for both protected routes. The no-store security policy is retained. |
+| No provider/transcription request | PASS | No `/api/` request occurred. No audio was uploaded or sent to a speech/extraction service. |
 
-Use the [P8 device checklist](../services/P8_DEVICE_CHECKLIST.md). Do not infer device or provider acceptance from fake MediaRecorder objects, API interception, local mock responses or P8 session tests.
+## Desktop permission-denied follow-up
+
+Fresh [permission attempt 01](evidence/p9/p9-desktop-permission-followup-20261015/device/desktop-mic/attempt-01/P9_DESKTOP_PERMISSION_RESULTS.json) used headed Chromium against the local Django page with the origin's browser permission state set to `denied`. The browser reported `denied`; native `getUserMedia()` rejected with `NotAllowedError`; the page showed the accessible denial message, kept Record and typed entry enabled, kept Stop disabled, and made zero API requests. The [command ledger](evidence/p9/p9-desktop-permission-followup-20261015/device/desktop-mic/attempt-01/P9_DESKTOP_PERMISSION_COMMAND_RESULTS.json) records the implementation and result hashes. This passes the desktop browser-denied UI path; it does not cover a missing/removed microphone or mobile.
+
+## Real recording to local mock endpoint
+
+Fresh [attempt 11](evidence/p9/p9-desktop-permission-followup-20261015/device/desktop-mic/attempt-11/P9_DESKTOP_MIC_RESULTS.json) reached the local Django `/api/transcribe` endpoint with a real 16,583-byte `audio/webm;codecs=opus` recording as `recording.webm`. Django returned the configured mock transcript, which appeared in the message. The response was HTTP 200; no audio was saved and no external provider request was sent. This passes the local recording-to-mock boundary. Earlier diagnostics: attempt 05 was blocked by `spawn EPERM`, attempt 06 received 401, and attempt 07 could not see the owner template in its synthetic fixture. Attempt 08 reached HTTP 200 but the Playwright response-body capture failed; attempts 09 and 10 reached HTTP 200 and inserted the mock transcript, then failed the navigation cleanup assertion. Attempt 11 repeated the successful upload with explicit track-stop instrumentation.
+
+Attempt 11 as a whole **failed** because navigation away during a subsequent active recording left one stream track live. Its `pagehide` snapshot recorded track states `ended, ended, live` and stop calls `1, 1, 0`. The local patch in [`p7_media.js`](../../migration/django/static/js/p7_media.js) now tracks owned streams and stops any remaining tracks on `pagehide`; that patch is **unverified** and the navigation-during-recording row remains open pending tomorrow's rerun. No provider request was made.
+
+## BFCache lifecycle follow-up
+
+The [actual navigation result](evidence/p9/p9-lifecycle-followup-20261015/attempt-02/P9_BFCACHE_RESULTS.json) removes Playwright's default `--disable-back-forward-cache` flag and observes browser-generated `pagehide`/`pageshow` events during cross-document navigation. Chromium reports `response-cache-control-no-store` for the protected voice and dashboard pages. The headed desktop microphone run in [attempt 01](evidence/p9/p9-lifecycle-followup-20261015/device/desktop-mic/attempt-01/P9_DESKTOP_MIC_RESULTS.json) confirms tracks end and the recorder works after the resulting full reload. No `pageshow.persisted === true` restoration occurred. The no-store response is covered by application security tests and is not weakened to make this check pass; owner/security disposition is still required for the BFCache acceptance row.
+
+## Deterministic AI Voice route acceptance
+
+Fresh [voice attempt 04](evidence/p9/p9-voice-route-followup-20261015/attempt-04/voice-integration/voice-integration-results.json) exercises the actual Django page with keyboard template selection, synthetic Record/Stop/Transcribe, chat/extraction duplicate suppression and retry, editable review, required-field validation/focus, return/save, and TTS replacement/failure/cleanup. Both 1440x900 and 390x844 checks show the selected form, chat and review with no horizontal overflow. The test intercepts one transcription, four extraction and six TTS requests and uses synthetic media/audio and local browser fixtures. It records zero provider authorization headers and zero browser errors. See the [command ledger](evidence/p9/p9-voice-route-followup-20261015/attempt-04/P9_VOICE_COMMAND_RESULTS.json). This is deterministic browser evidence only; it does not establish live STT/extraction/TTS, human audibility or physical-device behavior.
+
+## Deterministic media error-boundary follow-up
+
+Fresh [voice attempt 04](evidence/p9/p9-voice-route-followup-20261015/attempt-04/P9_VOICE_COMMAND_RESULTS.json) adds synthetic permission-denied, unavailable-device, empty-recording and over-limit-recording journeys to the actual Django page. Each case restores the Record control, keeps typed entry editable and makes zero transcription requests; the full 16-journey run passes at 1440x900 and 390x844 with no browser errors. The media APIs and local voice endpoints are controlled by Playwright, so these results verify client error handling only. The separate headed Chromium permission-denied browser path passes; no-device and physical empty/oversize device rows below remain `NOT RUN`.
+
+## Remaining rows
+
+| Check | Result | Needed |
+|---|---|---|
+| Mobile physical device | NOT RUN | Mobile device/browser, background/foreground, touch/keyboard and layout evidence. The current device scope was desktop only. |
+| Browser permission denied | PASS for the headed desktop Chromium UI path | [Actual denied state and app fallback](evidence/p9/p9-desktop-permission-followup-20261015/device/desktop-mic/attempt-01/P9_DESKTOP_PERMISSION_RESULTS.json); no API request. |
+| No microphone/device removed | NOT RUN | Exercise an absent or removed microphone and verify accessible recovery with no stale success or upload. |
+| Empty and oversized recordings | NOT RUN | Record actual empty/oversized cases and confirm no upload and usable recovery. |
+| Real recording reaches the local mock transcription endpoint | PASS for the local mock boundary | Attempt 11 submitted a real WebM/Opus recording, received HTTP 200 and displayed the configured mock transcript. No audio was saved and no provider was called. |
+| Navigate away during active recording | FAIL; cleanup fix awaits retest | Attempt 11 `pagehide` found one live track and no stop call for that stream. The `p7_media.js` cleanup patch was added afterward and remains unverified. |
+| Backgrounding and BFCache restore | INCOMPLETE; no approved exception | Actual Chromium back navigation with BFCache enabled reports `response-cache-control-no-store` on protected pages and performs a full reload. The recorder returns usable and tracks are ended. No `pageshow.persisted === true` restoration or real mobile background/return was observed; obtain owner/security disposition without weakening the no-store policy. |
+| Human-audible preview and live TTS | NOT RUN | Confirm preview is audible and run TTS only after a future explicit provider scope. |
+| Live STT/extraction/TTS | NOT RUN | No paid provider calls were authorized. A later provider run must use the existing providers and preserve P3 request/model/prompt/MIME behavior, with harmless synthetic content and sanitized evidence. |
+| Transcript correctness and saved real-provider result | NOT RUN | Requires an authorized provider run through review and the actual Django persistence route. |
+
+The [P8 device checklist](../services/P8_DEVICE_CHECKLIST.md) remains the case inventory. P7/P8 fake-media and intercepted-provider evidence remains deterministic-only and does not fill any physical-device or live-provider row.

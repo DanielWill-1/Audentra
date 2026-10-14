@@ -9,6 +9,31 @@
 
   const focusables = (dialog) => Array.from(dialog.querySelectorAll(focusableSelector))
     .filter((element) => !element.hidden && element.getAttribute('aria-hidden') !== 'true');
+  document.querySelectorAll('[data-local-datetime]').forEach((element) => {
+    if (!(element instanceof HTMLTimeElement)) return;
+    const date = new Date(element.dateTime);
+    if (!Number.isNaN(date.getTime())) element.textContent = date.toLocaleString();
+  });
+  const clearNativeKeyboardFocus = () => {
+    document.querySelectorAll('.keyboard-focus-visible').forEach((element) => {
+      element.classList.remove('keyboard-focus-visible');
+    });
+  };
+
+  document.addEventListener('pointerdown', clearNativeKeyboardFocus, true);
+  document.addEventListener('focusout', (event) => {
+    if (event.target instanceof HTMLElement) event.target.classList.remove('keyboard-focus-visible');
+  }, true);
+  document.addEventListener('keydown', (event) => {
+    if (event.key !== 'Tab') return;
+    window.setTimeout(() => {
+      clearNativeKeyboardFocus();
+      const active = document.activeElement;
+      if (active instanceof HTMLInputElement && ['date', 'time'].includes(active.type)) {
+        active.classList.add('keyboard-focus-visible');
+      }
+    }, 0);
+  }, true);
 
   document.addEventListener('click', (event) => {
     const target = event.target instanceof Element ? event.target : null;

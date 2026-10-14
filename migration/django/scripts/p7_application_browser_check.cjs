@@ -7,11 +7,18 @@ const { captureSourceProvenance } = require('./p7_source_provenance.cjs');
 
 const root = path.resolve(__dirname, '..', '..', '..');
 const wave = process.argv.find((argument) => /^--wave=w[3-7]$/.test(argument))?.slice(-2) || 'w4';
+const routeFilter = process.argv.find((argument) => argument.startsWith('--route='))?.slice(8) || '';
 const run = process.env.P7_EVIDENCE_RUN || 'post-wave-review-20261012';
 const referenceRun = process.env.P7_REFERENCE_RUN || '';
 const baseUrl = process.env.P7_DJANGO_BASE_URL || 'http://127.0.0.1:18875';
-const output = path.join(root, 'docs', 'pages', 'evidence', wave, run, 'django');
-const sourceOutput = path.join(root, 'docs', 'pages', 'evidence', wave, referenceRun, 'legacy');
+const activityClock = process.env.P7_ACTIVITY_CLOCK || new Date().toISOString();
+const p9EvidenceDir = process.env.P9_EVIDENCE_DIR ? path.resolve(process.env.P9_EVIDENCE_DIR) : null;
+const output = p9EvidenceDir
+  ? path.join(p9EvidenceDir, 'django', wave)
+  : path.join(root, 'docs', 'pages', 'evidence', wave, run, 'django');
+const sourceOutput = p9EvidenceDir
+  ? path.join(p9EvidenceDir, 'source', wave)
+  : path.join(root, 'docs', 'pages', 'evidence', wave, referenceRun, 'legacy');
 const appRoutes = {
   w3: [
     ['login', '/login', 200],
@@ -65,13 +72,17 @@ const ROUTE_CONTRACTS = {
     source_destinations: ['/', '/forgot-password', '/signup'],
     control_map: { Audentra: 'Audentra home' },
     field_map: { 'remember-me': 'remember_me' },
+    target_only: {
+      fields: [{ feature: 'csrfmiddlewaretoken', reason: 'Django CSRF form protection is required for local authenticated POST routes.' }],
+      copy: [{ feature: 'Google sign-in is unavailable on this development site.', reason: 'The existing OAuth route is intentionally unavailable under P4 and the page explains the disabled control.' }],
+    },
     source_only: { controls: [{ feature: 'Continue with Google', reason: 'P4 OAuth remains unavailable and the Django page presents the accepted disabled state.' }] },
   },
   signup: {
     source_heading: 'Create your account',
     heading: 'Create your account', fields: ['first_name','last_name','email','password','confirm_password','accepted_terms'],
     buttons: ['Create account','Show password'], destinations: ['/','/login','/terms','/privacy'],
-    accepted: ['Source Google OAuth is unavailable under P4.', 'Source camelCase fields map to Django snake_case fields.', 'Consent is retained and linked to the local Terms and Privacy routes.'],
+    accepted: ['Source Google OAuth is unavailable under P4.', 'Source camelCase fields map to Django snake_case fields.', 'Source custom submit validation requires consent; Django exposes the same requirement through its native required checkbox.', 'Consent is retained and linked to the local Terms and Privacy routes.'],
     source_sections: [],
     source_fields: ['firstName', 'lastName', 'email', 'password', 'confirmPassword', 'acceptedTerms'],
     source_controls: ['Create account', 'Show password', 'Sign in'],
@@ -83,12 +94,18 @@ const ROUTE_CONTRACTS = {
     },
     copy_map: { 'View source on GitHub →': 'View Audentra on GitHub →' },
     field_map: { firstName: 'first_name', lastName: 'last_name', confirmPassword: 'confirm_password', acceptedTerms: 'accepted_terms' },
+    field_required_map: { acceptedTerms: true },
     source_only: { controls: [{ feature: 'Continue with Google', reason: 'P4 OAuth remains unavailable and the Django page presents the accepted disabled state.' }] },
+    target_only: {
+      fields: [{ feature: 'csrfmiddlewaretoken', reason: 'Django CSRF form protection is required for local authenticated POST routes.' }],
+      controls: [{ feature: 'Continue with Google', reason: 'P4 OAuth remains unavailable and the Django page presents the accepted disabled state.' }],
+      copy: [{ feature: 'Google sign-in is unavailable on this development site.', reason: 'The existing OAuth route is intentionally unavailable under P4 and the page explains the disabled control.' }],
+    },
   },
   'forgot-password': {
     source_heading: 'Reset Your Password',
     heading: 'Email recovery unavailable', text: ['Email-based forgotten-password recovery is not configured'], destinations: ['/login','/signup'],
-    accepted: ['Source recovery email form is unavailable under P4; no email delivery is implemented.'],
+    accepted: ['Source recovery email form is unavailable under P4; no email delivery is implemented.', 'The source-only account-creation prompt is omitted while the Django page keeps the destination as a direct link.'],
     source_sections: [],
     source_fields: ['email'],
     source_controls: ['Send reset link'],
@@ -96,7 +113,10 @@ const ROUTE_CONTRACTS = {
     source_only: {
       fields: [{ feature: 'email', reason: 'P4 keeps password recovery unavailable because email delivery is not configured.' }],
       controls: [{ feature: 'Send reset link', reason: 'P4 keeps email recovery unavailable because email delivery is not configured.' }],
-      copy: [{ feature: "Enter your email address and we'll send you a link to reset your password.", reason: 'P4 keeps email recovery unavailable because email delivery and reset tokens are not configured.' }],
+      copy: [
+        { feature: "Enter your email address and we'll send you a link to reset your password.", reason: 'P4 keeps email recovery unavailable because email delivery and reset tokens are not configured.' },
+        { feature: "Don't have an account?", reason: 'The Django recovery-unavailable page retains a direct Create an account link but omits the source prompt copy.' },
+      ],
     },
     control_map: {
       Audentra: 'Audentra home',
@@ -132,15 +152,15 @@ const ROUTE_CONTRACTS = {
   },
   dashboard: {
     source_heading: 'What would you like to work on?',
-    heading: 'What would you like to work on?', sections: ['Start with your voice','Recent forms','Recent templates','Upcoming schedule','Team workspace'],
+    heading: 'What would you like to work on?', sections: ['Start with your voice','Recent forms','Templates','Upcoming schedule','Team workspace'],
     buttons: ['Start voice form','Choose a template','View all forms','Save profile','Team options','Open reviews'],
     destinations: ['/AIVoiceAutoFill','/templates','/filledtemplates','/scheduler','/templates#collaboration'],
     fields: ['first_name','last_name','company','industry','language','aiProcessingSpeed','industrySpecialization','voiceSensitivity'],
-    accepted: ['Home, Team and Settings are workspace navigation destinations in both implementations.', 'Recent activity is browser-local and account-key scoped.', 'Invite/member management remains unavailable; sharing and reviews route to P5-backed template flows.'],
+    accepted: ['Home, Team and Settings are workspace navigation destinations in both implementations.', 'Recent activity is browser-local and account-key scoped.', 'Invite/member management remains unavailable; sharing and reviews route to P5-backed template flows.', 'Dashboard shortcuts, profile controls, and local explanations are registered target additions; visible records use synthetic browser-local examples.'],
     source_sections: ['Start with your voice', 'Recent forms', 'Templates', 'Upcoming', 'Team'],
     source_controls: ['Start voice form', 'Choose a template', 'View all forms', 'Browse library'],
     source_destinations: ['/AIVoiceAutoFill', '/templates', '/filledtemplates', '/scheduler'],
-    section_map: { Upcoming: 'Upcoming schedule', Templates: 'Recent templates', Team: 'Team workspace' },
+    section_map: { Upcoming: 'Upcoming schedule', Team: 'Team workspace' },
     control_map: {
       'Reviews': 'Open reviews',
       'Share': 'Share with an existing account',
@@ -153,6 +173,36 @@ const ROUTE_CONTRACTS = {
       { feature: 'Manage team →', reason: 'Source team membership actions remain a demo; available P5 sharing and reviews are linked from the Team view.' },
       { feature: 'Invite', reason: 'P4 email invitations and team membership changes are not configured in the current migration contract.' },
     ] },
+    target_only: {
+      sections: [
+        { feature: 'Choose template', reason: 'The Django dashboard adds a direct template shortcut card.' },
+        { feature: 'Filled forms', reason: 'The Django dashboard adds a direct saved-forms shortcut card.' },
+        { feature: 'Create template', reason: 'The Django dashboard adds a direct template-builder shortcut card.' },
+        { feature: 'Patient intake', reason: 'This is the title of the synthetic recent-template fixture card, not an additional page section.' },
+        { feature: 'Profile settings', reason: 'The Django dashboard adds account profile editing below its recent-work sections.' },
+        { feature: 'Voice & AI settings', reason: 'The Django Settings panel adds browser-local preferences and does not change provider settings.' },
+        { feature: 'Choose a supported action', reason: 'The Django Team dialog explains the supported sharing and review actions.' },
+      ],
+      fields: [
+        { feature: 'csrfmiddlewaretoken', reason: 'Django CSRF form protection is required for local authenticated POST routes.' },
+        { feature: 'action', reason: 'Django uses an explicit hidden action value to dispatch profile updates safely.' },
+      ],
+      controls: [
+        { feature: 'Close', reason: 'The Django Team dialog provides a keyboard-accessible close control.' },
+        { feature: 'Open sharing and reviews', reason: 'The Django Team dialog links to the existing template sharing and review workspace.' },
+      ],
+      destinations: [
+        { feature: '/templates#create-template', reason: 'The Django dashboard adds a direct anchor to the template builder.' },
+        { pattern: '^/AIVoiceAutoFill\\?template=[0-9a-f-]{36}$', reason: 'The synthetic recent-template card links to the selected template using its fixture UUID.' },
+      ],
+      copy: [
+        { feature: 'Ready to listen', reason: 'The Django voice-start card adds a readiness badge.' },
+        { feature: 'Browser-local examples and history; they do not change saved forms.', reason: 'The Django dashboard discloses that its example activity is browser-local.' },
+        { feature: 'Your next scheduled events.', reason: 'The Django Upcoming schedule card adds an explanatory subtitle.' },
+        { feature: 'No upcoming events. Create one in the scheduler.', reason: 'The Django empty schedule state links users to the local scheduler.' },
+        { feature: 'Update your account profile.', reason: 'The Django profile editor adds explanatory copy.' },
+      ],
+    },
   },
   templates: {
     source_heading: 'Templates',
@@ -176,10 +226,51 @@ const ROUTE_CONTRACTS = {
       'Legal0': 'Legal, 0 templates',
       'Education0': 'Education, 0 templates',
       'Real Estate0': 'Real Estate, 0 templates',
-      Filters: 'Filter',
+      Filters: 'Filters',
       Edit: 'Edit fields and details',
       Share: 'Share with existing accounts',
       Hide: 'Make hidden',
+    },
+    target_only: {
+      sections: [
+        { feature: 'Choose a creation method', reason: 'The Django template builder exposes a manual or private-file creation step.' },
+        { feature: 'Form fields', reason: 'The Django builder and editor expose their field lists as named sections.' },
+      ],
+      fields: [
+        { feature: 'csrfmiddlewaretoken', reason: 'Django CSRF form protection is required for local authenticated POST routes.' },
+        { feature: 'action', reason: 'Django uses hidden action values to dispatch template operations.' },
+        { feature: 'description', reason: 'The Django editor allows the owner to edit a template description.' },
+        { feature: 'visibility', reason: 'The Django sharing flow lets the owner choose template visibility.' },
+        { feature: 'template_id', reason: 'Django forms carry the selected template identifier for account-scoped actions.' },
+        { feature: 'field_identifier_preview', reason: 'The Django builder previews the stable identifier for a new form field.' },
+        { feature: 'field_label_preview', reason: 'The Django builder previews the user-facing label for a new form field.' },
+        { feature: 'field_placeholder_preview', reason: 'The Django builder previews the optional field placeholder.' },
+        { feature: 'field_options_preview', reason: 'The Django builder previews choice-field options.' },
+        { feature: 'Field type', reason: 'The Django builder exposes the supported type for a new form field.' },
+        { feature: 'Required', reason: 'The Django builder lets the owner set whether a form field is required.' },
+        { feature: 'message', reason: 'The Django sharing flow accepts an optional message for an existing account.' },
+        { feature: 'rating', reason: 'The Django review flow records a review rating.' },
+        { feature: 'comment', reason: 'The Django review flow records an optional comment.' },
+      ],
+      controls: [
+        { feature: 'Move down', reason: 'The Django field editor lets owners change form field order.' },
+        { feature: 'Move up', reason: 'The Django field editor lets owners change form field order.' },
+        { feature: 'Private file', reason: 'The Django builder identifies the private source-file selection control.' },
+        { feature: 'Remove field', reason: 'The Django field editor lets owners remove a field from their template.' },
+        { feature: 'Request or submit a review', reason: 'The Django template workspace exposes its existing P5 review flow.' },
+        { feature: 'Save changes', reason: 'The Django template editor saves account-owned changes.' },
+        { feature: 'Submit review to the owner', reason: 'The Django review flow lets an existing recipient submit feedback.' },
+        { feature: 'Upload privately', reason: 'The Django builder stores an uploaded source file privately without parsing it.' },
+        { feature: 'Back to dashboard', reason: 'The Django template chooser adds a direct dashboard return control.' },
+        { feature: 'Export template JSON', reason: 'The Django template workspace offers a local JSON export action.' },
+        { pattern: '^More actions for .+$', reason: 'The Django native overflow disclosure labels its action trigger for assistive technology; the source MoreHorizontal trigger has no accessible name.' },
+        { feature: 'Use template', reason: 'The Django template card uses an accessible action to open the selected form.' },
+        { feature: 'Collaboration and reviews', reason: 'P5 sharing and review summaries stay in a closed disclosure until requested; the dashboard hash destination opens it.' },
+      ],
+      destinations: [
+        { pattern: '^/templates\\?category=(all|education|fieldwork|healthcare|hr|legal|realestate)$', reason: 'The Django category controls link to the corresponding local template filter.' },
+        { pattern: '^/templates\\?export=template&id=[0-9a-f-]{36}$', reason: 'The Django export link carries the selected synthetic template UUID.' },
+      ],
     },
   },
   scheduler: {
@@ -197,6 +288,34 @@ const ROUTE_CONTRACTS = {
     field_label_map: { 'Search events...': 'Search events' },
     control_map: { 'Schedule Event': '+ Schedule Event' },
     source_only: { fields: [{ feature: 'Search events...', reason: 'Source input is identified by placeholder; the Django search field is identified by its label/name.' }] },
+    target_only: {
+      fields: [
+        { feature: 'month', reason: 'Django calendar navigation carries the currently selected month.' },
+        { feature: 'view', reason: 'Django calendar navigation carries the selected month or week view.' },
+        { feature: 'csrfmiddlewaretoken', reason: 'Django CSRF form protection is required for local authenticated POST routes.' },
+        { feature: 'action', reason: 'Django uses hidden action values to dispatch schedule operations.' },
+        { feature: 'event_id', reason: 'Django schedule forms carry the selected owned event identifier.' },
+      ],
+      controls: [
+        { pattern: '^\\d{1,2}:\\d{2} [AP]M Review patient intake$', reason: 'The seeded schedule card adds the time and title to its accessible edit action.' },
+        { feature: 'Cancel', reason: 'The Django schedule editor provides a local cancel action.' },
+        { feature: 'Complete', reason: 'The Django schedule editor provides a local completion action.' },
+        { feature: 'Create a schedule', reason: 'The Django scheduler includes a direct create-event action.' },
+        { feature: 'Delete', reason: 'The Django schedule editor provides a confirmed delete action.' },
+        { feature: 'Edit schedule', reason: 'The Django schedule event card links to its owner-scoped editor.' },
+        { feature: 'Back to dashboard', reason: 'The Django scheduler adds a direct dashboard return link.' },
+        { feature: 'Next month', reason: 'The Django month calendar includes previous and next month navigation.' },
+        { feature: 'Previous month', reason: 'The Django month calendar includes previous and next month navigation.' },
+        { feature: 'Scheduler Settings', reason: 'The Django scheduler links to its local preferences page.' },
+        { pattern: '^Show week containing [A-Z][a-z]+ \\d{1,2}, \\d{4}$', reason: 'Each Django calendar day offers a direct local week-view action.' },
+      ],
+      destinations: [
+        { feature: '/scheduler#create-schedule', reason: 'The Django scheduler exposes a direct anchor to its event form.' },
+        { pattern: '^/scheduler\\?date=\\d{4}-\\d{2}-\\d{2}&view=week&q=&type=all$', reason: 'Django calendar days route to the selected date in week view.' },
+        { pattern: '^/scheduler\\?month=\\d{4}-\\d{2}(?:&date=\\d{4}-\\d{2}-\\d{2})?&view=month&q=&type=all$', reason: 'Django month controls preserve the selected month, date, view, and filters.' },
+      ],
+      copy: [{ feature: 'No upcoming events.', reason: 'The Django schedule sidebar displays its concise empty state.' }],
+    },
   },
   'manage-schedules': {
     source_heading: 'Manage All Schedules',
@@ -212,6 +331,36 @@ const ROUTE_CONTRACTS = {
     field_map: { 'Search events...': 'q' },
     field_label_map: { 'Search events...': 'Search events' },
     control_map: { 'Mark Complete': 'Complete' },
+    target_only: {
+      sections: [{ pattern: '^All scheduled events \\(\\d+\\)$', reason: 'The Django table heading includes the live count of account-owned schedules.' }],
+      fields: [
+        { feature: 'csrfmiddlewaretoken', reason: 'Django CSRF form protection is required for local authenticated POST routes.' },
+        { feature: 'event_id', reason: 'Django schedule forms carry the selected owned event identifier.' },
+        { feature: 'title', reason: 'The Django management route includes an event edit form.' },
+        { feature: 'date', reason: 'The Django management route includes an event edit form.' },
+        { feature: 'time', reason: 'The Django management route includes an event edit form.' },
+        { feature: 'duration', reason: 'The Django management route includes an event edit form.' },
+        { feature: 'priority', reason: 'The Django management route carries the event priority through its edit form.' },
+        { feature: 'description', reason: 'The Django management route carries the event description through its edit form.' },
+        { feature: 'location', reason: 'The Django management route carries the event location through its edit form.' },
+        { feature: 'attendees', reason: 'The Django management route carries event attendees through its edit form.' },
+        { feature: 'form_id', reason: 'The Django management route carries the linked form identifier through its edit form.' },
+        { feature: 'reminder_minutes', reason: 'The Django management route carries the reminder setting through its edit form.' },
+      ],
+      controls: [
+        { feature: 'Edit details', reason: 'The Django table opens an inline form for account-owned schedule details.' },
+        { feature: 'Save', reason: 'The Django inline schedule editor saves its current row.' },
+        { feature: 'Sort results', reason: 'The Django management route adds accessible table sorting.' },
+        { feature: 'Back to scheduler', reason: 'The Django management route adds a direct calendar return link.' },
+        { feature: 'Edit in scheduler', reason: 'The Django management table links to the calendar event editor.' },
+        { feature: 'Scheduler settings', reason: 'The Django management route links to its local scheduler preferences.' },
+      ],
+      destinations: [
+        { feature: '/manage-schedules', reason: 'The Django table sort and filter forms submit to their current local route.' },
+        { feature: '/scheduler#create-schedule', reason: 'The Django management view adds a direct anchor to the calendar event form.' },
+      ],
+      copy: [{ feature: 'Synthetic browser-capture schedule', reason: 'This event description belongs to the local browser test fixture.' }],
+    },
   },
   'scheduler-settings': {
     source_heading: 'Scheduler Settings',
@@ -219,7 +368,7 @@ const ROUTE_CONTRACTS = {
     buttons: ['General','Notifications','Calendar','Privacy','Appearance','Integrations','Save Changes','Reset','Export'],
     fields: ['defaultDuration','defaultReminderMinutes','workingHours.start','workingHours.end','timezone','workingDays','emailNotifications','pushNotifications','reminderNotifications','dailyDigest','weeklyReport','defaultView','weekStartsOn','showWeekends','showDeclinedEvents','shareCalendar','allowGuestInvites','showBusyTime','theme','colorScheme','compactView','googleCalendarSync','outlookSync','slackNotifications','teamsNotifications'],
     destinations: ['/scheduler'],
-    accepted: ['Source settings remain local preferences; integrations and notifications do not connect to external services.'],
+    accepted: ['Source settings remain local preferences; integrations and notifications do not connect to external services.', 'The Django page adds an explicit browser-local settings notice and a direct return link to the scheduler.'],
     source_sections: ['General Settings', 'Working Hours', 'Working Days'],
     source_fields: ['Default Event Duration (minutes)', 'Default Reminder (minutes before)', 'Start Time', 'End Time'],
     source_controls: ['General', 'Notifications', 'Calendar', 'Privacy', 'Appearance', 'Integrations', 'Save Changes', 'Reset', 'Export'],
@@ -234,32 +383,46 @@ const ROUTE_CONTRACTS = {
       Import: 'Import',
     },
     control_map: { Reset: 'Reset', Export: 'Export', 'Save Changes': 'Save Changes' },
+    target_only: {
+      controls: [{ feature: 'Back to scheduler', reason: 'The Django settings page adds a direct return link to its calendar.' }],
+      copy: [{ feature: 'These preferences stay in this browser on this device. Notification and calendar integration toggles are local preferences only; no reminders or external sync are active.', reason: 'The Django page explains that settings are stored locally and integrations do not connect to external services.' }],
+    },
   },
   'voice-autofill': {
     source_heading: 'AI Voice Auto-Fill',
     heading: 'AI Voice Auto-Fill', sections: ['Choose a Form Template'],
     buttons: ['Use template'],
     destinations: ['/dashboard','/AIVoiceAutoFill?template=33333333-3333-4333-8333-333333333333'],
-    accepted: ['Both captures start at template selection; the source template card has no button or link semantics, so Django exposes an accessible Use template button. Selected-template review is captured and tested separately.', 'Browser API interception is synthetic and does not establish live provider or hosted persistence.'],
+    accepted: ['Both captures start at template selection; the source template card has no button or link semantics, so Django exposes an accessible Use template button. Selected-template review is captured and tested separately.', 'Browser API interception is synthetic and does not establish live provider or hosted persistence.', 'The Django chooser adds a direct return link to the dashboard.'],
     source_sections: ['Choose a Form Template'],
     source_controls: [],
     source_destinations: ['/dashboard'],
+    target_only: {
+      controls: [{ feature: 'Back to dashboard', reason: 'The Django template chooser adds a direct dashboard return link.' }],
+    },
   },
   'filled-templates': {
     source_heading: 'Your Filled Templates',
-    heading: 'Filled templates', text: ['Sample Patient'], buttons: ['Delete'],
+    heading: 'Your Filled Templates', text: ['Sample Patient', 'Template Name:', 'Filled on:'], buttons: ['Delete'],
     fields: ['action','record_id'], destinations: ['/dashboard'],
-    accepted: ['Source title capitalization is normalized. Source Form Data is visible by default; Django exposes the same account-owned answers in an initially open details region.', 'The source delete icon title maps to Django’s explicit Delete label. Browser examples are distinguished from hosted persistence evidence.'],
+    accepted: ['Source Form Data is visible by default; Django renders the same account-owned answers in the same initial state and uses browser-local time formatting for the saved timestamp.', 'The source Back to Dashboard button and empty-state Choose a Template action use React navigation handlers; Django exposes the equivalent destinations as local links. The source delete icon maps to the Django Delete button and adds a confirmation before the server-side delete. Browser examples are distinguished from hosted persistence evidence.'],
     source_sections: ['Form Data:'],
     source_controls: ['Delete Template', 'Back to Dashboard'],
     source_destinations: [],
     source_copy: ['Manage all your previously filled templates here.'],
     control_map: { 'Delete Template': 'Delete' },
+    target_only: {
+      sections: [{ feature: 'Patient intake', reason: 'This is the synthetic saved-form fixture title.' }],
+      fields: [{ feature: 'csrfmiddlewaretoken', reason: 'Django CSRF form protection is required for local authenticated POST routes.' }],
+      controls: [{ feature: 'Delete confirmation', reason: 'Django confirms before deleting a saved form through its authenticated server route.' }],
+      destinations: [{ feature: '/dashboard', reason: 'The source Back to Dashboard action uses a React navigation handler, while Django renders the same local destination as a link.' }],
+      copy: [{ feature: 'Delete this saved form?', reason: 'This confirmation protects the server-side saved-form delete action.' }],
+    },
   },
   'activity-log': {
     source_heading: 'Activity Log',
-    heading: 'Activity log', fields: ['q','type','range'], buttons: ['Refresh'], destinations: ['/dashboard'],
-    accepted: ['Source Activity Log capitalization is normalized. Generic source Delete icons map to Django row-specific accessible labels; synthetic journeys verify row deletion. Source Download and Continue controls remain visibly unavailable because their source actions have no implementation. The feed remains local browser data and is not represented as a server audit log.'],
+    heading: 'Activity Log', fields: ['q','type','range'], buttons: ['Refresh'], destinations: ['/dashboard'],
+    accepted: ['Generic source Delete icons map to Django row-specific accessible labels; synthetic journeys verify row deletion. Source Download and Continue controls remain visibly unavailable because their source actions have no implementation. The feed remains local browser data and is not represented as a server audit log.'],
     source_sections: ['Activity Log'],
     source_controls: ['Refresh', 'Download', 'Continue', 'Delete'],
     source_destinations: ['/dashboard'],
@@ -269,6 +432,19 @@ const ROUTE_CONTRACTS = {
       Download: 'Download (unavailable)',
       Continue: 'Continue (unavailable)',
       Delete: 'Delete Patient Intake - John Smith',
+    },
+    target_only: {
+      controls: [
+        { feature: 'Delete Alex Chen joined your team', reason: 'The Django activity feed gives each synthetic row-delete control a descriptive accessible name.' },
+        { feature: 'Delete Employee Onboarding - Maria Garcia', reason: 'The Django activity feed gives each synthetic row-delete control a descriptive accessible name.' },
+        { feature: 'Delete HR Onboarding Template', reason: 'The Django activity feed gives each synthetic row-delete control a descriptive accessible name.' },
+        { feature: 'Delete Patient Intake Form shared', reason: 'The Django activity feed gives each synthetic row-delete control a descriptive accessible name.' },
+        { feature: 'Delete Safety Inspection Checklist reviewed', reason: 'The Django activity feed gives each synthetic row-delete control a descriptive accessible name.' },
+        { feature: 'Delete Safety Inspection Report', reason: 'The Django activity feed gives each synthetic row-delete control a descriptive accessible name.' },
+        { feature: 'Back to dashboard', reason: 'The Django activity view adds a direct dashboard return link.' },
+        { feature: 'Filters are unavailable', reason: 'The source shows an inactive filter-options icon; Django gives that no-op control an accessible unavailable label.' },
+      ],
+      copy: [{ feature: 'This page uses the existing local activity feed; it is not a server audit log.', reason: 'The Django activity view explains the boundary between local activity examples and server audit data.' }],
     },
   },
 };
@@ -309,6 +485,15 @@ function hasFeature(values, expected) {
 function sourceOnly(contract, category, value) {
   const exceptions = contract.source_only?.[category] || [];
   return exceptions.some((entry) => {
+    const feature = typeof entry === 'string' ? entry : entry.feature;
+    return featureKey(feature) === featureKey(value);
+  });
+}
+
+function targetOnly(contract, category, value) {
+  const allowances = contract.target_only?.[category] || [];
+  return allowances.some((entry) => {
+    if (entry.pattern) return new RegExp(entry.pattern).test(String(value));
     const feature = typeof entry === 'string' ? entry : entry.feature;
     return featureKey(feature) === featureKey(value);
   });
@@ -367,6 +552,15 @@ function assertSourceRouteContract(sourceInfo, djangoInfo, contract, routeName =
       djangoSectionCursor = position;
     }
   }
+  const mappedSourceSections = (sourceInfo.section_headings || [])
+    .filter((section) => !sourceOnly(contract, 'sections', section))
+    .map(mappedSection);
+  const expectedTargetSections = [...(contract.sections || []), ...mappedSourceSections];
+  for (const section of djangoInfo.section_headings || []) {
+    if (!hasFeature(expectedTargetSections, section) && !targetOnly(contract, 'sections', section)) {
+      failures.push(`unregistered Django-only section ${JSON.stringify(section)}`);
+    }
+  }
 
   const sourceFieldKeys = (sourceInfo.field_descriptors || []).flatMap((field) => [field.identity, field.label].filter(Boolean));
   for (const field of contract.source_fields || []) {
@@ -407,6 +601,30 @@ function assertSourceRouteContract(sourceInfo, djangoInfo, contract, routeName =
           );
         }
       }
+      const expectedRequired = contract.field_required_map?.[field.identity]
+        ?? contract.field_required_map?.[field.label]
+        ?? field.required;
+      if (!targetFields.some((item) => item.required === expectedRequired)) {
+        failures.push(
+          `source field ${JSON.stringify(field.label || field.identity)} required=${JSON.stringify(field.required)} ` +
+          `maps to Django required=${JSON.stringify(expectedRequired)}; ` +
+          `observed ${JSON.stringify(targetFields.map((item) => item.required))}`,
+        );
+      }
+    }
+  }
+  const mappedSourceFields = (sourceInfo.field_descriptors || [])
+    .filter((field) => !sourceOnly(contract, 'fields', field.identity) && !sourceOnly(contract, 'fields', field.label))
+    .map((field) => {
+      const mapped = mappedField(field);
+      return mapped ? [mapped] : [field.identity, field.label].filter(Boolean);
+    });
+  for (const field of djangoFieldDescriptors) {
+    const keys = [field.identity, field.label].filter(Boolean);
+    const sourceMapped = mappedSourceFields.some((expected) => expected.some((item) => hasFeature(keys, item)));
+    const targetRequired = (contract.fields || []).some((expected) => hasFeature(keys, expected));
+    if (!sourceMapped && !targetRequired && !targetOnly(contract, 'fields', field.identity || field.label)) {
+      failures.push(`unregistered Django-only field ${JSON.stringify({ identity: field.identity, label: field.label, type: field.type })}`);
     }
   }
 
@@ -422,6 +640,16 @@ function assertSourceRouteContract(sourceInfo, djangoInfo, contract, routeName =
       failures.push(`source control ${JSON.stringify(control)} has no mapped Django control ${JSON.stringify(target)}; observed ${JSON.stringify(djangoActions)}`);
     }
   }
+  const expectedTargetActions = [
+    ...(contract.buttons || []),
+    ...sourceActions.filter((control) => !sourceOnly(contract, 'controls', control)).map(mappedControl),
+  ];
+  const djangoActionsOnly = [...(djangoInfo.button_labels || []), ...(djangoInfo.link_labels || [])];
+  for (const control of djangoActionsOnly) {
+    if (!hasFeature(expectedTargetActions, control) && !targetOnly(contract, 'controls', control)) {
+      failures.push(`unregistered Django-only control ${JSON.stringify(control)}`);
+    }
+  }
 
   for (const destination of contract.source_destinations || []) {
     if (!hasFeature(sourceInfo.local_destinations || [], destination)) {
@@ -434,6 +662,17 @@ function assertSourceRouteContract(sourceInfo, djangoInfo, contract, routeName =
       failures.push(`source destination ${JSON.stringify(destination)} has no mapped Django destination ${JSON.stringify(target)}`);
     }
   }
+  const expectedTargetDestinations = [
+    ...(contract.destinations || []),
+    ...(sourceInfo.local_destinations || [])
+      .filter((destination) => !sourceOnly(contract, 'destinations', destination))
+      .map(mappedDestination),
+  ];
+  for (const destination of djangoInfo.local_destinations || []) {
+    if (!hasFeature(expectedTargetDestinations, destination) && !targetOnly(contract, 'destinations', destination)) {
+      failures.push(`unregistered Django-only destination ${JSON.stringify(destination)}`);
+    }
+  }
 
   for (const copy of contract.source_copy || []) {
     if (!String(sourceInfo.text || '').includes(copy)) failures.push(`required source copy ${JSON.stringify(copy)} is absent`);
@@ -442,6 +681,16 @@ function assertSourceRouteContract(sourceInfo, djangoInfo, contract, routeName =
     const target = mappedCopy(copy);
     if (!featureKey(djangoInfo.text || '').includes(featureKey(target)) && !sourceOnly(contract, 'copy', copy)) {
       failures.push(`source copy ${JSON.stringify(copy)} is missing from Django`);
+    }
+  }
+  for (const copy of djangoInfo.copy_blocks || []) {
+    const mapsSourceCopy = (sourceInfo.copy_blocks || []).some((sourceCopy) => {
+      if (sourceOnly(contract, 'copy', sourceCopy)) return false;
+      return featureKey(copy).includes(featureKey(mappedCopy(sourceCopy)));
+    });
+    const requiredTargetCopy = (contract.text || []).some((fragment) => featureKey(copy).includes(featureKey(fragment)));
+    if (!mapsSourceCopy && !requiredTargetCopy && !targetOnly(contract, 'copy', copy)) {
+      failures.push(`unregistered Django-only copy ${JSON.stringify(copy)}`);
     }
   }
 
@@ -504,6 +753,27 @@ function checkRealRouteNegativeControls(sourceInfo, djangoInfo, contract, routeN
     assert.throws(() => assertSourceRouteContract(mutatedSource, mutatedDjango, contract, routeName));
     checks.push('removed required source/Django field rejected');
   }
+  const constrainedField = (sourceInfo.field_descriptors || []).find((item) =>
+    !sourceOnly(contract, 'fields', item.identity) && !sourceOnly(contract, 'fields', item.label),
+  );
+  if (constrainedField) {
+    const mutatedDjango = cloneInfo(djangoInfo);
+    const mapped = contract.field_map?.[constrainedField.identity]
+      || contract.field_map?.[constrainedField.label]
+      || constrainedField.identity;
+    const targetField = (mutatedDjango.field_descriptors || []).find((item) =>
+      hasFeature([item.identity, item.label].filter(Boolean), mapped)
+      || hasFeature([item.identity, item.label].filter(Boolean), constrainedField.label),
+    );
+    if (targetField) {
+      const expectedRequired = contract.field_required_map?.[constrainedField.identity]
+        ?? contract.field_required_map?.[constrainedField.label]
+        ?? constrainedField.required;
+      targetField.required = !expectedRequired;
+      assert.throws(() => assertSourceRouteContract(sourceInfo, mutatedDjango, contract, routeName));
+      checks.push('changed field required constraint rejected');
+    }
+  }
   const copy = (contract.source_copy || []).find((item) => String(sourceInfo.text || '').includes(item));
   if (copy) {
     const mutatedSource = cloneInfo(sourceInfo);
@@ -514,14 +784,55 @@ function checkRealRouteNegativeControls(sourceInfo, djangoInfo, contract, routeN
     assert.throws(() => assertSourceRouteContract(mutatedSource, mutatedDjango, contract, routeName));
     checks.push('removed required source/Django copy rejected');
   }
+  const mutatedDjangoOnly = cloneInfo(djangoInfo);
+  mutatedDjangoOnly.button_labels = [...(mutatedDjangoOnly.button_labels || []), 'Unregistered injected P9 control'];
+  assert.throws(() => assertSourceRouteContract(sourceInfo, mutatedDjangoOnly, contract, routeName));
+  checks.push('unregistered Django-only control rejected');
+  const mutatedDjangoSection = cloneInfo(djangoInfo);
+  mutatedDjangoSection.section_headings = [...(mutatedDjangoSection.section_headings || []), 'Unregistered injected P9 section'];
+  assert.throws(() => assertSourceRouteContract(sourceInfo, mutatedDjangoSection, contract, routeName));
+  checks.push('unregistered Django-only section rejected');
+  const mutatedDjangoField = cloneInfo(djangoInfo);
+  mutatedDjangoField.field_descriptors = [
+    ...(mutatedDjangoField.field_descriptors || []),
+    { identity: 'unregistered_injected_p9_field', label: '', type: 'text', options: [] },
+  ];
+  assert.throws(() => assertSourceRouteContract(sourceInfo, mutatedDjangoField, contract, routeName));
+  checks.push('unregistered Django-only field rejected');
+  const mutatedDjangoDestination = cloneInfo(djangoInfo);
+  mutatedDjangoDestination.local_destinations = [
+    ...(mutatedDjangoDestination.local_destinations || []),
+    '/p9-unregistered-injected-destination',
+  ];
+  assert.throws(() => assertSourceRouteContract(sourceInfo, mutatedDjangoDestination, contract, routeName));
+  checks.push('unregistered Django-only destination rejected');
+  const mutatedDjangoCopy = cloneInfo(djangoInfo);
+  mutatedDjangoCopy.copy_blocks = [...(mutatedDjangoCopy.copy_blocks || []), 'Unregistered injected P9 copy'];
+  assert.throws(() => assertSourceRouteContract(sourceInfo, mutatedDjangoCopy, contract, routeName));
+  checks.push('unregistered Django-only copy rejected');
   return { route: routeName, passed: checks.length > 0, mutations_rejected: checks };
 }
 
 async function capture(browser, [slug, route, expectedStatus], viewport) {
   const page = await browser.newPage({ viewport });
+  const schedulerRequestTrace = [];
+  page.on('request', (request) => {
+    const url = new URL(request.url());
+    if (url.origin === baseUrl && url.pathname.replace(/\/$/, '') === '/scheduler') {
+      schedulerRequestTrace.push(`${request.method()} ${url.pathname}${url.search}`);
+    }
+  });
   await page.route(`${baseUrl}/**`, async (requestRoute) => {
-    const headers = await requestRoute.request().allHeaders();
-    await requestRoute.continue({ headers: { ...headers, 'X-P7-Fixture-Reset': '1' } });
+    const request = requestRoute.request();
+    const requestUrl = new URL(request.url());
+    const headers = await request.allHeaders();
+    for (const name of Object.keys(headers)) {
+      if (name.toLowerCase() === 'x-p7-fixture-reset') delete headers[name];
+    }
+    const resetFixture = request.method() === 'GET' && requestUrl.search === '';
+    await requestRoute.continue({
+      headers: resetFixture ? { ...headers, 'x-p7-fixture-reset': '1' } : headers,
+    });
   });
   const consoleErrors = [];
   const failedRequests = [];
@@ -536,6 +847,7 @@ async function capture(browser, [slug, route, expectedStatus], viewport) {
     if (url.origin === baseUrl) responses.push({ path: url.pathname, status: response.status() });
   });
 
+  if (route === '/activitylog') await page.clock.setFixedTime(new Date(activityClock));
   const response = await page.goto(`${baseUrl}${route}`, { waitUntil: 'domcontentloaded' });
   assert.equal(response?.status(), expectedStatus, `${route} should return ${expectedStatus}`);
   await page.evaluate(() => document.fonts.ready);
@@ -543,6 +855,19 @@ async function capture(browser, [slug, route, expectedStatus], viewport) {
   const info = await page.evaluate(() => ({
     title: document.title,
     heading: document.querySelector('h1')?.innerText.trim() || null,
+    filled_titles: [...document.querySelectorAll('article.card > .text-lg')].map((element) => {
+      const style = getComputedStyle(element);
+      const bounds = element.getBoundingClientRect();
+      return {
+        text: element.innerText,
+        color: style.color,
+        opacity: style.opacity,
+        visibility: style.visibility,
+        display: style.display,
+        bounds: { x: bounds.x, y: bounds.y, width: bounds.width, height: bounds.height },
+        title_color: getComputedStyle(element.querySelector('span') || element).color,
+      };
+    }),
     document_width: document.documentElement.scrollWidth,
     viewport_width: document.documentElement.clientWidth,
     has_react_root: Boolean(document.querySelector('#root,[data-reactroot]')),
@@ -564,9 +889,37 @@ async function capture(browser, [slug, route, expectedStatus], viewport) {
   assert.equal(info.has_react_root, false, `${route} must not mount React`);
   assert.equal(info.has_react_bootstrap, false, `${route} must not load the React bundle`);
   if (expectedStatus === 200) assert.ok(info.heading, `${route} should render its heading`);
+  if (route === '/filledtemplates' && expectedStatus === 200) {
+    const templateTitle = page.locator('article.card > .text-lg').first();
+    try {
+      await templateTitle.waitFor({ state: 'visible', timeout: 5000 });
+    } catch (error) {
+      const state = await page.evaluate(() => ({
+        title: document.title,
+        heading: document.querySelector('h1')?.innerText.trim() || null,
+        body: document.body.innerText.slice(0, 1200),
+        cards: [...document.querySelectorAll('article.card')].map((card) => {
+          const title = card.querySelector('.text-lg');
+          const style = title ? getComputedStyle(title) : null;
+          const bounds = title?.getBoundingClientRect();
+          return {
+            text: title?.innerText || null,
+            display: style?.display || null,
+            visibility: style?.visibility || null,
+            opacity: style?.opacity || null,
+            bounds: bounds ? { x: bounds.x, y: bounds.y, width: bounds.width, height: bounds.height } : null,
+          };
+        }),
+      }));
+      throw new Error(`Filled Templates initial title was not visible: ${JSON.stringify(state)}; ${error.message}`);
+    }
+    assert.equal(await templateTitle.innerText(), 'Template Name: Patient intake');
+  }
 
   const screenshot = `${slug}-${viewport.name}.png`;
   await page.screenshot({ path: path.join(output, screenshot), fullPage: false });
+  const djangoMarkup = await page.content();
+  const djangoDigest = crypto.createHash('sha256').update(djangoMarkup).digest('hex');
   const sourceMarkup = await fs.readFile(path.join(sourceOutput, `${slug}-${viewport.name}.html`), 'utf8');
   const sourceDigest = crypto.createHash('sha256').update(sourceMarkup).digest('hex');
   const sourceCapturePage = sourceReferencePages.find((item) =>
@@ -605,6 +958,7 @@ async function capture(browser, [slug, route, expectedStatus], viewport) {
           identity: item.getAttribute('name') || item.getAttribute('data-setting') || item.getAttribute('data-setting-array') || item.id || '',
           label: labels[0] || explicitLabel || wrappingLabel || adjacentLabel || item.getAttribute('aria-label') || item.getAttribute('placeholder') || '',
           type: item.type || item.tagName.toLowerCase(),
+          required: item.required,
           options: item.tagName === 'SELECT' ? [...item.options].map((option) => option.textContent.replace(/\s+/g, ' ').trim()).filter(Boolean) : [],
         };
       }).filter((item) => item.identity || item.label),
@@ -626,8 +980,12 @@ async function capture(browser, [slug, route, expectedStatus], viewport) {
         .sort(),
       text: target.textContent?.replace(/\s+/g, ' ').trim() || '',
       copy_blocks: [...target.querySelectorAll('p')]
-        .filter((item) => !item.closest('li,article,[role="listitem"]'))
-        .map((item) => item.innerText.replace(/\s+/g, ' ').trim()).filter(Boolean),
+        .filter((item) => !item.closest('[hidden],.hidden,[aria-hidden="true"],dialog:not([open]),li,article,[role="listitem"]'))
+        .map((item) => {
+          const paragraph = item.cloneNode(true);
+          paragraph.querySelectorAll('a,button,input,select,textarea').forEach((control) => control.remove());
+          return paragraph.innerText.replace(/\s+/g, ' ').trim();
+        }).filter(Boolean),
     };
   }, sourceMarkup);
   const djangoInfo = await page.evaluate(() => {
@@ -659,6 +1017,7 @@ async function capture(browser, [slug, route, expectedStatus], viewport) {
           identity: item.getAttribute('name') || item.getAttribute('data-setting') || item.getAttribute('data-setting-array') || item.id || '',
           label: labels[0] || explicitLabel || wrappingLabel || adjacentLabel || item.getAttribute('aria-label') || item.getAttribute('placeholder') || '',
           type: item.type || item.tagName.toLowerCase(),
+          required: item.required,
           options: item.tagName === 'SELECT' ? [...item.options].map((option) => option.textContent.replace(/\s+/g, ' ').trim()).filter(Boolean) : [],
         };
       }).filter((item) => item.identity || item.label),
@@ -678,7 +1037,13 @@ async function capture(browser, [slug, route, expectedStatus], viewport) {
         })
         .filter(Boolean)
         .sort(),
-      copy_blocks: [...copy.querySelectorAll('p')].map((item) => item.innerText.replace(/\s+/g, ' ').trim()).filter(Boolean),
+      copy_blocks: [...copy.querySelectorAll('p')]
+        .filter((item) => !item.closest('[hidden],.hidden,[aria-hidden="true"],dialog:not([open]),li,article,[role="listitem"]'))
+        .map((item) => {
+        const paragraph = item.cloneNode(true);
+        paragraph.querySelectorAll('a,button,input,select,textarea').forEach((control) => control.remove());
+        return paragraph.innerText.replace(/\s+/g, ' ').trim();
+      }).filter(Boolean),
     };
   });
   const contract = ROUTE_CONTRACTS[slug];
@@ -701,6 +1066,7 @@ async function capture(browser, [slug, route, expectedStatus], viewport) {
     viewport: viewport.name,
     passed: true,
     source_html_sha256: sourceDigest,
+    django_html_sha256: djangoDigest,
     source_run_id: referenceRun,
     source_worktree_digest: sourceReferenceManifest.source_provenance.worktree_digest,
     source_heading: sourceInfo.heading,
@@ -714,7 +1080,24 @@ async function capture(browser, [slug, route, expectedStatus], viewport) {
     mapped_source_fields: contract.field_map || {},
     mapped_source_field_types: contract.field_type_map || {},
     mapped_source_field_labels: contract.field_label_map || {},
+    mapped_source_field_required: contract.field_required_map || {},
     mapped_source_controls: contract.control_map || {},
+    source_contract: {
+      sections: sourceInfo.section_headings,
+      fields: sourceInfo.field_descriptors,
+      buttons: sourceInfo.button_labels,
+      links: sourceInfo.link_labels,
+      destinations: sourceInfo.local_destinations,
+      copy_blocks: sourceInfo.copy_blocks,
+    },
+    django_contract: {
+      sections: djangoInfo.section_headings,
+      fields: djangoInfo.field_descriptors,
+      buttons: djangoInfo.button_labels,
+      links: djangoInfo.link_labels,
+      destinations: djangoInfo.local_destinations,
+      copy_blocks: djangoInfo.copy_blocks,
+    },
     source_feature_counts: {
       sections: sourceInfo.section_headings.length,
       fields: sourceInfo.field_descriptors.length,
@@ -771,22 +1154,36 @@ async function capture(browser, [slug, route, expectedStatus], viewport) {
     },
   });
 
-  if (wave === 'w4' && viewport.name === 'desktop') {
-    await page.evaluate(() => {
+  if (wave === 'w4') {
+    const activityKey = await page.evaluate(() => {
       const key = document.querySelector('[data-dashboard-activity-key]')?.dataset.dashboardActivityKey;
+      if (!key) throw new Error('The current-account dashboard history key is missing.');
       localStorage.setItem(key, JSON.stringify([
         { id: 'current-user-form', type: 'form_started', title: 'Synthetic browser-local form', time: new Date().toISOString(), user: 'Synthetic' },
       ]));
       localStorage.setItem('recentActivity', JSON.stringify([
         { type: 'form_started', title: 'Unscoped prior-account form', time: new Date().toISOString() },
       ]));
+      localStorage.setItem('voiceform_activity_99999999-9999-4999-8999-999999999999', JSON.stringify([
+        { id: 'unrelated-account-form', type: 'form_started', title: 'Unrelated account form', time: new Date().toISOString(), user: 'Other account' },
+      ]));
+      return key;
     });
     await page.reload({ waitUntil: 'domcontentloaded' });
     const activityRow = page.locator('[data-dashboard-recent-forms] li').filter({ hasText: 'Synthetic browser-local form' });
     assert.equal(await activityRow.count(), 1);
     assert.equal(await page.getByText('Unscoped prior-account form').count(), 0);
+    assert.equal(await page.getByText('Unrelated account form').count(), 0);
     assert.equal(await activityRow.getByRole('link', { name: 'Resume' }).getAttribute('href'), '/AIVoiceAutoFill');
-    results.interactions.push({ route: '/dashboard', state: 'reads current-account browser history, ignores the unscoped prior-account key, and uses a fixed resume destination' });
+    results.interactions.push({ route: '/dashboard', state: `reads populated current-account history, ignores other-account and unscoped data, and uses a fixed resume destination at ${viewport.name}` });
+    await page.evaluate((key) => localStorage.setItem(key, JSON.stringify([])), activityKey);
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    assert.equal(await page.locator('[data-dashboard-recent-forms] li').count(), 0);
+    await page.getByText('No recent forms yet. Start a voice form to see it here.', { exact: true }).waitFor();
+    results.interactions.push({ route: '/dashboard', state: `empty current-account history shows its start-voice guidance at ${viewport.name}` });
+  }
+
+  if (wave === 'w4' && viewport.name === 'desktop') {
 
     await page.getByRole('link', { name: 'Settings', exact: true }).click();
         await page.waitForURL('**/dashboard#settings');
@@ -806,6 +1203,7 @@ async function capture(browser, [slug, route, expectedStatus], viewport) {
     await page.screenshot({ path: path.join(output, 'dashboard-team-desktop.png'), fullPage: false });
     await page.getByRole('link', { name: 'Open reviews' }).click();
     await page.waitForURL('**/templates#collaboration');
+    assert.equal(await page.locator('[data-template-collaboration]').evaluate((details) => details.open), true);
     await page.getByRole('heading', { name: 'Sent shares and review queue' }).waitFor();
     await page.goto(`${baseUrl}/dashboard`, { waitUntil: 'domcontentloaded' });
     await page.getByRole('link', { name: 'Team', exact: true }).click();
@@ -828,30 +1226,49 @@ async function capture(browser, [slug, route, expectedStatus], viewport) {
     results.interactions.push({ route: '/dashboard', state: 'Team and Settings navigation links work by click and keyboard activation; the team dialog closes on Escape and restores focus' });
     await page.screenshot({ path: path.join(output, 'dashboard-team-keyboard-desktop.png'), fullPage: false });
   }
-  if (wave === 'w7' && slug === 'voice-autofill' && viewport.name === 'desktop') {
-    await page.getByRole('link', { name: 'Use template' }).click();
+  if (wave === 'w7' && slug === 'voice-autofill') {
+    const useTemplate = page.getByRole('link', { name: 'Use template' });
+    await useTemplate.focus();
+    await page.keyboard.press('Enter');
     await page.waitForURL(/\/AIVoiceAutoFill\?template=/);
     await page.getByRole('heading', { name: 'Review form fields' }).waitFor();
     await page.getByRole('button', { name: 'Send to assistant' }).waitFor();
-    await page.screenshot({ path: path.join(output, 'voice-autofill-selected-desktop.png'), fullPage: false });
-    results.interactions.push({ route: '/AIVoiceAutoFill', state: 'template chooser opens the selected synthetic template and exposes the review, assistant, recorder, and save paths' });
+    await page.screenshot({ path: path.join(output, `voice-autofill-selected-${viewport.name}.png`), fullPage: false });
+    results.interactions.push({ route: '/AIVoiceAutoFill', state: `keyboard Enter activates the selected synthetic template chooser link and exposes the review, assistant, recorder, and save paths at ${viewport.name}` });
   }
-  if (wave === 'w7' && slug === 'filled-templates' && viewport.name === 'mobile') {
+  if (wave === 'w7' && slug === 'filled-templates') {
     const savedCard = page.locator('article.card').filter({ hasText: 'Sample Patient' });
     await savedCard.waitFor();
-    assert.equal(await savedCard.locator('details').evaluate((details) => details.open), true);
     await savedCard.getByRole('heading', { name: 'Form Data:' }).waitFor();
-    await savedCard.getByText('Sample Patient', { exact: true }).waitFor();
+    await savedCard.locator('li').filter({ hasText: 'Sample Patient' }).waitFor();
+    const renderedDate = await savedCard.locator('[data-local-datetime]').textContent();
+    const expectedDate = await savedCard.locator('[data-local-datetime]').evaluate((element) => new Date(element.dateTime).toLocaleString());
+    assert.equal(renderedDate, expectedDate, 'saved dates should use the same browser-local formatting as the React source page');
+    assert.equal(await savedCard.locator('details').count(), 0, 'saved answers remain visible in the initial state without an extra disclosure control');
     page.once('dialog', (dialog) => dialog.accept());
-    await savedCard.getByRole('button', { name: 'Delete' }).click();
+    const deleteSavedForm = savedCard.getByRole('button', { name: 'Delete' });
+    await deleteSavedForm.focus();
+    await page.keyboard.press('Enter');
     await page.getByRole('status').getByText('Filled form deleted.').waitFor();
-    await page.getByRole('heading', { name: 'No filled forms yet' }).waitFor();
+    await page.getByRole('heading', { name: 'No filled templates found' }).waitFor();
     assert.equal(await page.locator('article.card').filter({ hasText: 'Sample Patient' }).count(), 0);
-    await page.screenshot({ path: path.join(output, 'filled-templates-empty-mobile.png'), fullPage: false });
-    await page.getByRole('link', { name: 'Start a form' }).click();
-    await page.waitForURL('**/AIVoiceAutoFill');
-    await page.getByRole('heading', { name: 'Choose a Form Template' }).waitFor();
-    results.interactions.push({ route: '/filledtemplates', state: 'populated saved answers open, confirmed delete reaches the empty state, and the fixed Start a form link returns to the template chooser' });
+    await page.screenshot({ path: path.join(output, `filled-templates-empty-${viewport.name}.png`), fullPage: false });
+    const chooseTemplate = page.getByRole('link', { name: 'Choose a Template' });
+    await chooseTemplate.focus();
+    await page.keyboard.press('Enter');
+    await page.waitForURL('**/templates');
+    await page.getByRole('heading', { name: 'Templates', exact: true }).waitFor();
+    results.interactions.push({ route: '/filledtemplates', state: 'saved answers and browser-local timestamp match the source initial state; confirmed keyboard delete reaches the empty state, and Choose a Template returns to /templates by keyboard' });
+  }
+  if (wave === 'w7' && slug === 'filled-templates') {
+    await page.setExtraHTTPHeaders({ 'X-P9-Filled-Error': '1' });
+    const unavailableResponse = await page.goto(`${baseUrl}/filledtemplates`, { waitUntil: 'domcontentloaded' });
+    assert.equal(unavailableResponse?.status(), 200);
+    await page.getByRole('alert').getByText('Filled forms are temporarily unavailable.').waitFor();
+    await page.getByRole('heading', { name: 'No filled templates found' }).waitFor();
+    assert.equal(await page.locator('article.card').count(), 0);
+    await page.screenshot({ path: path.join(output, `filled-templates-error-${viewport.name}.png`), fullPage: false });
+    results.interactions.push({ route: '/filledtemplates', state: `synthetic listing failure displays safe recovery feedback and an empty state at ${viewport.name}` });
   }
   if (wave === 'w4' && viewport.name === 'mobile') {
     const drawerOpener = page.getByRole('button', { name: 'Open workspace navigation' });
@@ -862,7 +1279,9 @@ async function capture(browser, [slug, route, expectedStatus], viewport) {
     await page.screenshot({ path: path.join(output, 'dashboard-navigation-drawer-mobile.png'), fullPage: false });
     await page.keyboard.press('Escape');
     assert.equal(await drawer.evaluate((dialog) => dialog.open), false);
+    await page.waitForFunction(() => document.querySelector('[data-modal-open="mobile-navigation"]')?.getAttribute('aria-expanded') === 'false');
     assert.equal(await drawerOpener.getAttribute('aria-expanded'), 'false');
+    await page.waitForFunction(() => document.activeElement?.getAttribute('aria-label') === 'Open workspace navigation');
     assert.equal(await page.evaluate(() => document.activeElement?.getAttribute('aria-label')), 'Open workspace navigation');
     await drawerOpener.click();
     await drawer.getByRole('link', { name: 'Templates' }).click();
@@ -895,6 +1314,34 @@ async function capture(browser, [slug, route, expectedStatus], viewport) {
   }
   if (wave === 'w5' && viewport.name === 'desktop') {
     const resultsView = page.locator('[data-template-results]');
+    const openTemplateActions = async (card) => {
+      const disclosure = card.locator('[data-template-actions]');
+      if (!await disclosure.evaluate((element) => element.open)) {
+        await disclosure.locator(':scope > summary').focus();
+        await page.keyboard.press('Enter');
+      }
+      assert.equal(await disclosure.evaluate((element) => element.open), true);
+      return disclosure;
+    };
+    const seededCard = page.locator('article[data-template-card]').filter({
+      has: page.getByRole('heading', { name: 'Patient intake', exact: true }),
+    });
+    const seededActions = seededCard.locator('[data-template-actions]');
+    assert.equal(await seededActions.evaluate((element) => element.open), false);
+    await seededActions.locator(':scope > summary').focus();
+    await page.keyboard.press('Enter');
+    assert.equal(await seededActions.evaluate((element) => element.open), true);
+    await page.keyboard.press('Escape');
+    assert.equal(await seededActions.evaluate((element) => element.open), false);
+    assert.equal(await seededActions.locator(':scope > summary').evaluate((summary) => summary === document.activeElement), true);
+    const filterDisclosure = page.locator('[data-template-filters]');
+    assert.equal(await filterDisclosure.evaluate((element) => element.open), false);
+    await filterDisclosure.locator(':scope > summary').focus();
+    await page.keyboard.press('Enter');
+    assert.equal(await filterDisclosure.evaluate((element) => element.open), true);
+    await page.keyboard.press('Escape');
+    assert.equal(await filterDisclosure.evaluate((element) => element.open), false);
+    assert.equal(await filterDisclosure.locator(':scope > summary').evaluate((summary) => summary === document.activeElement), true);
     await page.getByRole('button', { name: 'List view' }).click();
     assert.equal(await resultsView.getAttribute('data-template-layout'), 'list');
     assert.equal(await page.getByRole('button', { name: 'List view' }).getAttribute('aria-pressed'), 'true');
@@ -902,7 +1349,8 @@ async function capture(browser, [slug, route, expectedStatus], viewport) {
     assert.equal(await resultsView.getAttribute('data-template-layout'), 'grid');
     assert.match(await page.locator('[data-template-path="upload"]').textContent(), /not parsed or converted into fields/i);
     const createTemplate = page.getByRole('button', { name: 'Create template' });
-    await createTemplate.click();
+    await createTemplate.focus();
+    await page.keyboard.press('Enter');
     const builderDialog = page.locator('#create-template');
     assert.equal(await builderDialog.evaluate((dialog) => dialog.open), true);
     assert.equal(await createTemplate.getAttribute('aria-expanded'), 'true');
@@ -911,53 +1359,77 @@ async function capture(browser, [slug, route, expectedStatus], viewport) {
     await page.waitForFunction(() => document.querySelector('[data-template-dialog-open]')?.getAttribute('aria-expanded') === 'false');
     assert.equal(await createTemplate.getAttribute('aria-expanded'), 'false');
     assert.equal(await page.evaluate(() => document.activeElement?.textContent?.trim()), 'Create template');
-    await createTemplate.click();
+    await createTemplate.focus();
+    await page.keyboard.press('Enter');
     const builder = page.locator('form[data-template-builder]').first();
     await builder.locator('[name="name"]').fill('Synthetic browser template');
     await builder.locator('[name="category"]').selectOption('healthcare');
     await builder.locator('[name="description"]').fill('Deterministic browser CRUD fixture');
-    await builder.getByRole('button', { name: 'Next' }).click();
-    await builder.getByLabel('Build manually').check();
-    await builder.getByRole('button', { name: 'Next' }).click();
-    await builder.getByRole('button', { name: 'Save template' }).click();
+    await builder.getByRole('button', { name: 'Next' }).focus();
+    await page.keyboard.press('Enter');
+    const manualChoice = builder.getByLabel('Build manually');
+    await manualChoice.focus();
+    await page.keyboard.press('Space');
+    await builder.getByRole('button', { name: 'Next' }).focus();
+    await page.keyboard.press('Enter');
+    await builder.getByRole('button', { name: 'Save template' }).focus();
+    await page.keyboard.press('Enter');
     await page.getByText('Add at least one field before creating a voice-enabled form.', { exact: true }).waitFor();
     assert.equal(await page.getByRole('heading', { name: 'Synthetic browser template', exact: true }).count(), 0);
-    await page.getByRole('button', { name: 'Add field' }).click();
+    const addField = page.getByRole('button', { name: 'Add field' });
+    await addField.focus();
+    await page.keyboard.press('Enter');
     assert.equal(await builder.locator('[data-template-flow-status]').textContent(), '', 'adding a field clears the prior empty-form validation error');
     const fields = builder.locator('[data-fields] fieldset');
     await fields.nth(0).locator('[data-property="label"]').fill('Patient name');
-    await fields.nth(0).locator('[data-property="required"]').check();
+    const requiredField = fields.nth(0).locator('[data-property="required"]');
+    await requiredField.focus();
+    await page.keyboard.press('Space');
     await fields.nth(0).locator('[data-property="type"]').selectOption('text');
-    await page.getByRole('button', { name: 'Add field' }).click();
+    await addField.focus();
+    await page.keyboard.press('Enter');
     await fields.nth(1).locator('[data-property="label"]').fill('Contact method');
     await fields.nth(1).locator('[data-property="type"]').selectOption('select');
     await fields.nth(1).locator('[data-property="options"]').fill('Email\nPhone');
-    await fields.nth(1).getByRole('button', { name: 'Move up' }).click();
+    const moveUp = fields.nth(1).getByRole('button', { name: 'Move up' });
+    await moveUp.focus();
+    await page.keyboard.press('Enter');
     assert.equal(await fields.nth(0).locator('[data-property="label"]').inputValue(), 'Contact method');
-    await fields.nth(0).getByRole('button', { name: 'Move down' }).click();
+    const moveDown = fields.nth(0).getByRole('button', { name: 'Move down' });
+    await moveDown.focus();
+    await page.keyboard.press('Enter');
     assert.equal(await fields.nth(0).locator('[data-property="label"]').inputValue(), 'Patient name');
-    await fields.nth(1).getByRole('button', { name: 'Remove field' }).click();
+    const removeField = fields.nth(1).getByRole('button', { name: 'Remove field' });
+    await removeField.focus();
+    await page.keyboard.press('Enter');
     const payload = JSON.parse(await builder.locator('[data-form-data]').inputValue());
     assert.deepEqual(payload.fields.map(({ id, label, type, required, options }) => ({ id, label, type, required, options })), [
       { id: payload.fields[0].id, label: 'Patient name', type: 'text', required: true, options: undefined },
     ]);
     await page.screenshot({ path: path.join(output, 'templates-builder-manual-desktop.png'), fullPage: false });
 
-    await builder.getByRole('button', { name: 'Save template' }).click();
+    await builder.getByRole('button', { name: 'Save template' }).focus();
+    await page.keyboard.press('Enter');
     await page.getByRole('status').getByText('Template created.').waitFor();
     const createdCard = page.locator('article.card').filter({ has: page.getByRole('heading', { name: 'Synthetic browser template', exact: true }) });
     await createdCard.waitFor();
     const createdId = await createdCard.locator('input[name="template_id"]').first().inputValue();
     assert.ok(createdId);
-    await createdCard.locator('details').filter({ has: page.getByText('Edit fields and details') }).locator('summary').click();
+    await openTemplateActions(createdCard);
+    const editDisclosure = createdCard.locator('[data-template-edit] > summary');
+    await editDisclosure.focus();
+    await page.keyboard.press('Enter');
     const editForm = createdCard.locator('form[data-template-builder]').last();
     await editForm.locator('[name="name"]').fill('Synthetic browser template edited');
     await editForm.locator('[name="description"]').fill('Persisted synthetic edit');
-    await editForm.getByRole('button', { name: 'Save changes' }).click();
+    const saveChanges = editForm.getByRole('button', { name: 'Save changes' });
+    await saveChanges.focus();
+    await page.keyboard.press('Enter');
     await page.getByRole('status').getByText('Template saved.').waitFor();
 
     const editedCard = page.locator('article.card').filter({ has: page.getByRole('heading', { name: 'Synthetic browser template edited', exact: true }) });
     await editedCard.waitFor();
+    await openTemplateActions(editedCard);
     const [templateDownload] = await Promise.all([
       page.waitForEvent('download'),
       editedCard.getByRole('link', { name: 'Export template JSON' }).click(),
@@ -968,33 +1440,57 @@ async function capture(browser, [slug, route, expectedStatus], viewport) {
     assert.equal(templateExport.name, 'Synthetic browser template edited');
     assert.equal(templateExport.form_data.fields[0].label, 'Patient name');
 
-    await editedCard.getByRole('button', { name: 'Duplicate' }).click();
+    const duplicateButton = editedCard.getByRole('button', { name: 'Duplicate' });
+    await duplicateButton.focus();
+    await page.keyboard.press('Enter');
     await page.getByRole('status').getByText('Template duplicated.').waitFor();
     const duplicateName = 'Synthetic browser template edited copy';
     const duplicateCard = page.locator('article.card').filter({ has: page.getByRole('heading', { name: duplicateName, exact: true }) });
     await duplicateCard.waitFor();
     const duplicateId = await duplicateCard.locator('input[name="template_id"]').first().inputValue();
-    await duplicateCard.getByRole('button', { name: 'Make hidden' }).click();
+    await openTemplateActions(duplicateCard);
+    const hideButton = duplicateCard.getByRole('button', { name: 'Make hidden' });
+    await hideButton.focus();
+    await page.keyboard.press('Enter');
     await page.getByRole('status').getByText('Template visibility updated.').waitFor();
     assert.equal(await duplicateCard.locator('.badge').filter({ hasText: 'Hidden' }).count(), 1);
-    await duplicateCard.getByRole('button', { name: 'Make visible' }).click();
+    await openTemplateActions(duplicateCard);
+    const showButton = duplicateCard.getByRole('button', { name: 'Make visible' });
+    await showButton.focus();
+    await page.keyboard.press('Enter');
     await page.getByRole('status').getByText('Template visibility updated.').waitFor();
 
     const filters = page.locator('form[role="search"]');
+    const openTemplateFilters = async () => {
+      const disclosure = filters.locator('[data-template-filters]');
+      if (!await disclosure.evaluate((element) => element.open)) {
+        await disclosure.locator(':scope > summary').focus();
+        await page.keyboard.press('Enter');
+      }
+      assert.equal(await disclosure.evaluate((element) => element.open), true);
+    };
     await filters.locator('[name="q"]').fill('Synthetic browser template');
+    await openTemplateFilters();
     await filters.locator('[name="category"]').selectOption('healthcare');
-    await filters.locator('[name="sort"]').selectOption('name');
-    await filters.getByRole('button', { name: 'Filter' }).click();
+    await filters.locator('[name="sort"]').selectOption('name-asc');
+    const applyFilters = filters.getByRole('button', { name: 'Filter', exact: true });
+    await applyFilters.focus();
+    await page.keyboard.press('Enter');
     await page.waitForURL(/q=Synthetic\+browser\+template/);
     await page.getByRole('heading', { name: duplicateName, exact: true }).waitFor();
 
     const deleteDuplicate = page.locator('article.card').filter({ has: page.getByRole('heading', { name: duplicateName, exact: true }) });
+    await openTemplateActions(deleteDuplicate);
     page.once('dialog', (dialog) => dialog.accept());
-    await deleteDuplicate.getByRole('button', { name: 'Delete' }).click();
+    const deleteDuplicateButton = deleteDuplicate.getByRole('button', { name: 'Delete' });
+    await deleteDuplicateButton.focus();
+    await page.keyboard.press('Enter');
     await page.getByRole('status').getByText('Template deleted.').waitFor();
     assert.equal(await page.getByRole('heading', { name: duplicateName, exact: true }).count(), 0);
     await filters.locator('[name="q"]').fill('no template should match this term');
-    await filters.getByRole('button', { name: 'Filter' }).click();
+    await openTemplateFilters();
+    await filters.getByRole('button', { name: 'Filter', exact: true }).focus();
+    await page.keyboard.press('Enter');
     await page.getByText('No templates match these filters. Create a template to get started.', { exact: true }).waitFor();
     await page.goto(`${baseUrl}/templates`, { waitUntil: 'domcontentloaded' });
     await page.getByRole('button', { name: 'Create template' }).click();
@@ -1014,12 +1510,13 @@ async function capture(browser, [slug, route, expectedStatus], viewport) {
     const uploadCard = page.locator('article.card').filter({ has: page.getByRole('heading', { name: 'Synthetic private upload', exact: true }) });
     await uploadCard.waitFor();
     const uploadId = await uploadCard.locator('input[name="template_id"]').first().inputValue();
+    await openTemplateActions(uploadCard);
     const [firstPrivateDownload] = await Promise.all([
       page.waitForEvent('download'),
       uploadCard.getByRole('button', { name: 'Download private file' }).click(),
     ]);
     assert.deepEqual(await fs.readFile(await firstPrivateDownload.path()), originalFile);
-    const privateDetails = uploadCard.locator('details').filter({ has: page.getByText('Private file', { exact: true }) });
+    const privateDetails = uploadCard.locator('[data-template-file]');
     await privateDetails.locator('summary').click();
     const replacementFile = Buffer.from('source,replacement\nprivate,fixture\n');
     await privateDetails.locator('[name="template_file"]').setInputFiles({
@@ -1028,15 +1525,142 @@ async function capture(browser, [slug, route, expectedStatus], viewport) {
     await privateDetails.getByRole('button', { name: 'Upload privately' }).click();
     await page.getByRole('status').getByText('Private template file saved.').waitFor();
     const replacementCard = page.locator('article.card').filter({ has: page.getByRole('heading', { name: 'Synthetic private upload', exact: true }) });
+    await openTemplateActions(replacementCard);
     const [replacementDownload] = await Promise.all([
       page.waitForEvent('download'),
       replacementCard.getByRole('button', { name: 'Download private file' }).click(),
     ]);
     assert.deepEqual(await fs.readFile(await replacementDownload.path()), replacementFile);
+    await openTemplateActions(replacementCard);
     page.once('dialog', (dialog) => dialog.accept());
     await replacementCard.getByRole('button', { name: 'Delete' }).click();
     await page.getByRole('status').getByText('Template deleted.').waitFor();
     assert.equal(await page.getByRole('heading', { name: 'Synthetic private upload', exact: true }).count(), 0);
+
+    const reviewerId = '88888888-8888-4888-8888-888888888888';
+    const openDisclosureByKeyboard = async (details) => {
+      const summary = details.locator(':scope > summary');
+      await summary.focus();
+      await page.keyboard.press('Enter');
+      assert.equal(await details.evaluate((element) => element.open), true,
+        'Enter should open the template collaboration disclosure');
+      assert.equal(await summary.evaluate((element) => element === document.activeElement), true,
+        'opening a template disclosure should retain focus on its summary');
+      return summary;
+    };
+    await openTemplateActions(seededCard);
+    const shareDisclosure = seededCard.locator('[data-template-actions] details')
+      .filter({ hasText: 'Share with existing accounts' }).last();
+    await openDisclosureByKeyboard(shareDisclosure);
+    const shareForm = shareDisclosure.locator('form:has(input[name="action"][value="share"])');
+    await shareForm.locator('[name="recipient_ids"]').fill(reviewerId);
+    await shareForm.locator('[name="role"]').selectOption('viewer');
+    await shareForm.locator('[name="message"]').fill('Synthetic P9 UI review access');
+    await shareForm.getByRole('button', { name: 'Save share' }).focus();
+    await page.keyboard.press('Enter');
+    await page.getByRole('status').getByText('Share saved for the selected account IDs.').waitFor();
+
+    const ownerCollaboration = page.locator('[data-template-collaboration]');
+    await openDisclosureByKeyboard(ownerCollaboration);
+    const sentShares = ownerCollaboration.locator('article').filter({ hasText: reviewerId });
+    const sentShareForm = sentShares.locator('form:has(input[name="action"][value="share-role"])');
+    await sentShareForm.locator('[name="role"]').selectOption('admin');
+    await sentShareForm.getByRole('button', { name: 'Update role' }).focus();
+    await page.keyboard.press('Enter');
+    await page.getByRole('status').getByText('Share role updated.').waitFor();
+    await openDisclosureByKeyboard(ownerCollaboration);
+    await sentShareForm.locator('[name="role"]').selectOption('viewer');
+    await sentShareForm.getByRole('button', { name: 'Update role' }).focus();
+    await page.keyboard.press('Enter');
+    await page.getByRole('status').getByText('Share role updated.').waitFor();
+
+    const reviewerPage = await browser.newPage({ viewport });
+    await reviewerPage.setExtraHTTPHeaders({ 'X-P7-Fixture-User': 'reviewer' });
+    await reviewerPage.goto(`${baseUrl}/templates?p9_fixture=reviewer`, { waitUntil: 'domcontentloaded' });
+    const reviewerCard = reviewerPage.locator('article[data-template-card]')
+      .filter({ has: reviewerPage.getByRole('heading', { name: 'Patient intake', exact: true }) });
+    await reviewerCard.waitFor();
+    const reviewerActions = reviewerCard.locator('[data-template-actions]');
+    await reviewerActions.locator(':scope > summary').focus();
+    await reviewerPage.keyboard.press('Enter');
+    assert.equal(await reviewerActions.evaluate((element) => element.open), true,
+      'the shared template action menu should open for its synthetic recipient');
+    const reviewerRequestDisclosure = reviewerActions.locator('details')
+      .filter({ hasText: 'Request or submit a review' }).last();
+    const reviewerRequestSummary = reviewerRequestDisclosure.locator(':scope > summary');
+    await reviewerRequestSummary.focus();
+    await reviewerPage.keyboard.press('Enter');
+    assert.equal(await reviewerRequestDisclosure.evaluate((element) => element.open), true);
+    assert.equal(await reviewerRequestSummary.evaluate((element) => element === document.activeElement), true);
+    const requestReview = reviewerRequestDisclosure.locator('form:has(input[name="action"][value="request-review"])');
+    await requestReview.getByRole('button', { name: 'Request review' }).focus();
+    await reviewerPage.keyboard.press('Enter');
+    await reviewerPage.getByRole('status').getByText('Review request submitted.').waitFor();
+
+    await reviewerActions.locator(':scope > summary').focus();
+    await reviewerPage.keyboard.press('Enter');
+    assert.equal(await reviewerActions.evaluate((element) => element.open), true);
+    const reviewerReviewDisclosure = reviewerCard.locator('details')
+      .filter({ hasText: 'Reviews (1)' }).last();
+    const reviewerReviewSummary = reviewerReviewDisclosure.locator(':scope > summary');
+    await reviewerReviewSummary.focus();
+    await reviewerPage.keyboard.press('Enter');
+    assert.equal(await reviewerReviewDisclosure.evaluate((element) => element.open), true,
+      'a submitted review should be disclosed in the shared template card');
+    const reviewerUpdateForm = reviewerReviewDisclosure.locator('form:has(input[name="action"][value="update-review"])');
+    await reviewerUpdateForm.locator('[name="rating"]').selectOption('4');
+    await reviewerUpdateForm.locator('[name="comment"]').fill('Synthetic browser review feedback');
+    await reviewerUpdateForm.getByRole('button', { name: 'Save my review' }).focus();
+    await reviewerPage.keyboard.press('Enter');
+    await reviewerPage.getByRole('status').getByText('Review updated.').waitFor();
+    await reviewerPage.close();
+
+    const ownerPage = await browser.newPage({ viewport });
+    await ownerPage.goto(`${baseUrl}/templates?p9_fixture=owner`, { waitUntil: 'domcontentloaded' });
+    const ownerCollaborationPanel = ownerPage.locator('[data-template-collaboration]');
+    const ownerCollaborationSummary = ownerCollaborationPanel.locator(':scope > summary');
+    await ownerCollaborationSummary.focus();
+    await ownerPage.keyboard.press('Enter');
+    const pendingReview = ownerCollaborationPanel.locator('article')
+      .filter({ hasText: 'Review: Patient intake' });
+    const moderateReviewForm = pendingReview.locator('form:has(input[name="action"][value="moderate-review"])');
+    await moderateReviewForm.locator('[name="status"]').selectOption('approved');
+    await moderateReviewForm.getByRole('button', { name: 'Save review' }).focus();
+    await ownerPage.keyboard.press('Enter');
+    await ownerPage.getByRole('status').getByText('Review decision saved.').waitFor();
+    await ownerCollaborationSummary.focus();
+    await ownerPage.keyboard.press('Enter');
+    assert.equal(await ownerCollaborationPanel.evaluate((element) => element.open), true);
+    await ownerPage.getByText('No reviews are waiting for a decision.', { exact: true }).waitFor();
+
+    const ownerCard = ownerPage.locator('article[data-template-card]')
+      .filter({ has: ownerPage.getByRole('heading', { name: 'Patient intake', exact: true }) });
+    const ownerActions = ownerCard.locator('[data-template-actions]');
+    await ownerActions.locator(':scope > summary').focus();
+    await ownerPage.keyboard.press('Enter');
+    const ownerReviewDisclosure = ownerCard.locator('details')
+      .filter({ hasText: 'Reviews (1)' }).last();
+    const ownerReviewSummary = ownerReviewDisclosure.locator(':scope > summary');
+    await ownerReviewSummary.focus();
+    await ownerPage.keyboard.press('Enter');
+    await ownerPage.getByText('4/5 · Approved', { exact: true }).waitFor();
+    await ownerPage.getByText('Synthetic browser review feedback', { exact: true }).waitFor();
+
+    const revokeShareForm = ownerCollaborationPanel.locator('form:has(input[name="action"][value="remove-share"])');
+    await revokeShareForm.getByRole('button', { name: 'Revoke' }).focus();
+    await ownerPage.keyboard.press('Enter');
+    await ownerPage.getByRole('status').getByText('Share removed.').waitFor();
+    await ownerCollaborationSummary.focus();
+    await ownerPage.keyboard.press('Enter');
+    await ownerPage.getByText('No outgoing shares.', { exact: true }).waitFor();
+    await ownerPage.close();
+
+    const revokedReviewerPage = await browser.newPage({ viewport });
+    await revokedReviewerPage.setExtraHTTPHeaders({ 'X-P7-Fixture-User': 'reviewer' });
+    await revokedReviewerPage.goto(`${baseUrl}/templates?p9_fixture=revoked`, { waitUntil: 'domcontentloaded' });
+    await revokedReviewerPage.getByText('No templates match these filters. Create a template to get started.', { exact: true }).waitFor();
+    await revokedReviewerPage.close();
+
     results.interactions.push({
       route: '/templates',
       state: 'grid/list display, category/search/sort and empty state, three-step manual/upload flow, add/reorder/remove/required/options builder, create/edit/duplicate/visibility/confirmed-delete, JSON export bytes, private upload/download/replacement/delete bytes pass through the actual Django page with mutable synthetic fixtures',
@@ -1049,6 +1673,13 @@ async function capture(browser, [slug, route, expectedStatus], viewport) {
       replacement_private_file_bytes_verified: replacementFile.length,
       storage_boundary: 'The browser route uses an in-memory synthetic Storage adapter; hosted route probe separately verifies real private Storage behavior.',
     });
+    results.interactions.push({
+      route: '/templates',
+      state: 'two-account keyboard UI flow shares a template, updates and revokes a share, requests and edits a recipient review, and approves it as the owner',
+      owner_fixture_id: '11111111-1111-4111-8111-111111111111',
+      reviewer_fixture_id: reviewerId,
+      share_and_review_boundary: 'Both accounts and every write are in-memory browser fixtures; no hosted request or email is sent.',
+    });
     await page.screenshot({ path: path.join(output, 'templates-crud-complete-desktop.png'), fullPage: false });
   }
   if (wave === 'w5' && viewport.name === 'mobile') {
@@ -1056,15 +1687,61 @@ async function capture(browser, [slug, route, expectedStatus], viewport) {
     const builder = page.locator('form[data-template-builder]').first();
     await builder.locator('[name="name"]').fill('Mobile stepper fixture');
     await builder.locator('[name="category"]').selectOption('healthcare');
-    await builder.getByRole('button', { name: 'Next' }).click();
+    const firstNext = builder.getByRole('button', { name: 'Next' });
+    await firstNext.focus();
+    await page.keyboard.press('Enter');
     await builder.getByLabel('Build manually').check();
-    await builder.getByRole('button', { name: 'Next' }).click();
+    const secondNext = builder.getByRole('button', { name: 'Next' });
+    await secondNext.focus();
+    await page.keyboard.press('Enter');
     await page.getByRole('button', { name: 'Add field' }).waitFor();
     assert.equal(await page.locator('[data-template-path="manual"]').isVisible(), true);
     const width = await page.evaluate(() => [document.documentElement.scrollWidth, document.documentElement.clientWidth]);
     assert.equal(width[0] > width[1], false, 'template builder stepper should not overflow on mobile');
     await page.screenshot({ path: path.join(output, 'templates-builder-mobile.png'), fullPage: false });
-    results.interactions.push({ route: '/templates', state: 'manual builder stepper is reachable at 390px without overflow' });
+    const builderDialog = page.locator('#create-template');
+    await page.keyboard.press('Escape');
+    assert.equal(await builderDialog.evaluate((dialog) => dialog.open), false,
+      'Escape should close the mobile template builder dialog');
+    assert.equal(await page.getByRole('button', { name: 'Create template' }).evaluate((button) => button === document.activeElement), true,
+      'closing the mobile builder should return focus to Create template');
+
+    const mobileCard = page.locator('article[data-template-card]')
+      .filter({ has: page.getByRole('heading', { name: 'Patient intake', exact: true }) });
+    const mobileActions = mobileCard.locator('[data-template-actions]');
+    const mobileActionsSummary = mobileActions.locator(':scope > summary');
+    await mobileActionsSummary.focus();
+    await page.keyboard.press('Enter');
+    assert.equal(await mobileActions.evaluate((details) => details.open), true);
+    assert.equal(await mobileActionsSummary.evaluate((summary) => summary === document.activeElement), true);
+    await page.screenshot({ path: path.join(output, 'templates-card-actions-mobile.png'), fullPage: true });
+    await page.keyboard.press('Space');
+    assert.equal(await mobileActions.evaluate((details) => details.open), false);
+    assert.equal(await mobileActionsSummary.evaluate((summary) => summary === document.activeElement), true);
+
+    const mobileFilters = page.locator('[data-template-filters]');
+    const mobileFiltersSummary = mobileFilters.locator(':scope > summary');
+    await mobileFiltersSummary.focus();
+    await page.keyboard.press('Enter');
+    assert.equal(await mobileFilters.evaluate((details) => details.open), true);
+    assert.equal(await mobileFiltersSummary.evaluate((summary) => summary === document.activeElement), true);
+    await page.keyboard.press('Space');
+    assert.equal(await mobileFilters.evaluate((details) => details.open), false);
+    assert.equal(await mobileFiltersSummary.evaluate((summary) => summary === document.activeElement), true);
+
+    const mobileCollaboration = page.locator('[data-template-collaboration]');
+    const mobileCollaborationSummary = mobileCollaboration.locator(':scope > summary');
+    await mobileCollaborationSummary.focus();
+    await page.keyboard.press('Enter');
+    assert.equal(await mobileCollaboration.evaluate((details) => details.open), true);
+    assert.equal(await mobileCollaborationSummary.evaluate((summary) => summary === document.activeElement), true);
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth), true,
+      'expanded collaboration content should fit the mobile viewport');
+    await page.screenshot({ path: path.join(output, 'templates-collaboration-mobile.png'), fullPage: true });
+    await page.keyboard.press('Space');
+    assert.equal(await mobileCollaboration.evaluate((details) => details.open), false);
+    assert.equal(await mobileCollaborationSummary.evaluate((summary) => summary === document.activeElement), true);
+    results.interactions.push({ route: '/templates', viewport: viewport.name, state: 'mobile builder Escape returns focus; card actions, filters, and collaboration disclosures open with Enter, close with Space, retain focus, and fit without overflow' });
   }
   if (wave === 'w6' && slug === 'scheduler' && viewport.name === 'desktop') {
     const calendarTitle = page.locator('#calendar-title');
@@ -1082,8 +1759,12 @@ async function capture(browser, [slug, route, expectedStatus], viewport) {
     await scheduleFilters.locator('[name="q"]').fill('');
     await scheduleFilters.locator('[name="type"]').selectOption('all');
     await scheduleFilters.getByRole('button', { name: 'Filter' }).click();
-    await page.getByText('Review patient intake', { exact: true }).first().waitFor();
-    await page.getByRole('link', { name: 'Next month' }).click();
+    await page.locator('section[aria-labelledby="calendar-title"] summary')
+      .filter({ hasText: 'Review patient intake' })
+      .waitFor({ state: 'visible' });
+    const nextMonth = page.getByRole('link', { name: 'Next month' });
+    await nextMonth.focus();
+    await page.keyboard.press('Enter');
     assert.match(await calendarTitle.innerText(), /November 2026/);
     await page.getByRole('link', { name: 'Previous month' }).click();
     assert.match(await calendarTitle.innerText(), /October 2026/);
@@ -1112,8 +1793,13 @@ async function capture(browser, [slug, route, expectedStatus], viewport) {
     assert.ok(editHref);
     const eventId = new URL(editHref, baseUrl).searchParams.get('edit');
     assert.ok(eventId);
-    await page.goto(`${baseUrl}${editHref}`, { waitUntil: 'domcontentloaded' });
-    const schedulerEditTitle = page.locator(`details.card form:has(input[name="event_id"][value="${eventId}"]) [name="title"]`);
+    const editResponse = await page.goto(`${baseUrl}${editHref}`, { waitUntil: 'domcontentloaded' });
+    const editForm = page.locator(`details.card form:has(input[name="event_id"][value="${eventId}"])`);
+    if (!(await editForm.count())) {
+      const body = (await page.locator('body').innerText()).slice(0, 1600);
+      throw new Error(`Scheduler edit route did not render the created event (HTTP ${editResponse?.status()}, URL ${page.url()}, href ${editHref}, requests ${JSON.stringify(schedulerRequestTrace)}, body ${body})`);
+    }
+    const schedulerEditTitle = editForm.locator('[name="title"]');
     assert.equal(await schedulerEditTitle.inputValue(), 'Synthetic browser-created review');
     await schedulerEditTitle.fill('Synthetic browser-updated review');
     await page.getByRole('button', { name: 'Save changes' }).click();
@@ -1123,8 +1809,13 @@ async function capture(browser, [slug, route, expectedStatus], viewport) {
     const openEventActions = async () => {
       const eventDetails = page.locator(`details:has(form input[name="event_id"][value="${eventId}"])`).first();
       if (!(await eventDetails.evaluate((details) => details.open))) {
-        await eventDetails.locator(':scope > summary').click();
+        const summary = eventDetails.locator(':scope > summary');
+        await summary.focus();
+        await page.keyboard.press('Enter');
+        assert.equal(await summary.evaluate((element) => element === document.activeElement), true,
+          'opening a Scheduler event disclosure should retain keyboard focus');
       }
+      assert.equal(await eventDetails.evaluate((details) => details.open), true);
     };
     await openEventActions();
     await eventAction('complete').getByRole('button', { name: 'Complete' }).click();
@@ -1136,31 +1827,150 @@ async function capture(browser, [slug, route, expectedStatus], viewport) {
     page.once('dialog', (dialog) => dialog.accept());
     await eventAction('delete').getByRole('button', { name: 'Delete' }).click();
     await page.getByRole('status').getByText('Schedule deleted.').waitFor();
-    results.interactions.push({ route: '/scheduler', state: 'search/type filters and empty state, month/week navigation, Today/date selection, create/edit/complete/cancel/confirmed-delete, upcoming events, and statistics work with a mutable synthetic schedule' });
+    await page.goto(`${baseUrl}/scheduler?view=week`, { waitUntil: 'domcontentloaded' });
+    const emptyCreateForm = page.locator('form:has(input[name="action"][value="create"])');
+    const emptyTitle = emptyCreateForm.locator('[name="title"]');
+    await emptyTitle.fill('');
+    const invalidSubmit = emptyCreateForm.getByRole('button', { name: 'Save schedule' });
+    await invalidSubmit.focus();
+    await page.keyboard.press('Enter');
+    assert.equal(await emptyTitle.evaluate((field) => field.validity.valueMissing), true, 'required schedule title blocks keyboard submission');
+    results.interactions.push({ route: '/scheduler', state: 'search/type filters and empty state, month/week navigation, Today/date selection, create/edit/complete/cancel/confirmed-delete, keyboard required-field validation, upcoming events, and statistics work with a mutable synthetic schedule' });
     await page.getByRole('link', { name: 'Week', exact: true }).click();
     assert.match(await calendarTitle.innerText(), /Oct 11/);
     await page.screenshot({ path: path.join(output, 'scheduler-week-desktop.png'), fullPage: false });
   }
+  if (wave === 'w6' && slug === 'scheduler' && viewport.name === 'mobile') {
+    const calendarTitle = page.locator('#calendar-title');
+    assert.match(await calendarTitle.innerText(), /October 2026/);
+    const nextMonth = page.getByRole('link', { name: 'Next month' });
+    await nextMonth.focus();
+    await page.keyboard.press('Enter');
+    assert.match(await calendarTitle.innerText(), /November 2026/);
+    await page.getByRole('link', { name: 'Previous month' }).focus();
+    await page.keyboard.press('Enter');
+    assert.match(await calendarTitle.innerText(), /October 2026/);
+    await page.getByRole('link', { name: 'Week', exact: true }).focus();
+    await page.keyboard.press('Enter');
+    assert.match(await calendarTitle.innerText(), /Oct 11/);
+    await page.getByRole('link', { name: 'Show week containing October 12, 2026' }).focus();
+    await page.keyboard.press('Enter');
+    assert.match(await calendarTitle.innerText(), /Oct 11/);
+
+    const eventDetails = page.locator('section[aria-labelledby="calendar-title"] details')
+      .filter({ hasText: 'Review patient intake' }).first();
+    const eventSummary = eventDetails.locator(':scope > summary');
+    await eventSummary.focus();
+    await page.keyboard.press('Enter');
+    assert.equal(await eventDetails.evaluate((details) => details.open), true,
+      'Enter should expand the mobile calendar event summary');
+    assert.equal(await eventSummary.evaluate((summary) => summary === document.activeElement), true);
+    await page.screenshot({ path: path.join(output, 'scheduler-event-details-mobile.png'), fullPage: true });
+
+    const editDetails = eventDetails.locator('details').filter({ hasText: 'Edit schedule' }).first();
+    const editSummary = editDetails.locator(':scope > summary');
+    await editSummary.focus();
+    await page.keyboard.press('Enter');
+    assert.equal(await editDetails.evaluate((details) => details.open), true,
+      'Enter should expand the mobile schedule edit form');
+    assert.equal(await editSummary.evaluate((summary) => summary === document.activeElement), true);
+    await page.keyboard.press('Space');
+    assert.equal(await editDetails.evaluate((details) => details.open), false,
+      'Space should close the mobile schedule edit form');
+    assert.equal(await editSummary.evaluate((summary) => summary === document.activeElement), true);
+    await eventSummary.focus();
+    await page.keyboard.press('Space');
+    assert.equal(await eventDetails.evaluate((details) => details.open), false,
+      'Space should collapse the mobile calendar event summary');
+    assert.equal(await eventSummary.evaluate((summary) => summary === document.activeElement), true);
+
+    const createForm = page.locator('form:has(input[name="action"][value="create"])');
+    const emptyTitle = createForm.locator('[name="title"]');
+    await emptyTitle.fill('');
+    const invalidSubmit = createForm.getByRole('button', { name: 'Save schedule' });
+    await invalidSubmit.focus();
+    await page.keyboard.press('Enter');
+    assert.equal(await emptyTitle.evaluate((field) => field.validity.valueMissing), true,
+      'required schedule title blocks mobile keyboard submission');
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth), true,
+      'mobile scheduler keyboard states should not overflow');
+    results.interactions.push({ route: '/scheduler', viewport: viewport.name, state: 'keyboard month/week/date navigation, nested event/edit disclosures, required-field validation, and focus retention pass at 390px' });
+  }
+  if (wave === 'w6' && slug === 'manage-schedules') {
+    const sortDisclosure = page.locator('form[role="search"] details').filter({ hasText: 'Sort results' });
+    const sortSummary = sortDisclosure.locator(':scope > summary');
+    await sortSummary.focus();
+    await page.keyboard.press('Enter');
+    assert.equal(await sortDisclosure.evaluate((details) => details.open), true,
+      'Enter should open the Sort results disclosure');
+    assert.equal(await sortSummary.evaluate((summary) => summary === document.activeElement), true,
+      'keyboard focus should remain on the Sort results summary');
+    await page.screenshot({ path: path.join(output, `manage-schedules-sort-disclosure-${viewport.name}.png`), fullPage: false });
+    await page.keyboard.press('Space');
+    assert.equal(await sortDisclosure.evaluate((details) => details.open), false,
+      'Space should close the Sort results disclosure');
+    assert.equal(await sortSummary.evaluate((summary) => summary === document.activeElement), true,
+      'closing the disclosure should retain keyboard focus on its summary');
+    results.interactions.push({
+      route: '/manage-schedules',
+      viewport: viewport.name,
+      state: 'Sort results disclosure opens with Enter and closes with Space while retaining focus on its summary',
+    });
+  }
   if (wave === 'w6' && slug === 'manage-schedules' && viewport.name === 'desktop') {
     assert.equal(await page.getByRole('link', { name: 'Scheduler settings' }).getAttribute('href'), '/scheduler-settings');
     assert.equal(await page.getByRole('link', { name: 'Edit in scheduler' }).getAttribute('href'), '/scheduler?edit=44444444-4444-4444-8444-444444444444');
+    assert.equal(await page.getByText('Private schedule for another account', { exact: true }).count(), 0);
+    const seedRow = page.locator('tbody tr').filter({ hasText: 'Review patient intake' });
+    const rowDetails = seedRow.locator('details').first();
+    await rowDetails.locator('summary').focus();
+    await page.keyboard.press('Enter');
+    assert.equal(await rowDetails.evaluate((details) => details.open), true);
+    await rowDetails.locator('[name="duration"]').fill('45');
+    await rowDetails.getByRole('button', { name: 'Save' }).focus();
+    await page.keyboard.press('Enter');
+    await page.getByRole('status').getByText('Schedule updated.').waitFor();
+    await page.waitForFunction(() => [...document.querySelectorAll('tbody td')].some((cell) => cell.textContent.includes('(45m)')));
     const filters = page.locator('form[role="search"]');
     await filters.locator('[name="q"]').fill('Review patient intake');
     await filters.locator('[name="type"]').selectOption('form_review');
     await filters.locator('[name="status"]').selectOption('scheduled');
-    await filters.getByText('Sort results', { exact: true }).click();
+    const sortDisclosure = filters.locator('details').filter({ hasText: 'Sort results' });
+    await sortDisclosure.locator(':scope > summary').focus();
+    await page.keyboard.press('Enter');
+    assert.equal(await sortDisclosure.evaluate((details) => details.open), true);
     await filters.locator('[name="sort"]').selectOption('title');
     await filters.locator('[name="order"]').selectOption('desc');
-    await filters.getByRole('button', { name: 'Apply filters' }).click();
+    await filters.getByRole('button', { name: 'Apply filters' }).focus();
+    await page.keyboard.press('Enter');
     await page.getByText('Review patient intake', { exact: true }).waitFor();
     assert.equal(new URL(page.url()).searchParams.get('q'), 'Review patient intake');
     const selection = page.getByRole('checkbox', { name: 'Select Review patient intake' });
-    await selection.check();
+    await selection.focus();
+    await page.keyboard.press('Space');
+    const bulkForm = page.locator('#bulk-schedules');
+    await bulkForm.evaluate((form) => {
+      const foreign = document.createElement('input');
+      foreign.type = 'hidden';
+      foreign.name = 'selected_ids';
+      foreign.value = '66666666-6666-4666-8666-666666666666';
+      form.append(foreign);
+    });
+    await page.locator('#bulk-action').selectOption('complete');
+    page.once('dialog', (dialog) => dialog.accept());
+    await bulkForm.getByRole('button', { name: 'Apply' }).focus();
+    await page.keyboard.press('Enter');
+    await page.getByRole('alert').getByText('The selected schedules could not be updated. Review the selection and try again.').waitFor();
+    await page.getByRole('cell', { name: 'Scheduled', exact: true }).waitFor();
+
+    await page.goto(`${baseUrl}/manage-schedules?q=Review%20patient%20intake&type=form_review&status=scheduled&sort=title&order=desc`, { waitUntil: 'domcontentloaded' });
+    await page.getByRole('checkbox', { name: 'Select Review patient intake' }).focus();
+    await page.keyboard.press('Space');
     await page.locator('#bulk-action').selectOption('export');
     page.once('dialog', (dialog) => dialog.accept());
     const [scheduleDownload] = await Promise.all([
       page.waitForEvent('download'),
-      page.locator('#bulk-schedules').getByRole('button', { name: 'Apply' }).click(),
+      page.locator('#bulk-schedules').getByRole('button', { name: 'Apply' }).focus().then(() => page.keyboard.press('Enter')),
     ]);
     const exportPath = await scheduleDownload.path();
     assert.ok(exportPath);
@@ -1170,26 +1980,32 @@ async function capture(browser, [slug, route, expectedStatus], viewport) {
 
     await page.goto(`${baseUrl}/manage-schedules?q=Review%20patient%20intake&type=form_review&status=all&sort=title&order=desc`, { waitUntil: 'domcontentloaded' });
 
-    await page.getByRole('checkbox', { name: 'Select Review patient intake' }).check();
+    await page.getByRole('checkbox', { name: 'Select Review patient intake' }).focus();
+    await page.keyboard.press('Space');
     await page.locator('#bulk-action').selectOption('complete');
     page.once('dialog', (dialog) => dialog.accept());
-    await page.locator('#bulk-schedules').getByRole('button', { name: 'Apply' }).click();
+    await page.locator('#bulk-schedules').getByRole('button', { name: 'Apply' }).focus();
+    await page.keyboard.press('Enter');
     await page.getByRole('status').getByText('1 schedules updated.').waitFor();
     await page.getByRole('cell', { name: 'Completed', exact: true }).waitFor();
 
-    await page.getByRole('checkbox', { name: 'Select Review patient intake' }).check();
+    await page.getByRole('checkbox', { name: 'Select Review patient intake' }).focus();
+    await page.keyboard.press('Space');
     await page.locator('#bulk-action').selectOption('cancel');
     page.once('dialog', (dialog) => dialog.accept());
-    await page.locator('#bulk-schedules').getByRole('button', { name: 'Apply' }).click();
+    await page.locator('#bulk-schedules').getByRole('button', { name: 'Apply' }).focus();
+    await page.keyboard.press('Enter');
     await page.getByRole('status').getByText('1 schedules updated.').waitFor();
     await page.getByRole('cell', { name: 'Cancelled', exact: true }).waitFor();
 
-    await page.getByRole('checkbox', { name: 'Select Review patient intake' }).check();
+    await page.getByRole('checkbox', { name: 'Select Review patient intake' }).focus();
+    await page.keyboard.press('Space');
     await page.locator('#bulk-action').selectOption('delete');
     page.once('dialog', (dialog) => dialog.accept());
-    await page.locator('#bulk-schedules').getByRole('button', { name: 'Apply' }).click();
+    await page.locator('#bulk-schedules').getByRole('button', { name: 'Apply' }).focus();
+    await page.keyboard.press('Enter');
     await page.getByText('No schedules match these filters.', { exact: true }).waitFor();
-    results.interactions.push({ route: '/manage-schedules', state: 'search/type/status/sort filters, source edit/settings destinations, export bytes, bulk complete/cancel/delete, and empty result pass' });
+    results.interactions.push({ route: '/manage-schedules', state: 'keyboard row edit, search/type/status/sort filters, source edit/settings destinations, mixed-owner rejection before mutation, export bytes, bulk complete/cancel/delete, and empty result pass' });
     await page.screenshot({ path: path.join(output, 'manage-schedules-empty-desktop.png'), fullPage: false });
   }
   if (wave === 'w6' && slug === 'scheduler-settings' && viewport.name === 'mobile') {
@@ -1198,10 +2014,18 @@ async function capture(browser, [slug, route, expectedStatus], viewport) {
     for (const name of ['General', 'Notifications', 'Calendar', 'Privacy', 'Appearance', 'Integrations']) {
       assert.equal(await page.getByRole('tab', { name }).isVisible(), true, `${name} settings tab must be visible on mobile`);
     }
-    await page.getByRole('tab', { name: 'Integrations' }).click();
+    const generalTab = page.getByRole('tab', { name: 'General' });
+    await generalTab.focus();
+    for (const name of ['Notifications', 'Calendar', 'Privacy', 'Appearance', 'Integrations']) {
+      await page.keyboard.press('ArrowRight');
+      assert.equal(await page.evaluate(() => document.activeElement?.textContent?.trim()), name, `${name} should be reachable with mobile arrow-key navigation`);
+      assert.equal(await page.getByRole('tab', { name }).getAttribute('aria-selected'), 'true');
+    }
     assert.equal(await page.locator('[data-settings-panel="integrations"]').isVisible(), true);
+    await page.keyboard.press('ArrowRight');
+    assert.equal(await page.evaluate(() => document.activeElement?.textContent?.trim()), 'General', 'mobile arrow-key navigation should wrap to the first tab');
+    assert.equal(await generalTab.getAttribute('aria-selected'), 'true');
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth), true);
-    await page.getByRole('tab', { name: 'General' }).click();
     results.interactions.push({ route: '/scheduler-settings', state: 'all six settings tabs remain visible, selectable, and within the mobile viewport' });
   }
   if (wave === 'w6' && slug === 'scheduler-settings' && viewport.name === 'desktop') {
@@ -1219,6 +2043,11 @@ async function capture(browser, [slug, route, expectedStatus], viewport) {
     assert.equal(await page.locator('[data-settings-panel="notifications"]').isVisible(), true);
     await page.keyboard.press('Home');
     assert.equal(await page.getByRole('tab', { name: 'General' }).getAttribute('aria-selected'), 'true');
+    await page.keyboard.press('End');
+    assert.equal(await page.getByRole('tab', { name: 'Integrations' }).getAttribute('aria-selected'), 'true');
+    await page.keyboard.press('ArrowRight');
+    assert.equal(await page.getByRole('tab', { name: 'General' }).getAttribute('aria-selected'), 'true');
+    await page.keyboard.press('Home');
     assert.deepEqual(
       await page.locator('[data-settings-panel="general"] h2, [data-settings-panel="general"] h3, [data-settings-panel="general"] legend').allTextContents(),
       ['General Settings', 'Working Hours', 'Working Days'],
@@ -1228,7 +2057,8 @@ async function capture(browser, [slug, route, expectedStatus], viewport) {
     const duration = page.locator('[data-setting="defaultDuration"]');
     await duration.fill('45');
     await page.locator('[data-setting="timezone"]').selectOption('Europe/London');
-    await page.locator('[data-settings-save]').click();
+    await page.locator('[data-settings-save]').focus();
+    await page.keyboard.press('Enter');
     assert.equal(await page.locator('[data-settings-status]').innerText(), 'Settings saved in this browser.');
     let stored = JSON.parse(await page.evaluate((key) => localStorage.getItem(key), settingsKey));
     assert.equal(stored.defaultDuration, 45);
@@ -1236,9 +2066,11 @@ async function capture(browser, [slug, route, expectedStatus], viewport) {
     await page.reload({ waitUntil: 'domcontentloaded' });
     assert.equal(await page.locator('[data-setting="defaultDuration"]').inputValue(), '45');
 
-    await page.locator('[data-settings-reset]').click();
+    await page.locator('[data-settings-reset]').focus();
+    await page.keyboard.press('Space');
     assert.equal(await page.locator('[data-setting="defaultDuration"]').inputValue(), '60');
-    await page.locator('[data-settings-save]').click();
+    await page.locator('[data-settings-save]').focus();
+    await page.keyboard.press('Enter');
     assert.equal(JSON.parse(await page.evaluate((key) => localStorage.getItem(key), settingsKey)).defaultDuration, 60);
 
     const importedSettings = {
@@ -1253,7 +2085,8 @@ async function capture(browser, [slug, route, expectedStatus], viewport) {
     });
     await page.getByText('Settings imported into this form. Save settings to keep them.').waitFor();
     assert.equal(await page.locator('[data-setting="defaultDuration"]').inputValue(), '75');
-    await page.locator('[data-settings-save]').click();
+    await page.locator('[data-settings-save]').focus();
+    await page.keyboard.press('Enter');
     stored = JSON.parse(await page.evaluate((key) => localStorage.getItem(key), settingsKey));
     assert.deepEqual(stored.workingDays, ['monday', 'wednesday', 'friday']);
 
@@ -1272,7 +2105,7 @@ async function capture(browser, [slug, route, expectedStatus], viewport) {
 
     const [download] = await Promise.all([
       page.waitForEvent('download'),
-      page.locator('[data-settings-export]').click(),
+      page.locator('[data-settings-export]').focus().then(() => page.keyboard.press('Enter')),
     ]);
     const downloadPath = await download.path();
     assert.ok(downloadPath, 'settings export should produce readable downloaded bytes');
@@ -1380,7 +2213,7 @@ async function capture(browser, [slug, route, expectedStatus], viewport) {
     results.interactions.push({ route: '/scheduler-settings', state: 'localStorage read/write failures announce a recoverable error and retain editable defaults' });
     await storageContext.close();
   }
-  if (wave === 'w7' && slug === 'activity-log' && viewport.name === 'desktop') {
+  if (wave === 'w7' && slug === 'activity-log') {
     const key = await page.locator('[data-activity-root]').getAttribute('data-activity-key');
     assert.equal(key, 'voiceform_activity_11111111-1111-4111-8111-111111111111');
     await page.evaluate((activityKey) => {
@@ -1394,7 +2227,7 @@ async function capture(browser, [slug, route, expectedStatus], viewport) {
     assert.equal(await page.getByText('Prior account private item').count(), 0);
     assert.ok(await page.evaluate((activityKey) => localStorage.getItem(activityKey), key));
     assert.ok(await page.evaluate(() => localStorage.getItem('recentActivity')));
-    results.interactions.push({ route: '/activitylog', state: 'account-scoped activity ignores but preserves unscoped legacy activity data' });
+    results.interactions.push({ route: '/activitylog', state: `account-scoped activity ignores but preserves unscoped legacy activity data at ${viewport.name}` });
 
     const xssTitle = '<img src=x onerror="window.__activityXss=true"> Current account record';
     const items = [
@@ -1407,29 +2240,57 @@ async function capture(browser, [slug, route, expectedStatus], viewport) {
     const activityRows = page.locator('[data-activity-list] article');
     await page.waitForFunction(() => document.querySelectorAll('[data-activity-list] article').length === 3);
     assert.equal(await page.getByRole('heading', { name: xssTitle }).count(), 1);
+    const titleLayout = await page.getByRole('heading', { name: xssTitle }).evaluate((heading) => {
+      const text = heading.getBoundingClientRect();
+      const actions = heading.closest('article')?.querySelector('[data-activity-actions]')?.getBoundingClientRect();
+      return {
+        clientWidth: heading.clientWidth,
+        scrollWidth: heading.scrollWidth,
+        overlapsActions: Boolean(actions && text.left < actions.right && text.right > actions.left && text.top < actions.bottom && text.bottom > actions.top),
+      };
+    });
+    assert.ok(titleLayout.scrollWidth <= titleLayout.clientWidth + 1, 'untrusted activity titles should wrap inside their column');
+    assert.equal(titleLayout.overlapsActions, false, 'untrusted activity titles should not overlap row actions');
     assert.equal(await page.locator('[data-activity-list] img').count(), 0);
     assert.equal(await page.evaluate(() => window.__activityXss || false), false);
 
     const search = page.locator('[data-activity-filter] [name="q"]');
     const type = page.locator('[data-activity-filter] [name="type"]');
     const range = page.locator('[data-activity-filter] [name="range"]');
-    await search.fill('needle');
+    await search.focus();
+    await page.keyboard.type('needle');
     assert.equal(await activityRows.count(), 2);
-    await type.selectOption('form_completed');
+    await type.focus();
+    await page.keyboard.press('ArrowDown');
+    await page.keyboard.press('Tab');
     assert.equal(await activityRows.count(), 1);
-    await range.selectOption('today');
+    await range.focus();
+    await page.keyboard.press('ArrowDown');
+    await page.keyboard.press('Tab');
     assert.equal(await activityRows.count(), 1);
-    await type.selectOption('all');
-    await search.fill('');
-    await range.selectOption('7');
+    await type.focus();
+    await page.keyboard.press('ArrowUp');
+    await page.keyboard.press('Tab');
+    await search.focus();
+    await page.keyboard.press('Control+A');
+    await page.keyboard.press('Backspace');
+    await range.focus();
+    await page.keyboard.press('ArrowDown');
+    await page.keyboard.press('Tab');
     assert.equal(await activityRows.count(), 2);
-    await range.selectOption('30');
+    await range.focus();
+    await page.keyboard.press('ArrowDown');
+    await page.keyboard.press('Tab');
     assert.equal(await activityRows.count(), 3);
-    await page.screenshot({ path: path.join(output, 'activity-populated-desktop.png'), fullPage: false });
+    assert.equal((await page.locator('[data-activity-status]').innerText()).trim(), '3 activity items shown.');
+    await page.screenshot({ path: path.join(output, `activity-populated-${viewport.name}.png`), fullPage: false });
 
     page.once('dialog', (dialog) => dialog.accept());
-    await page.getByRole('button', { name: `Delete ${xssTitle}` }).click();
+    const deleteActivity = page.getByRole('button', { name: `Delete ${xssTitle}` });
+    await deleteActivity.focus();
+    await page.keyboard.press('Enter');
     assert.equal(await activityRows.count(), 2);
+    assert.equal((await page.locator('[data-activity-status]').innerText()).trim(), 'Activity item deleted.');
     assert.equal(await page.evaluate((activityKey) => JSON.parse(localStorage.getItem(activityKey)).some((item) => item.id === 'xss'), key), false);
     await page.evaluate((activityKey) => localStorage.setItem(activityKey, JSON.stringify([
       { id: 'refreshed', type: 'template_created', title: 'Refreshed account item', description: '', time: new Date().toISOString(), user: 'Current account' },
@@ -1437,10 +2298,27 @@ async function capture(browser, [slug, route, expectedStatus], viewport) {
     await page.locator('[data-activity-refresh]').click();
     await page.getByRole('heading', { name: 'Refreshed account item' }).waitFor();
     assert.equal(await activityRows.count(), 1);
+    assert.equal((await page.locator('[data-activity-status]').innerText()).trim(), 'Activity refreshed from this browser.');
     await search.fill('no matching item');
-    await page.getByText('No activity matches these filters.', { exact: true }).waitFor();
+    await page.getByText('Try adjusting your filters to see more results', { exact: true }).waitFor();
+    assert.equal((await page.locator('[data-activity-status]').innerText()).trim(), '0 activity items shown.');
+    assert.equal(await page.getByRole('link', { name: 'Return to Dashboard' }).getAttribute('href'), '/dashboard');
+    await search.fill('');
+    await range.focus();
+    await page.keyboard.press('Home');
+    await page.keyboard.press('Tab');
+    assert.equal(await range.inputValue(), 'all');
+    await page.evaluate((activityKey) => localStorage.setItem(activityKey, JSON.stringify([])), key);
+    await page.locator('[data-activity-refresh]').click();
+    await page.getByRole('heading', { name: 'No activity found' }).waitFor();
+    await page.getByText('Start using the platform to see your activity here', { exact: true }).waitFor();
+    assert.equal(await page.locator('[data-activity-count]').innerText(), '0 activities');
+    assert.equal((await page.locator('[data-activity-status]').innerText()).trim(), 'Activity refreshed from this browser.');
+    assert.equal(await page.getByRole('link', { name: 'Return to Dashboard' }).getAttribute('href'), '/dashboard');
+    await page.screenshot({ path: path.join(output, `activity-empty-${viewport.name}.png`), fullPage: false });
     assert.deepEqual(consoleErrors, [], 'activity interactions should not emit browser errors');
-    results.interactions.push({ route: '/activitylog', state: 'search/type/date filters, XSS-safe text, confirmed deletion, refresh, and empty state work on account-scoped records' });
+    results.interactions.push({ route: '/activitylog', state: `search/type/date filters, XSS-safe text, keyboard-confirmed deletion, refresh, and empty state work on account-scoped records at ${viewport.name}` });
+    results.interactions.push({ route: '/activitylog', state: `a truly empty account activity feed shows the source empty state and returns to /dashboard at ${viewport.name}` });
   }
   await page.close();
 }
@@ -1462,16 +2340,21 @@ async function checkAuthJourneys(browser) {
   });
   const authLoginPage = await page.goto(`${baseUrl}/login/?p7_auth_flow=1&next=https%3A%2F%2Fevil.example%2Fsteal`, { waitUntil: 'domcontentloaded' });
   const authLoginMode = await authLoginPage.headerValue('x-p7-auth-flow-active');
-  assert.equal(await page.locator('input[name="next"]').inputValue(), '/auth/session/');
+  assert.equal(await page.locator('input[name="next"]').inputValue(), '/dashboard');
   assert.equal(await page.locator('form[data-submit-once]').count(), 1);
   await page.screenshot({ path: path.join(output, 'auth-login-desktop.png'), fullPage: false });
   await page.locator('#id_email').fill('browser-auth@example.invalid');
   await page.locator('#id_password').fill('synthetic-passphrase');
-  await page.getByRole('button', { name: 'Show password' }).click();
+  const passwordToggle = page.locator('[data-password-toggle="id_password"]');
+  await passwordToggle.focus();
+  await passwordToggle.press('Space');
   assert.equal(await page.locator('#id_password').getAttribute('type'), 'text');
-  await page.getByRole('button', { name: 'Hide password' }).click();
+  await passwordToggle.press('Enter');
   assert.equal(await page.locator('#id_password').getAttribute('type'), 'password');
-  await page.locator('#id_remember_me').check();
+  const rememberMe = page.locator('#id_remember_me');
+  await rememberMe.focus();
+  await rememberMe.press('Space');
+  assert.equal(await rememberMe.isChecked(), true, 'Space activates the remember-me checkbox');
   const loginPost = page.waitForResponse((response) =>
     response.request().method() === 'POST' && new URL(response.url()).pathname.replace(/\/$/, '') === '/login');
   await page.getByRole('button', { name: 'Sign in' }).dblclick({ delay: 25 });
@@ -1484,8 +2367,10 @@ async function checkAuthJourneys(browser) {
       `url=${loginResponse.url()}`,
   );
   assert.equal(await loginResponse.headerValue('x-p7-auth-flow-signin-calls'), '1');
-  assert.match(await loginResponse.headerValue('hx-redirect') || '', /\/auth\/session\//);
-  await page.waitForURL('**/auth/session/');
+  assert.match(await loginResponse.headerValue('hx-redirect') || '', /\/dashboard$/);
+  await page.waitForURL(/\/dashboard\/?$/);
+  await page.getByRole('heading', { name: 'What would you like to work on?' }).waitFor();
+  await page.goto(`${baseUrl}/auth/session/`, { waitUntil: 'domcontentloaded' });
   await page.getByRole('heading', { name: 'Signed in' }).waitFor();
   assert.equal(postResponses.length, 1, 'the guarded login form submits once for a rapid double click');
   const sessionCookie = (await context.cookies(baseUrl)).find((cookie) => /session/i.test(cookie.name));
@@ -1496,7 +2381,18 @@ async function checkAuthJourneys(browser) {
   await page.screenshot({ path: path.join(output, 'auth-session-desktop.png'), fullPage: false });
   results.interactions.push({
     route: '/login',
-    state: 'safe-next rejects an external URL; rapid duplicate click creates one synthetic sign-in call; remember-me produces a bounded persistent session cookie',
+    state: 'safe-next rejects an external URL; password visibility supports Space and Enter; remember-me supports Space and produces a bounded persistent session cookie; rapid duplicate click creates one synthetic sign-in call',
+  });
+
+  await page.goto(`${baseUrl}/login/`, { waitUntil: 'domcontentloaded' });
+  await page.waitForURL(/\/dashboard\/?$/);
+  await page.getByRole('heading', { name: 'What would you like to work on?' }).waitFor();
+  await page.goto(`${baseUrl}/signup/`, { waitUntil: 'domcontentloaded' });
+  await page.waitForURL(/\/dashboard\/?$/);
+  await page.getByRole('heading', { name: 'What would you like to work on?' }).waitFor();
+  results.interactions.push({
+    route: '/login and /signup',
+    state: 'an authenticated synthetic session redirects both Auth entry routes to the local Dashboard',
   });
 
   await page.goto(`${baseUrl}/change-password/`, { waitUntil: 'domcontentloaded' });
@@ -1513,22 +2409,76 @@ async function checkAuthJourneys(browser) {
 
   await page.goto(`${baseUrl}/signup/?p7_auth_flow=1`, { waitUntil: 'domcontentloaded' });
   assert.equal(await page.locator('#id_accepted_terms').evaluate((input) => input.required), true);
+  assert.equal(await page.locator('#id_first_name').evaluate((input) => input.required), true);
+  assert.equal(await page.locator('#id_last_name').evaluate((input) => input.required), true);
   assert.equal(await page.getByRole('link', { name: 'Terms of Service' }).getAttribute('href'), '/terms');
   assert.equal(await page.getByRole('link', { name: 'Privacy Policy' }).getAttribute('href'), '/privacy');
+  await page.setViewportSize(viewports[1]);
   await page.locator('#id_first_name').fill('Browser');
   await page.locator('#id_last_name').fill('Fixture');
+  await page.locator('#id_email').fill('mismatch-browser-auth@example.invalid');
+  await page.locator('#id_password').fill('synthetic-passphrase');
+  await page.locator('#id_confirm_password').fill('different-synthetic-passphrase');
+  const acceptedTerms = page.locator('#id_accepted_terms');
+  await acceptedTerms.focus();
+  await acceptedTerms.press('Space');
+  assert.equal(await acceptedTerms.isChecked(), true, 'Space activates the signup consent checkbox');
+  await page.screenshot({ path: path.join(output, 'auth-signup-mobile.png'), fullPage: false });
+  const mismatchSignupPost = page.waitForResponse((response) =>
+    response.request().method() === 'POST' && new URL(response.url()).pathname.replace(/\/$/, '') === '/signup');
+  await page.getByRole('button', { name: 'Create account' }).focus();
+  await page.keyboard.press('Enter');
+  const mismatchSignupResponse = await mismatchSignupPost;
+  assert.equal(mismatchSignupResponse.status(), 400, 'a password mismatch is rejected before Auth signup');
+  await page.getByText('Passwords do not match.', { exact: true }).waitFor();
+  assert.equal(await page.locator('#id_email').inputValue(), 'mismatch-browser-auth@example.invalid');
+  assert.equal(await page.locator('#id_password').inputValue(), '');
+  assert.equal(await page.locator('#id_confirm_password').inputValue(), '');
+  results.interactions.push({ route: '/signup', state: 'mobile keyboard submission reports a mismatched password, retains the email, clears password values, and does not create a session' });
+
+  await page.locator('#id_email').fill('duplicate-browser-auth@example.invalid');
+  await page.locator('#id_password').fill('synthetic-passphrase');
+  await page.locator('#id_confirm_password').fill('synthetic-passphrase');
+  assert.equal(await acceptedTerms.isChecked(), true, 'the valid consent remains checked after form feedback');
+  const duplicateSignupPost = page.waitForResponse((response) =>
+    response.request().method() === 'POST' && new URL(response.url()).pathname.replace(/\/$/, '') === '/signup');
+  await page.getByRole('button', { name: 'Create account' }).focus();
+  await page.keyboard.press('Enter');
+  const duplicateSignupResponse = await duplicateSignupPost;
+  assert.equal(duplicateSignupResponse.status(), 400);
+  await page.getByRole('alert').getByText('Those details could not be accepted. Check them and try again.').waitFor();
+  assert.equal(await page.locator('#id_email').inputValue(), 'duplicate-browser-auth@example.invalid');
+  results.interactions.push({ route: '/signup', state: 'a synthetic duplicate-account response provides safe live feedback and keeps the email without creating a session' });
+
+  await page.setViewportSize(viewports[0]);
   await page.locator('#id_email').fill('new-browser-auth@example.invalid');
   await page.locator('#id_password').fill('synthetic-passphrase');
   await page.locator('#id_confirm_password').fill('synthetic-passphrase');
-  await page.locator('#id_accepted_terms').check();
-  await page.screenshot({ path: path.join(output, 'auth-signup-mobile.png'), fullPage: false });
-  await page.getByRole('button', { name: 'Create account' }).click();
-  await page.waitForURL('**/auth/session/');
+  await page.screenshot({ path: path.join(output, 'auth-signup-desktop.png'), fullPage: false });
+  const signupPost = page.waitForResponse((response) =>
+    response.request().method() === 'POST' && new URL(response.url()).pathname.replace(/\/$/, '') === '/signup');
+  await page.getByRole('button', { name: 'Create account' }).press('Enter');
+  const signupResponse = await signupPost;
+  assert.equal(signupResponse.status(), 200, 'the boosted signup form accepts keyboard submission');
+  assert.match(await signupResponse.headerValue('hx-redirect') || '', /\/dashboard$/);
+  await page.waitForURL(/\/dashboard\/?$/);
+  await page.getByRole('heading', { name: 'What would you like to work on?' }).waitFor();
+  await page.goto(`${baseUrl}/auth/session/`, { waitUntil: 'domcontentloaded' });
   await page.getByRole('heading', { name: 'Signed in' }).waitFor();
   assert.equal(await page.getByText('new-browser-auth@example.invalid').count(), 1);
   await page.screenshot({ path: path.join(output, 'auth-signup-session-desktop.png'), fullPage: false });
-  results.interactions.push({ route: '/signup', state: 'valid signup creates a synthetic authenticated Django session without provider or email calls' });
+  results.interactions.push({ route: '/signup', state: 'Space activates required consent and Enter submits valid signup to create a synthetic authenticated Django session without provider or email calls' });
 
+  const signedInRecovery = await page.goto(`${baseUrl}/forgot-password/`, { waitUntil: 'domcontentloaded' });
+  assert.equal(signedInRecovery.status(), 200, 'P4 keeps the recovery-unavailable explanation visible to signed-in users');
+  await page.getByRole('heading', { name: 'Email recovery unavailable' }).waitFor();
+  const signedInReset = await page.goto(`${baseUrl}/reset-password/`, { waitUntil: 'domcontentloaded' });
+  assert.equal(signedInReset.status(), 404, 'P4 keeps reset-token use unavailable regardless of session state');
+  await page.getByRole('heading', { name: 'Reset link unavailable' }).waitFor();
+  results.interactions.push({ route: '/forgot-password and /reset-password', state: 'signed-in P4 state keeps recovery explanation and intentional reset-token 404; no email or provider request occurs' });
+
+  await page.goto(`${baseUrl}/auth/session/`, { waitUntil: 'domcontentloaded' });
+  await page.getByRole('heading', { name: 'Signed in' }).waitFor();
   await page.locator('form[action="/logout/"] button[type="submit"]').click();
   await page.waitForURL(/\/login\/?(?:\?.*)?$/);
   const afterLogout = await page.goto(`${baseUrl}/auth/session/`, { waitUntil: 'domcontentloaded' });
@@ -1536,6 +2486,29 @@ async function checkAuthJourneys(browser) {
   await page.waitForURL(/\/login\/?(?:\?.*)?$/);
   assert.equal(new URL(page.url()).searchParams.get('next'), '/auth/session/');
   results.interactions.push({ route: '/logout', state: 'logout clears the session and protected route requires sign-in again' });
+
+  const resetDesktop = await page.goto(`${baseUrl}/reset-password/`, { waitUntil: 'domcontentloaded' });
+  assert.equal(resetDesktop.status(), 404);
+  assert.equal(resetDesktop.headers()['referrer-policy'], 'no-referrer');
+  await page.screenshot({ path: path.join(output, 'auth-reset-notfound-desktop.png'), fullPage: false });
+  await page.getByRole('link', { name: 'Sign in' }).focus();
+  await page.keyboard.press('Enter');
+  await page.waitForURL(/\/login\/?$/);
+  await page.getByRole('heading', { name: 'Welcome back' }).waitFor();
+
+  const resetMobileContext = await browser.newContext({ viewport: viewports[1] });
+  const resetMobilePage = await resetMobileContext.newPage();
+  const resetMobile = await resetMobilePage.goto(`${baseUrl}/reset-password/`, { waitUntil: 'domcontentloaded' });
+  assert.equal(resetMobile.status(), 404);
+  assert.equal(resetMobile.headers()['referrer-policy'], 'no-referrer');
+  await resetMobilePage.screenshot({ path: path.join(output, 'auth-reset-notfound-mobile.png'), fullPage: false });
+  await resetMobilePage.getByRole('link', { name: 'Sign in' }).focus();
+  await resetMobilePage.keyboard.press('Enter');
+  await resetMobilePage.waitForURL(/\/login\/?$/);
+  await resetMobilePage.getByRole('heading', { name: 'Welcome back' }).waitFor();
+  await resetMobileContext.close();
+  results.interactions.push({ route: '/reset-password', state: 'the intentional 404 protects the reset token and its Sign in link activates by Enter on desktop and mobile' });
+
   await context.close();
 
   const validationContext = await browser.newContext({ viewport: viewports[0] });
@@ -1564,7 +2537,7 @@ async function checkAuthJourneys(browser) {
   await validationPage.locator('#id_password').fill('wrong-synthetic-password');
   const fullPageError = validationPage.waitForResponse((response) =>
     response.request().method() === 'POST' && new URL(response.url()).pathname.replace(/\/$/, '') === '/login');
-  await validationPage.getByRole('button', { name: 'Sign in' }).click();
+  await validationPage.getByRole('button', { name: 'Sign in' }).press('Enter');
   const fullPageErrorResponse = await fullPageError;
   assert.equal(fullPageErrorResponse.status(), 400);
   await validationPage.getByRole('alert').getByText('Those details could not be accepted. Check them and try again.').waitFor();
@@ -1578,7 +2551,8 @@ async function checkAuthJourneys(browser) {
   await validationPage.locator('#id_password').fill('wrong-synthetic-password');
   const htmxError = validationPage.waitForResponse((response) =>
     response.request().method() === 'POST' && new URL(response.url()).pathname.replace(/\/$/, '') === '/login');
-  await validationPage.getByRole('button', { name: 'Sign in' }).click();
+  await validationPage.getByRole('button', { name: 'Sign in' }).focus();
+  await validationPage.keyboard.press('Enter');
   const htmxErrorResponse = await htmxError;
   assert.equal(htmxErrorResponse.status(), 400);
   assert.equal(await htmxErrorResponse.request().headerValue('hx-request'), 'true');
@@ -1600,15 +2574,17 @@ async function checkAuthJourneys(browser) {
   await outagePage.goto(`${baseUrl}/login/?p7_auth_flow=1`, { waitUntil: 'domcontentloaded' });
   await outagePage.locator('#id_email').fill('browser-auth@example.invalid');
   await outagePage.locator('#id_password').fill('provider-down');
+  const outageSubmit = outagePage.getByRole('button', { name: 'Sign in' });
+  await outageSubmit.focus();
   const outageResponse = await Promise.all([
     outagePage.waitForResponse((response) => response.request().method() === 'POST' && new URL(response.url()).pathname === '/login/'),
-    outagePage.getByRole('button', { name: 'Sign in' }).click(),
+    outagePage.keyboard.press('Enter'),
   ]).then(([response]) => response);
   assert.equal(outageResponse.status(), 503);
   await outagePage.getByRole('alert').getByText('Authentication is temporarily unavailable. Please try again.').waitFor();
   assert.equal(await outagePage.getByText('provider-down').count(), 0);
   await outagePage.screenshot({ path: path.join(output, 'auth-provider-unavailable-mobile.png'), fullPage: false });
-  results.interactions.push({ route: '/login', state: 'synthetic provider outage shows a safe retryable error without exposing credentials; recovery email and OAuth remain unavailable by contract' });
+  results.interactions.push({ route: '/login', state: 'mobile keyboard submission during a synthetic provider outage shows a safe retryable error without exposing credentials; recovery email and OAuth remain unavailable by contract' });
   await outageContext.close();
 }
 
@@ -1637,10 +2613,12 @@ async function main() {
   const browser = await chromium.launch({ headless: true });
   results.browser = browser.version();
   try {
-    for (const route of appRoutes[wave]) {
+    const routesToCapture = appRoutes[wave].filter(([slug]) => !routeFilter || slug === routeFilter);
+    assert.ok(routesToCapture.length, `No ${wave.toUpperCase()} route matches ${routeFilter || 'the requested route set'}.`);
+    for (const route of routesToCapture) {
       for (const viewport of viewports) await capture(browser, route, viewport);
     }
-    if (wave === 'w3') await checkAuthJourneys(browser);
+    if (wave === 'w3' && !routeFilter) await checkAuthJourneys(browser);
   } finally {
     await browser.close();
   }

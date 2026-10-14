@@ -1,10 +1,14 @@
 # Django foundation
 
-This native Windows Django project remains beside the React/Vite and Express source. P2-P6 services/shells and P7/P8 implementation is present; P7 SR-1 through SR-4 and P8 deterministic acceptance are closed. Physical-device and live-provider checks remain P9 work. The P9 matrix and report track the remaining acceptance work. Its first local read-only inventory reconciled all 25 routes with zero fallback; browser, hosted schema/data, device, and provider checks remain open.
+This native Windows Django project remains beside the React/Vite and Express source. P2-P6 services/shells and P7/P8 implementation is present; P7 SR-1 through SR-4 and P8 deterministic acceptance are closed. P9 evidence includes a 25-route deterministic browser comparison, 37 hosted route/security checks and a real desktop microphone subset. Formal P9 acceptance remains open for full route-matrix sign-off, bucket metadata, mobile and provider checks; see [P9 report](../../docs/parity/P9_REPORT.md). P10 implementation waits for explicit owner approval.
 
-See the [current handoff](../../HANDOFF_2026-10-13_033145_IST.md), [P7 finding closeout](../../docs/pages/P7_SR_CLOSEOUT_2026-10-13.md), [P7/P8 matrix](../../docs/pages/P7_P8_CLOSURE_MATRIX.md), and [P9 task](../../docs/parity/P9_IMPLEMENTATION_PROMPT.md), [acceptance matrix](../../docs/parity/P9_ACCEPTANCE_MATRIX.md), and [report](../../docs/parity/P9_REPORT.md). The older P7 session review remains a dated historical record.
+See the [current scope handoff](../../HANDOFF_2026-10-14_LOCAL_READINESS.md), [P7 finding closeout](../../docs/pages/P7_SR_CLOSEOUT_2026-10-13.md), [P7/P8 matrix](../../docs/pages/P7_P8_CLOSURE_MATRIX.md), and [P9 task](../../docs/parity/P9_IMPLEMENTATION_PROMPT.md), [acceptance matrix](../../docs/parity/P9_ACCEPTANCE_MATRIX.md), and [report](../../docs/parity/P9_REPORT.md). The older P7 session review remains a dated historical record.
 
 The bounded P3 code findings are corrected; live speech-provider evidence remains pending for P9. P4 development authentication was verified with fresh hosted accounts and PostgreSQL concurrency; see [P4_REPORT.md](../../docs/auth/P4_REPORT.md). P5 schema, RLS, Storage, Django data services and hosted shared transaction-pooler/user-switch verification are complete; see [P5_REPORT.md](../../docs/data/P5_REPORT.md) and [P5_VERIFICATION.md](../../docs/data/P5_VERIFICATION.md). P6 shells and controlled rollback remain implemented; normal P7 page routing now has zero legacy fallbacks. See [P6 report](../../docs/rendering/P6_REPORT.md) and [rollback runbook](../../docs/rendering/P6_ROLLBACK.md).
+
+## Local operation and P10 reference
+
+The current task is P9 closeout. The owner asked to finish and report P9, then wait for approval before P10. The [P10 brief](../../docs/deployment/P10_IMPLEMENTATION_PROMPT.md) and [readiness ledger](../../docs/deployment/P10_READINESS.md) are references until that approval. Local functionality uses hosted Supabase and configured providers; no paid speech-provider call was made in the P9 run.
 
 ## Setup
 

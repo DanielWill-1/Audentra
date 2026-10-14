@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
+import argparse
 import hashlib
 import json
 import os
+import re
 import sys
 from pathlib import Path
 from typing import Any
@@ -15,7 +17,6 @@ MANIFEST_PATH = ROOT / "docs" / "parity" / "route-manifest.json"
 P6_OWNERSHIP_PATH = DJANGO_ROOT / "config" / "p6_route_ownership.json"
 P7_OWNERSHIP_PATH = ROOT / "docs" / "pages" / "P7_ROUTE_OWNERSHIP.json"
 OUTPUT_PATH = ROOT / "docs" / "parity" / "P9_ROUTE_OWNERSHIP.json"
-RUN_ID = "p9-initial-readonly-20261013"
 
 
 def read_json(path: Path) -> tuple[dict[str, Any], bytes]:
@@ -31,6 +32,16 @@ def view_path(view: Any) -> str:
 
 
 def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--run-id", required=True, help="Fresh filesystem-safe P9 evidence ID")
+    run_id = parser.parse_args().run_id
+    if not re.fullmatch(r"[a-z0-9][a-z0-9_-]{0,47}", run_id, re.IGNORECASE):
+        parser.error("--run-id must be a short filesystem-safe label")
+
+    evidence_dir = ROOT / "docs" / "parity" / "evidence" / "p9" / run_id
+    if evidence_dir.exists():
+        parser.error(f"P9 evidence directory already exists; refusing to overwrite: {run_id}")
+
     sys.path.insert(0, str(DJANGO_ROOT))
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings.test")
 
@@ -109,7 +120,7 @@ def main() -> None:
         raise AssertionError("A manifest route is still assigned to a legacy fallback")
 
     result = {
-        "run_id": RUN_ID,
+        "run_id": run_id,
         "status": "PASS — read-only manifest/registry/resolver reconciliation",
         "boundary": (
             "Local Django URL resolver under config.settings.test; "
@@ -124,21 +135,12 @@ def main() -> None:
         "effective_fallback_count": owner_counts.get("legacy-fallback", 0),
         "routes": routes,
     }
-    OUTPUT_PATH.write_text(
+    evidence_dir.mkdir(parents=True, exist_ok=False)
+    evidence_path = evidence_dir / "P9_ROUTE_OWNERSHIP.json"
+    evidence_path.write_text(
         json.dumps(result, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
     )
-
-    evidence_path = (
-        ROOT
-        / "docs"
-        / "parity"
-        / "evidence"
-        / "p9"
-        / RUN_ID
-        / "P9_ROUTE_OWNERSHIP.json"
-    )
-    evidence_path.parent.mkdir(parents=True, exist_ok=True)
-    evidence_path.write_text(
+    OUTPUT_PATH.write_text(
         json.dumps(result, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
     )
     summary = {"status": result["status"], "route_count": len(routes), "owner_counts": owner_counts}

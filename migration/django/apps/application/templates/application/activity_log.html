@@ -4,12 +4,28 @@
 {% block extra_head %}<script src="{% static 'js/p7_activity.js' %}" defer></script>{% endblock %}
 {% block content %}
 <div data-activity-root data-activity-key="{{ activity_key }}">
-<header class="border-b border-border bg-surface"><div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-4 py-6 sm:px-6 lg:px-8"><div class="flex items-center gap-4"><a class="icon-button" href="/dashboard" aria-label="Back to dashboard">←</a><div><h1 class="text-2xl font-bold text-text-primary">Activity log</h1><p class="text-text-secondary">View all your recent activity and actions</p></div></div><button class="icon-button" type="button" aria-label="Refresh" title="Refresh" data-activity-refresh>↻</button></div></header>
+<header class="border-b border-border bg-surface"><div class="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-6 sm:px-6 lg:px-8"><div class="flex min-w-0 items-center"><a class="mr-4 shrink-0 text-text-secondary hover:text-text-primary" href="/dashboard" aria-label="Back to dashboard"><svg class="h-5 w-5" aria-hidden="true" focusable="false"><use href="{% static 'icons/sprite.svg' %}#icon-arrow-left"></use></svg></a><div class="min-w-0"><h1 class="text-2xl font-bold text-text-primary">Activity Log</h1><p class="text-[15px] text-text-secondary">View all your recent activity and actions</p></div></div><button class="icon-button shrink-0" type="button" aria-label="Refresh" title="Refresh" data-activity-refresh>↻</button></div></header>
 <div class="mx-auto max-w-7xl space-y-6 px-4 py-8 sm:px-6 lg:px-8">
   <p class="text-sm text-text-secondary">This page uses the existing local activity feed; it is not a server audit log.</p>
   <div data-activity-status class="sr-only" role="status" aria-live="polite"></div>
-  <form data-activity-filter class="card grid gap-3 p-4 sm:grid-cols-3" role="search"><label class="field-label">Search activity<input class="field-input" type="text" name="q" placeholder="Search title, description, or user"></label><label class="field-label">Type<select class="field-input" name="type"><option value="all">All activity</option><option value="form_completed">Form completed</option><option value="template_created">Template created</option><option value="team_invite">Team invitation</option><option value="template_shared">Template shared</option><option value="form_started">Form started</option><option value="template_reviewed">Template reviewed</option></select></label><label class="field-label">Date range<select class="field-input" name="range"><option value="all">All time</option><option value="today">Today</option><option value="7">Last 7 days</option><option value="30">Last 30 days</option></select></label></form>
-  <section class="card divide-y divide-border"><div class="border-b border-border p-5"><h2 class="text-lg font-semibold">Activity Log</h2><p class="mt-1 text-sm text-text-secondary">Showing your recent activity and actions</p></div><div data-activity-list aria-label="Activity items"></div></section>
+  <form data-activity-filter class="mb-8 flex flex-col gap-4 rounded-2xl border border-gray-200 bg-white p-6 md:flex-row md:items-center md:justify-between" role="search">
+    <div class="flex min-w-0 flex-1 flex-col gap-4 sm:flex-row">
+      <div class="relative min-w-0 flex-1">
+        <svg class="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" aria-hidden="true" focusable="false"><use href="{% static 'icons/sprite.svg' %}#icon-search"></use></svg>
+        <label class="sr-only" for="activity-search">Search activity</label>
+        <input id="activity-search" class="w-full rounded-lg border border-gray-300 py-2 pl-10 pr-4 focus:border-blue-500 focus:ring-2 focus:ring-blue-500" type="text" name="q" placeholder="Search activity...">
+      </div>
+      <label class="sr-only" for="activity-type">Activity type</label>
+      <select id="activity-type" class="rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-500" name="type"><option value="all">All Types</option><option value="form_completed">Form Completed</option><option value="template_created">Template Created</option><option value="team_invite">Team Invitations</option><option value="template_shared">Template Shared</option><option value="form_started">Form Started</option><option value="template_reviewed">Template Reviewed</option></select>
+      <label class="sr-only" for="activity-range">Date range</label>
+      <select id="activity-range" class="rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-500" name="range"><option value="all">All Time</option><option value="today">Today</option><option value="week">Last 7 Days</option><option value="month">Last 30 Days</option></select>
+    </div>
+    <div class="flex items-center justify-end gap-2">
+      <span class="text-sm text-gray-600" data-activity-count></span>
+      <button class="rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600" type="button" aria-label="Filters are unavailable" aria-disabled="true" title="Filters"><svg class="h-4 w-4" aria-hidden="true" focusable="false"><use href="{% static 'icons/sprite.svg' %}#icon-sliders-horizontal"></use></svg></button>
+    </div>
+  </form>
+  <section class="card divide-y divide-border"><div class="border-b border-border p-6" data-activity-list-heading><h2 class="text-lg font-semibold">Activity Log</h2><p class="mt-1 text-sm text-text-secondary">Showing your recent activity and actions</p></div><div data-activity-list aria-label="Activity items"></div></section>
 </div>
 </div>
 {% endblock %}

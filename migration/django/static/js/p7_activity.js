@@ -8,12 +8,20 @@
   const filter = root.querySelector("[data-activity-filter]");
   const status = root.querySelector("[data-activity-status]");
   const types = {
-    form_completed: "Form completed",
-    template_created: "Template created",
-    team_invite: "Team invitation",
-    template_shared: "Template shared",
-    form_started: "Form started",
-    template_reviewed: "Template reviewed",
+    form_completed: "Form Completed",
+    template_created: "Template Created",
+    team_invite: "Team Invitation",
+    template_shared: "Template Shared",
+    form_started: "Form Started",
+    template_reviewed: "Template Reviewed",
+  };
+  const presentation = {
+    form_completed: { status: "Completed", box: "bg-green-50 border-green-200", badge: "bg-green-100 text-green-800", icon: "text-green-600", symbol: "check-circle" },
+    template_created: { status: "Created", box: "bg-blue-50 border-blue-200", badge: "bg-blue-100 text-blue-800", icon: "text-blue-600", symbol: "file-text" },
+    team_invite: { status: "Joined", box: "bg-purple-50 border-purple-200", badge: "bg-purple-100 text-purple-800", icon: "text-purple-600", symbol: "users" },
+    template_shared: { status: "Shared", box: "bg-emerald-50 border-emerald-200", badge: "bg-emerald-100 text-emerald-800", icon: "text-emerald-600", symbol: "share-2" },
+    form_started: { status: "In Progress", box: "bg-orange-50 border-orange-200", badge: "bg-orange-100 text-orange-800", icon: "text-orange-600", symbol: "clock" },
+    template_reviewed: { status: "Reviewed", box: "bg-indigo-50 border-indigo-200", badge: "bg-indigo-100 text-indigo-800", icon: "text-indigo-600", symbol: "message-square" },
   };
   const samples = [
     ["1", "form_completed", "Patient Intake - John Smith", "Completed in 1:34 minutes", 2],
@@ -34,7 +42,7 @@
       title,
       description,
       time: new Date(Date.now() - Number(hours) * 60 * 60 * 1000).toISOString(),
-      user: ["4"].includes(id) ? "System" : ["6", "7"].includes(id) ? "Alex Chen" : "You",
+      user: id === "4" ? "System" : id === "6" ? "Alex Chen" : id === "7" ? "Maria Johnson" : "You",
     }));
   }
   function validItems(value) {
@@ -80,7 +88,29 @@
   }
   function timeLabel(value) {
     const date = new Date(value);
-    return Number.isNaN(date.getTime()) ? "Unknown date" : date.toLocaleString();
+    return Number.isNaN(date.getTime()) ? "Unknown date" : date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  }
+  function icon(name, className) {
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("class", className);
+    svg.setAttribute("aria-hidden", "true");
+    svg.setAttribute("focusable", "false");
+    const use = document.createElementNS("http://www.w3.org/2000/svg", "use");
+    use.setAttribute("href", "/static/icons/sprite.svg#icon-" + name);
+    svg.append(use);
+    return svg;
+  }
+  function metadata(iconName, value) {
+    const detail = document.createElement("span");
+    detail.className = "flex items-center";
+    detail.append(icon(iconName, "mr-1 h-4 w-4"), document.createTextNode(value));
+    return detail;
   }
   function matches(item) {
     const data = new FormData(filter);
@@ -93,10 +123,11 @@
     if (range !== "all") {
       const time = new Date(item.time);
       if (Number.isNaN(time.getTime())) return false;
-      const now = new Date();
-      const start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-      if (range === "today" && time < start) return false;
-      if (range !== "today" && time < new Date(Date.now() - Number(range) * 24 * 60 * 60 * 1000)) return false;
+      const cutoff = new Date();
+      if (range === "today") cutoff.setHours(0, 0, 0, 0);
+      if (range === "week") cutoff.setDate(cutoff.getDate() - 7);
+      if (range === "month") cutoff.setMonth(cutoff.getMonth() - 1);
+      if (time < cutoff) return false;
     }
     return true;
   }
@@ -104,37 +135,70 @@
     if (!list) return;
     list.replaceChildren();
     const visible = items.filter(matches);
+    const count = root.querySelector("[data-activity-count]");
+    const listHeading = root.querySelector("[data-activity-list-heading]");
+    if (count) count.textContent = visible.length + (visible.length === 1 ? " activity" : " activities");
+    if (listHeading) listHeading.hidden = !visible.length;
     visible.forEach((item) => {
       const row = document.createElement("article");
-      row.className = "flex flex-wrap items-start justify-between gap-4 p-5";
+      row.className = "p-6 transition-colors hover:bg-gray-50";
+      const layout = document.createElement("div");
+      layout.className = "flex items-start justify-between gap-4";
+      const content = document.createElement("div");
+      content.className = "flex min-w-0 flex-1 items-start gap-4";
+      const style = presentation[item.type] || {
+        status: "Updated",
+        box: "bg-gray-50 border-gray-200",
+        badge: "bg-gray-100 text-gray-800",
+        icon: "text-gray-600",
+        symbol: "file-text",
+      };
+      const iconBox = document.createElement("div");
+      iconBox.className = "flex h-12 w-12 shrink-0 items-center justify-center rounded-lg " + style.box;
+      iconBox.append(icon(style.symbol, "h-5 w-5 " + style.icon));
       const body = document.createElement("div");
       body.className = "min-w-0 flex-1";
-      const heading = document.createElement("h2");
-      heading.className = "font-semibold";
+      const heading = document.createElement("h3");
+      heading.className = "min-w-0 break-words text-lg font-semibold text-gray-900";
       heading.textContent = item.title;
+      const headingRow = document.createElement("div");
+      headingRow.className = "mb-1 flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1";
+      const badge = document.createElement("span");
+      badge.className = "shrink-0 rounded-full px-2 py-1 text-xs " + style.badge;
+      badge.textContent = style.status;
+      headingRow.append(heading, badge);
       const description = document.createElement("p");
-      description.className = "mt-1 text-sm text-text-secondary";
+      description.className = "mb-2 text-gray-600";
       description.textContent = item.description || "";
       const details = document.createElement("p");
-      details.className = "mt-3 text-xs text-text-muted";
+      details.className = "mt-2 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-gray-500";
       details.textContent = timeLabel(item.time) + " · " + item.user + " · " + (types[item.type] || item.type);
-      body.append(heading, description, details);
+      details.replaceChildren(
+        metadata("clock", timeLabel(item.time)),
+        metadata("users", item.user),
+        metadata("file-text", types[item.type] || item.type),
+      );
+      body.append(headingRow, description, details);
+      content.append(iconBox, body);
       const actions = document.createElement("div");
-      actions.className = "flex items-center gap-2";
+      actions.className = "flex shrink-0 items-center gap-2";
+      actions.setAttribute("data-activity-actions", "");
       if (item.type === "form_completed" || item.type === "form_started") {
         const inactive = document.createElement("button");
         inactive.type = "button";
-        inactive.className = "rounded-md border border-border px-3 py-2 text-sm text-text-muted";
+        inactive.className = "rounded-md p-2 text-gray-400 transition-colors hover:text-blue-600";
         inactive.setAttribute("aria-label", item.type === "form_completed" ? "Download (unavailable)" : "Continue (unavailable)");
         inactive.title = item.type === "form_completed" ? "Download" : "Continue";
-        inactive.textContent = item.type === "form_completed" ? "Download" : "Continue";
+        inactive.setAttribute("aria-disabled", "true");
+        inactive.append(icon(item.type === "form_completed" ? "download" : "clock", "h-4 w-4"));
         actions.append(inactive);
       }
       const remove = document.createElement("button");
       remove.type = "button";
-      remove.className = "text-sm font-medium text-red-700 underline";
-      remove.textContent = "Delete";
+      remove.className = "rounded-md p-2 text-gray-400 transition-colors hover:text-red-600";
+      remove.title = "Delete";
       remove.setAttribute("aria-label", "Delete " + item.title);
+      remove.append(icon("trash-2", "h-4 w-4"));
       remove.addEventListener("click", () => {
         if (!window.confirm("Delete this activity item?")) return;
         const before = items;
@@ -147,13 +211,31 @@
         announce("Activity item deleted.");
       });
       actions.append(remove);
-      row.append(body, actions);
+      layout.append(content, actions);
+      row.append(layout);
       list.append(row);
     });
     if (!visible.length) {
-      const empty = document.createElement("p");
-      empty.className = "p-8 text-center text-sm text-text-secondary";
-      empty.textContent = items.length ? "No activity matches these filters." : "No activity found. Start using the platform to see activity here.";
+      const empty = document.createElement("div");
+      empty.className = "py-12 text-center";
+      empty.append(icon("clock", "mx-auto mb-4 h-12 w-12 text-gray-400"));
+      const emptyTitle = document.createElement("h3");
+      emptyTitle.className = "mb-2 text-lg font-medium text-gray-900";
+      emptyTitle.textContent = "No activity found";
+      const emptyMessage = document.createElement("p");
+      emptyMessage.className = "mb-6 text-gray-600";
+      const data = new FormData(filter);
+      const hasFilter = Boolean(String(data.get("q") || ""))
+        || String(data.get("type") || "all") !== "all"
+        || String(data.get("range") || "all") !== "all";
+      emptyMessage.textContent = hasFilter
+        ? "Try adjusting your filters to see more results"
+        : "Start using the platform to see your activity here";
+      const returnLink = document.createElement("a");
+      returnLink.className = "inline-flex items-center rounded-lg bg-blue-600 px-6 py-2 text-white hover:bg-blue-700";
+      returnLink.href = "/dashboard";
+      returnLink.textContent = "Return to Dashboard";
+      empty.append(emptyTitle, emptyMessage, returnLink);
       list.append(empty);
     }
     if (storageError) {

@@ -1,8 +1,8 @@
 # Migration plan and scope controls
 
-**Version:** 2.2
-**Updated:** 2026-10-13
-**Current task:** P7 SR-1 through SR-4 are closed; P8 deterministic acceptance is complete; physical-device and live-provider checks remain P9 work; P9 is in progress. The [P7/P8 matrix](docs/pages/P7_P8_CLOSURE_MATRIX.md), [P7 finding closeout](docs/pages/P7_SR_CLOSEOUT_2026-10-13.md), [P9 acceptance matrix](docs/parity/P9_ACCEPTANCE_MATRIX.md), [P9 report](docs/parity/P9_REPORT.md), and [current handoff](HANDOFF_2026-10-13_033145_IST.md) record the state. Initial P9 route reconciliation passed 25/25; end-to-end acceptance remains open.
+**Version:** 2.3
+**Updated:** 2026-10-14, P9 closeout and latest owner instruction
+**Current task:** P7 SR-1 through SR-4 are closed; P8 deterministic acceptance is complete; P9 implementation and evidence collection are in closeout, but formal P9 acceptance remains open. The [P7/P8 matrix](docs/pages/P7_P8_CLOSURE_MATRIX.md), [P7 finding closeout](docs/pages/P7_SR_CLOSEOUT_2026-10-13.md), [P9 acceptance matrix](docs/parity/P9_ACCEPTANCE_MATRIX.md), [P9 report](docs/parity/P9_REPORT.md), and [P9 closeout handoff](HANDOFF_2026-10-14_P9_CLOSEOUT.md) record the state. The latest owner instruction supersedes the earlier P10-preparation scope: finish and report P9, then wait for explicit approval before starting P10. Deployment remains a later owner decision.
 
 **Owner scope revision:** The owner's 2026-10-11 request replaces the earlier SMTP/legacy-account/React compatibility gates. Supabase Python SDK + Django + HTMX signup/login/session/refresh/password-change/logout passed against fresh hosted accounts. The project remains development-only and signup confirmation is disabled with authorization; email recovery is separate.
 
@@ -14,11 +14,13 @@
 **Archived P5 closure brief:** [P5_CLOSURE_PROMPT.md](docs/data/P5_CLOSURE_PROMPT.md) — hosted shared transaction-pooler gate passed; P5 is complete
 **P6 implementation evidence:** [archived brief](docs/rendering/P6_IMPLEMENTATION_PROMPT.md), [report](docs/rendering/P6_REPORT.md), [verification](docs/rendering/P6_VERIFICATION.md), [review](docs/rendering/P6_REVIEW.md), [route ownership](docs/rendering/P6_ROUTE_OWNERSHIP.json), [asset inventory](docs/rendering/P6_ASSET_INVENTORY.md), [rollback](docs/rendering/P6_ROLLBACK.md)
 **P7 W1 result:** The [W1 report](docs/pages/P7_W1_REPORT.md), [verification](docs/pages/P7_W1_VERIFICATION.md), [review](docs/pages/P7_W1_REVIEW.md), [asset provenance](docs/pages/P7_W1_ASSETS.md) and [route ownership](docs/pages/P7_W1_ROUTE_OWNERSHIP.json) record the delivered wave. Its [executed brief](docs/pages/P7_W1_IMPLEMENTATION_PROMPT.md) is archived.
-**P7/P8 closeout review:** Preserve the [master brief](docs/pages/P7_P8_IMPLEMENTATION_PROMPT.md), [executed closeout prompt](docs/pages/P7_P8_CLOSEOUT_PROMPT.md) and prior evidence. The [review](docs/pages/P7_P8_SESSION_REVIEW_2026-10-13.md) supersedes unconditional closure. Repair SR-1–SR-4 within P7 before P9; P8 is a separate prerequisite, not W8.
+**P7/P8 closeout review:** Preserve the master/closeout briefs and historical session review. The later [P7 finding closeout](docs/pages/P7_SR_CLOSEOUT_2026-10-13.md) closed SR-1 through SR-4 before P9 started; P8 remains a separate deterministic prerequisite.
 **P3 evidence:** [P3_REPORT.md](docs/services/P3_REPORT.md), [P3_CONTRACTS.md](docs/services/P3_CONTRACTS.md), [P3_REVIEW.md](docs/services/P3_REVIEW.md)
 **P2 evidence:** [P2_REPORT.md](docs/foundation/P2_REPORT.md), [P2_REVIEW.md](docs/foundation/P2_REVIEW.md)
 
 ## 1. Goal and authority
+
+**Owner scope revision, 2026-10-14:** An earlier review asked for supported local functionality through P9 plus P10 deployment preparation. The later instruction for this run is to finish and report P9, then wait for explicit approval before beginning P10. This later instruction supersedes the earlier P10 preparation scope. The current [P9 brief](docs/parity/P9_IMPLEMENTATION_PROMPT.md) governs continuation. Local operation uses Django on native Windows plus the existing hosted Supabase development project and configured existing providers; it is not offline Supabase replacement. Keep required unrun hardware/provider/schema cases visible.
 
 Move Audentra from React/TypeScript/Vite and Express to Django, Python services, server-rendered templates and HTMX. Retain Supabase Postgres, Auth and Storage. Keep browser JavaScript for microphone capture, playback and small interactions requiring browser APIs.
 
@@ -81,7 +83,7 @@ Before a future implementation, record a bounded brief:
 | Recovery | Code/traffic rollback, or operator recovery for a history change |
 | Stop conditions | Missing access, unresolved choice or required scope expansion |
 
-Map changed files to the brief. Record unrelated bugs in a backlog. Finish independent authorized work when a gate blocks dependent work. Completion alone does not authorize another phase. The owner's full P7/P8 brief superseded separate-wave approval stops; its execution evidence is preserved, with acceptance gaps identified by the 2026-10-12 review. This does not authorize P9–P11.
+Map changed files to the brief. Record unrelated bugs in a backlog. Finish independent authorized work when a gate blocks dependent work. The earlier P7/P8 brief did not itself authorize later phases; P9 was subsequently started. The latest 2026-10-14 owner instruction supersedes the earlier P10 preparation scope: finish and report P9, then wait for explicit approval before starting P10. Actual deployment/production soak and P11 retirement require later owner instructions.
 
 Preserve user changes. Dependency overlap does not authorize additional phases, background work or remote writes.
 
@@ -139,7 +141,8 @@ P0 is complete per owner report. P1 is finalized with owner-accepted exceptions:
     P3 + P6 -> P8
     W6 + P8 -> W7
     P1 carryovers + continuous wave checks -> P9 full parity gate
-    P7 + P9 -> P10 deployment/soak -> P11 removal
+    P7 + P9 local acceptance -> P10 deployable preparation
+    Later owner deployment decision -> deployed verification/soak -> P11 removal
 
 P4 requires P3. P5b requires P4/P5a. W1/W2 do not wait for authenticated/data phases; P8 must precede W7. Dependencies allow future overlap only within user-authorized work.
 
@@ -301,25 +304,27 @@ The [archived master brief](docs/pages/P7_P8_IMPLEMENTATION_PROMPT.md) defines W
 
 ### P9: full parity gate
 
-**Entry:** P7 SR-1 through SR-4 are closed with evidence in the [P7 closeout](docs/pages/P7_SR_CLOSEOUT_2026-10-13.md); P8 deterministic prerequisites pass. P9 is in progress. Its [acceptance matrix](docs/parity/P9_ACCEPTANCE_MATRIX.md) was created before execution, and the initial local route inventory passed 25/25. End-to-end route, security, hosted schema/data, and applicable device/provider checks remain open.
+**Entry:** P7 SR-1 through SR-4 and P8 deterministic prerequisites are closed. The [P9 matrix](docs/parity/P9_ACCEPTANCE_MATRIX.md) preceded execution. Full browser aggregate attempt 46 passed the source/Django suite; final app-only attempt 48 passed all W3-W7 journeys after the Filled Templates screenshot adjustment, using attempt 46 source captures. Attempt 47's later source retry stopped on local Vite `ERR_NO_BUFFER_SPACE` before comparison or app checks. The route asset audit covers all 25 manifest paths; 37 hosted route/security checks and a real desktop microphone subset passed. The visible read-only schema comparison matches P5; Storage bucket privacy/limits remain unobservable to the restricted identity. Full route-state/role and keyboard journeys, remaining paired visual/icon review, mobile and live-provider checks remain open.
 
-**Scope / exit:** Follow the active [P9 implementation prompt](docs/parity/P9_IMPLEMENTATION_PROMPT.md) and update the [P9 report](docs/parity/P9_REPORT.md) and verification ledger with linked evidence. Acceptance covers route ownership, source/Django visuals and behavior, sessions/security/rollback, hosted data/RLS/Storage/schema, and truthful provider/device boundaries. P9 passes only when every required matrix row passes or has an explicit owner-approved exception.
+**Scope / exit:** Follow the active [P9 implementation prompt](docs/parity/P9_IMPLEMENTATION_PROMPT.md), update the [P9 report](docs/parity/P9_REPORT.md) and verification ledger with exact evidence, then stop for owner review. Acceptance covers route ownership, source/Django visuals and behavior, sessions/security/rollback, hosted data/RLS/Storage/schema, and truthful provider/device boundaries. P9 passes only when every required matrix row passes or has an explicit owner-approved exception. The latest owner instruction requires approval before P10.
 
 **Limits:** Verification findings do not authorize general refactoring or features.
 
-### P10: deployment and soak
+### P10: deployment preparation; deployment deferred
 
-**Entry:** P7/P8, accepted P9, Q1/Q15/Q17, hosting/domain/access and rollback agreement.
+**Entry:** P7/P8 are closed. P9 must be reported first. P10 implementation/readiness checks are on hold until the owner explicitly approves the next phase; the existing P10 brief and readiness ledger are references only in the current session.
 
-**Scope:** Prepare runbooks/configuration and concrete deployment for review; switch traffic when authorized. Retain legacy host, callback compatibility and backward-compatible schema during soak.
+**Scope:** Implement the [P10 readiness brief](docs/deployment/P10_IMPLEMENTATION_PROMPT.md): reproducible native Windows startup, pinned server, static serving, private configuration/preflight, production-compatible service access/rate-limit policy, local actual-server checks, monitoring/recovery instructions and concrete future deployment/soak runbooks. Address the current enabled-service production guard and missing production server entry point through bounded verified changes. Retain legacy runtime and backward-compatible schema.
 
-**Exit:** Production route/auth/CRUD/voice checks, both-stack schema compatibility, monitoring/restore drill, agreed soak and distinct traffic/code rollback vs data-incident procedures.
+**Preparation exit:** Runtime/configuration/runbooks are implemented and locally verified; supported local auth/data/voice flows have direct evidence; all unrun external checks and decisions remain visible in [P10 readiness](docs/deployment/P10_READINESS.md). Mocked voice is insufficient for a fully functional local voice claim. P9 full acceptance still needs every required row or an explicit owner exception.
 
-**Limits:** No external write/deploy from planning. Traffic rollback does not revert valid new rows; corrupted writes need targeted incident response.
+**Later deployment exit:** After a separate owner instruction, verify the selected production host, route/auth/CRUD/voice behavior, both-stack schema compatibility, monitoring/restore drill and agreed soak. Distinguish traffic/code rollback from data-incident recovery. These results are DEFERRED BY OWNER in the present scope.
+
+**Limits:** Current work prepares a deployable application; publishing, production changes, DNS/traffic switching, external secret changes and production soak await the owner. Traffic rollback does not revert valid new rows; corrupted writes need targeted incident response. P10 preparation completion does not authorize P11.
 
 ### P11: legacy removal
 
-**Entry:** Accepted P10; agreed soak (old recommendation: at least two weeks); evidence of zero fallback forwards and zero legacy API usage; clean recovery reference.
+**Entry:** Accepted P10 deployment verification after the later owner deployment decision; agreed soak (old recommendation: at least two weeks); evidence of zero fallback forwards and zero legacy API usage; clean recovery reference. Preparation-only completion does not satisfy this gate.
 
 **Scope:** Retire React/Express/Node, legacy deployment, bearer path, public request marker and legacy transcription input. Preserve designs, parity artifacts, schema history and documentation.
 
@@ -333,7 +338,7 @@ Record owner decisions separately from bounded brief defaults. The latest instru
 
 | ID | Needed decision/evidence | Gate |
 |---|---|---|
-| Q1 | Current deployment/users/owner | P10 |
+| Q1 | Future deployment/users/owner | Actual deployment; local preparation may proceed |
 | Q2 | Current .env target confirmed hosted development/testing, reachable with empty public schema and Storage before P5; historical source status not established | Resolved for P2 target, 2026-10-10; P5 post-apply inventory in docs/data/P5_TARGET_INVENTORY.json |
 | Q3 | No historic application DDL recovered; P5 records new development contracts for the previously absent objects and imports/deletes no legacy rows | Resolved for P5 implementation scope; see docs/data/P5_DECISIONS.md |
 | Q4 | Repository exposure context | P0 record; rotate exposed credentials regardless |
@@ -347,9 +352,9 @@ Record owner decisions separately from bounded brief defaults. The latest instru
 | Q12 | P2 brief selects standalone Tailwind compatible with legacy tokens; no Node-free legacy cleanup yet | P2 default; Node retirement P11 |
 | Q13 | Scheduler timezone behavior/correction | W6 |
 | Q14 | Useful markup from unused components | P6; no resurrected features by inference |
-| Q15 | Secrets owner/deployment mechanism | P0/P10 |
+| Q15 | Secrets owner/deployment mechanism | P0 follow-up / actual deployment; preparation documents placeholders |
 | Q16 | Repair/remove unrouted share-link feature | Related service/route work; W5 |
-| Q17 | Product identity for domain/email/deployment | P10; preserve current brand meanwhile |
+| Q17 | Product identity for domain/email/deployment | Actual deployment; preserve current brand during preparation |
 | Q18 | Existing desktop screenshots accepted for manual reference; numeric thresholds/masks and full matrix deferred | Manual acceptance recorded; automated evidence before affected cutovers/P9 |
 | Q19 | P2 brief selects dedicated django-schema sessions with restricted state and metadata connector roles; principal/auth remains P4 | P2 default, verify boundaries |
 | Q20 | P2 brief excludes operational admin and Django account models | P2 default; future admin requires separate scope |
@@ -386,18 +391,19 @@ Completion requires stated gates or a user-accepted bounded exception. Missing e
 
 ## 7. Change control and handoffs
 
-**Current status (2026-10-13):** P7 SR-1 through SR-4 are closed; P8 deterministic regressions pass; P9 is in progress. See the [P7 closeout](docs/pages/P7_SR_CLOSEOUT_2026-10-13.md), [P9 report](docs/parity/P9_REPORT.md), and [current handoff](HANDOFF_2026-10-13_033145_IST.md). Older reviews remain dated historical evidence.
+**Current status (2026-10-14):** P7/P8 are closed. P9 deterministic/browser, hosted route and desktop-microphone subsets passed; schema acceptance is incomplete and full route/device/provider gates remain open. P10 preparation is scoped but must wait for explicit owner approval. Deployment/soak is deferred. See the [P9 closeout handoff](HANDOFF_2026-10-14_P9_CLOSEOUT.md), [P9 report](docs/parity/P9_REPORT.md) and [P10 readiness](docs/deployment/P10_READINESS.md).
 
 Before expanding scope, record trigger, affected files/routes/data, necessity, alternatives, checks, recovery and user authorization. Update the brief after approval. Keep unrelated work in a backlog.
 
 Each handoff reads state/plan/prompt, preserves completed work/user changes, refreshes stale evidence and executes only the authorized task. An old prompt cannot authorize a new phase.
 
-Current handoff: P7 is closed within the documented boundaries; P8 deterministic checks pass. P9 started with a pre-execution matrix and a passing 25-route local inventory. [Current handoff](HANDOFF_2026-10-13_033145_IST.md), [P9 matrix](docs/parity/P9_ACCEPTANCE_MATRIX.md), and [P9 report](docs/parity/P9_REPORT.md) define current status. P9 browser/hosted acceptance is open; P10/P11 remain later.
+Current handoff: [P9 closeout](HANDOFF_2026-10-14_P9_CLOSEOUT.md). The [local-readiness scope review](HANDOFF_2026-10-14_LOCAL_READINESS.md) and [P9 kickoff](HANDOFF_2026-10-13_033145_IST.md) remain retained snapshots. P9 full acceptance is open; P10 waits for owner approval. Actual deployment and P11 retirement await later decisions.
 
 ## 8. Corrections to older documents
 
 | Older instruction/claim | Consolidated interpretation |
 |---|---|
+| Continue P10 immediately after P9 without a phase transition | Superseded by the latest owner instruction: complete and report P9, then wait for explicit approval before P10. Actual deployment/soak remains a later owner decision. |
 | Strict full Auth/state-matrix completion before P2 | Superseded by latest owner acceptance: P1 finalized with exceptions; assigned verification remains required before affected cutovers/P9 |
 | P2 Docker/root-level files/four existing tables | Native Windows, migration/django/, isolated env; the pre-P5 app schema was empty, so P5 defines and provisions new development contracts |
 | P2 data alias starts with application role grants | P2 django_data had metadata/connectivity only; P5 adds `authenticated` membership with `INHERIT FALSE, SET TRUE` and uses it only in transaction-local RLS context |

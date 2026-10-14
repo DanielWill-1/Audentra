@@ -1,10 +1,10 @@
 """Synthetic verified identity/data used only by the isolated browser capture."""
 
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from contextlib import ExitStack
 from datetime import UTC, date, datetime, time
 from time import time as unix_time
-from typing import Any
+from typing import Any, cast
 from unittest.mock import patch
 from uuid import UUID, uuid4
 
@@ -19,6 +19,11 @@ FIXTURE_USER = _principal(
     "11111111-1111-4111-8111-111111111111",
     "synthetic@example.invalid",
     {"first_name": "Demo", "last_name": "User"},
+)
+FIXTURE_REVIEWER = _principal(
+    "88888888-8888-4888-8888-888888888888",
+    "reviewer@example.invalid",
+    {"first_name": "Synthetic", "last_name": "Reviewer"},
 )
 FIXTURE_TEMPLATE: dict[str, Any] = {
     "id": UUID("33333333-3333-4333-8333-333333333333"),
@@ -55,6 +60,12 @@ FIXTURE_EVENT: dict[str, Any] = {
     "status": "scheduled",
     "created_by": FIXTURE_USER.id,
 }
+FIXTURE_OTHER_USER_EVENT: dict[str, Any] = {
+    **FIXTURE_EVENT,
+    "id": UUID("66666666-6666-4666-8666-666666666666"),
+    "title": "Private schedule for another account",
+    "created_by": UUID("22222222-2222-4222-8222-222222222222"),
+}
 FIXTURE_FILLED: dict[str, Any] = {
     "id": UUID("55555555-5555-4555-8555-555555555555"),
     "template_name": "Patient intake",
@@ -62,9 +73,10 @@ FIXTURE_FILLED: dict[str, Any] = {
     "created_at": datetime(2026, 10, 12, 8, tzinfo=UTC),
 }
 _BROWSER_FILLED_RECORDS = [FIXTURE_FILLED]
-_BROWSER_SCHEDULE_EVENTS = [FIXTURE_EVENT]
+_BROWSER_SCHEDULE_EVENTS = [FIXTURE_EVENT, FIXTURE_OTHER_USER_EVENT]
 _BROWSER_TEMPLATES: list[dict[str, Any]] = []
 _BROWSER_TEMPLATE_FILES: dict[str, tuple[UUID, bytes, str]] = {}
+_BROWSER_TEMPLATE_SHARES: list[dict[str, Any]] = []
 _AUTH_FLOW_SIGN_IN_CALLS = 0
 
 
@@ -80,6 +92,7 @@ def _copy_fixture_template() -> dict[str, Any]:
 def _reset_browser_templates() -> None:
     _BROWSER_TEMPLATES[:] = [_copy_fixture_template()]
     _BROWSER_TEMPLATE_FILES.clear()
+    _BROWSER_TEMPLATE_SHARES.clear()
 
 
 def _list_fixture_templates(
@@ -92,9 +105,15 @@ def _list_fixture_templates(
     limit: int = 50,
     offset: int = 0,
 ) -> list[dict[str, Any]]:
-    if user.id != FIXTURE_USER.id:
-        return []
-    rows = list(_BROWSER_TEMPLATES)
+    if user.id == FIXTURE_USER.id:
+        rows = list(_BROWSER_TEMPLATES)
+    else:
+        shared_template_ids = {
+            share["template_id"]
+            for share in _BROWSER_TEMPLATE_SHARES
+            if share["recipient_id"] == user.id and not share["is_hidden"]
+        }
+        rows = [row for row in _BROWSER_TEMPLATES if row["id"] in shared_template_ids]
     if category not in {None, "all"}:
         rows = [row for row in rows if row["category"] == category]
     if search:
@@ -111,9 +130,214 @@ def _list_fixture_templates(
 
 
 def _get_fixture_template(user: SupabaseUser, template_id: UUID) -> dict[str, Any] | None:
-    if user.id != FIXTURE_USER.id:
+    row = next((item for item in _BROWSER_TEMPLATES if item["id"] == template_id), None)
+    if row is None:
         return None
-    return next((row for row in _BROWSER_TEMPLATES if row["id"] == template_id), None)
+    if row["created_by"] == user.id:
+        return row
+    if any(
+        share["template_id"] == template_id
+        and share["recipient_id"] == user.id
+        and not share["is_hidden"]
+        for share in _BROWSER_TEMPLATE_SHARES
+    ):
+        return row
+    return None
+
+
+def _create_fixture_shares(
+    user: SupabaseUser,
+    template_id: UUID,
+    recipient_ids: Sequence[UUID],
+    role: str,
+    *,
+    message: str = "",
+) -> list[dict[str, Any]]:
+    template = _get_fixture_template(user, template_id)
+    allowed_roles = {"viewer", "editor", "admin"}
+    if (
+        template is None
+        or template["created_by"] != user.id
+        or role not in allowed_roles
+        or not recipient_ids
+        or len(recipient_ids) > 100
+        or not isinstance(message, str)
+        or len(message) > 1000
+    ):
+        raise ValueError("Invalid share request for the synthetic browser fixture.")
+    recipients = list(recipient_ids)
+    if len(recipients) != len(set(recipients)):
+        raise ValueError("Duplicate share recipients are not allowed.")
+    if any(recipient != FIXTURE_REVIEWER.id for recipient in recipients):
+        raise ValueError("Share recipients must be existing synthetic browser accounts.")
+    if any(
+        share["template_id"] == template_id and share["recipient_id"] in recipients
+        for share in _BROWSER_TEMPLATE_SHARES
+    ):
+        raise ValueError("A synthetic account already has access to this template.")
+    now = datetime.now(UTC)
+    created = [
+        {
+            "id": uuid4(),
+            "template_id": template_id,
+            "recipient_id": recipient,
+            "role": role,
+            "shared_by": user.id,
+            "shared_at": now,
+            "message": message[:1000],
+            "is_hidden": False,
+            "updated_at": now,
+        }
+        for recipient in recipients
+    ]
+    _BROWSER_TEMPLATE_SHARES.extend(created)
+    return created
+
+
+def _list_fixture_received_shares(user: SupabaseUser, *, limit: int = 100) -> list[dict[str, Any]]:
+    shares = [
+        share
+        for share in _BROWSER_TEMPLATE_SHARES
+        if share["recipient_id"] == user.id and not share["is_hidden"]
+    ][:limit]
+    return [
+        {**share, "template": _get_fixture_template(user, share["template_id"])}
+        for share in shares
+    ]
+
+
+def _list_fixture_sent_shares(user: SupabaseUser, *, limit: int = 100) -> list[dict[str, Any]]:
+    shares = [
+        share for share in _BROWSER_TEMPLATE_SHARES if share["shared_by"] == user.id
+    ][:limit]
+    return [
+        {**share, "template": _get_fixture_template(user, share["template_id"])}
+        for share in shares
+    ]
+
+
+def _remove_fixture_share(user: SupabaseUser, share_id: UUID) -> bool:
+    for index, share in enumerate(_BROWSER_TEMPLATE_SHARES):
+        if share["id"] == share_id and share["shared_by"] == user.id:
+            del _BROWSER_TEMPLATE_SHARES[index]
+            return True
+    return False
+
+
+def _set_fixture_share_hidden(
+    user: SupabaseUser, share_id: UUID, hidden: bool
+) -> dict[str, Any] | None:
+    if not isinstance(hidden, bool):
+        raise ValueError("Hidden state must be boolean.")
+    for share in _BROWSER_TEMPLATE_SHARES:
+        if share["id"] == share_id and share["recipient_id"] == user.id:
+            share["is_hidden"] = hidden
+            share["updated_at"] = datetime.now(UTC)
+            return share
+    return None
+
+
+def _set_fixture_share_role(
+    user: SupabaseUser, share_id: UUID, role: str
+) -> dict[str, Any] | None:
+    if role not in {"viewer", "editor", "admin"}:
+        raise ValueError("Unsupported share role.")
+    for share in _BROWSER_TEMPLATE_SHARES:
+        if share["id"] == share_id and share["shared_by"] == user.id:
+            share["role"] = role
+            share["updated_at"] = datetime.now(UTC)
+            return share
+    return None
+
+
+def _create_fixture_review(
+    user: SupabaseUser,
+    template_id: UUID,
+    *,
+    rating: int,
+    comment: str = "",
+) -> dict[str, Any]:
+    template = _get_fixture_template(user, template_id)
+    if (
+        template is None
+        or template["created_by"] == user.id
+        or isinstance(rating, bool)
+        or not isinstance(rating, int)
+        or not 0 <= rating <= 5
+        or not isinstance(comment, str)
+        or len(comment) > 10_000
+    ):
+        raise ValueError("Invalid review for the synthetic browser fixture.")
+    if any(review["reviewer_id"] == user.id for review in template["reviews"]):
+        raise ValueError("A review already exists for this synthetic account.")
+    now = datetime.now(UTC)
+    review = {
+        "id": uuid4(),
+        "template_id": template_id,
+        "reviewer_id": user.id,
+        "reviewer_name": " ".join(
+            value.strip()
+            for value in (
+                user.user_metadata.get("first_name", ""),
+                user.user_metadata.get("last_name", ""),
+            )
+            if isinstance(value, str) and value.strip()
+        )[:200],
+        "rating": rating,
+        "comment": comment[:10_000],
+        "status": "pending",
+        "created_at": now,
+        "updated_at": now,
+    }
+    template["reviews"].append(review)
+    return review
+
+
+def _request_fixture_review(user: SupabaseUser, template_id: UUID) -> dict[str, Any]:
+    return _create_fixture_review(user, template_id, rating=0)
+
+
+def _update_fixture_review(
+    user: SupabaseUser, review_id: UUID, values: dict[str, Any]
+) -> dict[str, Any] | None:
+    for template in _BROWSER_TEMPLATES:
+        for review in template["reviews"]:
+            if review["id"] != review_id:
+                continue
+            if review["reviewer_id"] == user.id and set(values) <= {"rating", "comment"}:
+                rating = values.get("rating", review["rating"])
+                comment = values.get("comment", review["comment"])
+                if (
+                    isinstance(rating, bool)
+                    or not isinstance(rating, int)
+                    or not 0 <= rating <= 5
+                    or not isinstance(comment, str)
+                    or len(comment) > 10_000
+                ):
+                    raise ValueError("Invalid review update for the synthetic fixture.")
+                review.update(rating=rating, comment=comment, updated_at=datetime.now(UTC))
+                return cast(dict[str, Any], review)
+            if (
+                template["created_by"] == user.id
+                and set(values) == {"status"}
+                and values["status"] in {"approved", "rejected", "needs_changes"}
+            ):
+                review.update(status=values["status"], updated_at=datetime.now(UTC))
+                return cast(dict[str, Any], review)
+            return None
+    return None
+
+
+def _list_fixture_review_queue(user: SupabaseUser, *, limit: int = 100) -> list[dict[str, Any]]:
+    if user.id != FIXTURE_USER.id:
+        return []
+    return [
+        {**review, "template": template}
+        for template in _BROWSER_TEMPLATES
+        if template["created_by"] == user.id
+        for review in template["reviews"]
+        if review["status"] == "pending"
+    ][:limit]
 
 
 def _create_fixture_template(user: SupabaseUser, values: dict[str, Any]) -> dict[str, Any]:
@@ -214,9 +438,14 @@ def _remove_fixture_template_object(
 _reset_browser_templates()
 
 
-def _auth_flow_tokens(email: str, metadata: dict[str, Any] | None = None) -> AuthTokens:
+def _auth_flow_tokens(
+    email: str,
+    metadata: dict[str, Any] | None = None,
+    *,
+    subject: str = "66666666-6666-4666-8666-666666666666",
+) -> AuthTokens:
     return AuthTokens(
-        subject="66666666-6666-4666-8666-666666666666",
+        subject=subject,
         email=email,
         user_metadata=metadata or {"first_name": "Auth", "last_name": "Fixture"},
         access_token="synthetic-browser-auth-access",
@@ -248,12 +477,20 @@ def _auth_flow_sign_in(_client: object, email: str, password: str) -> AuthTokens
         raise AuthServiceError("Synthetic provider outage", kind="unavailable")
     if password != "synthetic-passphrase":
         raise AuthServiceError("Synthetic credentials rejected", kind="invalid")
+    if email.strip().casefold() == "p9-desktop-mic@example.invalid":
+        return _auth_flow_tokens(
+            email,
+            {"first_name": "Demo", "last_name": "User"},
+            subject=str(FIXTURE_USER.id),
+        )
     return _auth_flow_tokens(email)
 
 
 def _auth_flow_sign_up(
     _client: object, email: str, _password: str, metadata: dict[str, str]
 ) -> dict[str, Any]:
+    if email == "duplicate-browser-auth@example.invalid":
+        raise AuthServiceError("Synthetic account already exists", kind="invalid")
     tokens = _auth_flow_tokens(email, metadata)
     return {
         "access_token": tokens.access_token,
@@ -269,6 +506,14 @@ def _auth_flow_sign_up(
 
 def _enter_auth_patch(stack: ExitStack, target: str, replacement: object) -> None:
     stack.enter_context(patch(target, replacement))
+
+
+def _fixture_user_for_request(request: HttpRequest) -> SupabaseUser | None:
+    if request.path_info not in settings.P7_PROTECTED_PATHS:
+        return None
+    if request.headers.get("X-P7-Fixture-User") == "reviewer":
+        return FIXTURE_REVIEWER
+    return FIXTURE_USER
 
 
 def _save_fixture_filled(
@@ -298,6 +543,10 @@ def _list_fixture_filled(
     return _BROWSER_FILLED_RECORDS[offset : offset + limit]
 
 
+def _raise_fixture_filled_error(*args: Any, **kwargs: Any) -> list[dict[str, Any]]:
+    raise ValueError("Synthetic filled-form listing failure.")
+
+
 def _delete_fixture_filled(user: SupabaseUser, record_id: UUID) -> bool:
     if user.id != FIXTURE_USER.id:
         return False
@@ -309,7 +558,9 @@ def _delete_fixture_filled(user: SupabaseUser, record_id: UUID) -> bool:
 
 
 def _schedule_rows(user: SupabaseUser) -> list[dict[str, Any]]:
-    return _BROWSER_SCHEDULE_EVENTS if user.id == FIXTURE_USER.id else []
+    if user.id != FIXTURE_USER.id:
+        return []
+    return [row for row in _BROWSER_SCHEDULE_EVENTS if row["created_by"] == user.id]
 
 
 def _list_fixture_events(
@@ -446,7 +697,11 @@ def _reset_browser_schedule_fixtures(event_date: str = "") -> None:
             event["date"] = date.fromisoformat(event_date)
         except ValueError:
             pass
-    _BROWSER_SCHEDULE_EVENTS[:] = [event]
+    other_user_event = {
+        **FIXTURE_OTHER_USER_EVENT,
+        "attendees": list(FIXTURE_OTHER_USER_EVENT["attendees"]),
+    }
+    _BROWSER_SCHEDULE_EVENTS[:] = [event, other_user_event]
 
 
 class P7FixtureAuthenticationMiddleware:
@@ -456,6 +711,7 @@ class P7FixtureAuthenticationMiddleware:
         self.get_response = get_response
 
     def __call__(self, request: HttpRequest) -> HttpResponse:
+        fixture_path = request.path_info.rstrip("/")
         if (
             request.headers.get("X-P7-Fixture-Reset") == "1"
             and request.method == "GET"
@@ -463,12 +719,17 @@ class P7FixtureAuthenticationMiddleware:
         ):
             fixture_event_date = (
                 request.headers.get("X-P7-Fixture-Event-Date", "")
-                if request.path_info.rstrip("/") == "/scheduler"
+                if fixture_path == "/scheduler"
                 else ""
             )
-            _reset_browser_schedule_fixtures(fixture_event_date)
-            if request.path_info.rstrip("/") == "/templates":
+            if fixture_path in {"/scheduler", "/manage-schedules", "/scheduler-settings"}:
+                _reset_browser_schedule_fixtures(fixture_event_date)
+            if fixture_path == "/templates":
                 _reset_browser_templates()
+            if fixture_path == "/filledtemplates":
+                _BROWSER_FILLED_RECORDS[:] = [
+                    {**FIXTURE_FILLED, "form_data": dict(FIXTURE_FILLED["form_data"])}
+                ]
         session_auth = request.session.get(AUTH_SESSION_KEY)
         synthetic_session = (
             isinstance(session_auth, dict)
@@ -490,15 +751,16 @@ class P7FixtureAuthenticationMiddleware:
                     side_effect=(
                         _authenticate_auth_flow
                         if auth_flow
-                        else lambda current: (
-                            FIXTURE_USER
-                            if current.path_info in settings.P7_PROTECTED_PATHS
-                            else None
-                        )
+                        else _fixture_user_for_request
                     ),
                 )
             )
             if auth_flow:
+                _enter_auth_patch(
+                    stack,
+                    "apps.api.middleware.authenticate_session",
+                    _authenticate_auth_flow,
+                )
                 _enter_auth_patch(
                     stack,
                     "apps.accounts.services.gotrue.GoTrueClient.sign_in",
@@ -550,19 +812,19 @@ class P7FixtureAuthenticationMiddleware:
             stack.enter_context(
                 patch(
                     "apps.application.views.template_selectors.list_received_shares",
-                    return_value=[],
+                    side_effect=_list_fixture_received_shares,
                 )
             )
             stack.enter_context(
                 patch(
                     "apps.application.views.template_selectors.list_sent_shares",
-                    return_value=[],
+                    side_effect=_list_fixture_sent_shares,
                 )
             )
             stack.enter_context(
                 patch(
                     "apps.application.views.template_selectors.list_review_queue",
-                    return_value=[],
+                    side_effect=_list_fixture_review_queue,
                 )
             )
             stack.enter_context(
@@ -587,6 +849,48 @@ class P7FixtureAuthenticationMiddleware:
                 patch(
                     "apps.application.views.template_services.delete_template",
                     side_effect=_delete_fixture_template,
+                )
+            )
+            stack.enter_context(
+                patch(
+                    "apps.application.views.template_services.create_shares",
+                    side_effect=_create_fixture_shares,
+                )
+            )
+            stack.enter_context(
+                patch(
+                    "apps.application.views.template_services.remove_share",
+                    side_effect=_remove_fixture_share,
+                )
+            )
+            stack.enter_context(
+                patch(
+                    "apps.application.views.template_services.set_share_hidden",
+                    side_effect=_set_fixture_share_hidden,
+                )
+            )
+            stack.enter_context(
+                patch(
+                    "apps.application.views.template_services.set_share_role",
+                    side_effect=_set_fixture_share_role,
+                )
+            )
+            stack.enter_context(
+                patch(
+                    "apps.application.views.template_services.request_review",
+                    side_effect=_request_fixture_review,
+                )
+            )
+            stack.enter_context(
+                patch(
+                    "apps.application.views.template_services.create_review",
+                    side_effect=_create_fixture_review,
+                )
+            )
+            stack.enter_context(
+                patch(
+                    "apps.application.views.template_services.update_review",
+                    side_effect=_update_fixture_review,
                 )
             )
             stack.enter_context(
@@ -670,7 +974,11 @@ class P7FixtureAuthenticationMiddleware:
             stack.enter_context(
                 patch(
                     "apps.application.views.filled_selectors.list_filled",
-                    side_effect=_list_fixture_filled,
+                    side_effect=(
+                        _raise_fixture_filled_error
+                        if request.headers.get("X-P9-Filled-Error") == "1"
+                        else _list_fixture_filled
+                    ),
                 )
             )
             stack.enter_context(

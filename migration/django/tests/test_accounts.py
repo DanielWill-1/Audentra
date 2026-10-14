@@ -5,6 +5,7 @@ from uuid import UUID
 
 import httpx
 import pytest
+from apps.accounts.forms import SignupForm
 from apps.accounts.principals import SupabaseUser
 from apps.accounts.services.gotrue import AuthServiceError, AuthTokens, GoTrueClient, parse_tokens
 from apps.accounts.services.tokens import AUTH_SESSION_KEY, authenticate_session
@@ -195,7 +196,7 @@ def test_login_uses_opaque_browser_cookie_and_rotates_csrf() -> None:
 
     assert initial.status_code == 200
     assert response.status_code == 302
-    assert response["Location"] == "/auth/session/"
+    assert response["Location"] == "/dashboard"
     session_cookie = response.cookies[settings.SESSION_COOKIE_NAME]
     assert session_cookie["httponly"]
     assert session_cookie["samesite"] == "Lax"
@@ -206,6 +207,40 @@ def test_login_uses_opaque_browser_cookie_and_rotates_csrf() -> None:
     assert stored["access_token"] == ACCESS
     assert stored["refresh_token"] == REFRESH
     assert ACCESS.encode() not in response.content
+
+
+@pytest.mark.django_db
+def test_authenticated_login_and_signup_pages_redirect_to_dashboard() -> None:
+    client = Client()
+    make_session(client)
+    with patch("apps.accounts.services.tokens.GoTrueClient") as auth:
+        auth.return_value.get_user.return_value = (
+            SUBJECT,
+            "synthetic@example.test",
+            {"first_name": "Test"},
+        )
+        for path in ("/login/", "/signup/"):
+            response = client.get(path)
+            assert response.status_code == 302
+            assert response["Location"] == "/dashboard"
+
+    assert auth.return_value.get_user.call_count == 2
+
+
+def test_signup_requires_source_required_name_fields() -> None:
+    form = SignupForm(
+        data={
+            "first_name": "",
+            "last_name": "",
+            "email": "synthetic@example.test",
+            "password": "correct horse battery staple",
+            "confirm_password": "correct horse battery staple",
+            "accepted_terms": "on",
+        }
+    )
+
+    assert not form.is_valid()
+    assert set(form.errors) >= {"first_name", "last_name"}
 
 
 @pytest.mark.django_db
@@ -468,7 +503,7 @@ def test_signup_provisions_profile_before_session_without_confirmation() -> None
         response = client.post("/signup/", {**signup_values, "accepted_terms": "on"})
 
     assert response.status_code == 302
-    assert response["Location"] == "/auth/session/"
+    assert response["Location"] == "/dashboard"
     auth.return_value.sign_up.assert_called_once_with(
         "synthetic@example.test",
         "correct horse battery staple",

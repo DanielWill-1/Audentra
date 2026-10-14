@@ -15,10 +15,39 @@ const result = {
   boundary: 'Actual Django voice page and scripts; browser media/STT/AI/TTS APIs intercepted; save/list/delete use synthetic browser fixture middleware, not hosted persistence.',
   viewports: [],
   api: { transcription: [], extraction: [], tts: [] },
+  media_error_cases: [],
   journey: [],
   browser_errors: [],
   expected_request_cancellations: [],
 };
+
+async function activateByKeyboard(page, control, key = 'Enter') {
+  await control.focus();
+  assert.equal(
+    await control.evaluate((element) => element === document.activeElement),
+    true,
+    'keyboard target should receive focus before activation',
+  );
+  await page.keyboard.press(key);
+}
+
+async function replaceByKeyboard(page, control, value) {
+  await control.focus();
+  await page.keyboard.press('Control+A');
+  await page.keyboard.press('Backspace');
+  if (value) await page.keyboard.type(value);
+}
+
+async function submitMessageByKeyboard(page, message, submit, value, key = 'Enter') {
+  await replaceByKeyboard(page, message, value);
+  await page.keyboard.press('Tab');
+  assert.equal(
+    await submit.evaluate((element) => element === document.activeElement),
+    true,
+    'Tab from the message field should reach Send to assistant',
+  );
+  await page.keyboard.press(key);
+}
 
 async function main() {
   await fs.mkdir(outputDir, { recursive: true });
@@ -28,12 +57,26 @@ async function main() {
   await context.addInitScript(() => {
     localStorage.clear();
     sessionStorage.clear();
-    const track = { stopped: false, stop() { this.stopped = true; } };
-    const stream = { getTracks: () => [track] };
-    window.__p8Voice = { track, recorders: [], audios: [], rejectNextPlay: false };
+    window.__p8Voice = {
+      recorders: [],
+      audios: [],
+      rejectNextPlay: false,
+      mediaErrorName: null,
+      nextRecordingByteCount: 4,
+    };
     Object.defineProperty(navigator, 'mediaDevices', {
       configurable: true,
-      value: { getUserMedia: async () => stream },
+      value: {
+        getUserMedia: async () => {
+          if (window.__p8Voice.mediaErrorName) {
+            const errorName = window.__p8Voice.mediaErrorName;
+            window.__p8Voice.mediaErrorName = null;
+            throw new DOMException('Synthetic media failure', errorName);
+          }
+          const track = { stopped: false, stop() { this.stopped = true; } };
+          return { getTracks: () => [track] };
+        },
+      },
     });
     window.MediaRecorder = class FixtureRecorder extends EventTarget {
       static isTypeSupported(type) { return type === 'audio/webm;codecs=opus'; }
@@ -47,7 +90,10 @@ async function main() {
       stop() {
         if (this.state === 'inactive') return;
         this.state = 'inactive';
-        const data = new Blob([new Uint8Array([1, 2, 3, 4])], { type: this.mimeType });
+        const byteCount = window.__p8Voice.nextRecordingByteCount;
+        window.__p8Voice.nextRecordingByteCount = 4;
+        const bytes = byteCount === 4 ? new Uint8Array([1, 2, 3, 4]) : new Uint8Array(byteCount);
+        const data = new Blob([bytes], { type: this.mimeType });
         this.dispatchEvent(Object.assign(new Event('dataavailable'), { data }));
         queueMicrotask(() => this.dispatchEvent(new Event('stop')));
       }
@@ -192,7 +238,7 @@ async function main() {
   try {
     const initial = await page.goto(`${djangoBase}/AIVoiceAutoFill`, { waitUntil: 'networkidle' });
     assert.equal(initial.status(), 200);
-    await page.getByRole('link', { name: 'Use template' }).click();
+    await activateByKeyboard(page, page.getByRole('link', { name: 'Use template' }));
     await page.locator('[data-voice-root]').waitFor();
     await page.waitForLoadState('networkidle');
     assert.equal(new URL(page.url()).searchParams.get('template'), templateId);
@@ -201,11 +247,79 @@ async function main() {
       .some((item) => item.name.includes('/static/js/p7_voice.js'))));
     assert.ok(await page.evaluate(() => performance.getEntriesByType('resource')
       .some((item) => item.name.includes('/static/js/p7_media.js'))));
-    result.journey.push('selected accessible template on actual Django page; loaded both shipped scripts without React bootstrap');
+    result.journey.push('keyboard Enter selected the accessible template; both shipped scripts loaded on the actual Django page without React bootstrap');
 
-    await page.getByRole('button', { name: 'Record', exact: true }).click();
-    await page.getByRole('button', { name: 'Stop', exact: true }).click();
-    await page.getByRole('button', { name: 'Transcribe recording' }).click();
+    const recordButton = page.getByRole('button', { name: 'Record', exact: true });
+    const mediaStatus = page.locator('[data-media-status]');
+    const messageField = page.locator('[data-voice-message]');
+    const assertMediaFallback = async (caseName, statusText, screenshotName) => {
+      await page.waitForFunction((expected) =>
+        document.querySelector('[data-media-status]')?.textContent?.trim() === expected, statusText);
+      const recordEnabled = await recordButton.isEnabled();
+      const messageEditable = await messageField.isEditable();
+      const transcriptionRequests = result.api.transcription.length;
+      assert.equal(recordEnabled, true, `${caseName} should restore the Record control`);
+      assert.equal(messageEditable, true, `${caseName} should leave typed entry available`);
+      assert.equal(transcriptionRequests, 0, `${caseName} must not send a transcription request`);
+      result.media_error_cases.push({
+        case: caseName,
+        status: statusText,
+        record_enabled: recordEnabled,
+        message_editable: messageEditable,
+        transcription_requests: transcriptionRequests,
+      });
+      await page.screenshot({ path: path.join(outputDir, screenshotName), fullPage: false });
+      result.journey.push(`${caseName} restored the recorder and typed fallback without a transcription request`);
+    };
+
+    await page.evaluate(() => { window.__p8Voice.mediaErrorName = 'NotAllowedError'; });
+    await activateByKeyboard(page, recordButton, 'Space');
+    await assertMediaFallback(
+      'synthetic microphone permission denial',
+      'Microphone permission was denied. Type your message instead.',
+      'media-permission-denied.png',
+    );
+
+    await page.evaluate(() => { window.__p8Voice.mediaErrorName = 'NotFoundError'; });
+    await activateByKeyboard(page, recordButton, 'Space');
+    await assertMediaFallback(
+      'synthetic microphone unavailable',
+      'No microphone is available. Type your message instead.',
+      'media-no-device.png',
+    );
+
+    await page.evaluate(() => { window.__p8Voice.nextRecordingByteCount = 0; });
+    await activateByKeyboard(page, recordButton, 'Space');
+    await mediaStatus.getByText('Recording. Select Stop when you are done.').waitFor();
+    await activateByKeyboard(page, page.getByRole('button', { name: 'Stop', exact: true }));
+    await assertMediaFallback(
+      'synthetic empty recording',
+      'The recording was empty. Record again or type your message.',
+      'media-empty.png',
+    );
+    assert.equal(await page.getByRole('button', { name: 'Transcribe recording' }).isDisabled(), true,
+      'an empty recording must not enable Transcribe');
+
+    const maxAudioBytes = Number(await page.locator('[data-voice-root]').getAttribute('data-max-audio-bytes'));
+    assert.ok(Number.isSafeInteger(maxAudioBytes) && maxAudioBytes > 0,
+      'the real page must expose its configured audio byte limit');
+    await page.evaluate((byteCount) => { window.__p8Voice.nextRecordingByteCount = byteCount; }, maxAudioBytes + 1);
+    await activateByKeyboard(page, recordButton, 'Space');
+    await mediaStatus.getByText('Recording. Select Stop when you are done.').waitFor();
+    await activateByKeyboard(page, page.getByRole('button', { name: 'Stop', exact: true }));
+    await assertMediaFallback(
+      'synthetic over-limit recording',
+      'The recording is too large to transcribe. Reset and record a shorter message.',
+      'media-oversized.png',
+    );
+    assert.equal(await page.getByRole('button', { name: 'Transcribe recording' }).isDisabled(), true,
+      'an over-limit recording must not enable Transcribe');
+
+    await activateByKeyboard(page, page.getByRole('button', { name: 'Record', exact: true }), 'Space');
+    await page.waitForFunction(() => document.querySelector('[data-media-status]').textContent.startsWith('Recording.'));
+    await activateByKeyboard(page, page.getByRole('button', { name: 'Stop', exact: true }));
+    await page.waitForFunction(() => document.querySelector('[data-media-status]').textContent.startsWith('Recording ready.'));
+    await activateByKeyboard(page, page.getByRole('button', { name: 'Transcribe recording' }), 'Space');
     await page.waitForFunction(() => document.querySelector('[data-voice-message]').value
       === 'Patient name is Ada Lovelace.');
     assert.equal(result.api.transcription.length, 1);
@@ -217,10 +331,10 @@ async function main() {
     assert.equal(result.api.transcription[0].filename_present, true);
     assert.equal(result.api.transcription[0].mime_type, 'audio/webm;codecs=opus');
     assert.equal(result.api.transcription[0].audio_payload_present, true);
-    result.journey.push('recorded, stopped, previewed and received deterministic multipart transcript through the actual page');
+    result.journey.push('keyboard-activated Record, Stop and Transcribe; previewed a deterministic multipart transcript through the actual page');
 
-    await page.locator('[data-voice-message]').fill('Patient name is Ada Lovelace.');
-    await page.getByRole('button', { name: 'Send to assistant' }).click();
+    const sendButton = page.getByRole('button', { name: 'Send to assistant' });
+    await submitMessageByKeyboard(page, messageField, sendButton, 'Patient name is Ada Lovelace.');
     await firstExtractionStarted;
     assert.equal(await page.getByRole('button', { name: 'Send to assistant' }).isDisabled(), true);
     await page.locator('[data-voice-chat-form]').evaluate((form) => form.requestSubmit());
@@ -228,9 +342,20 @@ async function main() {
     assert.equal(result.api.extraction.length, 1);
     releaseFirstExtraction();
     await page.waitForFunction(() => document.querySelector('[name="field_patient_name"]').value === 'Ada Lovelace');
-    await page.locator('[name="field_patient_name"]').fill('Grace Hopper');
-    await page.locator('[data-voice-message]').fill('Keep my reviewed name and add my email.');
-    await page.getByRole('button', { name: 'Send to assistant' }).click();
+    const patientName = page.locator('[name="field_patient_name"]');
+    await replaceByKeyboard(page, patientName, 'Grace Hopper');
+    const desktopState = await page.evaluate(() => ({
+      overflow: document.documentElement.scrollWidth > innerWidth,
+      selectedTemplate: Boolean(document.querySelector('[data-voice-root]')),
+      chatVisible: Boolean(document.querySelector('[data-voice-chat-form]')),
+      reviewVisible: Boolean(document.querySelector('[data-voice-review-form]')),
+    }));
+    assert.equal(desktopState.overflow, false);
+    assert.equal(desktopState.selectedTemplate && desktopState.chatVisible && desktopState.reviewVisible, true);
+    await page.screenshot({ path: path.join(outputDir, 'voice-review-desktop.png'), fullPage: false });
+    result.viewports.push({ viewport: '1440x900', ...desktopState, keyboard_journey: 'template, media, chat, editable review' });
+    await page.setViewportSize({ width: 390, height: 844 });
+    await submitMessageByKeyboard(page, messageField, sendButton, 'Keep my reviewed name and add my email.', 'Space');
     await page.waitForFunction(() => document.querySelector('[name="field_email"]').value === 'grace@example.invalid');
     assert.equal(result.api.extraction.length, 2);
     assert.equal(result.api.extraction[0].prior_messages, 1);
@@ -238,19 +363,26 @@ async function main() {
     assert.equal(result.api.extraction[1].current_patient_name, 'Grace Hopper');
     assert.equal(result.api.extraction.every((item) => item.csrf_header_present && item.marker_present
       && !item.authorization_header_present), true);
-    result.journey.push('duplicate chat submission was ignored while busy; extraction matched a field, then preserved a reviewed edit and conversation across the next request');
+    result.journey.push('keyboard chat submission ignored a duplicate while busy; extraction matched a field, preserved the keyboard-edited name, and added the email on retry at mobile width');
 
-    await page.locator('[name="field_patient_name"]').fill('');
-    await page.getByRole('button', { name: 'Save filled form' }).click();
-    assert.equal(await page.locator('[name="field_patient_name"]').evaluate((field) => field.checkValidity()), false);
-    await page.locator('[name="field_patient_name"]').fill('Grace Hopper');
-    result.journey.push('required-field browser validation blocks an incomplete save');
+    await replaceByKeyboard(page, patientName, '');
+    await activateByKeyboard(page, page.getByRole('button', { name: 'Save filled form' }));
+    assert.equal(await patientName.evaluate((field) => field.checkValidity()), false);
+    assert.equal(await patientName.evaluate((field) => field === document.activeElement), true,
+      'native required-field validation should return keyboard focus to the missing field');
+    await replaceByKeyboard(page, patientName, 'Grace Hopper');
+    result.journey.push('keyboard save hit native required-field validation and focus returned to the missing field');
 
-    await page.screenshot({ path: path.join(outputDir, 'voice-review-desktop.png'), fullPage: false });
-    result.viewports.push({ viewport: '1440x900', overflow: await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), selected_template: true, transcript_and_review_visible: true });
-    await page.setViewportSize({ width: 390, height: 844 });
+    const mobileState = await page.evaluate(() => ({
+      overflow: document.documentElement.scrollWidth > innerWidth,
+      selectedTemplate: Boolean(document.querySelector('[data-voice-root]')),
+      chatVisible: Boolean(document.querySelector('[data-voice-chat-form]')),
+      reviewVisible: Boolean(document.querySelector('[data-voice-review-form]')),
+    }));
+    assert.equal(mobileState.overflow, false);
+    assert.equal(mobileState.selectedTemplate && mobileState.chatVisible && mobileState.reviewVisible, true);
     await page.screenshot({ path: path.join(outputDir, 'voice-review-mobile.png'), fullPage: false });
-    result.viewports.push({ viewport: '390x844', overflow: await page.evaluate(() => document.documentElement.scrollWidth > innerWidth), selected_template: true, transcript_and_review_visible: true });
+    result.viewports.push({ viewport: '390x844', ...mobileState, keyboard_journey: 'chat retry, editable review, required validation, return and save' });
     assert.equal(result.viewports.every((item) => !item.overflow), true);
 
     const csrfDiagnostics = await page.evaluate(() => ({
@@ -262,26 +394,25 @@ async function main() {
     }));
     const returnResponsePromise = page.waitForResponse((response) =>
       response.request().method() === 'POST' && response.url().includes('/AIVoiceAutoFill'));
-    await page.getByRole('button', { name: 'Return to chat' }).click();
+    await activateByKeyboard(page, page.getByRole('button', { name: 'Return to chat' }));
     const returnResponse = await returnResponsePromise;
     assert.equal(returnResponse.status(), 200, `Return to chat failed (${JSON.stringify({ csrfDiagnostics, returnRequestHeaders })}): ${await returnResponse.text()}`);
     await page.waitForLoadState('networkidle');
     assert.equal(await page.locator('[data-chat-messages]').getByText('Keep my reviewed name and add my email.').count(), 1);
     assert.equal(await page.locator('[name="field_patient_name"]').inputValue(), 'Grace Hopper');
     assert.equal(await page.locator('[name="field_email"]').inputValue(), 'grace@example.invalid');
-    result.journey.push('Return to chat preserved conversation and reviewed field values across the Django form navigation');
+    result.journey.push('keyboard Return to chat preserved conversation and reviewed field values across Django form navigation');
 
-    await page.locator('[data-voice-review-form] [name="field_patient_name"]').fill('Grace Hopper');
     const saved = await Promise.all([
       page.waitForResponse((response) => response.url().includes('/filledtemplates') && response.status() === 200),
-      page.getByRole('button', { name: 'Save filled form' }).click(),
+      activateByKeyboard(page, page.getByRole('button', { name: 'Save filled form' })),
     ]);
     assert.equal(saved[0].status(), 200);
     const savedCard = page.locator('article').filter({ hasText: 'Grace Hopper' });
     await savedCard.waitFor();
     assert.equal(await savedCard.getByText('Grace Hopper').count(), 1);
     await page.screenshot({ path: path.join(outputDir, 'filled-list-populated-mobile.png'), fullPage: false });
-    result.journey.push('saved reviewed values through the actual Django page and rendered the synthetic filled-list fixture');
+    result.journey.push('keyboard-saved reviewed values through the actual Django page and rendered the synthetic filled-list fixture');
 
     page.once('dialog', (dialog) => dialog.accept());
     await savedCard.getByRole('button', { name: 'Delete' }).click();
@@ -290,8 +421,7 @@ async function main() {
     result.journey.push('confirmed deletion updated the synthetic filled-list fixture');
 
     await page.goto(`${djangoBase}/AIVoiceAutoFill?template=${templateId}`, { waitUntil: 'networkidle' });
-    await page.locator('[data-voice-message]').fill('Discard this delayed answer.');
-    await page.getByRole('button', { name: 'Send to assistant' }).click();
+    await submitMessageByKeyboard(page, page.locator('[data-voice-message]'), page.getByRole('button', { name: 'Send to assistant' }), 'Discard this delayed answer.');
     await staleExtractionStarted;
     await page.evaluate(() => window.dispatchEvent(new PageTransitionEvent('pagehide')));
     releaseStaleExtraction();
@@ -299,38 +429,37 @@ async function main() {
     assert.equal(await page.locator('[data-chat-messages]').getByText('I kept your reviewed name.').count(), 0);
     assert.equal(await page.locator('[name="field_email"]').inputValue(), '');
     assert.equal(result.api.extraction.length, 3);
-    result.journey.push('pagehide cancelled a delayed extraction and suppressed its stale answer and field update');
+    result.journey.push('keyboard-submitted extraction was cancelled on pagehide without a stale answer or field update');
 
     await page.goto(`${djangoBase}/AIVoiceAutoFill?template=${templateId}`, { waitUntil: 'networkidle' });
-    await page.locator('[data-voice-message]').fill('Prepare a spoken response.');
-    await page.getByRole('button', { name: 'Send to assistant' }).click();
+    await submitMessageByKeyboard(page, page.locator('[data-voice-message]'), page.getByRole('button', { name: 'Send to assistant' }), 'Prepare a spoken response.');
     await page.getByRole('button', { name: 'Speak response' }).first().waitFor();
     const speak = page.getByRole('button', { name: 'Speak response' }).first();
-    await speak.click();
+    await activateByKeyboard(page, speak);
     await page.waitForFunction(() => document.querySelector('[data-media-status]').textContent.includes('Preparing'));
-    await speak.click();
+    await activateByKeyboard(page, speak, 'Space');
     await page.waitForFunction(() => document.querySelector('[data-media-status]').textContent.includes('Replacing'));
     if (releaseFirstTts) releaseFirstTts();
     if (releaseSecondTts) releaseSecondTts();
     await page.waitForFunction(() => document.querySelector('[data-media-status]').textContent.includes('Playing'));
     await page.waitForTimeout(50);
     assert.equal(await page.evaluate(() => window.__p8Voice.audios.length), 1);
-    result.journey.push('a replaced pending TTS response was suppressed; the current response played once');
+    result.journey.push('keyboard Speak response replaced a pending TTS request; only the current response played');
 
-    await speak.click();
+    await activateByKeyboard(page, speak);
     await page.waitForFunction(() => window.__p8Voice.audios.length === 2);
     assert.equal(await page.evaluate(() => window.__p8Voice.audios[0].paused), true);
     assert.equal(await page.evaluate(() => window.__p8Voice.audios[0].src), '');
     await page.evaluate(() => { window.__p8Voice.rejectNextPlay = true; });
-    await speak.click();
+    await activateByKeyboard(page, speak, 'Space');
     await page.waitForFunction(() => document.querySelector('[data-media-status]').textContent.includes('Playback was blocked'));
     assert.equal(await page.evaluate(() => window.__p8Voice.audios[2].paused), true);
-    result.journey.push('previous TTS audio was paused and released; rejected playback stayed visible');
+    result.journey.push('keyboard Speak response paused and released prior audio; rejected playback stayed visible');
 
-    await speak.click();
+    await activateByKeyboard(page, speak);
     await page.waitForFunction(() => document.querySelector('[data-media-status]').textContent.includes('Speech playback is unavailable'));
     assert.equal(await page.evaluate(() => window.__p8Voice.audios.length), 3);
-    result.journey.push('invalid TTS response was rejected without creating audio');
+    result.journey.push('keyboard Speak response rejected invalid TTS data without creating audio');
 
     await speak.click();
     await page.waitForTimeout(50);
@@ -340,7 +469,7 @@ async function main() {
     await page.waitForFunction(() => window.__p8Voice.audios[2].paused === true);
     await page.waitForTimeout(50);
     assert.equal(await page.evaluate(() => window.__p8Voice.audios.length), 3);
-    result.journey.push('pagehide cancelled pending TTS and prevented a stale audio response');
+    result.journey.push('pagehide cancelled keyboard-started TTS and prevented a stale audio response');
 
     assert.deepEqual(result.browser_errors, []);
     await fs.writeFile(path.join(outputDir, 'voice-integration-results.json'), `${JSON.stringify(result, null, 2)}\n`, 'utf8');

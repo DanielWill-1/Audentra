@@ -281,9 +281,8 @@
   document.querySelectorAll("[data-template-builder]").forEach(initForm);
   document.querySelector("[data-template-refresh]")?.addEventListener("click", () => window.location.reload());
   document.querySelectorAll("[data-template-results]").forEach((results) => {
-    const section = results.closest("section");
-    const controls = [...(section?.querySelectorAll("[data-template-view]") || [])];
-    const status = section?.querySelector("[data-template-view-status]");
+    const controls = [...document.querySelectorAll("[data-template-view]")];
+    const status = document.querySelector("[data-template-view-status]");
     controls.forEach((button) => {
       button.addEventListener("click", () => {
         const layout = button.dataset.templateView === "list" ? "list" : "grid";
@@ -295,4 +294,27 @@
       });
     });
   });
+
+  const templateActionMenus = [...document.querySelectorAll("details[data-template-actions]")];
+  const templateFilterDisclosures = [...document.querySelectorAll("details[data-template-filters]")];
+  const templateDismissibleDisclosures = [...templateActionMenus, ...templateFilterDisclosures];
+  document.addEventListener("click", (event) => {
+    templateDismissibleDisclosures.forEach((menu) => {
+      if (menu.open && !menu.contains(event.target)) menu.open = false;
+    });
+  });
+  document.addEventListener("keydown", (event) => {
+    if (event.key !== "Escape") return;
+    const openMenu = [...templateDismissibleDisclosures].reverse().find((menu) => menu.open);
+    if (!openMenu) return;
+    openMenu.open = false;
+    openMenu.querySelector(":scope > summary")?.focus();
+  });
+
+  const collaboration = document.querySelector("details[data-template-collaboration]");
+  const openCollaborationForHash = () => {
+    if (location.hash === "#collaboration" && collaboration) collaboration.open = true;
+  };
+  openCollaborationForHash();
+  window.addEventListener("hashchange", openCollaborationForHash);
 })();

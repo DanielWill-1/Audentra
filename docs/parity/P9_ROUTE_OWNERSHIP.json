@@ -1,5 +1,5 @@
 {
-  "run_id": "p9-initial-readonly-20261013",
+  "run_id": "p9-full-20261014-0723-utc",
   "status": "PASS — read-only manifest/registry/resolver reconciliation",
   "boundary": "Local Django URL resolver under config.settings.test; no HTTP requests or hosted reads/writes.",
   "source_manifest": "docs/parity/route-manifest.json",

@@ -224,8 +224,11 @@ def _write_results(results: dict[str, object]) -> None:
     evidence_run = os.getenv("P7_EVIDENCE_RUN", "closeout-20261012")
     if not re.fullmatch(r"[a-z0-9][a-z0-9_-]{0,47}", evidence_run, re.IGNORECASE):
         raise ValueError("P7_EVIDENCE_RUN must be a short filesystem-safe label.")
+    p9_evidence_dir = os.getenv("P9_EVIDENCE_DIR")
     destination = (
-        REPOSITORY
+        Path(p9_evidence_dir) / "P9_HOSTED_ROUTE_RESULTS.json"
+        if p9_evidence_dir
+        else REPOSITORY
         / "docs"
         / "pages"
         / "evidence"
@@ -233,6 +236,8 @@ def _write_results(results: dict[str, object]) -> None:
         / evidence_run
         / "hosted-route-results.json"
     )
+    if destination.exists():
+        raise FileExistsError(f"Refusing to overwrite hosted evidence: {destination}")
     destination.parent.mkdir(parents=True, exist_ok=True)
     destination.write_text(json.dumps(results, indent=2) + "\n", encoding="utf-8")
 
@@ -240,9 +245,14 @@ def _write_results(results: dict[str, object]) -> None:
 def main() -> int:
     _assert_development_target()
     results: dict[str, object] = {
-        "run": "P7 W5/W6 protected Django routes against the development shared pooler",
+        "run": (
+            "P9 W5/W6 protected Django routes against the development shared pooler"
+            if os.getenv("P9_EVIDENCE_DIR")
+            else "P7 W5/W6 protected Django routes against the development shared pooler"
+        ),
         "route_waves": ["W5", "W6"],
         "source": "Fresh synthetic Auth accounts; django_data RLS context; exact fixture cleanup",
+        "project_ref": (urlsplit(settings.SUPABASE_URL).hostname or "").split(".", 1)[0],
         "status": "running",
         "accounts_created": 0,
         "emails_sent": 0,
@@ -321,6 +331,34 @@ def main() -> int:
                 dict(stranger_session.get("user_metadata", {})),
             )
             checks.append("three_fresh_accounts_authenticated_through_django")
+
+            stage = "authenticated_storage_bucket_metadata_read"
+            bucket_metadata_response = admin_http.get(
+                f"{settings.SUPABASE_URL.rstrip('/')}/storage/v1/bucket/template-files",
+                headers={
+                    "apikey": settings.SUPABASE_PUBLISHABLE_KEY,
+                    "Authorization": f"Bearer {owner_session.get('access_token', '')}",
+                },
+            )
+            bucket_metadata: dict[str, object] = {
+                "access_method": (
+                    "read-only Storage API GET with fresh synthetic owner access token"
+                ),
+                "http_status": bucket_metadata_response.status_code,
+            }
+            if bucket_metadata_response.status_code == 200:
+                bucket_payload = bucket_metadata_response.json()
+                for field in ("id", "name", "public", "file_size_limit", "allowed_mime_types"):
+                    bucket_metadata[field] = bucket_payload.get(field)
+                if bucket_metadata.get("id") == "template-files":
+                    results["storage_bucket_metadata"] = bucket_metadata
+                    checks.append("authenticated_owner_can_read_private_bucket_metadata")
+                else:
+                    bucket_metadata["status"] = "unexpected_bucket_identity"
+                    results["storage_bucket_metadata"] = bucket_metadata
+            else:
+                bucket_metadata["status"] = "metadata_not_visible_to_authenticated_owner"
+                results["storage_bucket_metadata"] = bucket_metadata
 
             stage = "create_hidden_template"
             name = template_name

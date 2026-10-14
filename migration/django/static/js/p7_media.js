@@ -16,6 +16,7 @@
   const maxBytes = Number(root.dataset.maxAudioBytes || 0);
   let attemptSequence = 0;
   let activeAttempt = null;
+  const ownedStreams = new Set();
   let recording = null;
   let previewUrl = null;
   let transcription = null;
@@ -26,6 +27,7 @@
   function stopStream(attempt, stream = attempt?.stream) {
     if (!stream || attempt.stoppedStreams.has(stream)) return;
     attempt.stoppedStreams.add(stream);
+    ownedStreams.delete(stream);
     stream.getTracks().forEach((track) => track.stop());
     if (attempt.stream === stream) attempt.stream = null;
   }
@@ -155,6 +157,7 @@
         return;
       }
       attempt.stream = stream;
+      ownedStreams.add(stream);
       const recorder = new MediaRecorder(stream, { mimeType });
       attempt.recorder = recorder;
       recorder.addEventListener("dataavailable", (event) => {
@@ -244,5 +247,9 @@
   window.addEventListener("pagehide", () => {
     disposed = true;
     resetCurrent();
+    for (const stream of ownedStreams) {
+      stream.getTracks().forEach((track) => track.stop());
+    }
+    ownedStreams.clear();
   }, { once: true });
 })();

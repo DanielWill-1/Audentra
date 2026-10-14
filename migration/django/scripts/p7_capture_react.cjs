@@ -6,7 +6,10 @@ const { chromium } = require('playwright');
 const baseUrl = process.env.P7_REACT_BASE_URL || 'http://localhost:5173';
 const root = path.resolve(__dirname, '..', '..', '..');
 const wave = process.argv.includes('--wave=w2') ? 'w2' : 'w1';
-const output = path.join(root, 'docs', 'pages', 'evidence', wave, 'legacy');
+const p9EvidenceDir = process.env.P9_EVIDENCE_DIR ? path.resolve(process.env.P9_EVIDENCE_DIR) : null;
+const output = p9EvidenceDir
+  ? path.join(p9EvidenceDir, 'source', wave)
+  : path.join(root, 'docs', 'pages', 'evidence', wave, 'legacy');
 const w1Routes = [
   ['terms', '/terms'],
   ['privacy', '/privacy'],
@@ -44,9 +47,9 @@ async function main() {
         page.on('pageerror', (error) => consoleErrors.push(error.message));
         page.on('requestfailed', (request) => failedRequests.push({ url: request.url(), failure: request.failure()?.errorText }));
         await page.setViewportSize({ width: viewport.width, height: viewport.height });
-        const response = await page.goto(`${baseUrl}${route}`, { waitUntil: 'domcontentloaded' });
+        const response = await page.goto(`${baseUrl}${route}`, { waitUntil: 'commit', timeout: 60000 });
         assert.equal(response?.status(), 200, `${route} should render from current React source`);
-        await page.locator('#root main').waitFor({ state: 'visible' });
+        await page.locator('#root main').waitFor({ state: 'visible', timeout: 60000 });
         await page.waitForTimeout(500);
         const markup = await page.locator('#root main').innerHTML();
         assert.ok(markup.length > 100, `${route} main body should contain page content`);

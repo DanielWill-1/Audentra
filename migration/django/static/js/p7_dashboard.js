@@ -48,14 +48,14 @@
     for (const form of forms) {
       const completed = form.type === "form_completed";
       const item = document.createElement("li");
-      item.className = "flex flex-wrap items-center justify-between gap-3 px-5 py-4";
+      item.className = "flex flex-wrap items-center justify-between gap-3 px-6 py-4";
       const details = document.createElement("div");
       details.className = "min-w-0";
       const title = document.createElement("p");
-      title.className = "truncate font-medium";
+      title.className = "truncate font-body-medium text-body-medium font-medium text-text-primary";
       title.textContent = form.title.trim();
       const time = document.createElement("p");
-      time.className = "mt-1 text-xs text-text-muted";
+      time.className = "font-metadata text-metadata text-text-muted";
       const elapsedMinutes = Math.max(0, Math.floor((Date.now() - Date.parse(form.time)) / 60000));
       const elapsedDays = Math.floor(elapsedMinutes / 1440);
       time.textContent = elapsedMinutes < 1
@@ -72,10 +72,10 @@
       const actions = document.createElement("div");
       actions.className = "flex items-center gap-3";
       const badge = document.createElement("span");
-      badge.className = "rounded bg-surface-subtle px-2.5 py-1 text-xs font-medium";
-      badge.textContent = completed ? "Completed" : "In progress";
+      badge.className = `rounded px-2.5 py-1 font-label-code text-label-code font-medium ${completed ? "bg-success/10 text-success" : "bg-warning/15 text-warning"}`;
+      badge.textContent = completed ? "Completed" : "In Progress";
       const link = document.createElement("a");
-      link.className = "text-sm font-medium text-blue-700 underline";
+      link.className = "font-metadata text-metadata text-primary hover:text-brand-hover";
       link.href = completed ? "/filledtemplates" : "/AIVoiceAutoFill";
       link.textContent = completed ? "View" : "Resume";
       actions.append(badge, link);

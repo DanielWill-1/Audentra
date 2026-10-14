@@ -57,6 +57,8 @@ def test_signup_requires_terms_consent_and_supports_htmx() -> None:
     assert b"htmx-2.0.8.min.js" in page.content
     csrf = client.cookies[settings.CSRF_COOKIE_NAME].value
     values = {
+            "first_name": "Synthetic",
+            "last_name": "Account",
         "email": USER["email"],
         "password": "secure passphrase",
         "confirm_password": "secure passphrase",
@@ -78,7 +80,7 @@ def test_signup_requires_terms_consent_and_supports_htmx() -> None:
         auth.return_value.sign_up.assert_not_called()
         values["accepted_terms"] = "on"
         signed_up = client.post("/signup/", values, HTTP_X_CSRFTOKEN=csrf, HTTP_HX_REQUEST="true")
-    assert signed_up["HX-Redirect"] == "/auth/session/"
+    assert signed_up["HX-Redirect"] == "/dashboard"
     assert client.session[AUTH_SESSION_KEY]["subject"] == SUBJECT
     assert client.cookies[settings.SESSION_COOKIE_NAME]["httponly"]
     assert client.cookies[settings.SESSION_COOKIE_NAME]["samesite"] == "Lax"
@@ -102,6 +104,8 @@ def test_signup_does_not_start_session_when_profile_provisioning_fails() -> None
         response = client.post(
             "/signup/",
             {
+                    "first_name": "Synthetic",
+                    "last_name": "Account",
                 "email": USER["email"],
                 "password": "secure passphrase",
                 "confirm_password": "secure passphrase",
@@ -120,6 +124,8 @@ def test_signup_does_not_claim_success_when_confirmation_has_been_reenabled() ->
         response = Client().post(
             "/signup/",
             {
+                    "first_name": "Synthetic",
+                    "last_name": "Account",
                 "email": USER["email"],
                 "password": "secure passphrase",
                 "confirm_password": "secure passphrase",

@@ -8,7 +8,10 @@ const { captureSourceProvenance } = require('./p7_source_provenance.cjs');
 const root = path.resolve(__dirname, '..', '..', '..');
 const run = process.env.P7_EVIDENCE_RUN || 'post-wave-review-20261012';
 const baseUrl = process.env.P7_REACT_BASE_URL || 'http://127.0.0.1:15573';
-const outputRoot = path.join(root, 'docs', 'pages', 'evidence');
+const activityClock = process.env.P7_ACTIVITY_CLOCK || new Date().toISOString();
+const outputRoot = process.env.P9_EVIDENCE_DIR
+  ? path.join(path.resolve(process.env.P9_EVIDENCE_DIR), 'source')
+  : path.join(root, 'docs', 'pages', 'evidence');
 const sourceProvenance = captureSourceProvenance(root);
 const userId = '11111111-1111-4111-8111-111111111111';
 const templateId = '33333333-3333-4333-8333-333333333333';
@@ -99,8 +102,10 @@ function fixtureFor(request) {
 async function main() {
   const browser = await chromium.launch({ headless: true });
   const authOnly = process.argv.includes('--auth-only');
+  const requestedWave = process.argv.find((argument) => /^--wave=w[3-7]$/.test(argument))?.slice(-2);
   const waveEntries = Object.entries(routes).filter(([wave]) =>
-    authOnly ? wave === 'w3' : !process.argv.includes('--app-waves-only') || wave !== 'w3',
+    requestedWave ? wave === requestedWave
+      : authOnly ? wave === 'w3' : !process.argv.includes('--app-waves-only') || wave !== 'w3',
   );
   const summary = {
     run_id: run,
@@ -121,7 +126,9 @@ async function main() {
       summary.fixture_data = wave === 'w3'
         ? 'Auth pages captured without a signed-in session; no credentials were submitted'
         : 'Patient intake template, schedule, and filled-form row; all dummy-origin requests are intercepted';
-      const output = path.join(outputRoot, wave, run, 'legacy');
+      const output = process.env.P9_EVIDENCE_DIR
+        ? path.join(outputRoot, wave)
+        : path.join(outputRoot, wave, run, 'legacy');
       await fs.mkdir(output, { recursive: true });
       const pages = [];
       for (const [slug, route] of waveRoutes) {
@@ -141,6 +148,7 @@ async function main() {
             }, { syntheticUser: fixtureUser });
           }
           const page = await context.newPage();
+          if (route === '/activitylog') await page.clock.setFixedTime(new Date(activityClock));
           const consoleErrors = [];
           const failedRequests = [];
           page.on('console', (message) => {
