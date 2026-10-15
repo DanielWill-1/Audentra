@@ -95,3 +95,4 @@ docs/parity/reports/*
 *\service-account.json
 service-account.json
 /docs/parity/evidence/p9
+/docs/deployment/evidence

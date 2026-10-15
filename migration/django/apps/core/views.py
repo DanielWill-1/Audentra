@@ -64,7 +64,13 @@ preview_urlpatterns = [
 
 
 @require_GET
-def healthz(request: HttpRequest) -> JsonResponse:
+def livez(request: HttpRequest) -> JsonResponse:
+    del request
+    return JsonResponse({"status": "ok"})
+
+
+@require_GET
+def readyz(request: HttpRequest) -> JsonResponse:
     del request
     for alias in ("default", "supabase"):
         try:
@@ -73,3 +79,10 @@ def healthz(request: HttpRequest) -> JsonResponse:
             logger.warning("Health probe failed for %s (%s).", alias, type(error).__name__)
             return JsonResponse({"status": "unavailable"}, status=503)
     return JsonResponse({"status": "ok", "checks": {"default": "ok", "supabase": "ok"}})
+
+
+@require_GET
+def healthz(request: HttpRequest) -> JsonResponse:
+    """Preserve the existing data-readiness route for older monitors."""
+
+    return readyz(request)

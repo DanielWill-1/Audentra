@@ -7,7 +7,7 @@ from apps.accounts.principals import SupabaseUser
 from apps.ai.backends import groq
 from apps.ai.backends.groq import _extract_json
 from apps.ai.prompts import build_messages, build_system_prompt
-from apps.ai.services import AI_FAILURE_RESPONSE, extract
+from apps.ai.services import AI_FAILURE_RESPONSE, AIProviderError, extract
 from django.test import Client, override_settings
 
 EXPECTED_SYSTEM_PROMPT = (
@@ -188,6 +188,48 @@ def test_mock_and_provider_error_fallbacks_are_distinct() -> None:
     assert extract(
         "hello", [], {}, [], backend=lambda *_args: (_ for _ in ()).throw(RuntimeError("secret"))
     ) == {"response": AI_FAILURE_RESPONSE, "extractedData": {}}
+
+
+def test_real_extraction_provider_failure_is_an_error_not_a_mock_response() -> None:
+    def fail(*_args: object) -> dict[str, object]:
+        raise RuntimeError("private provider response")
+
+    with pytest.raises(AIProviderError, match="provider failed") as error:
+        extract("hello", [], {}, [], backend=fail, use_mock=False)
+    assert "private provider response" not in str(error.value)
+
+
+def test_real_extraction_provider_failure_returns_sanitized_http_error() -> None:
+    client = Client(
+        HTTP_HOST="127.0.0.1:8000",
+        HTTP_ORIGIN="http://127.0.0.1:8000",
+        HTTP_X_INTERNAL_API_TOKEN="test-request-marker",
+        HTTP_AUTHORIZATION="Bearer synthetic-access",
+    )
+    principal = SupabaseUser(
+        id=UUID("00000000-0000-4000-8000-000000000001"),
+        email="synthetic@example.test",
+        user_metadata={},
+    )
+    with (
+        override_settings(
+            P3_SERVICES_ENABLED=True,
+            P3_ALLOWED_ORIGINS=["http://127.0.0.1:8000"],
+            P3_API_MARKER="test-request-marker",
+            USE_MOCK_AI=False,
+        ),
+        patch("apps.api.middleware.authenticate_bearer", return_value=principal),
+        patch("apps.ai.views.extract", side_effect=AIProviderError("private provider response")),
+    ):
+        response = client.post(
+            "/api/ai/extract/",
+            {"userInput": "Ada", "formFields": [], "currentFormData": {}, "conversation": []},
+            content_type="application/json",
+        )
+
+    assert response.status_code == 503
+    assert response.json() == {"error": "AI extraction is temporarily unavailable"}
+    assert "private provider response" not in response.content.decode()
 
 
 def test_mock_extraction_endpoint_accepts_expected_contract() -> None:

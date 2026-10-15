@@ -17,38 +17,41 @@ BEGIN
   -- Drop foreign key constraint from template_shares.user_id if it exists
   IF EXISTS (
     SELECT 1 FROM information_schema.table_constraints 
-    WHERE constraint_name = 'template_shares_user_id_fkey' 
+    WHERE table_schema = 'public'
+    AND constraint_name = 'template_shares_user_id_fkey'
     AND table_name = 'template_shares'
   ) THEN
-    ALTER TABLE template_shares DROP CONSTRAINT template_shares_user_id_fkey;
+    ALTER TABLE public.template_shares DROP CONSTRAINT template_shares_user_id_fkey;
   END IF;
 
   -- Drop foreign key constraint from template_reviews.reviewer_id if it exists
   IF EXISTS (
     SELECT 1 FROM information_schema.table_constraints 
-    WHERE constraint_name = 'template_reviews_reviewer_id_fkey' 
+    WHERE table_schema = 'public'
+    AND constraint_name = 'template_reviews_reviewer_id_fkey'
     AND table_name = 'template_reviews'
   ) THEN
-    ALTER TABLE template_reviews DROP CONSTRAINT template_reviews_reviewer_id_fkey;
+    ALTER TABLE public.template_reviews DROP CONSTRAINT template_reviews_reviewer_id_fkey;
   END IF;
 END $$;
 
 -- Ensure RLS is enabled on template_shares
-ALTER TABLE template_shares ENABLE ROW LEVEL SECURITY;
+ALTER TABLE IF EXISTS public.template_shares ENABLE ROW LEVEL SECURITY;
 
 -- Ensure RLS is enabled on template_reviews  
-ALTER TABLE template_reviews ENABLE ROW LEVEL SECURITY;
+ALTER TABLE IF EXISTS public.template_reviews ENABLE ROW LEVEL SECURITY;
 
 -- Add policy for authenticated users to select from template_shares
 DO $$
 BEGIN
-  IF NOT EXISTS (
+  IF to_regclass('public.template_shares') IS NOT NULL AND NOT EXISTS (
     SELECT 1 FROM pg_policies 
-    WHERE tablename = 'template_shares' 
+    WHERE schemaname = 'public'
+    AND tablename = 'template_shares'
     AND policyname = 'Authenticated users can read template shares'
   ) THEN
     CREATE POLICY "Authenticated users can read template shares"
-      ON template_shares
+      ON public.template_shares
       FOR SELECT
       TO authenticated
       USING (true);
@@ -58,13 +61,14 @@ END $$;
 -- Add policy for authenticated users to select from template_reviews
 DO $$
 BEGIN
-  IF NOT EXISTS (
+  IF to_regclass('public.template_reviews') IS NOT NULL AND NOT EXISTS (
     SELECT 1 FROM pg_policies 
-    WHERE tablename = 'template_reviews' 
+    WHERE schemaname = 'public'
+    AND tablename = 'template_reviews'
     AND policyname = 'Authenticated users can read template reviews'
   ) THEN
     CREATE POLICY "Authenticated users can read template reviews"
-      ON template_reviews
+      ON public.template_reviews
       FOR SELECT
       TO authenticated
       USING (true);

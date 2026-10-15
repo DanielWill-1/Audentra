@@ -1,0 +1,25 @@
+﻿{
+  "status": "pass",
+  "captured_at": "2026-10-15T16:29:24.469Z",
+  "container": "supabase_db_VoiceForm",
+  "boundary": "Local Docker only; hosted project untouched. Scratch fixtures are synthetic.",
+  "checks": [
+    "canonical baseline remains unchanged",
+    "fresh historical replay reproduces 58-column/24-policy drift",
+    "email mismatch and incompatible NULL data abort without schema changes",
+    "full migration replay matches baseline; alignment is idempotent",
+    "P5 reconciliation and forward alignment can be reapplied together",
+    "owner/share/review/private-object RLS assertions pass with rolled-back fixtures"
+  ],
+  "scratch_cleanup": [
+    {
+      "kind": "replay",
+      "removed": true
+    },
+    {
+      "kind": "baseline",
+      "removed": true
+    }
+  ],
+  "scratch_role_removed": true
+}

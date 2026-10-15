@@ -21,6 +21,7 @@ SERVICE_PATHS = {
     "/api/ai/extract",
     "/api/ai/extract/",
 }
+PRIVATE_PROXY_HEADER = "X-VoiceForm-Proxy-Token"
 
 
 class RequestBodyError(ValueError):
@@ -101,6 +102,20 @@ def _preflight(request: HttpRequest, origin: str) -> HttpResponse:
     return response
 
 
+def _private_client_is_authorized(request: HttpRequest) -> bool:
+    mode = getattr(settings, "P3_SERVICE_ACCESS_MODE", "loopback")
+    if mode == "loopback":
+        try:
+            return ip_address(request.META.get("REMOTE_ADDR", "")).is_loopback
+        except ValueError:
+            return False
+    if mode == "trusted-proxy":
+        expected = getattr(settings, "P3_PROXY_TOKEN", "")
+        supplied = request.headers.get(PRIVATE_PROXY_HEADER, "")
+        return len(expected) >= 32 and compare_digest(supplied, expected)
+    return False
+
+
 def check_service_boundary(request: HttpRequest) -> HttpResponse | None:
     """Validate and cache network limits before service auth and CSRF checks."""
     if request.META.get("P4_BOUNDARY_CHECKED"):
@@ -115,12 +130,8 @@ def check_service_boundary(request: HttpRequest) -> HttpResponse | None:
         except DisallowedHost:
             response = _json_error("Host not allowed", 400)
         else:
-            try:
-                source_is_loopback = ip_address(request.META.get("REMOTE_ADDR", "")).is_loopback
-            except ValueError:
-                source_is_loopback = False
-            if not source_is_loopback:
-                response = _json_error("Loopback access required", 403)
+            if not _private_client_is_authorized(request):
+                response = _json_error("Private service upstream required", 403)
             else:
                 origin = _allowed_origin(request.headers.get("Origin"))
                 if origin is None:

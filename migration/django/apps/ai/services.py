@@ -13,6 +13,10 @@ AI_FAILURE_RESPONSE = (
 )
 
 
+class AIProviderError(RuntimeError):
+    """A real extraction provider failed and the caller must show an error."""
+
+
 def extract(
     user_input: Any,
     form_fields: Any,
@@ -22,12 +26,12 @@ def extract(
     backend: Extractor | None = None,
     use_mock: bool | None = None,
 ) -> dict[str, Any]:
+    mock_selected = settings.USE_MOCK_AI if use_mock is None else use_mock
+    if not isinstance(user_input, str) or not user_input.strip():
+        return {"response": AI_FAILURE_RESPONSE, "extractedData": {}}
+    if not isinstance(form_fields, list) or not isinstance(conversation, list):
+        return {"response": AI_FAILURE_RESPONSE, "extractedData": {}}
     try:
-        if not isinstance(user_input, str) or not user_input.strip():
-            raise ValueError("User input is required")
-        if not isinstance(form_fields, list) or not isinstance(conversation, list):
-            raise TypeError("Extraction request shape is invalid")
-        mock_selected = settings.USE_MOCK_AI if use_mock is None else use_mock
         selected = backend or (mock_extract if mock_selected else None)
         if selected is None:
             from .backends.groq import extract as groq_extract
@@ -39,6 +43,10 @@ def extract(
             "response": response if isinstance(response, str) else "",
             "extractedData": result.get("extractedData") or {},
         }
+    except AIProviderError:
+        raise
     except Exception as error:
         logger.warning("P3 AI extraction failed (%s).", type(error).__name__)
+        if not mock_selected:
+            raise AIProviderError("AI extraction provider failed") from error
         return {"response": AI_FAILURE_RESPONSE, "extractedData": {}}

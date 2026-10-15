@@ -268,16 +268,16 @@ Referenced in `uploadTemplateFile()` (`src/lib/templates.ts`). Stores uploaded t
 | 4 | `20250614161822_turquoise_king.sql` | `scheduled_events` |
 | 5 | `20250628064052_twilight_disk.sql` | `users`, `handle_new_user()` trigger |
 | 6 | `20250628064557_aged_tree.sql` | `teams`, `team_members`, `team_invites`, `team_activity` |
-| 7 | `20250628065741_precious_brook.sql` | **WILL FAIL** — adds RLS to `template_shares` and `template_reviews` which don't exist yet |
+| 7 | `20250628065741_precious_brook.sql` | Skips its share/review RLS changes when those legacy tables are absent; the later P5 reconciliation creates and secures them |
 
 ---
 
 ## Critical Issues
 
-1. **Migration 7 will error** — `template_shares` and `template_reviews` don't exist when the migration runs. A migration to CREATE these tables must be inserted before `20250628065741_precious_brook.sql`.
+1. **Resolved (2026-10-15):** migration 7 now skips absent share/review tables, and the P5 reconciliation later creates them for a fresh local stack. It still applies the legacy RLS changes when the tables already exist.
 
-2. **Missing INSERT/UPDATE/DELETE RLS policies** for `template_shares` and `template_reviews` — the precious_brook migration only adds SELECT policies. All CRUD operations from `lib/templates.ts` will fail for authenticated users.
+2. **Resolved by P5:** the reconciliation migration installs participant-scoped SELECT/INSERT/UPDATE/DELETE policies for shares and reviews.
 
-3. **`filled_templates` has NO migration or RLS at all** — must be created from scratch.
+3. **Resolved by P5:** `filled_templates` is created with owner-scoped RLS policies by the reconciliation migration.
 
-4. **Storage bucket `template-files` is not created by any migration** — must be created manually in Supabase dashboard.
+4. Local Supabase creates the private `template-files` bucket from `supabase/config.toml`; hosted bucket provisioning is handled separately from SQL migrations.

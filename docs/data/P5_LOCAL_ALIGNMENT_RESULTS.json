@@ -1,0 +1,100 @@
+﻿{
+  "status": "pass",
+  "captured_at": "2026-10-15T16:31:04.710Z",
+  "container": "supabase_db_VoiceForm",
+  "boundary": "Local Docker only; hosted project untouched. Scratch fixtures are synthetic.",
+  "checks": [
+    "canonical baseline remains unchanged",
+    "running local application and private Storage catalog match the canonical baseline"
+  ],
+  "local_comparison": [
+    {
+      "area": "tables",
+      "expected_count": 6,
+      "actual_count": 6,
+      "pass": true
+    },
+    {
+      "area": "columns",
+      "expected_count": 57,
+      "actual_count": 57,
+      "pass": true
+    },
+    {
+      "area": "constraints",
+      "expected_count": 30,
+      "actual_count": 30,
+      "pass": true
+    },
+    {
+      "area": "indexes",
+      "expected_count": 19,
+      "actual_count": 19,
+      "pass": true
+    },
+    {
+      "area": "policies",
+      "expected_count": 23,
+      "actual_count": 23,
+      "pass": true
+    },
+    {
+      "area": "triggers",
+      "expected_count": 10,
+      "actual_count": 10,
+      "pass": true
+    },
+    {
+      "area": "functions",
+      "expected_count": 11,
+      "actual_count": 11,
+      "pass": true
+    },
+    {
+      "area": "grants",
+      "expected_count": 22,
+      "actual_count": 22,
+      "pass": true
+    },
+    {
+      "area": "column_grants",
+      "expected_count": 54,
+      "actual_count": 54,
+      "pass": true
+    },
+    {
+      "area": "storage_policies",
+      "expected_count": 4,
+      "actual_count": 4,
+      "pass": true
+    },
+    {
+      "area": "bucket",
+      "expected_count": 1,
+      "actual_count": 1,
+      "pass": true
+    },
+    {
+      "area": "legacy_auth_trigger",
+      "expected_count": 0,
+      "actual_count": 0,
+      "pass": true
+    }
+  ],
+  "local_migration_recorded": true,
+  "local_application_row_counts": {
+    "users": 0,
+    "templates": 0,
+    "template_shares": 0,
+    "filled_templates": 0,
+    "scheduled_events": 0,
+    "template_reviews": 0
+  },
+  "scratch_cleanup": [
+    {
+      "kind": "baseline",
+      "removed": true
+    }
+  ],
+  "scratch_role_removed": true
+}

@@ -7,7 +7,7 @@ from django.http import HttpRequest, JsonResponse
 
 from apps.api.boundary import RequestBodyError, service_boundary
 
-from .services import extract
+from .services import AIProviderError, extract
 
 logger = logging.getLogger(__name__)
 
@@ -33,10 +33,13 @@ def extract_data(request: HttpRequest) -> JsonResponse:
         return JsonResponse({"error": "JSON body must be an object"}, status=400)
 
     logger.info("p3_service_request endpoint=ai_extract input=json")
-    result = extract(
-        payload.get("userInput"),
-        payload.get("formFields"),
-        payload.get("currentFormData"),
-        payload.get("conversation"),
-    )
+    try:
+        result = extract(
+            payload.get("userInput"),
+            payload.get("formFields"),
+            payload.get("currentFormData"),
+            payload.get("conversation"),
+        )
+    except AIProviderError:
+        return JsonResponse({"error": "AI extraction is temporarily unavailable"}, status=503)
     return JsonResponse(result)

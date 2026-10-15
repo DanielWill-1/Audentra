@@ -1,0 +1,25 @@
+﻿{
+  "status": "fail",
+  "captured_at": "2026-10-15T16:28:21.333Z",
+  "container": "supabase_db_VoiceForm",
+  "boundary": "Local Docker only; hosted project untouched. Scratch fixtures are synthetic.",
+  "checks": [
+    "canonical baseline remains unchanged",
+    "fresh historical replay reproduces 58-column/24-policy drift",
+    "email mismatch and incompatible NULL data abort without schema changes",
+    "full migration replay matches baseline; alignment is idempotent",
+    "P5 reconciliation and forward alignment can be reapplied together"
+  ],
+  "error": "ERROR:  permission denied to set role \"p5_alignment_de14eaf41b_data\"",
+  "scratch_cleanup": [
+    {
+      "kind": "replay",
+      "removed": true
+    },
+    {
+      "kind": "baseline",
+      "removed": true
+    }
+  ],
+  "scratch_role_removed": true
+}

@@ -1,14 +1,19 @@
 # P9 read-only schema acceptance
 
-**Status:** Incomplete. The P9 schema inspection completed against the accepted P5 baseline using the restricted project-scoped `django_data` identity. All inspected schema/security comparisons passed. Owner requested another nonprivileged Storage metadata attempt; attempt 05 again returned no bucket metadata. This remains unavailable, not schema drift. Do not use an admin/service-role credential. See the [attempt 05 command result](evidence/p9/p9-full-20261014-0723-utc/P9_SCHEMA_ACCEPTANCE_ATTEMPT_05_COMMAND_RESULTS.json).
+**Status: PASS within current P9 scope.** The visible P5 schema/security comparison passed using the restricted project-scoped `django_data` identity. A supplemental read-only Management API capture now confirms the hosted `template-files` bucket is private, limited to 20 MiB, and restricted to the accepted MIME types. Those hosted settings match `supabase/config.toml`. No admin or service-role credential was used.
 
 ## Run and boundaries
 
-- Run: `p9-full-20261014-0723-utc`
-- Results: [attempt 04](evidence/p9/p9-full-20261014-0723-utc/P9_SCHEMA_ACCEPTANCE_ATTEMPT_04.json), [attempt 05](evidence/p9/p9-full-20261014-0723-utc/P9_SCHEMA_ACCEPTANCE_ATTEMPT_05.json)
-- Hosted route probe that supplied the read-only metadata attempt: [P9_HOSTED_ROUTE_RESULTS.json](evidence/p9/p9-full-20261014-0723-utc/P9_HOSTED_ROUTE_RESULTS.json)
-- Target: Audentra development project `pgtttjmqibxufvwehkyj`, shared transaction pooler, restricted `django_data` identity.
-- Read-only: no DDL, migrations, policy/grant changes, row reads or row copies were performed by this schema inspection.
+- Schema run: `p9-full-20261014-0723-utc`; supplemental Storage run: `p9-full-20261015-storage-metadata`
+- Results: [attempt 04](evidence/p9/p9-full-20261014-0723-utc/P9_SCHEMA_ACCEPTANCE_ATTEMPT_04.json), [attempt 05](evidence/p9/p9-full-20261014-0723-utc/P9_SCHEMA_ACCEPTANCE_ATTEMPT_05.json), and [attempt 06](evidence/p9/p9-full-20261014-0723-utc/P9_SCHEMA_ACCEPTANCE_ATTEMPT_06.json)
+- Latest restricted-identity schema command result: [attempt 06](evidence/p9/p9-full-20261014-0723-utc/P9_SCHEMA_ACCEPTANCE_ATTEMPT_06.json)
+- Sanitized CLI link state: [P9_SUPABASE_CLI_STATUS.json](evidence/p9/p9-full-20261014-0723-utc/P9_SUPABASE_CLI_STATUS.json)
+- Hosted route probe: [P9_HOSTED_ROUTE_RESULTS.json](evidence/p9/p9-full-20261014-0723-utc/P9_HOSTED_ROUTE_RESULTS.json)
+- Supplemental hosted Storage capture: [raw bucket metadata](evidence/p9/p9-full-20261015-storage-metadata/P9_STORAGE_BUCKET_METADATA.json) and [read-only acceptance comparison](evidence/p9/p9-full-20261015-storage-metadata/P9_STORAGE_BUCKET_ACCEPTANCE.json)
+- Database schema target: Audentra development project `pgtttjmqibxufvwehkyj`, shared transaction pooler, restricted `django_data` identity. Supplemental Storage target: the same development project through the Management API.
+- Read-only: no DDL, migrations, policy/grant changes, application-data reads or row copies were performed by this schema inspection.
+
+The Supabase CLI status is linked to the expected project, while `supabase start` runs the local development stack. Attempts 04–06 queried hosted schema through the restricted `django_data` alias; the supplemental bucket metadata capture used the read-only Supabase Management API with a project-scoped `storage_read` token. The CLI link and local `config.toml` alone do not establish hosted bucket metadata or widen the hosted database role. See the [Supabase CLI workflow](https://supabase.com/docs/guides/local-development/cli-workflows).
 
 ## Accepted baseline comparison
 
@@ -21,10 +26,10 @@
 | Restricted roles and memberships | PASS | 4/4 roles, 1/1 membership, 6/6 schema privileges; role restrictions match the accepted baseline. |
 | Django alias separation | PASS | Default connects as `django_app` on `django`; Supabase alias connects as `django_data` on `public`; PostgreSQL 17.6. |
 | Storage object security | PASS | Authenticated role sees the expected RLS/grants and 4/4 object policies. |
-| Storage bucket privacy and limits | UNAVAILABLE after two restricted reads | Attempt 04's authenticated synthetic-owner Storage API GET returned HTTP 400. Owner-authorized read-only attempt 05 used the existing project-scoped restricted identity and returned no metadata row for bucket `template-files`; privacy, size limit and MIME allowlist remain unknown. |
+| Storage bucket privacy and limits | PASS | The project-scoped read-only Management API capture found `template-files`: `public=false`, `file_size_limit=20971520` (20 MiB), and the five allowed MIME types. Privacy, size and MIME settings match `supabase/config.toml`; see the supplemental acceptance record. |
 
-The complete comparison and connection details are in [P9_SCHEMA_ACCEPTANCE_ATTEMPT_04.json](evidence/p9/p9-full-20261014-0723-utc/P9_SCHEMA_ACCEPTANCE_ATTEMPT_04.json). The result status is `drift_or_incomplete` only because bucket metadata was unavailable; no difference was found in the visible P5 baseline objects.
+Attempt 06 retained `runtime_aliases_status: pass` and `restricted_role_status: pass`; its `drift_or_incomplete` result reflected the bucket metadata that was then unavailable. The supplemental hosted read resolves that gap and confirms the hosted bucket configuration matches the local contract. No schema, bucket, policy, or grant was changed during the inspection.
 
-## Remaining acceptance
+## Closeout
 
-Obtain read-only bucket privacy/size/MIME metadata through an owner-authorized nonprivileged method. The Supabase integration has been surfaced for connection because the existing restricted database path cannot see these fields; it is not connected yet. Do not retry with an admin/service-role credential and do not change the bucket or policies as part of this inspection. The latest restricted-read evidence remains incomplete, not drift.
+The hosted Storage gap is closed by the owner-authorized, read-only Management API capture using a project-scoped `storage_read` token ([API reference](https://supabase.com/docs/reference/api/v1-list-all-buckets)). The result is limited to bucket metadata and was compared with the checked-in configuration. No write credential, database privilege change, bucket mutation, or policy change was used. No hosted Storage acceptance work remains in current P9 scope.

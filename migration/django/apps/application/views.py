@@ -115,9 +115,7 @@ def _label_schedule_events(events: list[dict[str, Any]]) -> list[dict[str, Any]]
     for event in events:
         event_type = event.get("type")
         type_label = (
-            _EVENT_TYPE_LABELS.get(event_type, "Other")
-            if isinstance(event_type, str)
-            else "Other"
+            _EVENT_TYPE_LABELS.get(event_type, "Other") if isinstance(event_type, str) else "Other"
         )
         labeled.append({**event, "type_label": type_label})
     return labeled
@@ -972,11 +970,13 @@ def voice_autofill(request: HttpRequest) -> HttpResponse:
                 return redirect(f"/AIVoiceAutoFill?template={template_id}")
             elif action == "return":
                 conversation = _conversation_values(request.POST.get("conversation_json", "[]"))
-                form_data = _json_object(
-                    request.POST.get("form_data", "{}"), max_bytes=100_000
-                )
+                form_data = _json_object(request.POST.get("form_data", "{}"), max_bytes=100_000)
             else:
                 return HttpResponseNotAllowed(["GET", "POST"])
+        except ai_services.AIProviderError:
+            error = (
+                "AI extraction is temporarily unavailable. Your form was not changed. Try again."
+            )
         except (ValueError, DatabaseError) as exception:
             error = (
                 str(exception)

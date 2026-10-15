@@ -56,9 +56,9 @@ def _database_from_url(url: str, schema: str) -> dict[str, object]:
         raise ValueError("Database URL must be a PostgreSQL URL with a host.")
 
     query = parse_qs(parsed.query)
-    pooler_transaction = (
-        (parsed.hostname or "").endswith(".pooler.supabase.com") and parsed.port == 6543
-    )
+    pooler_transaction = (parsed.hostname or "").endswith(
+        ".pooler.supabase.com"
+    ) and parsed.port == 6543
     options: dict[str, object] = {
         "sslmode": query.get("sslmode", ["require"])[0],
         "connect_timeout": 5,
@@ -112,12 +112,21 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = "/static/"
-STATIC_ROOT = Path(os.getenv("DJANGO_STATIC_ROOT", str(BASE_DIR / "staticfiles")))
+_static_root = os.getenv("DJANGO_STATIC_ROOT", "").strip()
+_static_root_path = Path(_static_root) if _static_root else Path("staticfiles")
+STATIC_ROOT = _static_root_path if _static_root_path.is_absolute() else BASE_DIR / _static_root_path
 STATICFILES_DIRS = [BASE_DIR / "static"]
+STORAGES = {
+    "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+    "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"},
+}
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-P3_SERVICES_ENABLED = os.getenv("P3_SERVICES_ENABLED", "false").lower() == "true"
+P3_SERVICES_ENABLED = os.getenv("P3_SERVICES_ENABLED", "false").strip().lower() == "true"
+P3_SERVICE_ACCESS_MODE = os.getenv("P3_SERVICE_ACCESS_MODE", "loopback").strip().lower()
 P3_API_MARKER = os.getenv("INTERNAL_API_TOKEN", "voiceform-p3")
+P3_PROXY_TOKEN = os.getenv("P3_PROXY_TOKEN", "")
+P10_TRUSTED_PROXY_IP = os.getenv("P10_TRUSTED_PROXY_IP", "").strip()
 P3_ALLOWED_ORIGINS = [
     origin.strip().rstrip("/")
     for origin in os.getenv(
@@ -180,9 +189,9 @@ P6_PREVIEW_ENABLED = os.getenv("P6_PREVIEW_ENABLED", "false").lower() == "true"
 P6_ASSET_INVENTORY = BASE_DIR / "config" / "p6_legacy_assets.json"
 P6_ROUTE_OWNERSHIP = BASE_DIR / "config" / "p6_route_ownership.json"
 
-SPEECH_BACKEND = os.getenv("SPEECH_BACKEND", "mock").lower()
-TTS_BACKEND = os.getenv("TTS_BACKEND", "mock").lower()
-USE_MOCK_AI = os.getenv("USE_MOCK_AI", "true").lower() == "true"
+SPEECH_BACKEND = os.getenv("SPEECH_BACKEND", "mock").strip().lower()
+TTS_BACKEND = os.getenv("TTS_BACKEND", "mock").strip().lower()
+USE_MOCK_AI = os.getenv("USE_MOCK_AI", "true").strip().lower() == "true"
 GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
 GROQ_API_URL = os.getenv("GROQ_API_URL", "https://api.groq.com/openai/v1/chat/completions")
 GROQ_MODEL = os.getenv("GROQ_MODEL", "openai/gpt-oss-120b")

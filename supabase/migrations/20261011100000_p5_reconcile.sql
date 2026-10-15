@@ -1,5 +1,6 @@
 -- Guarded P5 application-schema reconciliation for the verified development target.
--- Safe only when all six application tables are absent or a complete P5 v1 schema exists.
+-- Safe when the application schema is absent, complete P5 v1, or the exact legacy
+-- users/templates/scheduled_events schema produced by the committed history.
 -- DDL runs in a transaction and can be re-applied without changing the resulting catalog.
 BEGIN;
 DO $p5_guard$
@@ -14,7 +15,37 @@ BEGIN
     ('users','templates','template_shares','template_reviews','scheduled_events','filled_templates')
     AND c.relkind IN ('r','p');
   IF existing_tables NOT IN (0,6) THEN
-    RAISE EXCEPTION 'P5 reconciliation found a partial application schema; no changes made';
+    IF existing_tables <> 3
+       OR to_regclass('public.users') IS NULL
+       OR to_regclass('public.templates') IS NULL
+       OR to_regclass('public.scheduled_events') IS NULL
+       OR to_regclass('public.template_shares') IS NOT NULL
+       OR to_regclass('public.template_reviews') IS NOT NULL
+       OR to_regclass('public.filled_templates') IS NOT NULL
+       OR NOT EXISTS (
+         SELECT 1 FROM information_schema.columns
+         WHERE table_schema='public' AND table_name='users' AND column_name='email'
+       )
+       OR NOT EXISTS (
+         SELECT 1 FROM information_schema.columns
+         WHERE table_schema='public' AND table_name='templates' AND column_name='created_by'
+       )
+       OR NOT EXISTS (
+         SELECT 1 FROM information_schema.columns
+         WHERE table_schema='public' AND table_name='scheduled_events' AND column_name='attendees'
+       )
+       OR NOT EXISTS (
+         SELECT 1 FROM pg_policies
+         WHERE schemaname='public' AND tablename='templates'
+           AND policyname='Users can select own templates'
+       )
+       OR NOT EXISTS (
+         SELECT 1 FROM pg_policies
+         WHERE schemaname='public' AND tablename='scheduled_events'
+           AND policyname='Users can view own scheduled events'
+       ) THEN
+      RAISE EXCEPTION 'P5 reconciliation found an unrecognized partial application schema; no changes made';
+    END IF;
   END IF;
   IF existing_tables=6 THEN
     SELECT count(*) INTO secure_tables
@@ -286,6 +317,24 @@ ALTER TABLE public.template_shares ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.template_reviews ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.scheduled_events ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.filled_templates ENABLE ROW LEVEL SECURITY;
+
+-- Remove equivalent owner-only policies left by the historical migrations before
+-- installing the consolidated P5 policy set.
+DROP POLICY IF EXISTS "Authenticated users can read user data" ON public.users;
+DROP POLICY IF EXISTS "Users can insert own data" ON public.users;
+DROP POLICY IF EXISTS "Users can update own data" ON public.users;
+DROP POLICY IF EXISTS "Users can insert own templates" ON public.templates;
+DROP POLICY IF EXISTS "Users can select own templates" ON public.templates;
+DROP POLICY IF EXISTS "Users can update own templates" ON public.templates;
+DROP POLICY IF EXISTS "Users can delete own templates" ON public.templates;
+DROP POLICY IF EXISTS "Allow select own templates" ON public.templates;
+DROP POLICY IF EXISTS "Allow insert own templates" ON public.templates;
+DROP POLICY IF EXISTS "Allow update own templates" ON public.templates;
+DROP POLICY IF EXISTS "Allow delete own templates" ON public.templates;
+DROP POLICY IF EXISTS "Users can view own scheduled events" ON public.scheduled_events;
+DROP POLICY IF EXISTS "Users can create own scheduled events" ON public.scheduled_events;
+DROP POLICY IF EXISTS "Users can update own scheduled events" ON public.scheduled_events;
+DROP POLICY IF EXISTS "Users can delete own scheduled events" ON public.scheduled_events;
 
 DROP POLICY IF EXISTS users_select_self ON public.users;
 CREATE POLICY users_select_self ON public.users FOR SELECT TO authenticated USING (id = auth.uid());

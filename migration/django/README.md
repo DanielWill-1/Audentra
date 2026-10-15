@@ -1,14 +1,14 @@
 # Django foundation
 
-This native Windows Django project remains beside the React/Vite and Express source. P2-P6 services/shells and P7/P8 implementation is present; P7 SR-1 through SR-4 and P8 deterministic acceptance are closed. P9 evidence includes a 25-route deterministic browser comparison, 37 hosted route/security checks and a real desktop microphone subset. Formal P9 acceptance remains open for full route-matrix sign-off, bucket metadata, mobile and provider checks; see [P9 report](../../docs/parity/P9_REPORT.md). P10 implementation waits for explicit owner approval.
+This native Windows Django project remains beside the React/Vite and Express source. P2-P8 implementation is accepted within its documented boundaries, P9 is complete within the revised owner scope, and P10 local preparation is complete. The locked Waitress/WhiteNoise runtime, settings, service boundary, and runbooks passed their scoped checks; production deployment remains deferred. See [P10 readiness](../../docs/deployment/P10_READINESS.md).
 
-See the [current scope handoff](../../HANDOFF_2026-10-14_LOCAL_READINESS.md), [P7 finding closeout](../../docs/pages/P7_SR_CLOSEOUT_2026-10-13.md), [P7/P8 matrix](../../docs/pages/P7_P8_CLOSURE_MATRIX.md), and [P9 task](../../docs/parity/P9_IMPLEMENTATION_PROMPT.md), [acceptance matrix](../../docs/parity/P9_ACCEPTANCE_MATRIX.md), and [report](../../docs/parity/P9_REPORT.md). The older P7 session review remains a dated historical record.
+See the [P10 preparation handoff](../../HANDOFF_2026-10-15_P10_PREPARATION.md), [P7 finding closeout](../../docs/pages/P7_SR_CLOSEOUT_2026-10-13.md), [P7/P8 matrix](../../docs/pages/P7_P8_CLOSURE_MATRIX.md), and [P9 task](../../docs/parity/P9_IMPLEMENTATION_PROMPT.md), [acceptance matrix](../../docs/parity/P9_ACCEPTANCE_MATRIX.md), and [report](../../docs/parity/P9_REPORT.md). The older P7 session review remains a dated historical record.
 
-The bounded P3 code findings are corrected; live speech-provider evidence remains pending for P9. P4 development authentication was verified with fresh hosted accounts and PostgreSQL concurrency; see [P4_REPORT.md](../../docs/auth/P4_REPORT.md). P5 schema, RLS, Storage, Django data services and hosted shared transaction-pooler/user-switch verification are complete; see [P5_REPORT.md](../../docs/data/P5_REPORT.md) and [P5_VERIFICATION.md](../../docs/data/P5_VERIFICATION.md). P6 shells and controlled rollback remain implemented; normal P7 page routing now has zero legacy fallbacks. See [P6 report](../../docs/rendering/P6_REPORT.md) and [rollback runbook](../../docs/rendering/P6_ROLLBACK.md).
+The bounded P3 code findings are corrected; live speech-provider evidence and further recording/lifecycle work are deferred to the owner and future Scope 11. The microphone cleanup patch is intentionally owner-managed and unverified. P4 development Auth and P5 hosted data/RLS/Storage/pooler acceptance pass; see [P4 report](../../docs/auth/P4_REPORT.md) and [P5 verification](../../docs/data/P5_VERIFICATION.md). P6 shells and controlled rollback remain implemented; normal P7 page routing has zero legacy fallbacks.
 
 ## Local operation and P10 reference
 
-The current task is P9 closeout. The owner asked to finish and report P9, then wait for approval before P10. The [P10 brief](../../docs/deployment/P10_IMPLEMENTATION_PROMPT.md) and [readiness ledger](../../docs/deployment/P10_READINESS.md) are references until that approval. Local functionality uses hosted Supabase and configured providers; no paid speech-provider call was made in the P9 run.
+P9 closeout and P10 local preparation are complete. The local schema alignment and the runtime implementation are recorded in the [P5 local results](../../docs/data/P5_LOCAL_ALIGNMENT_RESULTS.json) and [P10 evidence](../../docs/deployment/evidence/p10/p10-20261015-runtime-01/commands.md). Django continues to use the existing hosted development connections. Follow the [P10 local runbook](../../docs/deployment/P10_LOCAL_RUNBOOK.md) for reproducible setup. Recording/provider and physical-device checks remain deferred or excluded as recorded there. Deployment remains a later decision.
 
 ## Setup
 
@@ -20,10 +20,10 @@ Run commands from this directory in PowerShell.
        $env:UV_CACHE_DIR = (Join-Path $PWD ".uv-cache")
        $env:UV_PROJECT_ENVIRONMENT = ".venv-p2"
 
-2. Copy .env.example to .env. Keep the project-local .env private and use only the dedicated django_app and django_data database roles.
+2. If this checkout has no .env, copy .env.example to .env. Keep it private and use only the dedicated django_app and django_data database roles.
 3. Install and lock dependencies with the locally managed interpreter:
 
-       uv sync --python .python\cpython-3.12.10-windows-x86_64-none\python.exe
+       uv sync --locked --python .python\cpython-3.12.10-windows-x86_64-none\python.exe
 
 4. Download and SHA-256 verify the pinned Tailwind standalone executable into ignored .state/, then build the Tailwind 3 CSS:
 
@@ -31,21 +31,24 @@ Run commands from this directory in PowerShell.
 
 5. Run checks, focused lint/type/tests and collect static files:
 
-       uv run python manage.py check
+       uv run --locked python manage.py check --settings=config.settings.local_http
        powershell -NoProfile -ExecutionPolicy Bypass -File scripts/run_ruff.ps1 check .
-       uv run python -m mypy config apps tests
-       uv run python -m pytest -q
-       uv run python manage.py collectstatic --noinput
+       uv run --locked python -m mypy config apps tests
+       uv run --locked python -m pytest -q
+       uv run --locked python manage.py collectstatic --noinput --settings=config.settings.local_http
+       uv run --locked python scripts/p10_preflight.py --profile local-http
 
 6. Apply only Django-owned migrations to default after the restricted database URL is configured:
 
        uv run python manage.py migrate --database=default
 
-7. Start the local development server on loopback:
+7. Start the production-style local HTTP server on loopback:
 
-       uv run python manage.py runserver 127.0.0.1:8000
+       uv run --locked python scripts/serve_p10.py --profile local-http
 
-The health endpoint is at http://127.0.0.1:8000/healthz. It returns 200 only when both PostgreSQL connections pass role and schema checks. If database URLs are absent, offline framework checks use SQLite and the health endpoint returns a sanitized 503.
+The foreground server stops with Ctrl+C. `/livez` reports process status, `/readyz` checks both PostgreSQL aliases, and `/healthz` preserves the earlier database-readiness behavior. The local profile is explicitly HTTP and loopback-only; it sets `DEBUG=False`, disables secure-cookie and HTTPS-redirect flags only for this profile, and serves the collected manifest through WhiteNoise. Production settings retain secure cookies and HTTPS redirect.
+
+The [deployment runbook](../../docs/deployment/P10_DEPLOYMENT_RUNBOOK.md) describes the same-host TLS proxy contract. The [rollback runbook](../../docs/deployment/P10_ROLLBACK_RUNBOOK.md) separates code/traffic rollback from targeted data repair. The selected production host, domain, proxy, Auth policy, provider accounts, external secrets, and deployment remain owner decisions.
 
 The Tailwind and Ruff helpers stage their locked Windows executables in the OS temporary directory as a workaround for launch failures observed in this Windows runner. OneDrive was not established as the cause. Native Python DLL loading also failed inside the Codex Windows sandbox; the same checks passed with approved execution outside it.
 
@@ -53,7 +56,7 @@ The Tailwind and Ruff helpers stage their locked Windows executables in the OS t
 
 The normal pytest configuration uses config.settings.test. Both aliases are in-memory SQLite databases, overriding the hosted URLs loaded by base settings. Never point pytest at the hosted Supabase project or use it to create, drop or flush that database. Live read-only foundation checks run separately under development settings. The [P2 review](../../docs/foundation/P2_REVIEW.md) records 9 passing tests and the repeated foundation checks.
 
-P3 service endpoints are disabled by default and use deterministic mocks when enabled. For Django service work, set P3_SERVICES_ENABLED=true, SPEECH_BACKEND=mock, TTS_BACKEND=mock and USE_MOCK_AI=true. P4 makes verified identity mandatory and requires CSRF for cookie-authorized writes. The React-to-Django authentication handoff was removed from the revised scope; use the Django site for development Auth. See the P3 contracts/report and P4_REPORT.md for evidence.
+P3 service endpoints are disabled by default. For deterministic local service checks, set P3_SERVICES_ENABLED=true with SPEECH_BACKEND=mock, TTS_BACKEND=mock and USE_MOCK_AI=true. Real modes require their private provider configuration; provider failures are surfaced instead of being replaced with successful mock data. P4 makes verified identity mandatory and requires CSRF for cookie-authorized writes. The React-to-Django authentication handoff was removed from the revised scope; use the Django site for development Auth. See the P3 contracts/report and P4_REPORT.md for evidence.
 
 ## P5 application data
 
@@ -69,13 +72,6 @@ The owner authorized disabling mandatory signup email confirmation in the develo
 
 See [P4_REPORT.md](../../docs/auth/P4_REPORT.md) for actual hosted/HTMX and regression evidence. Do not enable the legacy React-to-Django transport as an Auth acceptance path; P4 no longer provides React session handoff.
 
-For the Windows Store interpreter workaround used in this runner, from migration/django/:
-
-```powershell
-$env:PYTHONPATH = (Resolve-Path .venv-p2/Lib/site-packages).Path
-& "$env:LOCALAPPDATA\Microsoft\WindowsApps\PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0\python.exe" manage.py runserver 127.0.0.1:8000
-```
-
 The website does not read SUPABASE_TEST_ADMIN_KEY. Only scripts/check_p4_hosted_auth.py uses that ignored server credential to delete its own freshly generated test account. The regular test suite remains isolated from hosted databases.
 
 ## Database boundaries
@@ -84,7 +80,7 @@ The default alias must connect as django_app with search_path=django. It stores 
 
 The SQL in supabase/bootstrap/django_app_role.sql has no embedded passwords. It creates the django schema under the Supabase management role because that role does not grant SET ROLE to django_app. It grants django_app only USAGE and CREATE in that schema; Django owns the tables it creates, while the runtime role cannot drop or transfer the schema. Generated random role passwords are stored in this directory's ignored .env. The transient SQL file used to set them is removed after bootstrap. Never place database URLs or generated passwords in committed SQL, command arguments, reports, output or browser code.
 
-P2 did not create public application tables or change Auth, Storage, existing Supabase migrations, project-wide grants or application policies. P5 added the application schema and reviewed RLS/Storage policies through forward-only migrations; historical migration files remain unchanged. The baseline and exact results are documented in [schema reconciliation](../../docs/schema-reconciliation.md).
+P2 did not create public application tables or change Auth/Storage. P5 added the application schema and reviewed RLS/Storage policies. The later local-start repair guarded a historical missing-table reference, and forward migration `20261015170000_p5_legacy_schema_alignment.sql` aligns the resulting local application catalog with canonical P5. Hosted settings were not changed by that local follow-up. See [P5 verification](../../docs/data/P5_VERIFICATION.md) and [schema reconciliation](../../docs/schema-reconciliation.md).
 
 ## Source tokens
 
