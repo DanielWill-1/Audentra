@@ -4,7 +4,7 @@ This directory contains new comparison evidence. It does not replace page-screen
 
 ## Current status
 
-- P1 is finalized with [accepted exceptions](P1_ACCEPTANCE.md). P7 SR-1 through SR-4 are closed in the [finding closeout](../pages/P7_SR_CLOSEOUT_2026-10-13.md), and P8 deterministic acceptance is complete; physical-device and live-provider checks remain P9 work. P9 has started; its [25-route acceptance matrix](P9_ACCEPTANCE_MATRIX.md) preceded a passing local read-only inventory. Browser and hosted acceptance remain open.
+- P1 is finalized with [accepted exceptions](P1_ACCEPTANCE.md). P7 SR-1 through SR-4 are closed in the [finding closeout](../pages/P7_SR_CLOSEOUT_2026-10-13.md), and P8 deterministic acceptance is complete. P9 route-level acceptance now passes all 25 routes; physical mobile is excluded, physical edge cases/audibility are for owner manual review, and recording/live-provider checks are paused for future Scope 11. Restricted hosted Storage metadata remains open pending a nonprivileged Supabase connection.
 - The accepted route contract enumerates all 25 routes from src/App.tsx. /activitylog remains a future feature.
 - All 24 historical desktop PNGs in page-screenshots/ were inventoried and visually reviewed; see [reference-inventory.json](reference-inventory.json). /open and mobile references are absent. Some app images show login/loading/error and cannot stand in for successful authenticated views.
 - Existing images are accepted manual design references. baseline/ still has no full reviewed golden matrix; numeric thresholds and masks remain deferred.
