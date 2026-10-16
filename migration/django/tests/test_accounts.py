@@ -19,8 +19,6 @@ SUBJECT = "00000000-0000-4000-8000-000000000001"
 ACCESS = "synthetic-access-token"
 REFRESH = "synthetic-refresh-token"
 DJANGO_ORIGIN = "http://127.0.0.1:8000"
-VITE_ORIGIN = "http://localhost:5173"
-MARKER = "voiceform-p3"
 
 
 def principal(subject: str = SUBJECT) -> SupabaseUser:
@@ -57,17 +55,6 @@ def make_session(client: Client) -> str:
     assert key is not None
     client.cookies[settings.SESSION_COOKIE_NAME] = key
     return key
-
-
-def service_client(*, origin: str = VITE_ORIGIN, bearer: str | None = ACCESS) -> Client:
-    client = Client(
-        HTTP_HOST="127.0.0.1:8000",
-        HTTP_ORIGIN=origin,
-        HTTP_X_INTERNAL_API_TOKEN=MARKER,
-    )
-    if bearer is not None:
-        client.defaults["HTTP_AUTHORIZATION"] = f"Bearer {bearer}"
-    return client
 
 
 @pytest.mark.django_db
@@ -315,166 +302,6 @@ def test_logout_clears_local_session_even_when_gotrue_is_unavailable() -> None:
     assert b"Signed out locally" in response.content
     assert not Session.objects.filter(session_key=key).exists()
     assert response.cookies[settings.SESSION_COOKIE_NAME]["max-age"] == 0
-
-
-def test_api_requires_identity_after_marker_and_allowed_origin() -> None:
-    with (
-        override_settings(
-            P3_SERVICES_ENABLED=True,
-            P3_ALLOWED_ORIGINS=[VITE_ORIGIN, DJANGO_ORIGIN],
-        ),
-        patch("apps.api.middleware.authenticate_bearer") as verify,
-    ):
-        no_identity = Client(
-            HTTP_HOST="127.0.0.1:8000",
-            HTTP_ORIGIN=VITE_ORIGIN,
-            HTTP_X_INTERNAL_API_TOKEN=MARKER,
-        ).post("/api/tts/", {"text": "hello"}, content_type="application/json")
-        wrong_origin = service_client(origin="http://attacker.invalid").post(
-            "/api/tts/", {"text": "hello"}, content_type="application/json"
-        )
-        malformed = service_client(bearer="bad token").post(
-            "/api/tts/", {"text": "hello"}, content_type="application/json"
-        )
-
-    assert no_identity.status_code == 401
-    assert wrong_origin.status_code == 403
-    assert malformed.status_code == 401
-    assert verify.call_count == 0
-
-
-def test_bearer_only_api_call_is_verified_cors_readable_and_does_not_create_session() -> None:
-    with (
-        override_settings(
-            P3_SERVICES_ENABLED=True,
-            P3_ALLOWED_ORIGINS=[VITE_ORIGIN],
-            TTS_BACKEND="mock",
-        ),
-        patch("apps.api.middleware.authenticate_bearer", return_value=principal()),
-    ):
-        response = service_client().post(
-            "/api/tts/", {"text": "hello"}, content_type="application/json"
-        )
-
-    assert response.status_code == 200
-    assert response["Access-Control-Allow-Origin"] == VITE_ORIGIN
-    assert settings.SESSION_COOKIE_NAME not in response.cookies
-
-
-@pytest.mark.django_db
-def test_session_api_requires_csrf_and_valid_matching_bearer_keeps_csrf() -> None:
-    client = Client(enforce_csrf_checks=True)
-    key = make_session(client)
-    with patch("apps.accounts.middleware.authenticate_session", return_value=principal()):
-        csrf_page = client.get("/auth/session/")
-    csrf = client.cookies[settings.CSRF_COOKIE_NAME].value
-    assert csrf_page.status_code == 200
-
-    with (
-        override_settings(
-            P3_SERVICES_ENABLED=True,
-            P3_ALLOWED_ORIGINS=[VITE_ORIGIN, DJANGO_ORIGIN],
-            TTS_BACKEND="mock",
-        ),
-        patch("apps.accounts.middleware.authenticate_session", return_value=principal()),
-        patch("apps.api.middleware.authenticate_session", return_value=principal()),
-        patch("apps.api.middleware.authenticate_bearer", return_value=principal()),
-    ):
-        no_csrf = client.post(
-            "/api/tts/",
-            {"text": "hello"},
-            content_type="application/json",
-            HTTP_HOST="127.0.0.1:8000",
-            HTTP_ORIGIN=DJANGO_ORIGIN,
-            HTTP_X_INTERNAL_API_TOKEN=MARKER,
-            HTTP_AUTHORIZATION=f"Bearer {ACCESS}",
-        )
-        with_csrf = client.post(
-            "/api/tts/",
-            {"text": "hello"},
-            content_type="application/json",
-            HTTP_HOST="127.0.0.1:8000",
-            HTTP_ORIGIN=DJANGO_ORIGIN,
-            HTTP_X_INTERNAL_API_TOKEN=MARKER,
-            HTTP_AUTHORIZATION=f"Bearer {ACCESS}",
-            HTTP_X_CSRFTOKEN=csrf,
-        )
-
-    assert no_csrf.status_code == 403
-    assert no_csrf["Access-Control-Allow-Origin"] == DJANGO_ORIGIN
-    assert with_csrf.status_code == 200
-    assert Session.objects.filter(session_key=key).exists()
-
-
-@pytest.mark.django_db
-def test_invalid_bearer_never_falls_back_and_conflicting_identity_is_rejected() -> None:
-    client = Client()
-    make_session(client)
-    with (
-        override_settings(P3_SERVICES_ENABLED=True, P3_ALLOWED_ORIGINS=[VITE_ORIGIN]),
-        patch(
-            "apps.api.middleware.authenticate_bearer",
-            side_effect=AuthServiceError("invalid", kind="invalid"),
-        ),
-        patch("apps.api.middleware.authenticate_session", return_value=principal()) as session_auth,
-    ):
-        invalid_bearer = client.post(
-            "/api/tts/",
-            {"text": "hello"},
-            content_type="application/json",
-            HTTP_HOST="127.0.0.1:8000",
-            HTTP_ORIGIN=VITE_ORIGIN,
-            HTTP_X_INTERNAL_API_TOKEN=MARKER,
-            HTTP_AUTHORIZATION=f"Bearer {ACCESS}",
-        )
-    assert invalid_bearer.status_code == 401
-    session_auth.assert_not_called()
-
-    with (
-        override_settings(P3_SERVICES_ENABLED=True, P3_ALLOWED_ORIGINS=[VITE_ORIGIN]),
-        patch("apps.api.middleware.authenticate_bearer", return_value=principal()),
-        patch(
-            "apps.api.middleware.authenticate_session",
-            return_value=principal("00000000-0000-4000-8000-000000000002"),
-        ),
-    ):
-        mismatch = client.post(
-            "/api/tts/",
-            {"text": "hello"},
-            content_type="application/json",
-            HTTP_HOST="127.0.0.1:8000",
-            HTTP_ORIGIN=VITE_ORIGIN,
-            HTTP_X_INTERNAL_API_TOKEN=MARKER,
-            HTTP_AUTHORIZATION=f"Bearer {ACCESS}",
-        )
-    assert mismatch.status_code == 403
-    assert mismatch.json() == {"error": "Credentials identify different users"}
-
-
-def test_api_verifier_outage_and_unknown_preflight_header_fail_without_provider_call() -> None:
-    with (
-        override_settings(P3_SERVICES_ENABLED=True, P3_ALLOWED_ORIGINS=[VITE_ORIGIN]),
-        patch(
-            "apps.api.middleware.authenticate_bearer",
-            side_effect=AuthServiceError("offline"),
-        ) as verify,
-    ):
-        unavailable = service_client().post(
-            "/api/tts/", {"text": "hello"}, content_type="application/json"
-        )
-        preflight = Client(HTTP_HOST="127.0.0.1:8000").options(
-            "/api/tts/",
-            HTTP_ORIGIN=VITE_ORIGIN,
-            HTTP_ACCESS_CONTROL_REQUEST_METHOD="POST",
-            HTTP_ACCESS_CONTROL_REQUEST_HEADERS=(
-                "content-type, x-internal-api-token, authorization, x-unknown"
-            ),
-        )
-
-    assert unavailable.status_code == 503
-    assert unavailable["Access-Control-Allow-Origin"] == VITE_ORIGIN
-    assert preflight.status_code == 403
-    verify.assert_called_once()
 
 
 @pytest.mark.django_db

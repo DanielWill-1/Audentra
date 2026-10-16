@@ -1,5 +1,3 @@
-import base64
-import binascii
 from base64 import b64encode
 from collections.abc import Callable
 from typing import Any
@@ -18,23 +16,6 @@ class AudioInputError(ValueError):
 
 class TextInputError(ValueError):
     pass
-
-
-def validate_audio(audio: object, mime_type: object) -> tuple[bytes, str]:
-    if not isinstance(audio, str) or not audio or not isinstance(mime_type, str) or not mime_type:
-        raise AudioInputError("Missing audio or mimeType in request body")
-    if "," not in audio:
-        raise AudioInputError("Invalid audio data format: Base64 content is missing.")
-    content = audio.split(",", 1)[1]
-    if len(content) > settings.P3_MAX_BASE64_CHARS:
-        raise AudioInputError("Audio file too large")
-    try:
-        decoded = base64.b64decode(content, validate=True)
-    except (ValueError, binascii.Error) as error:
-        raise AudioInputError("Invalid base64 audio data") from error
-    if not decoded:
-        raise AudioInputError("Audio content is empty")
-    return decoded, mime_type
 
 
 def validate_multipart_audio(audio: Any, mime_type: str) -> tuple[bytes, str]:
@@ -56,13 +37,18 @@ def transcribe_audio(
     use_mock: bool | None = None,
 ) -> str:
     mock_selected = settings.SPEECH_BACKEND == "mock" if use_mock is None else use_mock
-    if backend is None and not mock_selected and settings.SPEECH_BACKEND != "google":
-        raise RuntimeError("SPEECH_BACKEND must be mock or google")
     selected = backend or (mock.transcribe if mock_selected else None)
     if selected is None:
-        from .backends.google import transcribe
+        if settings.SPEECH_BACKEND == "google":
+            from .backends.google import transcribe
 
-        selected = transcribe
+            selected = transcribe
+        elif settings.SPEECH_BACKEND == "groq":
+            from .backends.groq import transcribe
+
+            selected = transcribe
+        else:
+            raise RuntimeError("SPEECH_BACKEND must be mock, google, or groq")
     result = selected(audio, mime_type)
     return result or "Transcription failed"
 
@@ -112,9 +98,12 @@ def _mapping(value: Any) -> dict[str, Any]:
 def _provider_tts_config(voice: Any, options: Any) -> tuple[dict[str, object], dict[str, object]]:
     voice = _mapping(voice)
     options = _mapping(options)
+    default_voice = (
+        settings.GROQ_TTS_VOICE if settings.TTS_BACKEND == "groq" else "en-US-Neural2-D"
+    )
     voice_config = {
         "language_code": _js_or(voice.get("languageCode"), "en-US"),
-        "name": _js_or(voice.get("name"), "en-US-Neural2-D"),
+        "name": _js_or(voice.get("name"), default_voice),
         "ssml_gender": _js_or(voice.get("ssmlGender"), "MALE"),
     }
     audio_config = {
@@ -138,13 +127,21 @@ def synthesize_speech(
     clean_text = clean_tts_text(text)
     voice_config, audio_config = _provider_tts_config(voice, options)
     selected_mock = settings.TTS_BACKEND == "mock" if use_mock is None else use_mock
-    if backend is None and not selected_mock and settings.TTS_BACKEND != "google":
-        raise RuntimeError("TTS_BACKEND must be mock or google")
     selected = backend or (mock.synthesize if selected_mock else None)
     if selected is None:
-        from .backends.google import synthesize
+        if settings.TTS_BACKEND == "google":
+            from .backends.google import synthesize
 
-        selected = synthesize
+            selected = synthesize
+        elif settings.TTS_BACKEND == "groq":
+            from .backends.groq import synthesize
+
+            selected = synthesize
+        else:
+            raise RuntimeError("TTS_BACKEND must be mock, google, or groq")
+    groq_live = settings.TTS_BACKEND == "groq" and not selected_mock
+    if groq_live and len(clean_text) > 200:
+        raise TextInputError("Groq Orpheus accepts at most 200 characters per request")
     audio_content = selected(clean_text, voice_config, audio_config)
     if not audio_content:
         raise RuntimeError("No audio content generated")
@@ -155,6 +152,6 @@ def synthesize_speech(
             "textLength": len(clean_text),
             "audioSize": len(encoded_audio),
             "voice": voice_config["name"],
-            "encoding": audio_config["audio_encoding"],
+            "encoding": "wav" if groq_live else audio_config["audio_encoding"],
         },
     }

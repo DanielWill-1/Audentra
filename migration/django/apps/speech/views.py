@@ -7,14 +7,14 @@ from django.http import HttpRequest, JsonResponse
 from django.http.multipartparser import MultiPartParserError
 
 from apps.api.boundary import RequestBodyError, service_boundary
+from apps.api.consent import has_cloud_ai_consent, missing_cloud_ai_consent_response
 
-from .backends.google import SpeechProviderError
+from .exceptions import SpeechProviderError
 from .services import (
     AudioInputError,
     TextInputError,
     synthesize_speech,
     transcribe_audio,
-    validate_audio,
     validate_multipart_audio,
 )
 
@@ -56,16 +56,15 @@ def _request_audio(request: HttpRequest) -> tuple[bytes, str, str]:
         ) as error:
             status = 413 if isinstance(error, RequestDataTooBig) else 400
             raise RequestBodyError("Malformed multipart body", status) from error
-
-    payload = _read_json(request)
-    audio, mime_type = validate_audio(payload.get("audio"), payload.get("mimeType"))
-    return audio, mime_type, "legacy_json"
+    raise RequestBodyError("Audio uploads must use multipart/form-data", 415)
 
 
 @service_boundary
 def transcribe(request: HttpRequest) -> JsonResponse:
     if request.method != "POST":
         return JsonResponse({"error": "Method not allowed"}, status=405)
+    if settings.SPEECH_BACKEND != "mock" and not has_cloud_ai_consent(request):
+        return missing_cloud_ai_consent_response()
     try:
         audio, mime_type, input_contract = _request_audio(request)
         logger.info("p3_service_request endpoint=transcribe input=%s", input_contract)
@@ -77,7 +76,19 @@ def transcribe(request: HttpRequest) -> JsonResponse:
         return JsonResponse({"error": str(error)}, status=400)
     except SpeechProviderError as error:
         logger.warning("P3 transcription provider failed (%s).", type(error).__name__)
-        return JsonResponse({"error": "Failed to transcribe audio"}, status=error.status)
+        messages = {
+            400: "The audio request was rejected. Check the recording and try again.",
+            401: "Speech provider authentication failed. Check the server configuration.",
+            413: "The recording is too large to transcribe.",
+            415: "This recording format is not supported.",
+            429: "The speech provider limit was reached. Try again later.",
+            503: "Groq speech is not configured on this server.",
+            504: "Transcription took too long. Try a shorter recording.",
+        }
+        return JsonResponse(
+            {"error": messages.get(error.status, "Failed to transcribe audio")},
+            status=error.status,
+        )
     except Exception as error:
         logger.warning("P3 transcription failed (%s).", type(error).__name__)
         return JsonResponse({"error": "Failed to transcribe audio"}, status=500)
@@ -87,6 +98,8 @@ def transcribe(request: HttpRequest) -> JsonResponse:
 def synthesize(request: HttpRequest) -> JsonResponse:
     if request.method != "POST":
         return JsonResponse({"error": "Method not allowed"}, status=405)
+    if settings.TTS_BACKEND != "mock" and not has_cloud_ai_consent(request):
+        return missing_cloud_ai_consent_response()
     try:
         payload = _read_json(request)
         logger.info("p3_service_request endpoint=tts input=json")
@@ -101,9 +114,11 @@ def synthesize(request: HttpRequest) -> JsonResponse:
     except SpeechProviderError as error:
         logger.warning("P3 text-to-speech provider failed (%s).", type(error).__name__)
         messages = {
-            400: "Invalid text input or unsupported characters",
-            401: "Authentication failed. Check Google Cloud credentials.",
-            429: "Rate limit exceeded. Please try again later.",
+            400: "The response is too long or cannot be spoken by this voice.",
+            401: "Speech provider authentication failed. Check the server configuration.",
+            429: "The speech provider limit was reached. Try again later.",
+            503: "Groq speech is not configured on this server.",
+            504: "Speech generation took too long. Try again.",
         }
         return JsonResponse(
             {"error": messages.get(error.status, "Failed to generate speech")},

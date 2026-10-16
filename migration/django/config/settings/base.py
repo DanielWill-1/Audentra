@@ -124,38 +124,18 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 P3_SERVICES_ENABLED = os.getenv("P3_SERVICES_ENABLED", "false").strip().lower() == "true"
 P3_SERVICE_ACCESS_MODE = os.getenv("P3_SERVICE_ACCESS_MODE", "loopback").strip().lower()
-P3_API_MARKER = os.getenv("INTERNAL_API_TOKEN", "voiceform-p3")
 P3_PROXY_TOKEN = os.getenv("P3_PROXY_TOKEN", "")
 P10_TRUSTED_PROXY_IP = os.getenv("P10_TRUSTED_PROXY_IP", "").strip()
-P3_ALLOWED_ORIGINS = [
-    origin.strip().rstrip("/")
-    for origin in os.getenv(
-        "P3_ALLOWED_ORIGINS",
-        "http://localhost:5173,http://127.0.0.1:5173",
-    ).split(",")
-    if origin.strip()
-]
 DJANGO_PUBLIC_ORIGIN = os.getenv("DJANGO_PUBLIC_ORIGIN", "http://127.0.0.1:8000").rstrip("/")
-P3_ALLOWED_ORIGINS = list(dict.fromkeys([*P3_ALLOWED_ORIGINS, DJANGO_PUBLIC_ORIGIN]))
 P3_RATE_LIMIT_REQUESTS = 30
 P3_RATE_LIMIT_WINDOW_SECONDS = 60
 P3_MAX_REQUEST_BYTES = 20 * 1024 * 1024
-P3_MAX_BASE64_CHARS = 10 * 1024 * 1024
-P3_MAX_AUDIO_BYTES = P3_MAX_BASE64_CHARS * 3 // 4
+P3_MAX_AUDIO_BYTES = P3_MAX_REQUEST_BYTES
 DATA_UPLOAD_MAX_MEMORY_SIZE = P3_MAX_REQUEST_BYTES
 FILE_UPLOAD_MAX_MEMORY_SIZE = 2_621_440
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 1000
 P3_PROVIDER_TIMEOUT_SECONDS = float(os.getenv("P3_PROVIDER_TIMEOUT_SECONDS", "15"))
 
-# The P6 bridge stays opt-in even when a local legacy origin is configured.
-# It forwards only routes and assets listed in the reviewed P6 inventories.
-P6_LEGACY_FALLBACK_ENABLED = os.getenv("P6_LEGACY_FALLBACK_ENABLED", "false").lower() == "true"
-P6_LEGACY_ORIGIN = os.getenv("P6_LEGACY_ORIGIN", "").strip()
-P7_LEGACY_ROLLBACK_ROUTES = frozenset(
-    route.strip()
-    for route in os.getenv("P7_LEGACY_ROLLBACK_ROUTES", "").split(",")
-    if route.strip()
-)
 P7_PUBLIC_SESSION_ROUTES = frozenset(
     {
         "/",
@@ -186,7 +166,6 @@ P7_PROTECTED_PATHS = frozenset(
     }
 )
 P6_PREVIEW_ENABLED = os.getenv("P6_PREVIEW_ENABLED", "false").lower() == "true"
-P6_ASSET_INVENTORY = BASE_DIR / "config" / "p6_legacy_assets.json"
 P6_ROUTE_OWNERSHIP = BASE_DIR / "config" / "p6_route_ownership.json"
 
 SPEECH_BACKEND = os.getenv("SPEECH_BACKEND", "mock").strip().lower()
@@ -195,6 +174,11 @@ USE_MOCK_AI = os.getenv("USE_MOCK_AI", "true").strip().lower() == "true"
 GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
 GROQ_API_URL = os.getenv("GROQ_API_URL", "https://api.groq.com/openai/v1/chat/completions")
 GROQ_MODEL = os.getenv("GROQ_MODEL", "openai/gpt-oss-120b")
+GROQ_STT_MODEL = os.getenv("GROQ_STT_MODEL", "whisper-large-v3-turbo").strip()
+GROQ_STT_LANGUAGE = os.getenv("GROQ_STT_LANGUAGE", "").strip()
+GROQ_TTS_MODEL = os.getenv("GROQ_TTS_MODEL", "canopylabs/orpheus-v1-english").strip()
+GROQ_TTS_VOICE = os.getenv("GROQ_TTS_VOICE", "hannah").strip().lower()
+GROQ_AUDIO_TIMEOUT_SECONDS = float(os.getenv("GROQ_AUDIO_TIMEOUT_SECONDS", "45"))
 SUPABASE_URL = os.getenv("SUPABASE_URL", "")
 SUPABASE_PUBLISHABLE_KEY = os.getenv("SUPABASE_PUBLISHABLE_KEY", "")
 AUTH_TIMEOUT_SECONDS = float(os.getenv("AUTH_TIMEOUT_SECONDS", "8"))

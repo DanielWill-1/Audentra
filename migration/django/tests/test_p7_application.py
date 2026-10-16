@@ -16,6 +16,7 @@ from apps.accounts.principals import SupabaseUser
 from apps.accounts.services.gotrue import AuthServiceError
 from apps.accounts.services.tokens import _principal
 from apps.ai import services as ai_services
+from apps.api.consent import CLOUD_AI_CONSENT_POLICY_VERSION
 from apps.scheduler import selectors as schedule_selectors
 from apps.scheduler import services as schedule_services
 from apps.storage import services as storage_services
@@ -853,6 +854,7 @@ def test_voice_extraction_matches_ids_and_labels_then_saves_only_after_review(
             "template_id": str(TEMPLATE_ID),
             "conversation_json": "[]",
             "form_data": "{}",
+            "cloud_ai_consent_version": CLOUD_AI_CONSENT_POLICY_VERSION,
             "message": "The patient is Ana Rivera.",
         },
     )
@@ -946,7 +948,7 @@ def test_voice_form_media_transcription_to_filled_record_flow_is_deterministic(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     _template_reads(monkeypatch)
-    monkeypatch.setattr("apps.api.middleware.authenticate_bearer", lambda _token: VERIFIED_USER)
+    monkeypatch.setattr("apps.api.middleware.authenticate_session", lambda _request: VERIFIED_USER)
     received_audio: dict[str, object] = {}
 
     def transcribe(audio: bytes, mime_type: str) -> str:
@@ -965,8 +967,6 @@ def test_voice_form_media_transcription_to_filled_record_flow_is_deterministic(
 
     with override_settings(
         P3_SERVICES_ENABLED=True,
-        P3_ALLOWED_ORIGINS=["http://localhost:5173"],
-        P3_API_MARKER="fixture-marker",
     ):
         transcription = authenticated_client.post(
             "/api/transcribe",
@@ -977,9 +977,8 @@ def test_voice_form_media_transcription_to_filled_record_flow_is_deterministic(
                 "mimeType": "audio/webm;codecs=opus",
             },
             HTTP_HOST="127.0.0.1:8000",
-            HTTP_ORIGIN="http://localhost:5173",
-            HTTP_X_INTERNAL_API_TOKEN="fixture-marker",
-            HTTP_AUTHORIZATION="Bearer fixture-access",
+            HTTP_ORIGIN="http://127.0.0.1:8000",
+            HTTP_X_CLOUD_AI_CONSENT=CLOUD_AI_CONSENT_POLICY_VERSION,
         )
     assert transcription.status_code == 200
     transcript = json.loads(transcription.content)["transcript"]
@@ -996,6 +995,7 @@ def test_voice_form_media_transcription_to_filled_record_flow_is_deterministic(
             "template_id": str(TEMPLATE_ID),
             "conversation_json": "[]",
             "form_data": "{}",
+            "cloud_ai_consent_version": CLOUD_AI_CONSENT_POLICY_VERSION,
             "message": transcript,
         },
     )
@@ -1075,6 +1075,7 @@ def test_voice_form_denies_another_principal_when_template_is_unreadable(
                 "template_id": str(TEMPLATE_ID),
                 "conversation_json": "[]",
                 "form_data": "{}",
+                "cloud_ai_consent_version": CLOUD_AI_CONSENT_POLICY_VERSION,
                 "message": "The patient name is Ana Rivera.",
             },
         )

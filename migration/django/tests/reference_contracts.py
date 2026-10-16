@@ -7,7 +7,10 @@ import json
 from typing import Any
 
 SOURCE_REVISION = "b66efbb"
-SOURCE_FILES = ("server/routes/transcription.ts", "server/routes/tts.ts")
+SOURCE_FILES = (
+    "legacy/server/routes/transcription.ts",
+    "legacy/server/routes/tts.ts",
+)
 STT_ENCODINGS = {
     "audio/wav": "LINEAR16",
     "audio/x-wav": "LINEAR16",

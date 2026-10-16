@@ -12,8 +12,11 @@ from urllib.parse import unquote, urlsplit
 
 PROFILE_MODULES = {
     "local-http": "config.settings.local_http",
+    "local-supabase": "config.settings.local_supabase",
+    "demo-http": "config.settings.demo_http",
     "production": "config.settings.prod",
 }
+LOCAL_PROFILES = {"local-http", "local-supabase"}
 PROJECT_DIR = Path(__file__).resolve().parents[1]
 if str(PROJECT_DIR) not in sys.path:
     sys.path.insert(0, str(PROJECT_DIR))
@@ -50,6 +53,43 @@ def _database_uses_role(url: str, expected_role: str, supabase_url: str) -> bool
         return False
 
 
+def _local_supabase_url(value: str) -> bool:
+    try:
+        parsed = urlsplit(value)
+        host = (parsed.hostname or "").casefold()
+        loopback = host in {"localhost", "127.0.0.1", "::1"}
+        return (
+            parsed.scheme == "http"
+            and loopback
+            and parsed.port == 54321
+            and parsed.username is None
+            and parsed.password is None
+            and parsed.path in {"", "/"}
+            and not parsed.query
+            and not parsed.fragment
+        )
+    except ValueError:
+        return False
+
+
+def _local_database_uses_role(url: str, expected_role: str) -> bool:
+    try:
+        parsed = urlsplit(url)
+        host = (parsed.hostname or "").casefold()
+        loopback = host in {"localhost", "127.0.0.1", "::1"}
+        return (
+            parsed.scheme in {"postgres", "postgresql"}
+            and loopback
+            and parsed.port == 54322
+            and unquote(parsed.username or "") == expected_role
+            and bool(parsed.password)
+            and parsed.path == "/postgres"
+            and parsed.query == "sslmode=disable"
+        )
+    except ValueError:
+        return False
+
+
 def _provider_status(settings: Any) -> tuple[dict[str, str], list[dict[str, str]]]:
     modes = {
         "speech": settings.SPEECH_BACKEND,
@@ -57,9 +97,9 @@ def _provider_status(settings: Any) -> tuple[dict[str, str], list[dict[str, str]
         "extraction": "mock" if settings.USE_MOCK_AI else "groq",
     }
     issues: list[dict[str, str]] = []
-    if modes["speech"] not in {"mock", "google"}:
+    if modes["speech"] not in {"mock", "google", "groq"}:
         issues.append({"setting": "SPEECH_BACKEND", "issue": "unsupported_mode"})
-    if modes["tts"] not in {"mock", "google"}:
+    if modes["tts"] not in {"mock", "google", "groq"}:
         issues.append({"setting": "TTS_BACKEND", "issue": "unsupported_mode"})
 
     google_selected = modes["speech"] == "google" or modes["tts"] == "google"
@@ -72,9 +112,24 @@ def _provider_status(settings: Any) -> tuple[dict[str, str], list[dict[str, str]
             issues.append(
                 {"setting": "GOOGLE_APPLICATION_CREDENTIALS", "issue": "file_not_available"}
             )
-    if modes["extraction"] == "groq":
+    if modes["speech"] == "groq" and not settings.GROQ_STT_MODEL:
+        issues.append({"setting": "GROQ_STT_MODEL", "issue": "not_configured"})
+    if modes["tts"] == "groq":
+        if not settings.GROQ_TTS_MODEL:
+            issues.append({"setting": "GROQ_TTS_MODEL", "issue": "not_configured"})
+        if settings.GROQ_TTS_VOICE not in {
+            "autumn",
+            "diana",
+            "hannah",
+            "austin",
+            "daniel",
+            "troy",
+        }:
+            issues.append({"setting": "GROQ_TTS_VOICE", "issue": "unsupported_voice"})
+    if modes["speech"] == "groq" or modes["tts"] == "groq" or modes["extraction"] == "groq":
         if not settings.GROQ_API_KEY:
             issues.append({"setting": "GROQ_API_KEY", "issue": "not_configured"})
+    if modes["extraction"] == "groq":
         if not _has_https_url(settings.GROQ_API_URL):
             issues.append({"setting": "GROQ_API_URL", "issue": "invalid_https_url"})
         if not settings.GROQ_MODEL.strip():
@@ -99,11 +154,10 @@ def inspect_configuration(profile: str) -> dict[str, Any]:
             "DJANGO_PUBLIC_ORIGIN",
             "DJANGO_CSRF_TRUSTED_ORIGINS",
             "P3_SERVICE_ACCESS_MODE",
-            "P3_ALLOWED_ORIGINS",
             "P3_PROXY_TOKEN",
-            "INTERNAL_API_TOKEN",
             "P10_TRUSTED_PROXY_IP",
             "DJANGO_HSTS_SECONDS",
+            "P10_LOCAL_DJANGO_SECRET_KEY",
         )
         setting = next(
             (name for name in known_settings if name in message),
@@ -124,41 +178,106 @@ def inspect_configuration(profile: str) -> dict[str, Any]:
         if raw_value is not None and raw_value.strip().lower() not in {"true", "false"}:
             failures.append({"setting": setting_name, "issue": "expected_true_or_false"})
     if settings.SECRET_KEY == "development-only-change-me" or len(settings.SECRET_KEY) < 50:
-        failures.append({"setting": "DJANGO_SECRET_KEY", "issue": "missing_or_too_short"})
+        secret_setting = (
+            "P10_LOCAL_DJANGO_SECRET_KEY" if profile in LOCAL_PROFILES else "DJANGO_SECRET_KEY"
+        )
+        failures.append({"setting": secret_setting, "issue": "missing_or_too_short"})
     if not settings.SUPABASE_URL or not settings.SUPABASE_PUBLISHABLE_KEY:
         failures.append({"setting": "SUPABASE_URL/SUPABASE_PUBLISHABLE_KEY", "issue": "required"})
-    if not _has_https_url(settings.SUPABASE_URL):
+    if profile in LOCAL_PROFILES:
+        if not _local_supabase_url(settings.SUPABASE_URL):
+            failures.append(
+                {"setting": "P10_LOCAL_SUPABASE_URL", "issue": "loopback_endpoint_required"}
+            )
+        if not settings.SUPABASE_PUBLISHABLE_KEY.startswith("sb_publishable_"):
+            failures.append(
+                {
+                    "setting": "P10_LOCAL_SUPABASE_PUBLISHABLE_KEY",
+                    "issue": "publishable_key_required",
+                }
+            )
+    elif profile not in LOCAL_PROFILES and not _has_https_url(settings.SUPABASE_URL):
         failures.append({"setting": "SUPABASE_URL", "issue": "invalid_https_url"})
-    if profile == "local-http" and settings.P3_SERVICE_ACCESS_MODE != "loopback":
+    if profile in LOCAL_PROFILES and settings.P3_SERVICE_ACCESS_MODE != "loopback":
         failures.append(
             {"setting": "P3_SERVICE_ACCESS_MODE", "issue": "local_profile_requires_loopback"}
         )
 
-    default_url = os.getenv("DJANGO_DATABASE_URL", "").strip()
-    supabase_url = os.getenv("DJANGO_SUPABASE_DATABASE_URL", "").strip()
+    default_url = os.getenv(
+        "P10_LOCAL_DJANGO_DATABASE_URL" if profile in LOCAL_PROFILES else "DJANGO_DATABASE_URL",
+        "",
+    ).strip()
+    supabase_url = os.getenv(
+        "P10_LOCAL_SUPABASE_DATABASE_URL"
+        if profile in LOCAL_PROFILES
+        else "DJANGO_SUPABASE_DATABASE_URL",
+        "",
+    ).strip()
+    local_database = profile in LOCAL_PROFILES
+    database_setting = (
+        "P10_LOCAL_DJANGO_DATABASE_URL/P10_LOCAL_SUPABASE_DATABASE_URL"
+        if local_database
+        else "DJANGO_DATABASE_URL/DJANGO_SUPABASE_DATABASE_URL"
+    )
     if bool(default_url) != bool(supabase_url):
         failures.append(
             {
-                "setting": "DJANGO_DATABASE_URL/DJANGO_SUPABASE_DATABASE_URL",
+                "setting": database_setting,
                 "issue": "both_aliases_required",
             }
         )
     if default_url and supabase_url:
-        if not _database_uses_role(default_url, "django_app", settings.SUPABASE_URL):
-            failures.append({"setting": "DJANGO_DATABASE_URL", "issue": "restricted_role_required"})
-        if not _database_uses_role(supabase_url, "django_data", settings.SUPABASE_URL):
+        app_database_ok = (
+            _local_database_uses_role(default_url, "django_app")
+            if local_database
+            else _database_uses_role(default_url, "django_app", settings.SUPABASE_URL)
+        )
+        data_database_ok = (
+            _local_database_uses_role(supabase_url, "django_data")
+            if local_database
+            else _database_uses_role(supabase_url, "django_data", settings.SUPABASE_URL)
+        )
+        if not app_database_ok:
             failures.append(
-                {"setting": "DJANGO_SUPABASE_DATABASE_URL", "issue": "restricted_role_required"}
+                {
+                    "setting": (
+                        "P10_LOCAL_DJANGO_DATABASE_URL"
+                        if local_database
+                        else "DJANGO_DATABASE_URL"
+                    ),
+                    "issue": "restricted_role_required",
+                }
             )
-        database_mode = "restricted_postgresql"
-    elif profile == "production":
+        if not data_database_ok:
+            failures.append(
+                {
+                    "setting": (
+                        "P10_LOCAL_SUPABASE_DATABASE_URL"
+                        if local_database
+                        else "DJANGO_SUPABASE_DATABASE_URL"
+                    ),
+                    "issue": "restricted_role_required",
+                }
+            )
+        database_mode = (
+            "local_supabase_restricted_postgresql" if local_database else "restricted_postgresql"
+        )
+    elif profile in {"production", "demo-http"}:
         failures.append(
             {
-                "setting": "DJANGO_DATABASE_URL/DJANGO_SUPABASE_DATABASE_URL",
-                "issue": "required_for_production",
+                "setting": database_setting,
+                "issue": "required_for_profile",
             }
         )
         database_mode = "incomplete"
+    elif profile in LOCAL_PROFILES:
+        database_mode = "incomplete"
+        failures.append(
+            {
+                "setting": database_setting,
+                "issue": "local_restricted_database_urls_required",
+            }
+        )
     else:
         database_mode = "offline_sqlite"
         warnings.append(
@@ -180,7 +299,7 @@ def inspect_configuration(profile: str) -> dict[str, Any]:
         failures.extend(provider_issues)
     else:
         warnings.extend(provider_issues)
-    if profile == "production":
+    if profile in {"production", "demo-http"}:
         if settings.SECURE_HSTS_SECONDS <= 0:
             warnings.append({"setting": "DJANGO_HSTS_SECONDS", "issue": "owner_decision_required"})
         warnings.extend(

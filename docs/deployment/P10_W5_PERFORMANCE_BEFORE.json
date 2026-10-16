@@ -1,0 +1,213 @@
+{
+  "measured_at": "2026-10-16T21:29:03.571Z",
+  "base_url": "http://127.0.0.1:8000",
+  "browser": {
+    "name": "Chromium",
+    "version": "148.0.7778.96",
+    "playwright": "1.60.0",
+    "launch_ms": 164.2
+  },
+  "machine": {
+    "platform": "win32",
+    "release": "10.0.26200",
+    "architecture": "x64",
+    "cpu_model": "AMD Ryzen 5 5600H with Radeon Graphics         ",
+    "cpu_cores": 12,
+    "memory_gib": 15.3
+  },
+  "setup": {
+    "services": "Supabase and Django started before timing",
+    "cold": "fresh browser context for each initial / navigation; empty HTTP cache",
+    "warm": "same browser context and page; full-page navigation after one warmup / request",
+    "routes": [
+      "/",
+      "/features",
+      "/documentation"
+    ]
+  },
+  "cold_initial_page": {
+    "summary": {
+      "samples": 5,
+      "load_ms": {
+        "median": 684.3,
+        "p95": 1999
+      },
+      "dom_content_loaded_ms": {
+        "median": 505.7,
+        "p95": 615
+      },
+      "ttfb_ms": {
+        "median": 5.3,
+        "p95": 78.1
+      }
+    },
+    "samples": [
+      {
+        "route": "/",
+        "load_ms": 684.3,
+        "dom_content_loaded_ms": 505.7,
+        "ttfb_ms": 78.1,
+        "slow_resources": [
+          {
+            "host": "fonts.googleapis.com",
+            "path": "/css2",
+            "duration_ms": 169.1,
+            "transfer_bytes": 1160
+          }
+        ],
+        "failed_requests": {}
+      },
+      {
+        "route": "/",
+        "load_ms": 1999,
+        "dom_content_loaded_ms": 615,
+        "ttfb_ms": 5.2,
+        "slow_resources": [
+          {
+            "host": "fonts.googleapis.com",
+            "path": "/css2",
+            "duration_ms": 471.5,
+            "transfer_bytes": 1160
+          }
+        ],
+        "failed_requests": {}
+      },
+      {
+        "route": "/",
+        "load_ms": 1967.2,
+        "dom_content_loaded_ms": 543.7,
+        "ttfb_ms": 5.3,
+        "slow_resources": [
+          {
+            "host": "fonts.googleapis.com",
+            "path": "/css2",
+            "duration_ms": 400.9,
+            "transfer_bytes": 1160
+          }
+        ],
+        "failed_requests": {}
+      },
+      {
+        "route": "/",
+        "load_ms": 427,
+        "dom_content_loaded_ms": 274.8,
+        "ttfb_ms": 6.1,
+        "slow_resources": [
+          {
+            "host": "fonts.googleapis.com",
+            "path": "/css2",
+            "duration_ms": 132.5,
+            "transfer_bytes": 1160
+          }
+        ],
+        "failed_requests": {}
+      },
+      {
+        "route": "/",
+        "load_ms": 419.3,
+        "dom_content_loaded_ms": 273.7,
+        "ttfb_ms": 4.6,
+        "slow_resources": [
+          {
+            "host": "fonts.googleapis.com",
+            "path": "/css2",
+            "duration_ms": 128.6,
+            "transfer_bytes": 1160
+          }
+        ],
+        "failed_requests": {}
+      }
+    ]
+  },
+  "warm_route_navigation": {
+    "summary": {
+      "samples": 9,
+      "load_ms": {
+        "median": 20.2,
+        "p95": 26.1
+      },
+      "dom_content_loaded_ms": {
+        "median": 15.9,
+        "p95": 21.6
+      },
+      "ttfb_ms": {
+        "median": 4.5,
+        "p95": 5.7
+      }
+    },
+    "samples": [
+      {
+        "route": "/",
+        "load_ms": 26.1,
+        "dom_content_loaded_ms": 21.6,
+        "ttfb_ms": 4.4,
+        "slow_resources": [],
+        "failed_requests": {}
+      },
+      {
+        "route": "/features",
+        "load_ms": 19.5,
+        "dom_content_loaded_ms": 16.1,
+        "ttfb_ms": 5.6,
+        "slow_resources": [],
+        "failed_requests": {}
+      },
+      {
+        "route": "/documentation",
+        "load_ms": 20.3,
+        "dom_content_loaded_ms": 15.9,
+        "ttfb_ms": 5.7,
+        "slow_resources": [],
+        "failed_requests": {}
+      },
+      {
+        "route": "/",
+        "load_ms": 20.2,
+        "dom_content_loaded_ms": 15.7,
+        "ttfb_ms": 4.5,
+        "slow_resources": [],
+        "failed_requests": {}
+      },
+      {
+        "route": "/features",
+        "load_ms": 18.1,
+        "dom_content_loaded_ms": 15,
+        "ttfb_ms": 4.2,
+        "slow_resources": [],
+        "failed_requests": {}
+      },
+      {
+        "route": "/documentation",
+        "load_ms": 17.5,
+        "dom_content_loaded_ms": 14.7,
+        "ttfb_ms": 4.8,
+        "slow_resources": [],
+        "failed_requests": {}
+      },
+      {
+        "route": "/",
+        "load_ms": 22.7,
+        "dom_content_loaded_ms": 17.9,
+        "ttfb_ms": 4.5,
+        "slow_resources": [],
+        "failed_requests": {}
+      },
+      {
+        "route": "/features",
+        "load_ms": 16.9,
+        "dom_content_loaded_ms": 12.9,
+        "ttfb_ms": 3.5,
+        "slow_resources": [],
+        "failed_requests": {}
+      },
+      {
+        "route": "/documentation",
+        "load_ms": 23.5,
+        "dom_content_loaded_ms": 20,
+        "ttfb_ms": 5.3,
+        "slow_resources": [],
+        "failed_requests": {}
+      }
+    ]
+  }
+}

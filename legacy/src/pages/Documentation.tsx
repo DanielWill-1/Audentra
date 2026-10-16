@@ -19,12 +19,10 @@ import {
 
 const GITHUB_REPO = 'https://github.com/DanielWill-1/Audentra';
 
-const QUICKSTART_CODE = `# Clone repository and execute detached production stack
-git clone https://github.com/audentra/audentra.git && cd audentra
-docker compose up -d --build
-✓ Model weights loaded: whisper-large-v3-turbo.gguf [1.6GB]
-✓ Deterministic Schema Parser listening at 127.0.0.1:8080
-# Live logs stream ready: docker compose logs -f pipeline`;
+const QUICKSTART_CODE = `# Current VoiceForm runtime
+# See docs/deployment/P10_LOCAL_RUNBOOK.md for the Django startup steps.
+# Speech, form-filling chat, and TTS use the configured provider.
+# Current P10 configuration sends inference requests to Groq over HTTPS.`;
 
 const SCHEMA_CODE = `{
   "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -76,71 +74,71 @@ const SIDEBAR = [
     id: 'guides',
     title: 'Integration',
     items: [
-      { label: 'Audio Ingestion (WebAudio)', anchor: 'guides' },
-      { label: 'Egress & Webhooks', anchor: 'guides' },
-      { label: 'Air-gapped Deployment', anchor: 'guides' },
-      { label: 'WebSocket & REST APIs', anchor: 'pipeline' },
+      { label: 'Browser audio capture', anchor: 'guides' },
+      { label: 'Provider requests', anchor: 'guides' },
+      { label: 'Provider and data flow', anchor: 'guides' },
+      { label: 'HTTP API endpoints', anchor: 'pipeline' },
     ],
   },
 ];
 
-const CHUNK_LINES = ['Segmenting chunks [1024 frames]', 'Whisper.cpp local · 48kHz PCM'];
+const CHUNK_LINES = ['Browser audio upload', 'Groq Whisper Large V3 Turbo - HTTPS API'];
 
 const STAGES = [
   {
     stage: 'STAGE 01',
-    title: 'Ingest Stream',
-    detail: '48kHz uncompressed raw PCM stream via bidirectional WebSockets with frame-level chunking.',
-    meta: 'BUFFER: 256ms',
+    title: 'Record and upload',
+    detail: 'The browser uploads a supported recording to the authenticated VoiceForm service.',
+    meta: 'MAX AUDIO: 7.5 MiB',
     icon: Network,
   },
   {
     stage: 'STAGE 02',
-    title: 'Acoustic Parser',
-    detail: 'Quantized whisper.cpp engine generates raw phonetic tokens with millisecond timestamp markers.',
-    meta: 'ENGINE: C++ NATIVE',
+    title: 'Speech transcription',
+    detail: 'After the user opts in, the backend sends audio to Groq Whisper Large V3 Turbo and returns the recognized text.',
+    meta: 'PROVIDER: GROQ',
     icon: Cpu,
   },
   {
     stage: 'STAGE 03',
-    title: 'Semantic AST',
-    detail: 'Deterministic context parser matches slot entities without open-ended speculative hallucinations.',
-    meta: 'GRAMMAR: EBNF',
+    title: 'Conversational extraction',
+    detail: 'After the user opts in, Groq GPT-OSS 120B receives the message, conversation, form fields, and current draft values.',
+    meta: 'PROVIDER: GROQ',
     icon: Braces,
   },
   {
     stage: 'STAGE 04',
-    title: 'Schema Coercion',
-    detail: 'Strict runtime type validation against your compiled JSON Schema or Pydantic definitions.',
-    meta: 'VALIDATION: PASS (100%)',
+    title: 'Validate and review',
+    detail: 'VoiceForm checks proposed values against the available field rules. You review the draft before saving.',
+    meta: 'SAVE: USER ACTION',
     icon: ShieldCheck,
   },
 ];
 
 const GUIDES = [
   {
-    title: 'Air-gapped Deployment',
-    tag: 'SETUP TIME: 15 MIN',
+    title: 'Provider and data flow',
+    tag: 'CURRENT P10 SETUP',
     icon: Server,
-    text: 'Run fully isolated speech recognition pipelines on on-premise CUDA or Apple Silicon instances without external network egress.',
+    text: 'After a one-time user opt-in, the current setup sends audio and conversational form data to Groq. The server reads provider credentials from its environment.',
   },
   {
     title: 'Custom Schema Authoring',
     tag: 'SPECIFICATION',
     icon: Braces,
-    text: 'Techniques for writing strict regex patterns, numeric tolerances, and contextual slot extraction logic with zero model re-training.',
+    text: 'Define form field labels, required values, and options. VoiceForm checks model suggestions against the selected form before updating the draft.',
   },
   {
-    title: 'WebAudio Zero-Latency Capture',
-    tag: 'FRONTEND SDK',
+    title: 'Recording and upload',
+    tag: 'BROWSER AUDIO',
     icon: Mic,
-    text: 'Setting up client-side AudioWorkletNode streaming to pipe clean 16-bit PCM voice fragments straight into backend workers.',
+    text: 'Record audio in the browser, review the clip, and send it for transcription. Upload limits and supported formats depend on the current app configuration.',
   },
   {
-    title: 'Webhook & FHIR/HL7 Dispatch',
-    tag: 'INTEGRATION',
+    title: 'Saved form records',
+    tag: 'SUPABASE STORAGE',
     icon: Webhook,
-    text: 'Automatically pipe validated JSON records into internal PostgreSQL instances, operational data warehouses, or FHIR servers.',
+    text: 'When you save a completed form, its values are stored in the configured Supabase database under owner-scoped row-level policies.',
   },
 ];
 
@@ -223,10 +221,10 @@ function Documentation() {
               ))}
               <div className="pt-4 border-t border-border">
                 <span className="inline-flex items-center gap-1.5 font-label-code text-label-code text-success">
-                  <CheckCircle2 className="w-4 h-4" aria-hidden="true" /> Deterministic VAD
+                  <CheckCircle2 className="w-4 h-4" aria-hidden="true" /> Form validation enabled
                 </span>
                 <p className="font-body text-body text-text-secondary text-[14px] mt-1 leading-snug">
-                  Zero hallucination guarantee enabled by strict token matching.
+                  Model suggestions can be wrong. Review the draft before saving.
                 </p>
               </div>
             </div>
@@ -253,18 +251,17 @@ function Documentation() {
               Documentation & Architecture Guide
             </h1>
             <p className="font-body-large text-body-large text-text-secondary max-w-2xl leading-relaxed mb-10">
-              Technical guides, schema authoring standards, and execution architecture for transforming physical
-              conversational audio streams into deterministic, validated enterprise payloads.
+              A practical overview of browser audio uploads, cloud AI requests, field checks, and saving a reviewed form.
             </p>
 
             {/* Telemetry panel */}
             <div className="bg-[#0F172A] rounded-xl border border-white/10 p-6 mb-12">
               <div className="flex items-center justify-between mb-5">
                 <div>
-                  <p className="font-label-code text-label-code text-slate-400 uppercase tracking-wider">Live Stream Ingest Telemetry</p>
-                  <p className="font-body text-body text-slate-300">Real-time Buffer Transduction</p>
+                  <p className="font-label-code text-label-code text-slate-400 uppercase tracking-wider">Current Request Flow</p>
+              <p className="font-body text-body text-slate-300">Audio, chat, and TTS call Groq after opt-in</p>
                 </div>
-                <span className="font-label-code text-label-code text-slate-300">LATENCY: 42ms</span>
+                <span className="font-label-code text-label-code text-slate-300">PROVIDER: GROQ</span>
               </div>
               <div className="font-label-code text-label-code text-slate-500 mb-3">
                 WebAudio 48kHz PCM · 00:00.000
@@ -283,11 +280,10 @@ function Documentation() {
             <section id="quickstart" className="scroll-mt-24 mb-14">
               <span className="font-label-code text-label-code text-text-muted block mb-2">1</span>
               <h2 className="font-headline-h3 text-headline-h3 text-text-primary font-semibold mb-3">
-                Quickstart Deployment
+                Current application
               </h2>
               <p className="font-body text-body text-text-secondary leading-relaxed mb-5 max-w-2xl">
-                Spin up the complete inference stack including the local Whisper C++ runner, schema extraction daemon,
-                and the WebSocket ingestion proxy in seconds via Docker.
+                Use the Django runtime instructions in the P10 local runbook. AI features use the provider configured by the operator.
               </p>
               <CodeBlock label="bash — audentra-init" code={QUICKSTART_CODE} />
             </section>
@@ -296,11 +292,11 @@ function Documentation() {
             <section id="pipeline" className="scroll-mt-24 mb-14">
               <span className="font-label-code text-label-code text-text-muted block mb-2">2</span>
               <h2 className="font-headline-h3 text-headline-h3 text-text-primary font-semibold mb-3">
-                The 4-Stage Extraction Pipeline
+                Current speech and form-filling flow
               </h2>
               <p className="font-body text-body text-text-secondary leading-relaxed mb-6 max-w-2xl">
-                Unlike standard LLM-based voice workflows, Audentra decouples speech recognition from structured
-                extraction, passing abstract syntax trees directly into strict JSON schema validators.
+                After you opt in, the browser sends a recording or message to the VoiceForm server. The server calls Groq for transcription or extraction,
+                then checks suggested values against the selected form before presenting the draft for review.
               </p>
               <div className="grid sm:grid-cols-2 gap-4">
                 {STAGES.map((s) => (

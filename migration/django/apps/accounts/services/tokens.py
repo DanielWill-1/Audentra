@@ -186,15 +186,6 @@ def access_token_for_verified_request(request: HttpRequest, expected_user: Supab
     return token
 
 
-def authenticate_bearer(token: str, *, client: GoTrueClient | None = None) -> SupabaseUser:
-    auth_client = client or GoTrueClient()
-    try:
-        subject, email, metadata = auth_client.get_user(token)
-    except AuthServiceError:
-        raise
-    return _principal(subject, email, metadata)
-
-
 def logout_session(request: HttpRequest, *, client: GoTrueClient | None = None) -> bool:
     key = request.session.session_key
     if not key:

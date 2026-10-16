@@ -21,8 +21,7 @@ function Industries() {
             <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"> Your Industry</span>
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Audentra's AI is trained on industry-specific terminology and workflows, 
-            ensuring perfect understanding of your professional language.
+            Use configurable form templates for different workflows. AI-generated values should be reviewed before they are saved.
           </p>
         </div>
       </section>
@@ -37,9 +36,7 @@ function Industries() {
               </div>
               <h3 className="text-3xl font-bold text-gray-900 mb-6">Healthcare</h3>
               <p className="text-gray-600 mb-8 text-lg leading-relaxed">
-                Transform patient care with voice-powered intake forms, medical histories, 
-                and clinical documentation. Our AI understands medical terminology, ICD codes, 
-                and healthcare workflows.
+                Use voice-enabled intake and documentation templates. This app does not validate medical decisions or claim healthcare compliance.
               </p>
               
               <div className="space-y-6 mb-8">
@@ -52,15 +49,15 @@ function Industries() {
                     </div>
                     <div className="flex items-center text-gray-600">
                       <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
-                      Medical history capture with ICD-10 coding
+                      Capture medical history in your own form fields
                     </div>
                     <div className="flex items-center text-gray-600">
                       <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
-                      Insurance verification and pre-authorization
+                      Create templates for insurance workflows
                     </div>
                     <div className="flex items-center text-gray-600">
                       <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
-                      HIPAA-compliant documentation
+                      Reviewable intake and documentation drafts
                     </div>
                   </div>
                 </div>

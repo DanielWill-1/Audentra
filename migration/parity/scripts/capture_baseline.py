@@ -22,7 +22,7 @@ from seed_parity import FIXTURE_STATE, REQUIRED_COLUMNS, SafetyError, load_parit
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 MANIFEST_PATH = REPO_ROOT / "docs" / "parity" / "route-manifest.json"
-APP_PATH = REPO_ROOT / "src" / "App.tsx"
+APP_PATH = REPO_ROOT / "legacy" / "src" / "App.tsx"
 REPORT_ROOT = REPO_ROOT / "docs" / "parity" / "reports"
 VIEWPORTS = {"desktop": (1440, 900), "mobile": (390, 844)}
 ROUTE_PATTERN = re.compile(r'<Route\s+path="([^"]+)"')
@@ -53,7 +53,7 @@ def manifest_errors(manifest: dict[str, Any], app_path: Path = APP_PATH) -> list
     recorded = set(paths)
     if recorded != actual:
         errors.append(
-            "route set differs from src/App.tsx "
+            "route set differs from legacy/src/App.tsx "
             f"(missing={sorted(actual - recorded)}, extra={sorted(recorded - actual)})"
         )
 

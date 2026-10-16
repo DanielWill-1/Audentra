@@ -6,6 +6,7 @@ from unittest.mock import patch
 import pytest
 from apps.accounts.services.tokens import AUTH_SESSION_KEY
 from apps.accounts.sessions import SessionStore
+from apps.api.consent import CLOUD_AI_CONSENT_POLICY_VERSION
 from django.conf import settings
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.http import HttpResponse
@@ -13,7 +14,6 @@ from django.test import Client, override_settings
 
 SUBJECT = "00000000-0000-4000-8000-000000000001"
 ORIGIN = "http://127.0.0.1:8000"
-MARKER = "fixture-p8-marker"
 
 
 def _client_with_session(*, expired: bool = False) -> Client:
@@ -40,8 +40,15 @@ def _client_with_session(*, expired: bool = False) -> Client:
 
 
 def _post_audio(
-    client: Client, csrf: str, *, origin: str = ORIGIN, marker: str = MARKER
+    client: Client, csrf: str, *, origin: str = ORIGIN, legacy_marker: bool = False
 ) -> HttpResponse:
+    headers = {
+        "HTTP_ORIGIN": origin,
+        "HTTP_X_CSRFTOKEN": csrf,
+        "HTTP_X_CLOUD_AI_CONSENT": CLOUD_AI_CONSENT_POLICY_VERSION,
+    }
+    if legacy_marker:
+        headers["HTTP_X_INTERNAL_API_TOKEN"] = "retired-p8-marker"
     return cast(
         HttpResponse,
         client.post(
@@ -50,9 +57,7 @@ def _post_audio(
                 "audio": SimpleUploadedFile("recording.webm", b"synthetic-audio"),
                 "mimeType": "audio/webm;codecs=opus",
             },
-            HTTP_ORIGIN=origin,
-            HTTP_X_INTERNAL_API_TOKEN=marker,
-            HTTP_X_CSRFTOKEN=csrf,
+            **headers,
         ),
     )
 
@@ -71,11 +76,8 @@ def test_session_csrf_multipart_reaches_transcriber_without_authorization_header
     with (
         override_settings(
             P3_SERVICES_ENABLED=True,
-            P3_ALLOWED_ORIGINS=[ORIGIN],
-            P3_API_MARKER=MARKER,
         ),
         patch("apps.accounts.services.tokens.GoTrueClient.get_user", return_value=identity),
-        patch("apps.api.middleware.authenticate_bearer") as bearer,
         patch("apps.speech.views.transcribe_audio", side_effect=transcribe),
     ):
         response = _post_audio(client, csrf)
@@ -83,7 +85,6 @@ def test_session_csrf_multipart_reaches_transcriber_without_authorization_header
     assert response.status_code == 200
     assert json.loads(response.content) == {"transcript": "Deterministic transcript"}
     assert received == [(b"synthetic-audio", "audio/webm;codecs=opus")]
-    bearer.assert_not_called()
     assert "HTTP_AUTHORIZATION" not in client.defaults
 
 
@@ -95,7 +96,7 @@ def test_session_csrf_multipart_reaches_transcriber_without_authorization_header
         ("expired-session", 401),
         ("wrong-csrf", 403),
         ("wrong-origin", 403),
-        ("missing-marker", 403),
+        ("legacy-marker", 400),
     ],
 )
 def test_session_multipart_rejections_never_reach_transcriber(
@@ -113,17 +114,13 @@ def test_session_multipart_rejections_never_reach_transcriber(
 
     kwargs = {
         "origin": "http://attacker.invalid" if case == "wrong-origin" else ORIGIN,
-        "marker": "" if case == "missing-marker" else MARKER,
+        "legacy_marker": case == "legacy-marker",
     }
     csrf_header = "wrong-csrf" if case == "wrong-csrf" else csrf
     identity: tuple[str, str, dict[str, Any]] = (SUBJECT, "synthetic@example.test", {})
 
     with (
-        override_settings(
-            P3_SERVICES_ENABLED=True,
-            P3_ALLOWED_ORIGINS=[ORIGIN],
-            P3_API_MARKER=MARKER,
-        ),
+        override_settings(P3_SERVICES_ENABLED=True),
         patch("apps.accounts.services.tokens.GoTrueClient.get_user", return_value=identity),
         patch("apps.speech.views.transcribe_audio") as transcribe,
     ):

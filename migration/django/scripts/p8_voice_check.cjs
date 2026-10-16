@@ -55,11 +55,11 @@ async function main() {
   result.browser = browser.version();
   const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
   await context.addInitScript(() => {
-    localStorage.clear();
     sessionStorage.clear();
     window.__p8Voice = {
       recorders: [],
       audios: [],
+      getUserMediaCalls: 0,
       rejectNextPlay: false,
       mediaErrorName: null,
       nextRecordingByteCount: 4,
@@ -68,6 +68,7 @@ async function main() {
       configurable: true,
       value: {
         getUserMedia: async () => {
+          window.__p8Voice.getUserMediaCalls += 1;
           if (window.__p8Voice.mediaErrorName) {
             const errorName = window.__p8Voice.mediaErrorName;
             window.__p8Voice.mediaErrorName = null;
@@ -112,7 +113,11 @@ async function main() {
           return Promise.reject(new DOMException('Playback was blocked', 'NotAllowedError'));
         }
         this.paused = false;
-        return Promise.resolve();
+        return Promise.resolve().then(() => {
+          setTimeout(() => {
+            if (!this.paused) this.dispatchEvent(new Event('ended'));
+          }, 0);
+        });
       }
       pause() { this.paused = true; this.pauseCalls += 1; }
       removeAttribute(name) { if (name === 'src') this.src = ''; }
@@ -201,6 +206,12 @@ async function main() {
   let releaseFirstTts;
   let releaseSecondTts;
   let releaseLastTts;
+  let signalFirstTtsReady;
+  let signalSecondTtsReady;
+  let signalLastTtsReady;
+  const firstTtsReady = new Promise((resolve) => { signalFirstTtsReady = resolve; });
+  const secondTtsReady = new Promise((resolve) => { signalSecondTtsReady = resolve; });
+  const lastTtsReady = new Promise((resolve) => { signalLastTtsReady = resolve; });
   await page.route('**/api/tts', async (route) => {
     const request = route.request();
     const headers = await request.allHeaders();
@@ -214,9 +225,16 @@ async function main() {
     });
     if (index === 1 || index === 2 || index === 6) {
       await new Promise((resolve) => {
-        if (index === 1) releaseFirstTts = resolve;
-        else if (index === 2) releaseSecondTts = resolve;
-        else releaseLastTts = resolve;
+        if (index === 1) {
+          releaseFirstTts = resolve;
+          signalFirstTtsReady();
+        } else if (index === 2) {
+          releaseSecondTts = resolve;
+          signalSecondTtsReady();
+        } else {
+          releaseLastTts = resolve;
+          signalLastTtsReady();
+        }
       });
       try {
         await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ audioContent: 'UklGRg==' }) });
@@ -252,6 +270,32 @@ async function main() {
     const recordButton = page.getByRole('button', { name: 'Record', exact: true });
     const mediaStatus = page.locator('[data-media-status]');
     const messageField = page.locator('[data-voice-message]');
+    const consentPanel = page.locator('[data-cloud-ai-consent]');
+    assert.equal(await consentPanel.isVisible(), true,
+      'first use should present the cloud-processing notice before voice features');
+    assert.equal(await consentPanel.getAttribute('aria-modal'), 'true',
+      'the first-use consent notice should block access to the voice controls');
+    assert.equal(await page.evaluate(() => window.__p8Voice.getUserMediaCalls), 0,
+      'the page must not request microphone access before cloud-processing opt-in');
+    assert.equal(await page.evaluate(() => window.__p8Voice.recorders.length), 0,
+      'recording must not start before cloud-processing opt-in');
+    assert.deepEqual(result.api, { transcription: [], extraction: [], tts: [] },
+      'voice actions must not call cloud AI before opt-in');
+    await page.locator('[data-cloud-ai-consent-accept]').click();
+    assert.equal(await consentPanel.isHidden(), true,
+      'accepting consent should close the blocking notice and expose the voice controls');
+    const consentVersion = await page.locator('[data-voice-root]')
+      .getAttribute('data-cloud-ai-consent-version');
+    assert.ok(consentVersion, 'the active consent policy version must be available to the browser');
+    assert.equal(
+      await page.evaluate(() => localStorage.getItem('audentra.cloudAiConsent')),
+      consentVersion,
+      'the synthetic user opt-in should persist for the active policy version',
+    );
+    await page.locator('[data-auto-speak]').uncheck();
+    assert.equal(await recordButton.isEnabled(), true,
+      'recording should be available after the synthetic user opts in');
+    result.journey.push('reviewed and accepted the cloud-processing notice in the isolated browser before using voice features');
     const assertMediaFallback = async (caseName, statusText, screenshotName) => {
       await page.waitForFunction((expected) =>
         document.querySelector('[data-media-status]')?.textContent?.trim() === expected, statusText);
@@ -291,13 +335,13 @@ async function main() {
     await page.evaluate(() => { window.__p8Voice.nextRecordingByteCount = 0; });
     await activateByKeyboard(page, recordButton, 'Space');
     await mediaStatus.getByText('Recording. Select Stop when you are done.').waitFor();
-    await activateByKeyboard(page, page.getByRole('button', { name: 'Stop', exact: true }));
+    await activateByKeyboard(page, page.getByRole('button', { name: 'Stop recording', exact: true }));
     await assertMediaFallback(
       'synthetic empty recording',
       'The recording was empty. Record again or type your message.',
       'media-empty.png',
     );
-    assert.equal(await page.getByRole('button', { name: 'Transcribe recording' }).isDisabled(), true,
+    assert.equal(await page.getByRole('button', { name: 'Transcribe', exact: true }).isDisabled(), true,
       'an empty recording must not enable Transcribe');
 
     const maxAudioBytes = Number(await page.locator('[data-voice-root]').getAttribute('data-max-audio-bytes'));
@@ -306,20 +350,20 @@ async function main() {
     await page.evaluate((byteCount) => { window.__p8Voice.nextRecordingByteCount = byteCount; }, maxAudioBytes + 1);
     await activateByKeyboard(page, recordButton, 'Space');
     await mediaStatus.getByText('Recording. Select Stop when you are done.').waitFor();
-    await activateByKeyboard(page, page.getByRole('button', { name: 'Stop', exact: true }));
+    await activateByKeyboard(page, page.getByRole('button', { name: 'Stop recording', exact: true }));
     await assertMediaFallback(
       'synthetic over-limit recording',
       'The recording is too large to transcribe. Reset and record a shorter message.',
       'media-oversized.png',
     );
-    assert.equal(await page.getByRole('button', { name: 'Transcribe recording' }).isDisabled(), true,
+    assert.equal(await page.getByRole('button', { name: 'Transcribe', exact: true }).isDisabled(), true,
       'an over-limit recording must not enable Transcribe');
 
     await activateByKeyboard(page, page.getByRole('button', { name: 'Record', exact: true }), 'Space');
     await page.waitForFunction(() => document.querySelector('[data-media-status]').textContent.startsWith('Recording.'));
-    await activateByKeyboard(page, page.getByRole('button', { name: 'Stop', exact: true }));
+    await activateByKeyboard(page, page.getByRole('button', { name: 'Stop recording', exact: true }));
     await page.waitForFunction(() => document.querySelector('[data-media-status]').textContent.startsWith('Recording ready.'));
-    await activateByKeyboard(page, page.getByRole('button', { name: 'Transcribe recording' }), 'Space');
+    await activateByKeyboard(page, page.getByRole('button', { name: 'Transcribe', exact: true }), 'Space');
     await page.waitForFunction(() => document.querySelector('[data-voice-message]').value
       === 'Patient name is Ada Lovelace.');
     assert.equal(result.api.transcription.length, 1);
@@ -333,10 +377,10 @@ async function main() {
     assert.equal(result.api.transcription[0].audio_payload_present, true);
     result.journey.push('keyboard-activated Record, Stop and Transcribe; previewed a deterministic multipart transcript through the actual page');
 
-    const sendButton = page.getByRole('button', { name: 'Send to assistant' });
+    const sendButton = page.locator('[data-voice-chat-form] button[type="submit"]');
     await submitMessageByKeyboard(page, messageField, sendButton, 'Patient name is Ada Lovelace.');
     await firstExtractionStarted;
-    assert.equal(await page.getByRole('button', { name: 'Send to assistant' }).isDisabled(), true);
+    assert.equal(await sendButton.isDisabled(), true);
     await page.locator('[data-voice-chat-form]').evaluate((form) => form.requestSubmit());
     await page.waitForTimeout(50);
     assert.equal(result.api.extraction.length, 1);
@@ -403,6 +447,16 @@ async function main() {
     assert.equal(await page.locator('[name="field_email"]').inputValue(), 'grace@example.invalid');
     result.journey.push('keyboard Return to chat preserved conversation and reviewed field values across Django form navigation');
 
+    await activateByKeyboard(page, page.getByRole('button', { name: 'Reset chat', exact: true }));
+    await page.locator('[data-chat-messages]')
+      .getByText('Chat reset. Your current form draft is unchanged. Send a new message to continue.')
+      .waitFor();
+    assert.deepEqual(JSON.parse(await page.locator('[data-voice-chat-form] [name="conversation_json"]').inputValue()), []);
+    assert.equal(await page.locator('[data-voice-message]').inputValue(), '');
+    assert.equal(await page.locator('[name="field_patient_name"]').inputValue(), 'Grace Hopper');
+    assert.equal(await page.locator('[name="field_email"]').inputValue(), 'grace@example.invalid');
+    result.journey.push('keyboard Reset chat cleared the conversation and kept the reviewed form values');
+
     const saved = await Promise.all([
       page.waitForResponse((response) => response.url().includes('/filledtemplates') && response.status() === 200),
       activateByKeyboard(page, page.getByRole('button', { name: 'Save filled form' })),
@@ -421,7 +475,8 @@ async function main() {
     result.journey.push('confirmed deletion updated the synthetic filled-list fixture');
 
     await page.goto(`${djangoBase}/AIVoiceAutoFill?template=${templateId}`, { waitUntil: 'networkidle' });
-    await submitMessageByKeyboard(page, page.locator('[data-voice-message]'), page.getByRole('button', { name: 'Send to assistant' }), 'Discard this delayed answer.');
+    await page.locator('[data-auto-speak]').uncheck();
+    await submitMessageByKeyboard(page, page.locator('[data-voice-message]'), page.locator('[data-voice-chat-form] button[type="submit"]'), 'Discard this delayed answer.');
     await staleExtractionStarted;
     await page.evaluate(() => window.dispatchEvent(new PageTransitionEvent('pagehide')));
     releaseStaleExtraction();
@@ -432,16 +487,31 @@ async function main() {
     result.journey.push('keyboard-submitted extraction was cancelled on pagehide without a stale answer or field update');
 
     await page.goto(`${djangoBase}/AIVoiceAutoFill?template=${templateId}`, { waitUntil: 'networkidle' });
-    await submitMessageByKeyboard(page, page.locator('[data-voice-message]'), page.getByRole('button', { name: 'Send to assistant' }), 'Prepare a spoken response.');
+    await page.locator('[data-auto-speak]').uncheck();
+    await submitMessageByKeyboard(page, page.locator('[data-voice-message]'), page.locator('[data-voice-chat-form] button[type="submit"]'), 'Prepare a spoken response.');
     await page.getByRole('button', { name: 'Speak response' }).first().waitFor();
     const speak = page.getByRole('button', { name: 'Speak response' }).first();
+    const firstTtsRequest = page.waitForRequest((request) => request.url().includes('/api/tts'));
     await activateByKeyboard(page, speak);
+    await firstTtsRequest;
+    await firstTtsReady;
     await page.waitForFunction(() => document.querySelector('[data-media-status]').textContent.includes('Preparing'));
+    const secondTtsRequest = page.waitForRequest((request) => request.url().includes('/api/tts'));
     await activateByKeyboard(page, speak, 'Space');
-    await page.waitForFunction(() => document.querySelector('[data-media-status]').textContent.includes('Replacing'));
+    await secondTtsRequest;
+    await secondTtsReady;
     if (releaseFirstTts) releaseFirstTts();
     if (releaseSecondTts) releaseSecondTts();
-    await page.waitForFunction(() => document.querySelector('[data-media-status]').textContent.includes('Playing'));
+    await page.waitForTimeout(250);
+    const firstSpeechState = await page.evaluate(() => ({
+      audioCount: window.__p8Voice.audios.length,
+      audioPaused: window.__p8Voice.audios.at(-1)?.paused ?? null,
+      status: document.querySelector('[data-media-status]')?.textContent,
+    }));
+    assert.equal(firstSpeechState.audioCount, 1,
+      `only the current TTS response should create audio: ${JSON.stringify(firstSpeechState)}`);
+    assert.equal(firstSpeechState.status, 'Finished speaking the reply.',
+      `the synthetic spoken reply should finish: ${JSON.stringify(firstSpeechState)}`);
     await page.waitForTimeout(50);
     assert.equal(await page.evaluate(() => window.__p8Voice.audios.length), 1);
     result.journey.push('keyboard Speak response replaced a pending TTS request; only the current response played');
@@ -452,7 +522,8 @@ async function main() {
     assert.equal(await page.evaluate(() => window.__p8Voice.audios[0].src), '');
     await page.evaluate(() => { window.__p8Voice.rejectNextPlay = true; });
     await activateByKeyboard(page, speak, 'Space');
-    await page.waitForFunction(() => document.querySelector('[data-media-status]').textContent.includes('Playback was blocked'));
+    await page.waitForFunction(() => document.querySelector('[data-media-status]').textContent
+      .includes('The reply is ready. Select Speak response to play it.'));
     assert.equal(await page.evaluate(() => window.__p8Voice.audios[2].paused), true);
     result.journey.push('keyboard Speak response paused and released prior audio; rejected playback stayed visible');
 
@@ -464,6 +535,7 @@ async function main() {
     await speak.click();
     await page.waitForTimeout(50);
     assert.equal(ttsCount, 6);
+    await lastTtsReady;
     await page.evaluate(() => window.dispatchEvent(new PageTransitionEvent('pagehide')));
     if (releaseLastTts) releaseLastTts();
     await page.waitForFunction(() => window.__p8Voice.audios[2].paused === true);

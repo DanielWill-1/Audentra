@@ -12,8 +12,7 @@ function Pricing() {
             <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"> Pricing</span>
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-            Choose the plan that fits your needs. All plans include our core voice AI technology, 
-            blockchain verification, and enterprise-grade security.
+            Choose the plan that fits your needs. Voice and AI features depend on the configured provider and its current limits.
           </p>
           <div className="inline-flex items-center bg-green-100 text-green-800 px-4 py-2 rounded-full text-sm font-medium">
             <Star className="w-4 h-4 mr-2" />
@@ -55,7 +54,7 @@ function Pricing() {
                 </div>
                 <div className="flex items-center">
                   <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
-                  <span className="text-gray-700">Standard security</span>
+                  <span className="text-gray-700">Standard features</span>
                 </div>
                 <div className="flex items-center">
                   <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
@@ -111,7 +110,7 @@ function Pricing() {
                 </div>
                 <div className="flex items-center">
                   <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
-                  <span className="text-gray-700">Enterprise security</span>
+                  <span className="text-gray-700">Team features</span>
                 </div>
                 <div className="flex items-center">
                   <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
@@ -160,7 +159,7 @@ function Pricing() {
                 </div>
                 <div className="flex items-center">
                   <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
-                  <span className="text-gray-700">Advanced security</span>
+                  <span className="text-gray-700">Advanced features</span>
                 </div>
                 <div className="flex items-center">
                   <CheckCircle className="w-5 h-5 text-green-500 mr-3" />
@@ -219,8 +218,7 @@ function Pricing() {
                 Is my data secure?
               </h3>
               <p className="text-gray-600">
-                Absolutely. We use enterprise-grade encryption, blockchain verification, and are fully 
-                compliant with HIPAA, GDPR, and other major privacy regulations.
+                Review the <a href="/security" className="text-blue-600 underline">Security page</a> for controls implemented in this app and the <a href="/privacy" className="text-blue-600 underline">Privacy Notice</a> for cloud processing and retention. We do not claim regulatory certifications or end-to-end encryption.
               </p>
             </div>
             

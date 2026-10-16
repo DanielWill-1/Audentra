@@ -4,6 +4,7 @@ import {
   GROQ_API_KEY,
   GROQ_API_URL,
 } from "../config/api";
+import { cloudAiConsentHeaders, hasCloudAiConsent } from "../lib/cloudAiConsent";
 
 const USE_DJANGO_SERVICES = import.meta.env.VITE_USE_DJANGO_SERVICES === "true";
 const DJANGO_API_BASE = (
@@ -15,6 +16,7 @@ function serviceHeaders(): Record<string, string> {
   return {
     "Content-Type": "application/json",
     "X-Internal-Api-Token": INTERNAL_API_MARKER,
+    ...cloudAiConsentHeaders(),
   };
 }
 
@@ -79,6 +81,9 @@ export async function transcribeAudio({
   mimeType: string;
 }): Promise<string> {
   try {
+    if (!hasCloudAiConsent()) {
+      throw new Error("Review and accept cloud AI processing before sending a recording.");
+    }
     // Validate input
     if (!audio || !mimeType) {
       throw new Error("Audio and MIME type are required.");
@@ -116,7 +121,7 @@ export async function transcribeAudio({
       method: "POST",
       headers: USE_DJANGO_SERVICES
         ? await serviceHeaders()
-        : { "Content-Type": "application/json" },
+        : { "Content-Type": "application/json", ...cloudAiConsentHeaders() },
       body: JSON.stringify({ 
         audio, 
         mimeType 
@@ -170,6 +175,7 @@ export async function transcribeAudio({
 
 export async function synthesizeSpeech(text: string): Promise<string> {
   try {
+    if (!hasCloudAiConsent()) return "";
     // Validate input
     if (!text?.trim()) {
       console.warn("Empty text provided for speech synthesis");
@@ -197,7 +203,7 @@ export async function synthesizeSpeech(text: string): Promise<string> {
       method: "POST",
       headers: USE_DJANGO_SERVICES
         ? await serviceHeaders()
-        : { "Content-Type": "application/json" },
+        : { "Content-Type": "application/json", ...cloudAiConsentHeaders() },
       body: JSON.stringify({ text }),
     });
 
@@ -277,6 +283,9 @@ export async function processWithGroq(
   currentFormData: any,
   conversation: any[]
 ): Promise<{ response: string; extractedData: any; audioUrl?: string }> {
+  if (!hasCloudAiConsent()) {
+    throw new Error("Review and accept cloud AI processing before sending this message.");
+  }
   try {
     // Validate inputs
     if (!userInput?.trim()) {
@@ -356,6 +365,7 @@ Example response format:
       headers: {
         Authorization: `Bearer ${GROQ_API_KEY}`,
         "Content-Type": "application/json",
+        ...cloudAiConsentHeaders(),
       },
       body: JSON.stringify({
         model: "llama3-70b-8192",

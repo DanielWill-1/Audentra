@@ -1,10 +1,10 @@
-# Django foundation
+# Audentra Django application
 
-This native Windows Django project remains beside the React/Vite and Express source. P2-P8 implementation is accepted within its documented boundaries, P9 is complete within the revised owner scope, and P10 local preparation is complete. The locked Waitress/WhiteNoise runtime, settings, service boundary, and runbooks passed their scoped checks; production deployment remains deferred. See [P10 readiness](../../docs/deployment/P10_READINESS.md).
+This is the active application. The former React/Vite and Express source is archived under [`../../legacy/`](../../legacy/) and is not part of the Django build or runtime. The locked Waitress/WhiteNoise runtime, settings, service boundary, and runbooks are maintained here; production deployment remains deferred. See [P10 readiness](../../docs/deployment/P10_READINESS.md).
 
 See the [P10 preparation handoff](../../HANDOFF_2026-10-15_P10_PREPARATION.md), [P7 finding closeout](../../docs/pages/P7_SR_CLOSEOUT_2026-10-13.md), [P7/P8 matrix](../../docs/pages/P7_P8_CLOSURE_MATRIX.md), and [P9 task](../../docs/parity/P9_IMPLEMENTATION_PROMPT.md), [acceptance matrix](../../docs/parity/P9_ACCEPTANCE_MATRIX.md), and [report](../../docs/parity/P9_REPORT.md). The older P7 session review remains a dated historical record.
 
-The bounded P3 code findings are corrected; live speech-provider evidence and further recording/lifecycle work are deferred to the owner and future Scope 11. The microphone cleanup patch is intentionally owner-managed and unverified. P4 development Auth and P5 hosted data/RLS/Storage/pooler acceptance pass; see [P4 report](../../docs/auth/P4_REPORT.md) and [P5 verification](../../docs/data/P5_VERIFICATION.md). P6 shells and controlled rollback remain implemented; normal P7 page routing has zero legacy fallbacks.
+P4 development Auth and P5 hosted data/RLS/Storage/pooler acceptance pass; see [P4 report](../../docs/auth/P4_REPORT.md) and [P5 verification](../../docs/data/P5_VERIFICATION.md). P7 routes resolve directly to Django pages and application views; the React proxy and route rollback bridge have been retired.
 
 ## Local operation and P10 reference
 
@@ -20,7 +20,7 @@ Run commands from this directory in PowerShell.
        $env:UV_CACHE_DIR = (Join-Path $PWD ".uv-cache")
        $env:UV_PROJECT_ENVIRONMENT = ".venv-p2"
 
-2. If this checkout has no .env, copy .env.example to .env. Keep it private and use only the dedicated django_app and django_data database roles.
+2. Configure the local profile values described in the [P10 local runbook](../../docs/deployment/P10_LOCAL_RUNBOOK.md). The archived `legacy/.env.example` belongs to the retired browser app and is not a Django settings template. Keep the Django `.env` private and use only the dedicated django_app and django_data database roles.
 3. Install and lock dependencies with the locally managed interpreter:
 
        uv sync --locked --python .python\cpython-3.12.10-windows-x86_64-none\python.exe

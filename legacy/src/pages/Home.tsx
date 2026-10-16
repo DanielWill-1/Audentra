@@ -607,33 +607,33 @@ function Home() {
                     <span className="w-3 h-3 rounded-full bg-[#ef4444]/80 inline-block" />
                     <span className="w-3 h-3 rounded-full bg-[#f59e0b]/80 inline-block" />
                     <span className="w-3 h-3 rounded-full bg-[#10b981]/80 inline-block" />
-                    <span className="font-label-code text-[12px] text-gray-400 ml-2">bash — quickstart</span>
+                    <span className="font-label-code text-[12px] text-gray-400 ml-2">P10 AI request flow</span>
                   </div>
-                  <span className="font-label-code text-[11px] text-gray-400">Docker v26.0+</span>
+                  <span className="font-label-code text-[11px] text-gray-400">Current configuration</span>
                 </div>
                 <div className="p-5 font-label-code text-[13px] leading-relaxed space-y-3 overflow-x-auto text-gray-300">
                   <div>
-                    <span className="text-gray-500"># 1. Clone repository</span>
+                    <span className="text-gray-500"># 1. Transcribe a recording</span>
                     <br />
-                    <span className="text-[#38bdf8]">$</span> git clone https://github.com/audentra/audentra.git
+                    <span className="text-[#38bdf8]">Browser - Django</span> /api/transcribe
                     <br />
-                    <span className="text-[#38bdf8]">$</span> cd audentra
+                    <span className="text-[#38bdf8]">Django - Groq</span> Whisper Large V3 Turbo
                   </div>
                   <div>
-                    <span className="text-gray-500"># 2. Launch container stack</span>
+                    <span className="text-gray-500"># 2. Fill and review a form</span>
                     <br />
-                    <span className="text-[#38bdf8]">$</span> docker compose up -d
+                    <span className="text-[#38bdf8]">Browser - Django</span> /AIVoiceAutoFill
                   </div>
                   <div className="pt-2 border-t border-[#374151]/60 text-gray-400 text-[12px] space-y-1">
-                    <div className="text-[#10b981]">✔ Container audentra-core Started</div>
-                    <div className="text-[#10b981]">✔ Container audentra-ui Started</div>
-                    <div className="text-[#10b981]">✔ Container acoustic-parser Started</div>
+                    <div className="text-[#10b981]">✔ Audio sent to Groq for transcription</div>
+                    <div className="text-[#10b981]">✔ Chat and draft sent to Groq GPT-OSS 120B</div>
+                    <div className="text-[#10b981]">✔ Suggested values checked before saving</div>
                     <div className="pt-1.5 text-gray-300">
-                      → Local UI instance running at <span className="text-[#60a5fa] underline">http://localhost:3000</span>
+                      → Speech and chat requests use cloud processing; app URL: <span className="text-[#60a5fa] underline">VoiceForm</span>
                       <br />
-                      → Speech websocket endpoint active on <span className="text-[#60a5fa]">ws://localhost:8080/stream</span>
+                      → Speech provider flow: <span className="text-[#60a5fa]">Browser to Django to Groq</span>
                       <br />
-                      → Custom schema loader mounted at <span className="text-amber-300">/schemas/intake.json</span>
+                      → Form field validation: <span className="text-amber-300">before draft update</span>
                     </div>
                   </div>
                 </div>
@@ -651,10 +651,10 @@ function Home() {
               Architecture & Privacy
             </span>
             <h2 className="font-headline-h2 text-headline-h2 text-text-primary font-semibold tracking-tight mb-4">
-              Designed with sensitive data in mind.
+              How VoiceForm handles data.
             </h2>
             <p className="font-body-large text-body-large text-text-secondary">
-              Engineered for local deployment and complete data sovereignty without proprietary cloud lock-in.
+              Voice and conversational form filling use cloud AI in this build after a one-time opt-in. Read the Privacy Notice to see what is sent and saved.
             </p>
           </div>
 
@@ -664,72 +664,72 @@ function Home() {
                 <div className="w-10 h-10 rounded-lg bg-surface-subtle border border-border flex items-center justify-center text-text-primary mb-4">
                   <Terminal className="w-5 h-5" aria-hidden="true" />
                 </div>
-                <h3 className="font-headline-h3 text-[18px] text-text-primary font-semibold mb-2">Self-Hosting & Local Execution</h3>
+                <h3 className="font-headline-h3 text-[18px] text-text-primary font-semibold mb-2">Deployment and providers</h3>
                 <p className="font-body text-body text-text-secondary leading-relaxed">
-                  Deploy on bare metal, air-gapped VPCs, or edge devices with full source access and zero forced network calls.
+                  The application can run on operator-managed infrastructure, but AI requests still go to the provider configured for that deployment.
                 </p>
               </div>
-              <span className="font-label-code text-[11px] text-text-muted mt-6 block">Air-Gap Capable</span>
+              <span className="font-label-code text-[11px] text-text-muted mt-6 block">Provider configuration applies</span>
             </div>
             <div className="bg-surface p-6 rounded-xl border border-border flex flex-col justify-between">
               <div>
                 <div className="w-10 h-10 rounded-lg bg-surface-subtle border border-border flex items-center justify-center text-text-primary mb-4">
                   <Trash2 className="w-5 h-5" aria-hidden="true" />
                 </div>
-                <h3 className="font-headline-h3 text-[18px] text-text-primary font-semibold mb-2">Configurable Storage & Zero-Retention</h3>
+                <h3 className="font-headline-h3 text-[18px] text-text-primary font-semibold mb-2">Saved forms and recordings</h3>
                 <p className="font-body text-body text-text-secondary leading-relaxed">
-                  Audio buffers flush immediately post-extraction; cryptographic wipe on session close. Raw audio is never permanently stored.
+                  After you opt in, recordings are sent to the configured speech provider and are not saved as completed-form records. Uploads may be temporarily buffered while processed.
                 </p>
               </div>
-              <span className="font-label-code text-[11px] text-text-muted mt-6 block">Stateless Inference Pipelines</span>
+              <span className="font-label-code text-[11px] text-text-muted mt-6 block">See retention details</span>
             </div>
             <div className="bg-surface p-6 rounded-xl border border-border flex flex-col justify-between">
               <div>
                 <div className="w-10 h-10 rounded-lg bg-surface-subtle border border-border flex items-center justify-center text-text-primary mb-4">
                   <Lock className="w-5 h-5" aria-hidden="true" />
                 </div>
-                <h3 className="font-headline-h3 text-[18px] text-text-primary font-semibold mb-2">End-to-End Encryption</h3>
+                <h3 className="font-headline-h3 text-[18px] text-text-primary font-semibold mb-2">Cloud AI processing</h3>
                 <p className="font-body text-body text-text-secondary leading-relaxed">
-                  TLS 1.3 in-transit, AES-256 at rest, and client-managed cryptographic key pairs (BYOK) supported out of the box.
+                  After you opt in, the VoiceForm server sends audio and form-filling text to Groq over its HTTPS API. Per-user provider selection and BYOK are not available in this release.
                 </p>
               </div>
-              <span className="font-label-code text-[11px] text-text-muted mt-6 block">Open Cryptographic Standards</span>
+              <span className="font-label-code text-[11px] text-text-muted mt-6 block">Provider terms apply</span>
             </div>
             <div className="bg-surface p-6 rounded-xl border border-border flex flex-col justify-between">
               <div>
                 <div className="w-10 h-10 rounded-lg bg-surface-subtle border border-border flex items-center justify-center text-text-primary mb-4">
                   <Cpu className="w-5 h-5" aria-hidden="true" />
                 </div>
-                <h3 className="font-headline-h3 text-[18px] text-text-primary font-semibold mb-2">Minimal Data Footprint</h3>
+                <h3 className="font-headline-h3 text-[18px] text-text-primary font-semibold mb-2">Data retention</h3>
                 <p className="font-body text-body text-text-secondary leading-relaxed">
-                  Strict ephemeral processing pipelines without third-party model retraining. You own 100% of your telemetry and data models.
+                  Saved forms remain in the configured database until deleted. Groq’s retention controls and hosting backups are managed separately.
                 </p>
               </div>
-              <span className="font-label-code text-[11px] text-text-muted mt-6 block">Zero External Model Training</span>
+              <span className="font-label-code text-[11px] text-text-muted mt-6 block">See the Privacy Notice</span>
             </div>
             <div className="bg-surface p-6 rounded-xl border border-border flex flex-col justify-between">
               <div>
                 <div className="w-10 h-10 rounded-lg bg-surface-subtle border border-border flex items-center justify-center text-text-primary mb-4">
                   <ShieldCheck className="w-5 h-5" aria-hidden="true" />
                 </div>
-                <h3 className="font-headline-h3 text-[18px] text-text-primary font-semibold mb-2">Pluggable Auth & RBAC</h3>
+                <h3 className="font-headline-h3 text-[18px] text-text-primary font-semibold mb-2">Account and form access</h3>
                 <p className="font-body text-body text-text-secondary leading-relaxed">
-                  OpenID Connect, SAML, and mTLS token verification to map permissions and protect sensitive fields across distributed teams.
+                  The Django app checks signed-in users and applies owner-scoped database policies to saved form records and private template files.
                 </p>
               </div>
-              <span className="font-label-code text-[11px] text-text-muted mt-6 block">OpenID Connect & SAML</span>
+              <span className="font-label-code text-[11px] text-text-muted mt-6 block">Current Django app</span>
             </div>
             <div className="bg-surface p-6 rounded-xl border border-border flex flex-col justify-between">
               <div>
                 <div className="w-10 h-10 rounded-lg bg-surface-subtle border border-border flex items-center justify-center text-text-primary mb-4">
                   <ScrollText className="w-5 h-5" aria-hidden="true" />
                 </div>
-                <h3 className="font-headline-h3 text-[18px] text-text-primary font-semibold mb-2">Tamper-Evident Audit Trails</h3>
+                <h3 className="font-headline-h3 text-[18px] text-text-primary font-semibold mb-2">Operational logs</h3>
                 <p className="font-body text-body text-text-secondary leading-relaxed">
-                  Local immutable JSON append-only logs for verification. Every transcription, schema mapping, and operator edit is traceably hashed.
+                  Application logs use fixed event labels and omit request content. Hosting and proxy logs depend on the deployment.
                 </p>
               </div>
-              <span className="font-label-code text-[11px] text-text-muted mt-6 block">Structured JSON Audit Log</span>
+              <span className="font-label-code text-[11px] text-text-muted mt-6 block">Request values omitted</span>
             </div>
           </div>
         </div>

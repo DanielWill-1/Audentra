@@ -1,8 +1,8 @@
 # Migration plan and scope controls
 
-**Version:** 2.6
-**Updated:** 2026-10-16, P10 wave plan
-**Current task:** P7/P8 and current-scope P9 are closed. The 2026-10-15 P10 local-runtime preparation sub-sprint passed with linked evidence. On 2026-10-16 the owner replanned P10 as the final local-first product/release-candidate stage before deployment; the expanded waves are planned and not yet implemented. See the [P10 brief](docs/deployment/P10_IMPLEMENTATION_PROMPT.md), [readiness ledger](docs/deployment/P10_READINESS.md), [current handoff](HANDOFF_2026-10-16_P10_WAVE_PLAN.md), and [migration state](MIGRATION_STATE.md). Deployment remains a separate later owner decision.
+**Version:** 2.7
+**Updated:** 2026-10-17, P11 local closeout
+**Current task:** P10 local-first implementation is complete and the owner accepted the local release candidate. Local P11 legacy retirement was subsequently authorized without deployment or soak entry gates and is now implemented; see the [P11 closeout](HANDOFF_2026-10-17_P11_LEGACY_RETIREMENT.md). Deployment remains deferred. See the [P10 review](docs/deployment/P10_W5_RELEASE_CANDIDATE_REVIEW.md).
 
 **Owner scope revision:** The owner's 2026-10-11 request replaces the earlier SMTP/legacy-account/React compatibility gates. Supabase Python SDK + Django + HTMX signup/login/session/refresh/password-change/logout passed against fresh hosted accounts. The project remains development-only and signup confirmation is disabled with authorization; email recovery is separate.
 
@@ -20,11 +20,11 @@
 
 ## 1. Goal and authority
 
-**Owner scope revision, 2026-10-16:** P9 is complete within its revised scope. P10 is the final pre-deployment stage and prioritizes a local-first product; the hosted installation is a demo. The former Scope 11 speech and recording work is included in P10 Waves 2–3. Wave 4 makes privacy/security promises real through backend controls and evidence. Wave 5 combines performance, error handling, local-first hardening, and the release-candidate gate. Physical mobile testing remains excluded; physical recording edge cases and audibility remain owner manual review. The 2026-10-15 runtime-preparation and local-schema results remain valid for their stated scope but do not prove local Supabase is the app's default target. Actual deployment remains deferred.
+**Owner scope revision, 2026-10-17:** P9 and all five P10 implementation waves are complete within the local-first scope. The owner reviewed and accepted the local release candidate. Groq ZDR is owner-confirmed disabled and disclosed. Physical mobile and recording edge cases/audibility remain excluded. Deployment is deferred. The owner authorized local P11 retirement with no entry gates; deployment and hosted changes remain out of scope.
 
 Move Audentra from React/TypeScript/Vite and Express to Django, Python services, server-rendered templates and HTMX. Retain Supabase Postgres, Auth and Storage. Keep browser JavaScript for microphone capture, playback and small interactions requiring browser APIs.
 
-Preserve approved design, routes, copy, data semantics and working flows. Record intentional behavior changes before implementation. Keep the legacy stack runnable until the final removal gate.
+Preserve approved design, routes, copy, data semantics and working flows. Record intentional behavior changes before implementation. The former legacy stack remained runnable through P10 and was archived locally under P11.
 
 This file consolidates scope and session evidence. The project is development/testing only, without production users or Docker. P1 is finalized under accepted exceptions; P2 is complete/reviewed; P3 bounded code findings are closed and live speech evidence remains later. P4 now follows the owner's clean development-only Auth scope. Hosted fresh-account and HTMX/browser evidence passes. [P4_REPORT.md](docs/auth/P4_REPORT.md) records the remaining credential-retirement approval and production/email-recovery limitations.
 
@@ -62,11 +62,11 @@ That was a documentation-only task. P1 was subsequently implemented and accepted
 
 Build the replacement beside the existing repository layout. Put P1 tooling/dependencies/tests/fixtures in migration/parity/, P2-and-later Python application work in migration/django/, and new comparison documentation/baselines/reports in docs/parity/. Python app paths in older phase descriptions are relative to migration/django/; P1 harness paths are relative to migration/parity/. Shared Supabase migration history and repository CI remain at their existing or explicitly named repository paths.
 
-Keep src/, server/, scripts/, public/, new pages/, page-screenshots/, existing Node manifests and Vite/TypeScript/style configuration in their original locations and runnable until the entire migration passes P9, deployment verification and the P10 soak. Reference files remain available for repeated comparisons throughout every wave. Copy content into the new implementation; do not relocate originals into legacy/ or rename the design folders.
+Historical preservation rule through P10: keep src/, server/, scripts/, public/, new pages/, page-screenshots/, existing Node manifests and Vite/TypeScript/style configuration in place and runnable for comparisons. Superseded by the owner's 2026-10-17 P11 decision: archive the former app code/configuration under legacy/ while retaining screenshots, design references, parity evidence, schema history and documentation in their existing evidence folders.
 
 Record original source paths/revisions and comparison artifacts in each phase report. Necessary compatibility/settings changes must fit the phase's exact existing-file allowlist, preserve legacy behaviour and record their diffs. Replacement code belongs in the new folders. Existing SQL migrations remain append-only; this policy does not restore material removed by P0.
 
-P11 may retire old runtime files only after the full completion/soak gates and a documented cleanup/recovery scope. Keep design references, historical screenshots, schema history, documentation and parity evidence available after retirement. No P1 task or individual route-wave completion permits old-folder cleanup.
+P11 archival is complete within the owner's 2026-10-17 local scope. Deployment, telemetry, soak and recovery-reference entry gates were explicitly excluded. Design references, historical screenshots, schema history, documentation and parity evidence remain available.
 
 ### Future phase contract
 
@@ -83,7 +83,7 @@ Before a future implementation, record a bounded brief:
 | Recovery | Code/traffic rollback, or operator recovery for a history change |
 | Stop conditions | Missing access, unresolved choice or required scope expansion |
 
-Map changed files to the brief. Record unrelated bugs in a backlog. Finish independent authorized work when a gate blocks dependent work. The earlier P7/P8 brief did not itself authorize later phases; P9 was subsequently started. The owner closed P9 within the revised scope, then authorized P10 entry work and later the local runtime/configuration sprint on 2026-10-15. Actual deployment/production soak and P11 retirement require later owner instructions.
+Map changed files to the brief. Record unrelated bugs in a backlog. Finish independent authorized work when a gate blocks dependent work. The earlier P7/P8 brief did not itself authorize later phases; P9 was subsequently started. The owner closed P9 within the revised scope, authorized P10 and the local runtime/configuration sprint, then authorized and completed local P11 archival. Actual deployment/production soak remains deferred.
 
 Preserve user changes. Dependency overlap does not authorize additional phases, background work or remote writes.
 
@@ -120,13 +120,13 @@ Prove roles, transaction scoping, query guard and pooler behavior before P5b. If
 
 | Mechanism | Introduction / use | Removal |
 |---|---|---|
-| Legacy JSON/base64 transcription | P3 retains it alongside multipart | P8 switches recorder; P11 removes input after zero-use evidence |
-| Supabase bearer credential | P3 implements; P4 requires valid bearer or Django session | P11 after legacy callers retire |
-| `INTERNAL_API_TOKEN` | Public P3 request marker, not authentication | P11; P4 auth cannot accept marker alone |
-| Legacy route fallback | P6 allowlists manifest page paths and verified methods | P11 after zero forwards during soak |
-| Browser Supabase session | Supports remaining React pages | Preserve while needed; remove with legacy stack at P11 |
+| Legacy JSON/base64 transcription | P3 retained it alongside multipart | Removed in P11; multipart only |
+| Supabase bearer credential on app APIs | P3/P4 briefly supported verified bearer requests | Removed in P11; app APIs require Django session and CSRF |
+| `INTERNAL_API_TOKEN` | Public P3 request marker, not authentication | Removed in P11; requests carrying the old header are rejected |
+| Legacy route fallback | P6 allowlisted manifest page paths and verified methods | Removed in P11; all active routes resolve directly to Django |
+| Browser Supabase client/session | Supported the former React application | React code is archived in `legacy/`; active pages use Django sessions |
 
-P3 binds privately with configured origin/CORS controls; do not expose an unauthenticated provider proxy to the internet. P4 requires session or valid bearer authentication. Protect session-authenticated writes with CSRF; specify/test the separate bearer API policy without exempting session requests by accident.
+P3 service routes retain the private upstream, request-size, rate-limit, session, and CSRF checks. App APIs no longer accept cross-origin bearer requests or the browser-visible marker.
 
 ## 4. Roadmap and gates
 
@@ -312,25 +312,27 @@ The [archived master brief](docs/pages/P7_P8_IMPLEMENTATION_PROMPT.md) defines W
 
 ### P10: local-first release candidate before deployment
 
-**Entry:** P7/P8 and current-scope P9 are closed. The 2026-10-15 runtime/configuration preparation sub-sprint passed; its evidence is linked in the [P10 readiness ledger](docs/deployment/P10_READINESS.md). On 2026-10-16 the owner expanded P10. The expanded work is planned and incomplete.
+**Entry:** P7/P8 and current-scope P9 are closed. The 2026-10-15 runtime/configuration preparation sub-sprint passed; the owner subsequently authorized five expanded P10 waves, all of which now have implementation evidence and owner acceptance of the local RC. See the [P10 closeout](docs/deployment/P10_W5_RELEASE_CANDIDATE_REVIEW.md). The owner says Google will not be used and instructs leaving the tracked service-account key unchanged; the prior exposure remains unresolved. P4 Supabase credential retirement remains a pre-deployment gate. Deployment is currently deferred.
 
-**Scope:** Follow the five waves in the [active P10 brief](docs/deployment/P10_IMPLEMENTATION_PROMPT.md): (1) owner-reported website issue intake and fixes; (2) evaluate/select and implement a live speech provider for STT/TTS; (3) resume recording lifecycle after provider integration; (4) implement and evidence backend privacy/security controls for existing promises; and (5) merge performance/error improvements with local-first hardening and release-candidate readiness. Run locally against the local Supabase CLI stack by default. The hosted installation is a synthetic-data demo. The former Scope 11 voice work belongs to P10 Waves 2–3. Keep physical mobile out of scope and leave physical recording edge cases/audibility to the owner for manual review.
+**Scope:** Follow the five waves in the [active P10 brief](docs/deployment/P10_IMPLEMENTATION_PROMPT.md): (1) implement Groq conversational form filling with GPT-OSS 120B, Whisper Large V3 Turbo, and Orpheus v1 English on Free tier only; (2) resume recording lifecycle after provider integration; (3) implement and evidence backend privacy/security controls and decide the end-user cloud policy; (4) intake and fix owner-reported website issues; and (5) merge performance/error improvements with local-first hardening and release-candidate readiness. Run locally against the local Supabase CLI stack by default. The hosted installation is a synthetic-data demo. The former Scope 11 voice work belongs to P10 Waves 1–2. Keep physical mobile out of scope and leave physical recording edge cases/audibility to the owner for manual review.
 
 **P10 exit:** All five waves have concrete evidence and the owner has reviewed the release candidate. The 2026-10-15 sub-sprint passing does not pass any expanded P10 wave by itself. Report local product readiness and hosted-demo readiness separately. A claim requiring a provider configuration, contract, certification, selected region, TLS host, or organizational audit remains gated until its evidence exists.
 
-**Deployment:** Publishing, production changes, DNS/traffic switching, production migrations, external secret changes, and production soak require a later owner instruction after P10 review. Distinguish traffic/code rollback from data-incident recovery. Traffic rollback does not revert valid new rows; corrupted writes need targeted incident response. P10 completion does not authorize P11.
+**Deployment:** The owner has deferred deployment for now. Publishing, production changes, DNS/traffic switching, production migrations, external secret changes, and production soak require a later owner instruction. This deployment boundary does not block the separately owner-authorized local P11 source migration. Distinguish traffic/code rollback from data-incident recovery. Traffic rollback does not revert valid new rows; corrupted writes need targeted incident response.
 
-**Limits:** Do not retire the legacy runtime during P10. P11 still requires deployed verification, an agreed soak, zero fallback/API usage evidence, and a clean recovery reference. Physical mobile tests remain excluded; physical edge cases/audibility are owner manual work.
+**Limits:** P10 acceptance does not authorize deployment or hosted changes. The owner later authorized local P11 archival without deployment, verification, telemetry, or soak entry gates. Physical mobile tests remain excluded; physical edge cases/audibility are owner manual work.
 
 ### P11: legacy removal
 
-**Entry:** Accepted P10 deployment verification after the later owner deployment decision; agreed soak (old recommendation: at least two weeks); evidence of zero fallback forwards and zero legacy API usage; clean recovery reference. Preparation-only completion does not satisfy this gate.
+**Owner decision:** Start local P11 now. There are no entry gates for this local source/runtime retirement. Keep the no-deployment/no-hosted-changes boundary.
 
-**Scope:** Retire React/Express/Node, legacy deployment, bearer path, public request marker and legacy transcription input. Preserve designs, parity artifacts, schema history and documentation.
+**Scope:** Move the former React/Vite/Express/Node app, its manifests/configuration and old workflow into one root `legacy/` archive. Remove its active Django proxy/fallback, API bearer authentication, browser request marker, and JSON/base64 transcription input. Preserve designs, screenshots, parity evidence, Supabase schema history, and documentation.
 
-**Exit:** Build/test/deploy without Node; session-only/multipart-only endpoints reject retired inputs; proxy gone; browser content has no Supabase credential; references preserved.
+**Exit:** Django build, checks, and runtime use no root Node app. Service APIs require a verified Django session and CSRF, reject `Authorization` and the retired request-marker header, and transcription accepts multipart uploads only. The React proxy/fallback and root Node workflow are gone. Active browser pages contain no Supabase client credential. Legacy source and historical references remain inspectable under `legacy/` and `docs/`.
 
-**Limits:** Elapsed time alone cannot justify deletion. Old runtime folders stay in place until full parity, deployment verification and soak complete and the cleanup/recovery scope is recorded. Keep Supabase data, migration history, designs, original screenshots, documentation and comparison evidence. Check history cleanliness before creating recovery tags.
+**Limits:** P11 is a local source/runtime migration only. Do not deploy, change hosted credentials, run production migrations, switch traffic, or start a soak. Preserve Supabase data, migration history, designs, original screenshots, documentation, and comparison evidence. The former application code is archived rather than discarded.
+
+**Status:** Implemented locally on 2026-10-17; see [P11 closeout](HANDOFF_2026-10-17_P11_LEGACY_RETIREMENT.md). No deployment or hosted changes were made.
 
 ## 5. Decision register
 
@@ -391,13 +393,13 @@ Completion requires stated gates or a user-accepted bounded exception. Missing e
 
 ## 7. Change control and handoffs
 
-**Current status (2026-10-15):** P7/P8 and current-scope P9 are closed. P10 local preparation is complete and verified; deployment/release verification and soak remain deferred. The microphone cleanup patch and recording/provider work remain intentionally owner-deferred. See the [P9 report](docs/parity/P9_REPORT.md), [migration state](MIGRATION_STATE.md), [P10 readiness](docs/deployment/P10_READINESS.md), and [P10 handoff](HANDOFF_2026-10-15_P10_PREPARATION.md).
+**Current status (2026-10-17):** P9 and all five P10 waves are closed within the owner-accepted local scope. P11 local source retirement is complete; deployment and production soak remain deferred. See the [P11 closeout](HANDOFF_2026-10-17_P11_LEGACY_RETIREMENT.md), [migration state](MIGRATION_STATE.md), [P10 readiness](docs/deployment/P10_READINESS.md), and [P10 release-candidate review](docs/deployment/P10_W5_RELEASE_CANDIDATE_REVIEW.md). The 2026-10-15 preparation status remains historical evidence.
 
 Before expanding scope, record trigger, affected files/routes/data, necessity, alternatives, checks, recovery and user authorization. Update the brief after approval. Keep unrelated work in a backlog.
 
 Each handoff reads state/plan/prompt, preserves completed work/user changes, refreshes stale evidence and executes only the authorized task. An old prompt cannot authorize a new phase.
 
-Current session record: [P10 preparation handoff](HANDOFF_2026-10-15_P10_PREPARATION.md) and [P10 readiness](docs/deployment/P10_READINESS.md). The [P9 closeout](HANDOFF_2026-10-14_P9_CLOSEOUT.md), [local-readiness scope review](HANDOFF_2026-10-14_LOCAL_READINESS.md), and [P9 kickoff](HANDOFF_2026-10-13_033145_IST.md) retain their dated evidence. P9 and in-scope P10 preparation are complete; actual deployment and P11 retirement await later decisions.
+Current session record: [P11 local closeout](HANDOFF_2026-10-17_P11_LEGACY_RETIREMENT.md), [P10 wave-plan handoff](HANDOFF_2026-10-16_P10_WAVE_PLAN.md), and [P10 readiness](docs/deployment/P10_READINESS.md). The [P9 closeout](HANDOFF_2026-10-14_P9_CLOSEOUT.md), [local-readiness scope review](HANDOFF_2026-10-14_LOCAL_READINESS.md), and [P9 kickoff](HANDOFF_2026-10-13_033145_IST.md) retain their dated evidence. P9/P10 and local P11 are complete in scope; deployment remains deferred.
 
 ## 8. Corrections to older documents
 
@@ -421,7 +423,7 @@ Current session record: [P10 preparation handoff](HANDOFF_2026-10-15_P10_PREPARA
 | P3 accepts a Django session before P4 principal hydration exists | Test a trusted-principal helper seam; never trust session existence or self-asserted fields; actual session authentication/hydration is P4 |
 | P3 TTS requires identical bytes from separate live provider calls | Identical mock bytes must match; live behavior needs documented provider tolerances and separately labelled evidence |
 | AI example uses different extraction field name | Preserve boundary keys, including `extractedData`; document internal mapping |
-| Early relocation of React tree / renaming design folders | Superseded by user instruction: new code in migration/parity/ and migration/django/; preserve original locations through full verification and soak; retain design/reference evidence after retirement |
+| Preserve the original React tree in place through deployment verification and soak | Superseded by the owner's 2026-10-17 P11 decision: archive the old app under `legacy/` now; retain designs, screenshots, parity evidence, schema history, and documentation |
 | P6 assumes SPA form POST routes | Verify methods; no invented endpoints or broad API forwarding |
 | P1 local replay assumed despite missing DDL | The pre-P5 target was empty; P5 records new contracts and hosted/native provisioning evidence, while P1's accepted handoff exception remains |
 | Old audit has zero tests | P0 SQL test exists; full app parity suite still absent |

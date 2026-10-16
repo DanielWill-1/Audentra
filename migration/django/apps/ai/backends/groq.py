@@ -33,6 +33,7 @@ def extract(
         "max_tokens": 2048,
         "top_p": 0.9,
         "stream": False,
+        "response_format": {"type": "json_object"},
     }
     try:
         with httpx.Client(timeout=settings.P3_PROVIDER_TIMEOUT_SECONDS) as client:

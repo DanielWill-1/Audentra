@@ -66,7 +66,7 @@ function HelpCenter() {
     },
     {
       id: 4,
-      title: 'HIPAA compliance and data security',
+      title: 'Cloud processing, privacy, and data security',
       category: 'security',
       readTime: '6 min read',
       rating: 4.9,

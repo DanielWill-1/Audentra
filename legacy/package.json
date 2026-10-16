@@ -13,7 +13,7 @@
     "dev:server": "ts-node server/index.ts",
     "screenshots": "node scripts/screenshot.js",
         "screenshots:existing": "node scripts/screenshot.js --existing",
-    "secret-scan": "python scripts/secret_scan.py --mode both"
+    "secret-scan": "python ../scripts/secret_scan.py --mode both"
 
   },
   "dependencies": {

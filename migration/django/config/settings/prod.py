@@ -56,17 +56,6 @@ if P10_TRUSTED_PROXY_IP not in {"127.0.0.1", "::1"}:  # noqa: F405
 if P3_SERVICES_ENABLED:  # noqa: F405
     if len(P3_PROXY_TOKEN) < 32:  # noqa: F405
         raise ImproperlyConfigured("Set P3_PROXY_TOKEN when P3 services are enabled.")
-    if len(P3_API_MARKER) < 16 or P3_API_MARKER == "voiceform-p3":  # noqa: F405
-        raise ImproperlyConfigured("Set a non-default INTERNAL_API_TOKEN for enabled services.")
-    configured_origins = [
-        _https_origin(origin)
-        for origin in os.getenv("P3_ALLOWED_ORIGINS", "").split(",")  # noqa: F405
-        if origin.strip()
-    ]
-    if not configured_origins or any(origin is None for origin in configured_origins):
-        raise ImproperlyConfigured("P3_ALLOWED_ORIGINS must contain explicit HTTPS origins.")
-    if public_origin not in configured_origins:
-        raise ImproperlyConfigured("P3_ALLOWED_ORIGINS must include DJANGO_PUBLIC_ORIGIN.")
 
 try:
     hsts_seconds = int(os.getenv("DJANGO_HSTS_SECONDS", "0"))
@@ -89,7 +78,7 @@ SECURE_PROXY_SSL_HEADER = None
 USE_X_FORWARDED_HOST = False
 CSRF_TRUSTED_ORIGINS = sorted(csrf_origins)
 # Django checks middleware by its exact import string; ServiceCsrfMiddleware subclasses it
-# and preserves the reviewed bearer exception for service POSTs.
+# and enforces the same session and CSRF boundary as other browser writes.
 SILENCED_SYSTEM_CHECKS = ["security.W003"]
 
 MIDDLEWARE = [  # noqa: F405

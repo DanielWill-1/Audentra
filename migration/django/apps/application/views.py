@@ -12,6 +12,10 @@ from uuid import UUID
 from apps.accounts import profile_selectors, profile_services
 from apps.accounts.principals import SupabaseUser
 from apps.ai import services as ai_services
+from apps.api.consent import (
+    CLOUD_AI_CONSENT_POLICY_VERSION,
+    has_cloud_ai_consent,
+)
 from apps.scheduler import selectors as schedule_selectors
 from apps.scheduler import services as schedule_services
 from apps.storage import services as storage_services
@@ -915,9 +919,10 @@ def voice_autofill(request: HttpRequest) -> HttpResponse:
                         {
                             "type": "assistant",
                             "content": (
-                                f'AI Assistant activated for "{template["name"]}". '
-                                "I will help you fill this form. Describe the information you "
-                                "want to add, and review each field before you save."
+                                f'Hi! Let\'s fill out "{template["name"]}" together. '
+                                "Tell me what you would like to add in your own words. I will "
+                                "ask a quick follow-up if I need another detail, and you can "
+                                "review the draft before saving."
                             ),
                         }
                     ]
@@ -929,6 +934,12 @@ def voice_autofill(request: HttpRequest) -> HttpResponse:
             )
 
     action = request.POST.get("action", "") if request.method == "POST" else ""
+    if (
+        action == "extract"
+        and not settings.USE_MOCK_AI
+        and not has_cloud_ai_consent(request, allow_form_field=True)
+    ):
+        error = "Review and accept cloud AI processing before sending this conversation."
     if not error and template is not None and request.method == "POST":
         try:
             if action == "extract":
@@ -940,9 +951,14 @@ def voice_autofill(request: HttpRequest) -> HttpResponse:
                 current = _json_object(request.POST.get("form_data", "{}"), max_bytes=100_000)
                 result = ai_services.extract(message, fields, current, conversation[:-1])
                 extracted = result.get("extractedData", {})
+                rejected_fields: list[dict[str, Any]] = []
                 if isinstance(extracted, dict):
-                    form_data = voice_services.apply_extraction(extracted, fields, current)
+                    form_data, rejected_fields = voice_services.apply_validated_extraction(
+                        extracted, fields, current
+                    )
                 response_text = result.get("response", "")
+                if rejected_fields:
+                    response_text = voice_services.validation_question(rejected_fields[0])
                 if isinstance(response_text, str) and response_text:
                     conversation.append({"type": "assistant", "content": response_text[:4000]})
             elif action == "save":
@@ -1023,8 +1039,8 @@ def voice_autofill(request: HttpRequest) -> HttpResponse:
             "conversation_json": json.dumps(conversation, ensure_ascii=False),
             "notice": notice,
             "error": error,
-            "api_marker": settings.P3_API_MARKER,
             "max_audio_bytes": settings.P3_MAX_AUDIO_BYTES,
+            "cloud_ai_consent_policy_version": CLOUD_AI_CONSENT_POLICY_VERSION,
         },
     )
 

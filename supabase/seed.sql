@@ -1,0 +1,2 @@
+-- The local demo account password is generated per workstation.
+-- migration/django/scripts/p10_local_supabase.py provisions it after migrations.

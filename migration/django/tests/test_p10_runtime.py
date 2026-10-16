@@ -43,8 +43,6 @@ def test_service_proxy_token_is_required_and_forwarded_ip_is_not_read_directly()
         "P3_SERVICES_ENABLED": True,
         "P3_SERVICE_ACCESS_MODE": "trusted-proxy",
         "P3_PROXY_TOKEN": proxy_token,
-        "P3_ALLOWED_ORIGINS": ["https://app.example.invalid"],
-        "P3_API_MARKER": "test-request-marker",
         "P3_MAX_REQUEST_BYTES": 1024,
         "P3_RATE_LIMIT_REQUESTS": 30,
         "P3_RATE_LIMIT_WINDOW_SECONDS": 60,
@@ -53,8 +51,6 @@ def test_service_proxy_token_is_required_and_forwarded_ip_is_not_read_directly()
     def request(*, proxy_token: str = "") -> HttpRequest:
         headers = {
             "HTTP_HOST": "127.0.0.1",
-            "HTTP_ORIGIN": "https://app.example.invalid",
-            "HTTP_X_INTERNAL_API_TOKEN": "test-request-marker",
             "HTTP_X_FORWARDED_FOR": "127.0.0.1",
             "REMOTE_ADDR": "203.0.113.19",
         }

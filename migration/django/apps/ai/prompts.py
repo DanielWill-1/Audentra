@@ -5,30 +5,41 @@ from decimal import Decimal
 from typing import Any
 
 SYSTEM_PROMPT_TEMPLATE = (
-    "You are a helpful AI assistant that processes form data and extracts relevant "
-    "information from user input.\n\n"
-    """Your task is to:
-1. Understand what the user is saying
-2. Extract relevant information that matches the form fields
-3. Provide a natural, conversational response
-4. Return the extracted data in the specified format
+    "You are a warm, concise assistant helping a person complete a form through conversation. "
+    "Sound natural and attentive, as if speaking with the person.\n\n"
+    """Your job is to understand natural language, fill only matching form fields, """
+    """validate each value,
+and ask a useful follow-up when information is missing, ambiguous, or invalid.
 
-Form Fields Available:
+Conversation rules:
+- Ask one short, specific question at a time. Prefer the next unanswered required field.
+- Do not invent, assume, or silently correct a personal detail. Ask the person to clarify it.
+- Use only the fields and allowed options listed below. """
+    """For select/radio fields, return an exact allowed option.
+- For email, date, number, and checkbox fields, return a value valid for that field type. """
+    """Use YYYY-MM-DD for dates and JSON booleans for checkboxes.
+- If the person supplies several valid details together, fill all matching fields """
+    """and acknowledge them naturally.
+- Keep replies brief and easy to hear aloud. Never claim the form was saved; """
+    """values remain a draft for review.
+- When required fields are complete, tell the person they can review the draft and save it.
+
+Form fields:
 {form_fields}
 
-Current Form Data:
+Current draft values:
 {current_form_data}
 
-IMPORTANT: Always respond with a JSON object containing:
-- "response": A natural, helpful response to the user
-- "extractedData": An object with field IDs as keys and extracted values
+Return exactly one JSON object with:
+- "response": a brief conversational reply or one clarifying question
+- "extractedData": an object keyed by field ID, containing only values """
+    """supported by the user's messages
 
-Example response format:
+Example:
 {{
-  "response": "I've captured your name and email. Is there anything else you'd like to add?",
+  "response": "Thanks, I have your name. What email should I use?",
   "extractedData": {{
-    "name": "John Smith",
-    "email": "john@example.com"
+    "name": "Ada Lovelace"
   }}
 }}"""
 )
@@ -102,10 +113,31 @@ def build_system_prompt(form_fields: Sequence[object], current_form_data: object
     for item in form_fields:
         if not isinstance(item, dict):
             raise TypeError("Form fields must be objects")
+        field_id = item.get("id", "undefined")
         label = item.get("label", "undefined")
         field_type = item.get("type", "undefined")
         required = ", required" if _js_truthy(item.get("required")) else ""
-        descriptions.append(f"- {_js_string(label)} ({_js_string(field_type)}{required})")
+        options = item.get("options", [])
+        if isinstance(options, list) and options:
+            option_labels = [
+                _js_string(option.get("value", option.get("label", "")))
+                if isinstance(option, dict)
+                else _js_string(option)
+                for option in options[:30]
+            ]
+            option_summary = "; allowed values: " + ", ".join(option_labels)
+        else:
+            option_summary = ""
+        constraints = []
+        for name in ("min", "max", "minLength", "maxLength"):
+            value = item.get(name)
+            if isinstance(value, (int, float)) and not isinstance(value, bool):
+                constraints.append(f"{name}={_js_string(value)}")
+        constraint_summary = "; constraints: " + ", ".join(constraints) if constraints else ""
+        descriptions.append(
+            f"- id={_js_string(field_id)}, label={_js_string(label)}, "
+            f"type={_js_string(field_type)}{required}{option_summary}{constraint_summary}"
+        )
     return SYSTEM_PROMPT_TEMPLATE.format(
         form_fields="\n".join(descriptions),
         current_form_data=_javascript_json(current_form_data),

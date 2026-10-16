@@ -12,7 +12,6 @@ class SanitizedOperationalFilter(logging.Filter):
     _EVENTS = {
         "apps.ai.services": "ai_provider",
         "apps.ai.views": "ai_service_request",
-        "apps.core.legacy": "legacy_route",
         "apps.core.views": "readiness_check",
         "apps.speech.views": "speech_service_request",
     }

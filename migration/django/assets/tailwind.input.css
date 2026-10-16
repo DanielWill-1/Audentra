@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer utilities {
+  [data-cloud-ai-consent][hidden] { display: none; }
+}
+
 @layer components {
   .template-builder-dialog {
     width: min(42rem, calc(100vw - 2rem));

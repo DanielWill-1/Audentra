@@ -8,12 +8,7 @@ from google.api_core import exceptions as google_exceptions
 from google.api_core.exceptions import GoogleAPICallError
 from google.cloud import speech_v1, texttospeech_v1
 
-
-class SpeechProviderError(RuntimeError):
-    def __init__(self, message: str, *, status: int = 502) -> None:
-        super().__init__(message)
-        self.status = status
-
+from ..exceptions import SpeechProviderError
 
 ENCODING_NAMES = {
     "audio/wav": "LINEAR16",

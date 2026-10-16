@@ -8,6 +8,11 @@ import {
 import { useAuth } from '../contexts/AuthContext';
 import { getUserTemplates, Template } from '../lib/templates';
 import { transcribeAudio, processWithGroq, synthesizeSpeech } from '../services/ai';
+import {
+  grantCloudAiConsent,
+  hasCloudAiConsent,
+  withdrawCloudAiConsent,
+} from '../lib/cloudAiConsent';
 import { supabase } from '../lib/supabaseClient'; // adjust path as needed
 
 const API_BASE = "http://localhost:3001";
@@ -53,6 +58,8 @@ function AIVoiceAutoFill() {
   const [isTranscribing, setIsTranscribing] = useState(false);
   const [isProcessingAI, setIsProcessingAI] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [cloudAiConsent, setCloudAiConsent] = useState(() => hasCloudAiConsent());
+  const [showCloudAiConsent, setShowCloudAiConsent] = useState(false);
 
   // Essential refs
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -110,9 +117,34 @@ function AIVoiceAutoFill() {
       }
     ]);
     setStep('chat');
+    if (!hasCloudAiConsent()) setShowCloudAiConsent(true);
+  };
+
+  const acceptCloudAiConsent = () => {
+    if (!grantCloudAiConsent()) {
+      setError('This browser could not save your consent. Enable browser storage, then try again.');
+      return;
+    }
+    setCloudAiConsent(true);
+    setShowCloudAiConsent(false);
+    setError(null);
+  };
+
+  const withdrawCloudConsent = () => {
+    if (isRecording || isTranscribing || isProcessingAI) return;
+    if (!withdrawCloudAiConsent()) {
+      setError('This browser could not remove the saved consent. Check browser storage settings and try again.');
+      return;
+    }
+    setCloudAiConsent(false);
+    setShowCloudAiConsent(true);
   };
 
   const startRecording = async () => {
+    if (!cloudAiConsent) {
+      setShowCloudAiConsent(true);
+      return;
+    }
     try {
       setError(null);
       const stream = await navigator.mediaDevices.getUserMedia({ 
@@ -199,6 +231,10 @@ function AIVoiceAutoFill() {
   };
 
   const transcribeAndProcess = async () => {
+    if (!cloudAiConsent) {
+      setShowCloudAiConsent(true);
+      return;
+    }
     if (!audioBlob) return;
 
     setIsTranscribing(true);
@@ -284,6 +320,10 @@ function AIVoiceAutoFill() {
   };
 
   const sendTextMessage = async (text: string) => {
+    if (!cloudAiConsent) {
+      setShowCloudAiConsent(true);
+      return;
+    }
     if (!text.trim()) return;
 
     setError(null);
@@ -487,6 +527,23 @@ function AIVoiceAutoFill() {
         {/* Step 2: Chat Interface */}
         {step === 'chat' && selectedTemplate && (
           <div className="grid lg:grid-cols-3 gap-8">
+            {showCloudAiConsent && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-950/70 p-4" role="dialog" aria-modal="true" aria-labelledby="cloud-ai-consent-title" aria-describedby="cloud-ai-consent-description">
+                <section className="w-full max-w-2xl rounded-2xl bg-white p-6 shadow-2xl sm:p-8">
+                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-blue-700">Before you continue</p>
+                  <h2 id="cloud-ai-consent-title" className="mt-2 text-2xl font-semibold text-gray-900">Allow cloud AI processing?</h2>
+                  <div id="cloud-ai-consent-description" className="mt-4 space-y-3 text-sm leading-6 text-gray-700">
+                    <p>VoiceForm sends recordings to Groq Whisper for transcription. It sends typed messages, recent chat, form field definitions, and current draft values to Groq GPT-OSS for form assistance. If you ask for a spoken reply, that reply text is sent to Groq Orpheus.</p>
+                    <p>The app owner confirms Zero Data Retention (ZDR) is disabled for this Groq organization. Groq may log inference inputs and outputs for reliability or abuse investigations for up to 30 days. Usage metadata is also collected. Review the <Link className="font-medium text-blue-700 underline" to="/privacy" target="_blank">Privacy Notice</Link> before deciding.</p>
+                    <p>Accepting is stored in this browser for this policy version. You can withdraw it from this screen when no request is in progress; future cloud requests will then be blocked until you opt in again.</p>
+                  </div>
+                  <div className="mt-6 flex flex-wrap gap-3">
+                    <button type="button" onClick={acceptCloudAiConsent} className="rounded-lg bg-blue-700 px-4 py-2.5 font-medium text-white hover:bg-blue-800">Accept and continue</button>
+                    <button type="button" onClick={() => setShowCloudAiConsent(false)} className="rounded-lg border border-gray-300 px-4 py-2.5 font-medium text-gray-700 hover:bg-gray-50">Not now</button>
+                  </div>
+                </section>
+              </div>
+            )}
             {/* Chat Panel */}
             <div className="lg:col-span-2">
               <div className="bg-white rounded-2xl border border-gray-200 h-[600px] flex flex-col">
@@ -499,6 +556,13 @@ function AIVoiceAutoFill() {
                     </div>
                     <div className="flex items-center space-x-2">
                       <button
+                        onClick={withdrawCloudConsent}
+                        disabled={!cloudAiConsent || isRecording || isTranscribing || isProcessingAI}
+                        className="px-3 py-2 text-sm text-gray-700 underline disabled:cursor-not-allowed disabled:opacity-50"
+                      >
+                        {cloudAiConsent ? 'Withdraw cloud AI consent' : 'Cloud AI not enabled'}
+                      </button>
+                      <button
                         onClick={() => setStep('review')}
                         className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm"
                       >
@@ -507,6 +571,13 @@ function AIVoiceAutoFill() {
                     </div>
                   </div>
                 </div>
+
+                {!cloudAiConsent && (
+                  <div className="mx-6 mt-4 rounded-lg border border-amber-300 bg-amber-50 p-3 text-sm text-amber-950" role="status">
+                    Cloud chat and speech are blocked until you opt in. You can still edit and review this form.
+                    <button type="button" onClick={() => setShowCloudAiConsent(true)} className="ml-2 font-medium underline">Review consent</button>
+                  </div>
+                )}
 
                 {/* Chat Messages */}
                 <div 
@@ -574,7 +645,7 @@ function AIVoiceAutoFill() {
                       {!isRecording ? (
                         <button
                           onClick={startRecording}
-                          disabled={isTranscribing || isProcessingAI}
+                          disabled={!cloudAiConsent || isTranscribing || isProcessingAI}
                           className="w-16 h-16 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full flex items-center justify-center hover:from-purple-700 hover:to-blue-700 transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           <Mic className="w-8 h-8" />
@@ -615,7 +686,7 @@ function AIVoiceAutoFill() {
                           <div className="flex items-center space-x-2">
                             <button
                               onClick={transcribeAndProcess}
-                              disabled={isTranscribing || isProcessingAI}
+                              disabled={!cloudAiConsent || isTranscribing || isProcessingAI}
                               className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50 flex items-center"
                             >
                               {isTranscribing || isProcessingAI ? (
@@ -647,10 +718,10 @@ function AIVoiceAutoFill() {
                       <input
                         type="text"
                         placeholder="Or type your message here..."
-                        disabled={isTranscribing || isProcessingAI}
+                        disabled={!cloudAiConsent || isTranscribing || isProcessingAI}
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent pr-12 disabled:opacity-50"
                         onKeyPress={(e) => {
-                          if (e.key === 'Enter' && !isTranscribing && !isProcessingAI) {
+                            if (e.key === 'Enter' && cloudAiConsent && !isTranscribing && !isProcessingAI) {
                             sendTextMessage(e.currentTarget.value);
                             e.currentTarget.value = '';
                           }
@@ -659,12 +730,12 @@ function AIVoiceAutoFill() {
                       <button
                         onClick={(e) => {
                           const input = e.currentTarget.previousElementSibling as HTMLInputElement;
-                          if (input.value.trim() && !isTranscribing && !isProcessingAI) {
+                          if (cloudAiConsent && input.value.trim() && !isTranscribing && !isProcessingAI) {
                             sendTextMessage(input.value);
                             input.value = '';
                           }
                         }}
-                        disabled={isTranscribing || isProcessingAI}
+                        disabled={!cloudAiConsent || isTranscribing || isProcessingAI}
                         className="absolute right-3 top-1/2 transform -translate-y-1/2 text-purple-600 hover:text-purple-700 disabled:opacity-50"
                       >
                         <Send className="w-4 h-4" />

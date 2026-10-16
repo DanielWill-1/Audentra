@@ -1,0 +1,179 @@
+{
+  "captured_at": "2026-10-16T21:07:16.167Z",
+  "browser": "148.0.7778.96",
+  "boundary": "Actual Django voice page and scripts; browser media/STT/AI/TTS APIs intercepted; save/list/delete use synthetic browser fixture middleware, not hosted persistence.",
+  "viewports": [
+    {
+      "viewport": "1440x900",
+      "overflow": false,
+      "selectedTemplate": true,
+      "chatVisible": true,
+      "reviewVisible": true,
+      "keyboard_journey": "template, media, chat, editable review"
+    },
+    {
+      "viewport": "390x844",
+      "overflow": false,
+      "selectedTemplate": true,
+      "chatVisible": true,
+      "reviewVisible": true,
+      "keyboard_journey": "chat retry, editable review, required validation, return and save"
+    }
+  ],
+  "api": {
+    "transcription": [
+      {
+        "method": "POST",
+        "multipart": true,
+        "csrf_header_present": true,
+        "marker_present": true,
+        "authorization_header_present": false,
+        "filename_present": true,
+        "mime_type": "audio/webm;codecs=opus",
+        "audio_payload_present": true
+      }
+    ],
+    "extraction": [
+      {
+        "csrf_header_present": true,
+        "marker_present": true,
+        "authorization_header_present": false,
+        "current_patient_name": "",
+        "prior_messages": 1,
+        "user_message_present": true
+      },
+      {
+        "csrf_header_present": true,
+        "marker_present": true,
+        "authorization_header_present": false,
+        "current_patient_name": "Grace Hopper",
+        "prior_messages": 3,
+        "user_message_present": true
+      },
+      {
+        "csrf_header_present": true,
+        "marker_present": true,
+        "authorization_header_present": false,
+        "current_patient_name": "",
+        "prior_messages": 1,
+        "user_message_present": true
+      },
+      {
+        "csrf_header_present": true,
+        "marker_present": true,
+        "authorization_header_present": false,
+        "current_patient_name": "",
+        "prior_messages": 1,
+        "user_message_present": true
+      }
+    ],
+    "tts": [
+      {
+        "method": "POST",
+        "csrf_header_present": true,
+        "marker_present": true,
+        "authorization_header_present": false
+      },
+      {
+        "method": "POST",
+        "csrf_header_present": true,
+        "marker_present": true,
+        "authorization_header_present": false
+      },
+      {
+        "method": "POST",
+        "csrf_header_present": true,
+        "marker_present": true,
+        "authorization_header_present": false
+      },
+      {
+        "method": "POST",
+        "csrf_header_present": true,
+        "marker_present": true,
+        "authorization_header_present": false
+      },
+      {
+        "method": "POST",
+        "csrf_header_present": true,
+        "marker_present": true,
+        "authorization_header_present": false
+      },
+      {
+        "method": "POST",
+        "csrf_header_present": true,
+        "marker_present": true,
+        "authorization_header_present": false
+      }
+    ]
+  },
+  "media_error_cases": [
+    {
+      "case": "synthetic microphone permission denial",
+      "status": "Microphone permission was denied. Type your message instead.",
+      "record_enabled": true,
+      "message_editable": true,
+      "transcription_requests": 0
+    },
+    {
+      "case": "synthetic microphone unavailable",
+      "status": "No microphone is available. Type your message instead.",
+      "record_enabled": true,
+      "message_editable": true,
+      "transcription_requests": 0
+    },
+    {
+      "case": "synthetic empty recording",
+      "status": "The recording was empty. Record again or type your message.",
+      "record_enabled": true,
+      "message_editable": true,
+      "transcription_requests": 0
+    },
+    {
+      "case": "synthetic over-limit recording",
+      "status": "The recording is too large to transcribe. Reset and record a shorter message.",
+      "record_enabled": true,
+      "message_editable": true,
+      "transcription_requests": 0
+    }
+  ],
+  "journey": [
+    "keyboard Enter selected the accessible template; both shipped scripts loaded on the actual Django page without React bootstrap",
+    "reviewed and accepted the cloud-processing notice in the isolated browser before using voice features",
+    "synthetic microphone permission denial restored the recorder and typed fallback without a transcription request",
+    "synthetic microphone unavailable restored the recorder and typed fallback without a transcription request",
+    "synthetic empty recording restored the recorder and typed fallback without a transcription request",
+    "synthetic over-limit recording restored the recorder and typed fallback without a transcription request",
+    "keyboard-activated Record, Stop and Transcribe; previewed a deterministic multipart transcript through the actual page",
+    "keyboard chat submission ignored a duplicate while busy; extraction matched a field, preserved the keyboard-edited name, and added the email on retry at mobile width",
+    "keyboard save hit native required-field validation and focus returned to the missing field",
+    "keyboard Return to chat preserved conversation and reviewed field values across Django form navigation",
+    "keyboard Reset chat cleared the conversation and kept the reviewed form values",
+    "keyboard-saved reviewed values through the actual Django page and rendered the synthetic filled-list fixture",
+    "confirmed deletion updated the synthetic filled-list fixture",
+    "keyboard-submitted extraction was cancelled on pagehide without a stale answer or field update",
+    "keyboard Speak response replaced a pending TTS request; only the current response played",
+    "keyboard Speak response paused and released prior audio; rejected playback stayed visible",
+    "keyboard Speak response rejected invalid TTS data without creating audio",
+    "pagehide cancelled keyboard-started TTS and prevented a stale audio response"
+  ],
+  "browser_errors": [],
+  "expected_request_cancellations": [
+    {
+      "path": "Google Fonts resource",
+      "reason": "net::ERR_ABORTED",
+      "cause": "document navigation canceled a pending font request"
+    },
+    {
+      "path": "/api/ai/extract",
+      "reason": "net::ERR_ABORTED"
+    },
+    {
+      "path": "/api/tts",
+      "reason": "net::ERR_ABORTED"
+    },
+    {
+      "path": "/api/tts",
+      "reason": "net::ERR_ABORTED"
+    }
+  ]
+}

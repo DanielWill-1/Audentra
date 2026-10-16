@@ -4,6 +4,7 @@ const path = require('node:path');
 
 const djangoRoot = path.resolve(__dirname, '..');
 const repoRoot = path.resolve(djangoRoot, '..', '..');
+const legacyRoot = path.join(repoRoot, 'legacy');
 const python = process.env.P7_BROWSER_PYTHON || path.join(djangoRoot, '.venv-p2', 'Scripts', 'python.exe');
 const reactPort = process.env.P7_REACT_PORT || 15573;
 const djangoPort = process.env.P7_DJANGO_PORT || 18875;
@@ -137,7 +138,7 @@ async function main() {
     'Vite',
     process.execPath,
     [path.join(repoRoot, 'node_modules', 'vite', 'bin', 'vite.js'), '--host=127.0.0.1', `--port=${reactPort}`, '--strictPort'],
-    repoRoot,
+    legacyRoot,
     {
       VITE_SUPABASE_URL: 'http://127.0.0.1:9',
       VITE_SUPABASE_ANON_KEY: 'synthetic-browser-capture-only',

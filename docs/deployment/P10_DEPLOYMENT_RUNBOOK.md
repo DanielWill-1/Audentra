@@ -22,7 +22,7 @@ The supported upstream contract is:
 6. Enforce the same 20 MiB request-body limit at the proxy. Keep upstream request timeouts within the app's configured provider timeout and Waitress's 60-second channel timeout.
 7. Do not use `X-Forwarded-Proto` to set Django's HTTPS state. Waitress uses a fixed HTTPS WSGI scheme in the production profile, and Django's `SECURE_PROXY_SSL_HEADER` remains unset. The proxy must only forward HTTPS traffic to the production listener.
 
-The API's existing `X-Internal-Api-Token` remains a browser-visible request marker. Verified Supabase identity, session CSRF, exact host/origin/method validation, payload limits, the proxy token, and the rate limiter provide the request controls. A marker value is not a substitute for identity or CSRF.
+Browser service calls use the Django session and CSRF boundary. `Authorization` and the retired `X-Internal-Api-Token` marker are rejected; transcription accepts multipart uploads only. The service boundary keeps host validation, the private upstream token, payload limits, and rate limiting. It does not enable cross-origin browser access.
 
 ## Prepare a selected host later
 
@@ -37,7 +37,7 @@ The API's existing `X-Internal-Api-Token` remains a browser-visible request mark
    ```
 3. Copy the needed values from `.env.production.example` into the host's private environment. Replace every placeholder. Do not put secrets in source, command arguments, reports, or browser settings.
 4. Set explicit `DJANGO_ALLOWED_HOSTS`, HTTPS `DJANGO_PUBLIC_ORIGIN`, matching `DJANGO_CSRF_TRUSTED_ORIGINS`, the two restricted Postgres aliases, and the public Supabase Auth values. Keep `default` on `django_app`/`django` and `supabase` on `django_data`/`public`.
-5. Configure `P10_TRUSTED_PROXY_IP=127.0.0.1`. Keep `P3_SERVICES_ENABLED=false` until the owner is ready to enable the upstream service route. When enabled, use `P3_SERVICE_ACCESS_MODE=trusted-proxy`, a private random `P3_PROXY_TOKEN`, a non-default request marker, and explicit HTTPS `P3_ALLOWED_ORIGINS`.
+5. Configure `P10_TRUSTED_PROXY_IP=127.0.0.1`. Keep `P3_SERVICES_ENABLED=false` until the owner is ready to enable the upstream service route. When enabled, use `P3_SERVICE_ACCESS_MODE=trusted-proxy` and a private random `P3_PROXY_TOKEN`; the app API requires Django session and CSRF and does not use a public marker or CORS allowlist.
 6. Run the static build, `collectstatic`, sanitized preflight, `manage.py check --deploy --settings=config.settings.prod`, and `manage.py migrate --plan --database=default`.
 7. Review every command result and the proxy's TLS, firewall, body-size, forwarded-header, token stripping/injection, and restart settings before any separate deployment decision.
 8. Start with `uv run --locked python scripts/serve_p10.py --profile production`. It binds to loopback, uses one process/eight threads by default, fixes the WSGI scheme to HTTPS, accepts only the configured local proxy for `X-Forwarded-For`, and keeps tracebacks out of responses.

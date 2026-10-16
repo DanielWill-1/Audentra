@@ -1,32 +1,32 @@
 # Migration state
 
-**Updated:** 2026-10-16, P10 replanning
+**Updated:** 2026-10-17, P11 local legacy retirement
 **Project:** Audentra / VoiceForm  
-**Current owner scope:** P9 is complete within its revised scope. The 2026-10-15 P10 local-runtime preparation sub-sprint is complete, but expanded P10 is now planned and not yet implemented: website issue intake/fixes; live STT/TTS provider selection; recording lifecycle; backend privacy/security controls; and a combined performance/error/local-first/release-candidate wave. The former Scope 11 voice work is part of P10. The hosted instance is demo-only; local Supabase is the primary target. Physical mobile is excluded and physical edge cases/audibility remain owner manual review. Keep `Cache-Control: no-store`. Actual deployment remains a later owner decision.
-**Current P9 next work:** None within the current owner scope. Hosted `template-files` privacy, 20 MiB limit and MIME allowlist pass; see [schema acceptance](docs/parity/P9_SCHEMA_ACCEPTANCE.md). Retain the P1 manifest's separate `full_state_matrix_verified: false` value unchanged. Expanded P10 scope and the prior local-preparation evidence are in the [readiness ledger](docs/deployment/P10_READINESS.md) and active [P10 brief](docs/deployment/P10_IMPLEMENTATION_PROMPT.md).
+**Current owner scope:** P9 and all five P10 waves are complete and owner-accepted. The owner authorized local P11 legacy retirement with no entry gates. Deployment and hosted changes remain out of scope. Preserve the historical design, screenshot, parity, schema, and documentation records.
+**Current P9 next work:** None within the current owner scope. Hosted `template-files` privacy, 20 MiB limit and MIME allowlist pass; see [schema acceptance](docs/parity/P9_SCHEMA_ACCEPTANCE.md). Retain the P1 manifest's separate `full_state_matrix_verified: false` value unchanged. The completed P10 local release-candidate review and prior local-preparation evidence are in the [P10 review](docs/deployment/P10_W5_RELEASE_CANDIDATE_REVIEW.md) and [readiness ledger](docs/deployment/P10_READINESS.md).
 **Current P9 status:** Complete within the revised owner scope: all 25 route-level rows pass, P9-D9 is closed, and hosted Storage metadata matches the accepted configuration. The P1 full-state flag is separate and is not a P9 blocker. See [P9 report](docs/parity/P9_REPORT.md), [verification](docs/parity/P9_VERIFICATION.md), [matrix](docs/parity/P9_ACCEPTANCE_MATRIX.md), [schema acceptance](docs/parity/P9_SCHEMA_ACCEPTANCE.md), and [device/provider results](docs/parity/P9_DEVICE_PROVIDER_RESULTS.md).
 **Historical progress snapshots:** The following dated paragraphs retain earlier evidence and statuses; the current P9 result and owner scope above govern.
-**Current task:** Plan and then implement the expanded P10 waves. The [active P10 brief](docs/deployment/P10_IMPLEMENTATION_PROMPT.md) and [2026-10-16 handoff](HANDOFF_2026-10-16_P10_WAVE_PLAN.md) define the new scope. The [readiness ledger](docs/deployment/P10_READINESS.md) preserves the completed prior run `p10-20261015-runtime-01`, which records the server, static, preflight, Django, pytest, Ruff, mypy, and HTTP-boundary results. Local P5 schema alignment remains verified; its forward migration was applied only to the local stack, all scratch resources were removed, and all six application tables remain empty. No P10 hosted schema change or production action occurred.
+**Current task:** P11 local retirement is implemented. The former root React/Vite/Express application and workflow are archived under `legacy/`; Django no longer proxies or falls back to that app. API services require Django session and CSRF, reject the retired request marker and bearer header, and transcription accepts multipart audio only. See [P11 closeout](HANDOFF_2026-10-17_P11_LEGACY_RETIREMENT.md). No deployment or hosted changes were made.
 **Prior local follow-up:** Public W1/W2 [attempt 07](docs/parity/evidence/p9/p9-route-acceptance-20261014/attempt-07/django/) supports the public route comparisons. Fresh synthetic [attempt 14 W3-W7](docs/parity/evidence/p9/p9-route-acceptance-20261014/attempt-14/django/) passes all four Auth rows and reruns app workflows. Current-worktree W7 [attempt 03](docs/parity/evidence/p9/p9-w7-mobile-interactions-20261015/attempt-03/django/w7/browser-results.json), Activity Log [attempt 13](docs/parity/evidence/p9/p9-activity-parity-20261015/attempt-13/django/w7/browser-results.json), Dashboard [attempt 06](docs/parity/evidence/p9/p9-dashboard-parity-20261015/attempt-06/django/w4/browser-results.json), Templates keyboard follow-up [attempt 01](docs/parity/evidence/p9/p9-keyboard-followup-20261015/attempt-01/django/w5/browser-results.json), and W6 [attempts 10 and 11](docs/parity/evidence/p9/p9-keyboard-followup-20261015/) cover route interactions and expanded keyboard states. All 25 route-level rows pass; `/help-center` is closed under P9-D9 using the existing Chrome mobile-viewport evidence. AI Voice local acceptance is deterministic and synthetic; live provider work is paused for Scope 11. The separate P1 full-state flag remains false; hosted Storage metadata was subsequently verified by the supplemental read-only capture linked above.
 **Prior device follow-up:** Desktop attempt 11 sent a real recording to local Django `/api/transcribe`, received HTTP 200, and displayed the mock transcript without saving audio or calling a provider. The run failed navigation cleanup: one active track remained live at `pagehide`. A `p7_media.js` cleanup fix was added afterward and remains unverified; the owner has paused this work for future Scope 11. See [device/provider results](docs/parity/P9_DEVICE_PROVIDER_RESULTS.md) and the [attempt 11 result](docs/parity/evidence/p9/p9-desktop-permission-followup-20261015/device/desktop-mic/attempt-11/P9_DESKTOP_MIC_RESULTS.json).
 **Prior active-step summary:** Full three-mode aggregate attempt 46 passed. App-only attempt 48 passed W3-W7; attempt 47's later source retry stopped with local Vite `ERR_NO_BUFFER_SPACE` before comparison or app checks. The W4/W6 comparator negative controls passed; route asset audit passed all 14 local static responses; bidirectional focus passed 48 rendered route/viewports; 37 hosted route/security checks passed with cleanup; visible schema sections match P5. Default-state screenshot pairs for all 25 routes were manually reviewed. Current P9 next steps are limited by the owner scope stated above.
 
 **P5 closure result (2026-10-11):** The shared transaction-pooler probe passed all 65 hosted checks and cleaned all three synthetic accounts. A/B/A role/claims and private-row isolation, transaction cleanup, forced rollback/recovery and reused Django client connection passed. Local verification passed 95 pytest tests, Django's system check, focused mypy across 60 source files and Ruff.
 
-**Session handoff:** [Current P10 wave-plan handoff](HANDOFF_2026-10-16_P10_WAVE_PLAN.md) records the expanded scope. [P10 preparation handoff](HANDOFF_2026-10-15_P10_PREPARATION.md) and [P10 readiness](docs/deployment/P10_READINESS.md) preserve the prior sub-sprint result. The [P9 closeout](HANDOFF_2026-10-14_P9_CLOSEOUT.md), [local-readiness scope review](HANDOFF_2026-10-14_LOCAL_READINESS.md), and [P7 closeout/P9 kickoff](HANDOFF_2026-10-13_033145_IST.md) retain their dated evidence and historical scope.
+**Latest handoff:** [P11 local legacy-retirement closeout](HANDOFF_2026-10-17_P11_LEGACY_RETIREMENT.md) is the current session record. [P10 wave-plan handoff](HANDOFF_2026-10-16_P10_WAVE_PLAN.md), [P10 preparation handoff](HANDOFF_2026-10-15_P10_PREPARATION.md), and [P10 readiness](docs/deployment/P10_READINESS.md) retain their dated phase evidence. The [P9 closeout](HANDOFF_2026-10-14_P9_CLOSEOUT.md), [local-readiness scope review](HANDOFF_2026-10-14_LOCAL_READINESS.md), and [P7 closeout/P9 kickoff](HANDOFF_2026-10-13_033145_IST.md) retain their historical scope.
 
 **P9 checkout metadata:** See [P9 start metadata](docs/parity/evidence/p9/p9-full-20261014-0723-utc/P9_START_METADATA.json), [current closeout metadata](docs/parity/evidence/p9/p9-full-20261014-0723-utc/P9_CLOSEOUT_METADATA.json), and retained [prior closeout snapshot 05](docs/parity/evidence/p9/p9-full-20261014-0723-utc/P9_CLOSEOUT_METADATA_PRIOR_05.json) and [snapshot 06](docs/parity/evidence/p9/p9-full-20261014-0723-utc/P9_CLOSEOUT_METADATA_PRIOR_06.json) plus the [earlier final metadata snapshot](docs/parity/evidence/p9/p9-full-20261014-0723-utc/P9_FINAL_METADATA.json). The earlier `main`/`3d16649` clean review predates P9 code changes; do not report it as the execution baseline.
 **Latest local verification run:** [recheck ledger](docs/parity/evidence/p9/p9-local-final-verification-20261015/P9_LOCAL_RECHECKS.json), [start metadata](docs/parity/evidence/p9/p9-local-final-verification-20261015/P9_START_METADATA.json), [final metadata](docs/parity/evidence/p9/p9-local-final-verification-20261015/P9_FINAL_METADATA.json), and [closeout metadata](docs/parity/evidence/p9/p9-local-final-verification-20261015/P9_CLOSEOUT_METADATA.json).
 
-**P10 status:** The prior runtime-preparation sub-sprint passes within its recorded scope. Expanded P10 is planned, not passed; it is the local-first pre-deploy product/release-candidate stage defined in the [active brief](docs/deployment/P10_IMPLEMENTATION_PROMPT.md). See [P10 readiness](docs/deployment/P10_READINESS.md).
+**P10 status:** All five local-first waves are complete and the owner accepted the local release candidate. Deployment remains deferred. See the [release-candidate review](docs/deployment/P10_W5_RELEASE_CANDIDATE_REVIEW.md), [readiness ledger](docs/deployment/P10_READINESS.md), and [wave-plan handoff](HANDOFF_2026-10-16_P10_WAVE_PLAN.md).
 
-**Owner scope revision:** The 2026-10-11 development-only request supersedes earlier SMTP, confirmation-delivery, legacy account and React Auth compatibility gates. Supabase remains the sole provider via its Python SDK. The supplied publishable key is configured. Automatic approval review blocked broad credential revocation; see [P4_CREDENTIAL_ROTATION.json](docs/auth/P4_CREDENTIAL_ROTATION.json).
+**P4 scope record:** The 2026-10-11 development-only request superseded earlier SMTP, confirmation-delivery, legacy-account and React Auth compatibility requirements. Django uses the Supabase Python SDK for email/password Auth; Google and Azure OAuth remain out of scope. See the [P4 report](docs/auth/P4_REPORT.md) for its dated implementation record. P11 did not include credential or hosted-service changes.
 
-**Folder policy:** P1 work belongs in migration/parity/, Python application work in migration/django/, and comparison evidence in docs/parity/. P2 created the Django foundation under migration/django/. Preserve the original app and reference folders through P9 and the P10 soak.
+**Folder policy:** P1 tooling belongs in `migration/parity/`, active Python application code belongs in `migration/django/`, and comparison evidence belongs in `docs/parity/`. P11 archives the former React/Vite/Express source and configuration under `legacy/`; screenshots, design references, schema history, migration documentation and parity evidence remain in their existing locations.
 
 ## 1. Purpose and authority
 
-Use this file for current facts, evidence, decisions and blockers. Use [MIGRATION_PLAN.md](MIGRATION_PLAN.md) for scope/gates and archived phase briefs for original scope. Root [prompt.md](prompt.md) contains the active P9 task. Evidence and dated reviews remain under `docs/pages/`, `docs/services/`, and `docs/parity/`.
+Use this file for current facts, evidence, decisions and blockers. Use [MIGRATION_PLAN.md](MIGRATION_PLAN.md) for scope and archived phase briefs for original scope. The current local retirement record is [P11 closeout](HANDOFF_2026-10-17_P11_LEGACY_RETIREMENT.md); root `prompt.md` and older phase prompts are historical. Evidence and dated reviews remain under `docs/pages/`, `docs/services/`, and `docs/parity/`.
 
 On 2026-10-10 the user authorized implementation of the P2 brief on native Windows and the existing hosted testing project. P2 created restricted django_app and django_data roles and a django schema, migrated only Django sessions/migration bookkeeping, and verified both runtime aliases. The public application table catalog and Storage bucket count remained empty. No Docker, commits, pushes, deployment, P3 work or P0 recovery was part of P2. P1 carryovers remain assigned to their later phases.
 
@@ -38,7 +38,7 @@ The owner authorized P4 and then revised it on 2026-10-11 to clean development-o
 
 The user reports P0 is done. Carry that completion forward as owner-reported acceptance; this P1 implementation does not independently verify the recovery or provider actions. Earlier P0 evidence below remains a dated record and does not reopen P0 automatically.
 
-The user also requires the existing application/reference folders to remain in their original locations until the migration is fully finished and verified. Preserve src/, server/, scripts/, public/, new pages/, page-screenshots/ and existing legacy configuration through P9 and the P10 soak. Run repeated comparisons against those originals; do not move them into legacy/ or overwrite reference screenshots. P11 runtime retirement needs the completion gates and a documented clean recovery reference; design/documentation/parity evidence remains retained. P0 removals stay in effect.
+Historical folder-preservation instruction: keep the original application/reference folders in place through P9 and P10 verification. The owner superseded it on 2026-10-17 by authorizing local P11 archival without deployment, soak, telemetry, or recovery-reference entry gates. The old app is now under `legacy/`; design references, screenshots, schema history, documentation, and parity evidence remain retained. P0 removals stay in effect.
 
 ## 2. Historical repository snapshot
 
@@ -60,17 +60,16 @@ Refresh this snapshot at each handoff. Preserve other people's working tree chan
 
 | Concern | Current implementation |
 |---|---|
-| Migrated page path | P7 manifest routes are locally owned by Django templates/views; all 25 URL patterns resolve and the normal legacy fallback count is zero |
-| Retained source/runtime | React 18, TypeScript, Vite, React Router and Express remain in their original folders for P9â€“P11 comparison/recovery; no traffic cutover or legacy retirement occurred |
-| Styling | Django uses its P6 public/application shells and the pinned Tailwind CSS 3 build; source tokens remain in `tailwind.config.js` and the Django theme config |
-| Identity / data | Django migrated pages use verified server sessions and P5 Supabase Python data services; the retained React stack keeps its separate existing session behavior |
-| Speech | P8 provides browser MediaRecorder and same-origin multipart to Django/P3; live provider work is paused for future Scope 11, physical mobile is excluded, and physical edge cases/audibility are for owner manual review |
-| Groq | `src/config/api.ts` exports `GROQ_API_KEY` as `undefined`; the assistant can use its existing mock fallback |
-| Activity | The retained React source uses localStorage; migrated `/activitylog` remains browser-local/example data and is not a server audit ledger |
-| Settings / collaboration | Scheduler settings and dashboard preferences remain local; only P5-backed template share/review operations use real services |
-| Screenshots | `scripts/screenshot.js` uses Node Playwright, route discovery and a desktop viewport; it does not set up a signed-in session |
+| Migrated pages | All 25 manifest routes resolve directly to Django templates/views; the legacy route proxy and rollback bridge are removed |
+| Legacy app | The React/Vite/Express source, package manifests, build configuration, and former workflow are archived under `legacy/` and are outside the active Django runtime |
+| Styling | Django uses the pinned standalone Tailwind CSS 3 build; active tokens live in `migration/django/config/tailwind.config.cjs` and `migration/django/assets/tailwind.input.css` |
+| Identity / data | Active pages use verified Django sessions and server-side Supabase Python data services; the browser has no Supabase client credential |
+| Service APIs | Chat and TTS require Django session and CSRF; transcription accepts multipart audio only; bearer headers and the former public request marker are rejected |
+| Speech | Browser MediaRecorder submits multipart audio to Django; P10's Groq provider selection remains server-side |
+| Activity | Django `/activitylog` remains browser-local/example data and is not a server audit ledger |
+| Screenshots | Historical route screenshots and parity evidence remain in their existing folders; the old Node capture utility is archived under `legacy/scripts/` |
 
-The original React/Vite/Express app is preserved as a source/reference runtime, while the P7 route manifest is served through the Django path. This establishes local ownership, not production cutover or full P9 release acceptance. The `/documentation` page describes a target architecture and does not itself prove that every described capability is shipped.
+The active application is Django under `migration/django/`. The retired React/Vite/Express code is preserved in `legacy/`; no production traffic cutover or deployment is recorded. Historical screenshots, route manifests, parity reports, schema history, and documentation remain available.
 
 The earlier audit identifies ElevenLabs code and an alternate transcription route as unused. Verify actual imports and mounted routes before a future port; file presence does not prove a working integration.
 
@@ -137,7 +136,7 @@ Do not infer whether an exposed key remains active or whether a live table has a
 
 ## 6. Route inventory
 
-`src/App.tsx` defines **25 routes: 13 public content routes, 4 authentication routes and 8 application routes**.
+`legacy/src/App.tsx` defines **25 routes: 13 public content routes, 4 authentication routes and 8 application routes**.
 
 | Group | Paths |
 |---|---|
@@ -190,8 +189,8 @@ No legacy source fixes, secret-history recovery, commits or deployments were per
 | P7 W1-W7 | Closed within accepted development boundaries; SR-1 through SR-4 repaired and verified | [P7 finding closeout](docs/pages/P7_SR_CLOSEOUT_2026-10-13.md), [matrix](docs/pages/P7_P8_CLOSURE_MATRIX.md); 25 local owners and zero fallback |
 | P8 | Deterministic media/development-session boundary revalidated | Fresh 16 media and 12 actual-page voice checks pass; P9 desktop microphone and denied-permission subsets passed; mobile and live-provider evidence remain open |
 | P9 | Complete within current owner scope | [P9 report](docs/parity/P9_REPORT.md), [visual review](docs/parity/P9_VISUAL_REVIEW.md), [verification](docs/parity/P9_VERIFICATION.md) and [handoff](HANDOFF_2026-10-14_P9_CLOSEOUT.md); all 25 route-level rows and hosted Storage metadata pass, including P9-D9. The separate P1 full-state flag remains false and unchanged. BFCache is verified with `no-store` retained and full reload working. Physical mobile is excluded; physical edge cases/audibility are for owner manual review; recording/provider checks are paused for future Scope 11. |
-| P10 | Expanded scope planned; prior local-preparation sub-sprint complete | [P10 task](docs/deployment/P10_IMPLEMENTATION_PROMPT.md), [readiness ledger](docs/deployment/P10_READINESS.md), [current handoff](HANDOFF_2026-10-16_P10_WAVE_PLAN.md), and [prior run evidence](docs/deployment/evidence/p10/p10-20261015-runtime-01/commands.md); local-first, speech, recording, privacy/security, performance, and errors still need implementation/evidence; deployment is separate |
-| P11 | Not started | Later deployed verification/soak and zero transitional usage evidence; preparation is insufficient |
+| P10 | Implementation complete; owner-accepted local release candidate; deployment remains deferred | [P10 closeout](docs/deployment/P10_W5_RELEASE_CANDIDATE_REVIEW.md), [W3 privacy/security](docs/deployment/P10_W3_PRIVACY_SECURITY_REVIEW.md), [W4 website review](docs/deployment/P10_W4_WEBSITE_REVIEW.md), [readiness](docs/deployment/P10_READINESS.md), and [handoff](HANDOFF_2026-10-16_P10_WAVE_PLAN.md) |
+| P11 | Local source/runtime retirement complete within owner scope; no deployment or hosted changes | [P11 closeout](HANDOFF_2026-10-17_P11_LEGACY_RETIREMENT.md); React/Vite/Express archived, Django fallback/bearer/marker/legacy transcription removed |
 
 The final P1 review added live read-only catalog inspection and historical screenshot review to offline harness checks. Legacy lint/type/build failures remain recorded. No browser capture, live Auth/RLS verification or deployment occurred. Earlier P0 scans/rewrite preflight retain their historical scope.
 
@@ -211,14 +210,14 @@ The app historically referenced template-files and public URLs. P5 created the p
 
 | Source | Role |
 |---|---|
-| Current session | P9 is complete within revised scope. The 2026-10-15 P10 local-preparation sub-sprint passes; expanded P10 is now planned as five waves, with former Scope 11 speech/recording work included. Local is primary; hosted is a demo. Physical mobile is excluded and physical edge cases/audibility are manual. The P1 full-state flag remains false and separate. Keep `no-store`; production deployment and soak remain deferred. |
+| Current session | P9/P10 are complete within the owner-accepted local scope and P11 local archival is complete. No deployment or hosted changes occurred. Deployment/soak remain deferred. Physical mobile and recording edge cases/audibility remain excluded. P1 full-state flag remains false and separate. Keep `no-store`. |
 | `docs/python-migration-plan.md` | Detailed target, phases, questions and wave order; revision history includes v0.3 |
 | `docs/security-remediation.md` | Historical P0 changes and operator blockers; local-cleanliness claim superseded by merge evidence |
 | `docs/p0-evidence/*.json` | Historical sanitized scan results |
 | `README.md` | Project/UI history and recorded environment limitation; runtime claims need evidence |
 | `docs/tables.md` | Historical migration/schema audit; inferred fields are not verified live DDL |
 | Root `prompt.md` | Historical 2026-10-15 local-preparation sub-sprint closeout |
-| `docs/prompt.md` | Current P10 plan, handoff, and historical evidence index |
+| `docs/prompt.md` | P10 plan, handoff, and historical evidence index; P10 is complete |
 | `.commandcode/taste/taste.md` | Empty template; no migration requirements |
 | Current routes, package/config/server/screenshot/activity files | Runtime and tooling evidence |
 
@@ -230,7 +229,7 @@ The old long plan contains stale headings and conflicting instructions. The [cor
 
 At the 2026-10-13 review snapshot, prior mypy/Ruff/JS/static checks, 50 captures/14 interactions, 12 isolated fake-media checks, and hosted W5/W6 cleanup evidence did not close the newly identified P7/P8 findings. Subsequent work closed P7 SR-1 through SR-4 and P8 deterministic acceptance; see the [P7 closeout](docs/pages/P7_SR_CLOSEOUT_2026-10-13.md), [P8 verification](docs/services/P8_VERIFICATION.md), and [P9 kickoff handoff](HANDOFF_2026-10-13_033145_IST.md).
 
-P2â€“P6 completion evidence and P1 accepted exceptions remain as previously recorded. P3 live speech evidence, P4 recovery email/production policy and credential follow-up remain separate. Preserve original source/reference folders through P9 and the P10 soak; P11 retirement needs its own gate.
+P2â€“P6 completion evidence and P1 accepted exceptions remain as previously recorded. P3 live speech evidence, P4 recovery email/production policy and credential follow-up remain separate. Historical source/reference folders were preserved through P9/P10; P11 subsequently archived the application code while retaining comparison and design evidence.
 
 Future updates must record:
 

@@ -8,46 +8,15 @@ from apps.ai.backends import groq
 from apps.ai.backends.groq import _extract_json
 from apps.ai.prompts import build_messages, build_system_prompt
 from apps.ai.services import AI_FAILURE_RESPONSE, AIProviderError, extract
+from apps.api.consent import CLOUD_AI_CONSENT_POLICY_VERSION
 from django.test import Client, override_settings
-
-EXPECTED_SYSTEM_PROMPT = (
-    "You are a helpful AI assistant that processes form data and extracts relevant "
-    "information from user input.\n\n"
-    """Your task is to:
-1. Understand what the user is saying
-2. Extract relevant information that matches the form fields
-3. Provide a natural, conversational response
-4. Return the extracted data in the specified format
-
-Form Fields Available:
-- Name (text, required)
-- email (email)
-
-Current Form Data:
-{
-  "name": "Ada"
-}
-
-IMPORTANT: Always respond with a JSON object containing:
-- "response": A natural, helpful response to the user
-- "extractedData": An object with field IDs as keys and extracted values
-
-Example response format:
-{
-  "response": "I've captured your name and email. Is there anything else you'd like to add?",
-  "extractedData": {
-    "name": "John Smith",
-    "email": "john@example.com"
-  }
-}"""
-)
 
 
 @pytest.fixture(autouse=True)
-def service_bearer(monkeypatch: pytest.MonkeyPatch) -> None:
+def service_session(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(
-        "apps.api.middleware.authenticate_bearer",
-        lambda _token: SupabaseUser(
+        "apps.api.middleware.authenticate_session",
+        lambda _request: SupabaseUser(
             id=UUID("00000000-0000-4000-8000-000000000001"),
             email="synthetic@example.test",
             user_metadata={},
@@ -55,12 +24,24 @@ def service_bearer(monkeypatch: pytest.MonkeyPatch) -> None:
     )
 
 
-def test_exact_prompt_and_conversation_order() -> None:
+def test_prompt_contract_and_conversation_order() -> None:
     fields = [
-        {"label": "Name", "type": "text", "required": True},
-        {"label": "email", "type": "email", "required": False},
+        {"id": "name", "label": "Name", "type": "text", "required": True},
+        {"id": "email", "label": "email", "type": "email", "required": False},
     ]
-    assert build_system_prompt(fields, {"name": "Ada"}) == EXPECTED_SYSTEM_PROMPT
+    prompt = build_system_prompt(fields, {"name": "Ada"})
+    for expected in (
+        "You are a warm, concise assistant helping a person complete a form through conversation.",
+        "Ask one short, specific question at a time. Prefer the next unanswered required field.",
+        "Do not invent, assume, or silently correct a personal detail.",
+        "Use only the fields and allowed options listed below.",
+        "Never claim the form was saved; values remain a draft for review.",
+        "- id=name, label=Name, type=text, required",
+        "- id=email, label=email, type=email",
+        'Current draft values:\n{\n  "name": "Ada"\n}',
+        '"extractedData": an object keyed by field ID',
+    ):
+        assert expected in prompt
     assert build_messages(
         "current",
         fields,
@@ -71,7 +52,7 @@ def test_exact_prompt_and_conversation_order() -> None:
             {"type": "assistant", "content": "reply"},
         ],
     ) == [
-        {"role": "system", "content": EXPECTED_SYSTEM_PROMPT},
+        {"role": "system", "content": prompt},
         {"role": "user", "content": "earlier"},
         {"role": "assistant", "content": "reply"},
         {"role": "user", "content": "current"},
@@ -89,7 +70,7 @@ def test_prompt_numeric_serialization_matches_javascript_json_stringify() -> Non
         },
     )
     assert (
-        'Current Form Data:\n{\n  "integer": 1,\n  "small": 0.000001,\n'
+        'Current draft values:\n{\n  "integer": 1,\n  "small": 0.000001,\n'
         '  "tiny": 1e-7,\n  "wide": 100000000000000000000\n}'
     ) in prompt
 
@@ -185,9 +166,15 @@ def test_mock_and_provider_error_fallbacks_are_distinct() -> None:
         "response": AI_FAILURE_RESPONSE,
         "extractedData": {},
     }
-    assert extract(
-        "hello", [], {}, [], backend=lambda *_args: (_ for _ in ()).throw(RuntimeError("secret"))
-    ) == {"response": AI_FAILURE_RESPONSE, "extractedData": {}}
+    def failing_backend(*_args: object) -> dict[str, object]:
+        raise RuntimeError("secret")
+
+    assert extract("hello", [], {}, [], backend=failing_backend, use_mock=True) == {
+        "response": AI_FAILURE_RESPONSE,
+        "extractedData": {},
+    }
+    with pytest.raises(AIProviderError, match="provider failed"):
+        extract("hello", [], {}, [], backend=failing_backend, use_mock=False)
 
 
 def test_real_extraction_provider_failure_is_an_error_not_a_mock_response() -> None:
@@ -203,8 +190,7 @@ def test_real_extraction_provider_failure_returns_sanitized_http_error() -> None
     client = Client(
         HTTP_HOST="127.0.0.1:8000",
         HTTP_ORIGIN="http://127.0.0.1:8000",
-        HTTP_X_INTERNAL_API_TOKEN="test-request-marker",
-        HTTP_AUTHORIZATION="Bearer synthetic-access",
+        HTTP_X_CLOUD_AI_CONSENT=CLOUD_AI_CONSENT_POLICY_VERSION,
     )
     principal = SupabaseUser(
         id=UUID("00000000-0000-4000-8000-000000000001"),
@@ -214,11 +200,9 @@ def test_real_extraction_provider_failure_returns_sanitized_http_error() -> None
     with (
         override_settings(
             P3_SERVICES_ENABLED=True,
-            P3_ALLOWED_ORIGINS=["http://127.0.0.1:8000"],
-            P3_API_MARKER="test-request-marker",
             USE_MOCK_AI=False,
         ),
-        patch("apps.api.middleware.authenticate_bearer", return_value=principal),
+        patch("apps.api.middleware.authenticate_session", return_value=principal),
         patch("apps.ai.views.extract", side_effect=AIProviderError("private provider response")),
     ):
         response = client.post(
@@ -233,12 +217,10 @@ def test_real_extraction_provider_failure_returns_sanitized_http_error() -> None
 
 
 def test_mock_extraction_endpoint_accepts_expected_contract() -> None:
-    with override_settings(P3_SERVICES_ENABLED=True):
+    with override_settings(P3_SERVICES_ENABLED=True, USE_MOCK_AI=True):
         client = Client(
             HTTP_HOST="127.0.0.1:8000",
-            HTTP_ORIGIN="http://localhost:5173",
-            HTTP_X_INTERNAL_API_TOKEN="voiceform-p3",
-            HTTP_AUTHORIZATION="Bearer synthetic-access",
+            HTTP_ORIGIN="http://127.0.0.1:8000",
         )
         response = client.post(
             "/api/ai/extract/",
@@ -252,3 +234,30 @@ def test_mock_extraction_endpoint_accepts_expected_contract() -> None:
         )
     assert response.status_code == 200
     assert set(response.json()) == {"response", "extractedData"}
+
+
+def test_real_extraction_endpoint_requires_explicit_consent() -> None:
+    client = Client(
+        HTTP_HOST="127.0.0.1:8000",
+        HTTP_ORIGIN="http://127.0.0.1:8000",
+    )
+    principal = SupabaseUser(
+        id=UUID("00000000-0000-4000-8000-000000000001"),
+        email="synthetic@example.test",
+        user_metadata={},
+    )
+    with (
+        override_settings(
+            P3_SERVICES_ENABLED=True,
+            USE_MOCK_AI=False,
+        ),
+        patch("apps.api.middleware.authenticate_session", return_value=principal),
+    ):
+        response = client.post(
+            "/api/ai/extract/",
+            {"userInput": "Ada", "formFields": [], "currentFormData": {}, "conversation": []},
+            content_type="application/json",
+        )
+
+    assert response.status_code == 428
+    assert response.json()["code"] == "cloud_ai_consent_required"

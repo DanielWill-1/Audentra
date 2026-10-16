@@ -4,115 +4,11 @@ from collections.abc import Callable
 from pathlib import Path
 from urllib.parse import parse_qsl
 
-from django.conf import settings
 from django.http import HttpRequest, HttpResponse, HttpResponseBadRequest
 from django.shortcuts import render
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.views.decorators.http import require_safe
-
-DOCUMENTATION_QUICKSTART = "\n".join(
-    [
-        "# Clone repository and execute detached production stack",
-        "git clone https://github.com/audentra/audentra.git && cd audentra",
-        "docker compose up -d --build",
-        "✓ Model weights loaded: whisper-large-v3-turbo.gguf [1.6GB]",
-        "✓ Deterministic Schema Parser listening at 127.0.0.1:8080",
-        "# Live logs stream ready: docker compose logs -f pipeline",
-    ]
-)
-DOCUMENTATION_SCHEMA = "\n".join(
-    [
-        "{",
-        '  "$schema": "https://json-schema.org/draft/2020-12/schema",',
-        '  "title": "ClinicalPatientIntake",',
-        '  "type": "object",',
-        '  "required": ["patient_id", "systolic_bp", "heart_rate", "triage_category"],',
-        '  "properties": {',
-        '    "patient_id": {"type": "string", "pattern": "^MED-[0-9]{6}$"},',
-        '    "systolic_bp": {"type": "integer", "minimum": 50, "maximum": 260},',
-        '    "heart_rate": {"type": "integer", "minimum": 30, "maximum": 220},',
-        '    "triage_category": {',
-        '      "type": "string",',
-        '      "enum": ["EMERGENT", "URGENT", "NON_URGENT"]',
-        "    },",
-        '    "chief_complaint_transcript": {"type": "string", "maxLength": 500}',
-        "  }",
-        "}",
-    ]
-)
-DOCUMENTATION_STAGES = (
-    {
-        "stage": "STAGE 01",
-        "title": "Ingest Stream",
-        "detail": (
-            "48kHz uncompressed raw PCM stream via bidirectional WebSockets with frame-level "
-            "chunking."
-        ),
-        "meta": "BUFFER: 256ms",
-    },
-    {
-        "stage": "STAGE 02",
-        "title": "Acoustic Parser",
-        "detail": (
-            "Quantized whisper.cpp engine generates raw phonetic tokens with millisecond timestamp "
-            "markers."
-        ),
-        "meta": "ENGINE: C++ NATIVE",
-    },
-    {
-        "stage": "STAGE 03",
-        "title": "Semantic AST",
-        "detail": (
-            "Deterministic context parser matches slot entities without open-ended speculative "
-            "hallucinations."
-        ),
-        "meta": "GRAMMAR: EBNF",
-    },
-    {
-        "stage": "STAGE 04",
-        "title": "Schema Coercion",
-        "detail": (
-            "Strict runtime type validation against your compiled JSON Schema or Pydantic "
-            "definitions."
-        ),
-        "meta": "VALIDATION: PASS (100%)",
-    },
-)
-DOCUMENTATION_GUIDES = (
-    {
-        "title": "Air-gapped Deployment",
-        "tag": "SETUP TIME: 15 MIN",
-        "text": (
-            "Run fully isolated speech recognition pipelines on on-premise CUDA or Apple Silicon "
-            "instances without external network egress."
-        ),
-    },
-    {
-        "title": "Custom Schema Authoring",
-        "tag": "SPECIFICATION",
-        "text": (
-            "Techniques for writing strict regex patterns, numeric tolerances, and contextual slot "
-            "extraction logic with zero model re-training."
-        ),
-    },
-    {
-        "title": "WebAudio Zero-Latency Capture",
-        "tag": "FRONTEND SDK",
-        "text": (
-            "Setting up client-side AudioWorkletNode streaming to pipe clean 16-bit PCM voice "
-            "fragments straight into backend workers."
-        ),
-    },
-    {
-        "title": "Webhook & FHIR/HL7 Dispatch",
-        "tag": "INTEGRATION",
-        "text": (
-            "Automatically pipe validated JSON records into internal PostgreSQL instances, "
-            "operational data warehouses, or FHIR servers."
-        ),
-    },
-)
 
 HELP_CATEGORIES = (
     {"id": "all", "name": "All Topics", "count": 47, "icon": "book-open"},
@@ -155,7 +51,7 @@ HELP_ARTICLES = (
         "updated": "3 days ago",
     },
     {
-        "title": "HIPAA compliance and data security",
+        "title": "Cloud processing, privacy, and data security",
         "category": "security",
         "read_time": "6 min read",
         "rating": "4.9",
@@ -258,10 +154,6 @@ def _reviewed_source_markup(slug: str) -> object:
 
 
 def _render_page(request: HttpRequest, route: str, slug: str) -> HttpResponse:
-    if route in settings.P7_LEGACY_ROLLBACK_ROUTES:
-        from apps.core.legacy import legacy_page
-
-        return legacy_page(request, route_path=route)
     valid, slash_alias = _valid_request(request, route)
     if not valid:
         return HttpResponseBadRequest("Invalid request path.", content_type="text/plain")

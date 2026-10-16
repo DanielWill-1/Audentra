@@ -1,10 +1,12 @@
 import base64
+from collections.abc import Iterator
 from types import SimpleNamespace
 from unittest.mock import Mock, patch
 from uuid import UUID
 
 import pytest
 from apps.accounts.principals import SupabaseUser
+from apps.api.consent import CLOUD_AI_CONSENT_POLICY_VERSION
 from apps.speech.backends import google, mock
 from apps.speech.services import (
     AudioInputError,
@@ -12,7 +14,6 @@ from apps.speech.services import (
     clean_tts_text,
     synthesize_speech,
     transcribe_audio,
-    validate_audio,
     validate_multipart_audio,
 )
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -27,50 +28,43 @@ from tests.reference_contracts import (
     mounted_tts_success,
 )
 
-ORIGIN = "http://localhost:5173"
+ORIGIN = "http://127.0.0.1:8000"
 HOST = "127.0.0.1:8000"
-MARKER = "voiceform-p3"
+MARKER = "retired-p3-marker"
 
 
 @pytest.fixture(autouse=True)
-def clear_boundary_state(monkeypatch: pytest.MonkeyPatch) -> None:
+def clear_boundary_state(monkeypatch: pytest.MonkeyPatch) -> Iterator[None]:
     from apps.api.throttling import clear_rate_limits
 
     clear_rate_limits()
     monkeypatch.setattr(
-        "apps.api.middleware.authenticate_bearer",
-        lambda _token: SupabaseUser(
+        "apps.api.middleware.authenticate_session",
+        lambda _request: SupabaseUser(
             id=UUID("00000000-0000-4000-8000-000000000001"),
             email="synthetic@example.test",
             user_metadata={},
         ),
     )
+    with override_settings(
+        P3_SERVICES_ENABLED=False,
+        SPEECH_BACKEND="mock",
+        TTS_BACKEND="mock",
+        USE_MOCK_AI=True,
+    ):
+        yield
 
 
 def service_client() -> Client:
     return Client(
         HTTP_HOST=HOST,
         HTTP_ORIGIN=ORIGIN,
-        HTTP_X_INTERNAL_API_TOKEN=MARKER,
-        HTTP_AUTHORIZATION="Bearer synthetic-access",
+        HTTP_X_CLOUD_AI_CONSENT=CLOUD_AI_CONSENT_POLICY_VERSION,
     )
 
 
-def test_legacy_audio_data_url_checks_and_decodes_strictly() -> None:
-    assert validate_audio("data:audio/webm;base64,YWJj", "audio/webm") == (
-        b"abc",
-        "audio/webm",
-    )
-    with pytest.raises(AudioInputError, match="format"):
-        validate_audio("YWJj", "audio/webm")
-    with pytest.raises(AudioInputError, match="base64"):
-        validate_audio("data:audio/webm;base64,not base64", "audio/webm")
-
-
-def test_audio_character_cap_and_multipart_byte_cap() -> None:
-    with override_settings(P3_MAX_BASE64_CHARS=4, P3_MAX_AUDIO_BYTES=3):
-        with pytest.raises(AudioInputError, match="too large"):
-            validate_audio("data:audio/webm;base64,YWJjZA==", "audio/webm")
+def test_multipart_audio_byte_cap() -> None:
+    with override_settings(P3_MAX_AUDIO_BYTES=3):
         upload = SimpleUploadedFile("audio.webm", b"abcd", content_type="audio/webm")
         with pytest.raises(AudioInputError, match="too large"):
             validate_multipart_audio(upload, "audio/webm")
@@ -83,9 +77,8 @@ def test_multipart_empty_audio_is_rejected() -> None:
 
 
 def test_mock_transcription_is_deterministic_and_empty_provider_result_falls_back() -> None:
-    audio, mime_type = validate_audio("data:audio/webm;base64,YWJj", "audio/webm")
-    assert transcribe_audio(audio, mime_type, use_mock=True).startswith("This is a mock")
-    assert transcribe_audio(audio, mime_type, backend=lambda _audio, _mime: "") == (
+    assert transcribe_audio(b"abc", "audio/webm", use_mock=True).startswith("This is a mock")
+    assert transcribe_audio(b"abc", "audio/webm", backend=lambda _audio, _mime: "") == (
         "Transcription failed"
     )
 
@@ -303,20 +296,18 @@ def test_google_tts_sdk_errors_keep_mounted_http_status(
     mock_client.close.assert_called_once()
 
 
-def test_service_endpoints_accept_both_contracts_and_slash_forms() -> None:
-    payload = {"audio": "data:audio/webm;base64,YWJj", "mimeType": "audio/webm"}
+def test_service_endpoints_accept_multipart_audio_and_slash_forms() -> None:
     with override_settings(P3_SERVICES_ENABLED=True):
         for route in ("/api/transcribe", "/api/transcribe/"):
-            response = service_client().post(route, payload, content_type="application/json")
+            response = service_client().post(
+                route,
+                {
+                    "audio": SimpleUploadedFile("sample.webm", b"abc"),
+                    "mimeType": "audio/webm",
+                },
+            )
             assert response.status_code == 200
             assert response.json()["transcript"].startswith("This is a mock")
-
-        response = service_client().post(
-            "/api/transcribe/",
-            {"audio": SimpleUploadedFile("sample.webm", b"abc"), "mimeType": "audio/webm"},
-        )
-        assert response.status_code == 200
-        assert response.json()["transcript"].startswith("This is a mock")
 
         for route in ("/api/tts", "/api/tts/"):
             response = service_client().post(
@@ -337,51 +328,42 @@ def test_service_endpoints_accept_both_contracts_and_slash_forms() -> None:
                 content_type="application/json",
             )
             assert response.status_code == 200
-            assert response.json()["extractedData"]["email"] == "test@example.com"
+            assert response.json()["extractedData"] == {"name": "John Doe"}
 
 
-def test_service_boundary_rejects_missing_disallowed_and_mismatched_origin() -> None:
+def test_cloud_speech_endpoints_require_explicit_consent() -> None:
+    client = service_client()
+    client.defaults.pop("HTTP_X_CLOUD_AI_CONSENT")
+    with override_settings(
+        P3_SERVICES_ENABLED=True,
+        SPEECH_BACKEND="groq",
+        TTS_BACKEND="groq",
+    ):
+        transcribe_response = client.post(
+            "/api/transcribe/",
+            {
+                "audio": SimpleUploadedFile("sample.webm", b"abc"),
+                "mimeType": "audio/webm",
+            },
+        )
+        tts_response = client.post(
+            "/api/tts/", {"text": "Hello"}, content_type="application/json"
+        )
+
+    assert transcribe_response.status_code == 428
+    assert transcribe_response.json()["code"] == "cloud_ai_consent_required"
+    assert tts_response.status_code == 428
+    assert tts_response.json()["code"] == "cloud_ai_consent_required"
+
+
+def test_service_boundary_rejects_retired_marker_and_invalid_host() -> None:
     with override_settings(P3_SERVICES_ENABLED=True):
-        no_origin = Client(HTTP_HOST=HOST, HTTP_X_INTERNAL_API_TOKEN=MARKER)
-        no_origin_response = no_origin.post(
+        retired_marker = Client(HTTP_HOST=HOST, HTTP_X_INTERNAL_API_TOKEN=MARKER)
+        assert retired_marker.post(
             "/api/tts/", {"text": "hi"}, content_type="application/json"
-        )
-        assert no_origin_response.status_code == 403
+        ).status_code == 400
 
-        blocked = Client(
-            HTTP_HOST=HOST,
-            HTTP_ORIGIN="http://localhost.attacker.invalid",
-            HTTP_X_INTERNAL_API_TOKEN=MARKER,
-        )
-        blocked_response = blocked.post(
-            "/api/tts/", {"text": "hi"}, content_type="application/json"
-        )
-        assert blocked_response.status_code == 403
-
-        mismatch = service_client()
-        response = mismatch.post(
-            "/api/tts/",
-            {"text": "hi"},
-            content_type="application/json",
-            HTTP_REFERER="http://127.0.0.1:5173/voice",
-        )
-        assert response.status_code == 403
-
-
-def test_service_boundary_requires_marker_and_valid_host() -> None:
-    with override_settings(P3_SERVICES_ENABLED=True):
-        missing_marker = Client(HTTP_HOST=HOST, HTTP_ORIGIN=ORIGIN)
-        assert (
-            missing_marker.post(
-                "/api/tts/", {"text": "hi"}, content_type="application/json"
-            ).status_code
-            == 403
-        )
-        bad_host = Client(
-            HTTP_HOST="attacker.invalid",
-            HTTP_ORIGIN=ORIGIN,
-            HTTP_X_INTERNAL_API_TOKEN=MARKER,
-        )
+        bad_host = Client(HTTP_HOST="attacker.invalid")
         assert (
             bad_host.post("/api/tts/", {"text": "hi"}, content_type="application/json").status_code
             == 400
@@ -389,8 +371,6 @@ def test_service_boundary_requires_marker_and_valid_host() -> None:
 
         remote = Client(
             HTTP_HOST=HOST,
-            HTTP_ORIGIN=ORIGIN,
-            HTTP_X_INTERNAL_API_TOKEN=MARKER,
             REMOTE_ADDR="192.0.2.10",
             HTTP_X_FORWARDED_FOR="127.0.0.1",
         )
@@ -400,18 +380,18 @@ def test_service_boundary_requires_marker_and_valid_host() -> None:
         )
 
 
-def test_service_preflight_and_rate_limit() -> None:
+def test_service_options_are_not_a_cross_origin_preflight_and_rate_limit() -> None:
     with override_settings(P3_SERVICES_ENABLED=True):
         response = Client(HTTP_HOST=HOST).options(
             "/api/tts/",
             HTTP_ORIGIN=ORIGIN,
             HTTP_ACCESS_CONTROL_REQUEST_METHOD="POST",
-            HTTP_ACCESS_CONTROL_REQUEST_HEADERS="content-type, x-internal-api-token, authorization",
+            HTTP_ACCESS_CONTROL_REQUEST_HEADERS=(
+                "content-type, x-internal-api-token, x-cloud-ai-consent, authorization"
+            ),
         )
-        assert response.status_code == 204
-        assert response["Access-Control-Allow-Origin"] == ORIGIN
-        assert "Authorization" in response["Access-Control-Allow-Headers"]
-        assert "Access-Control-Allow-Credentials" not in response
+        assert response.status_code == 405
+        assert "Access-Control-Allow-Origin" not in response
 
     with override_settings(P3_SERVICES_ENABLED=True, P3_RATE_LIMIT_REQUESTS=0):
         limited = service_client().post(
@@ -443,15 +423,18 @@ def test_malformed_json_and_api_errors_are_sanitized() -> None:
             {"audio": "no-comma", "mimeType": "audio/webm"},
             content_type="application/json",
         )
-        assert invalid_audio.status_code == 400
+        assert invalid_audio.status_code == 415
 
 
 def test_p3_logs_contract_kind_without_audio_payload() -> None:
     with override_settings(P3_SERVICES_ENABLED=True), patch("apps.speech.views.logger.info") as log:
-        payload = {"audio": "data:audio/webm;base64,YWJj", "mimeType": "audio/webm"}
         response = service_client().post(
-            "/api/transcribe/", payload, content_type="application/json"
+            "/api/transcribe/",
+            {
+                "audio": SimpleUploadedFile("sample.webm", b"abc"),
+                "mimeType": "audio/webm",
+            },
         )
     assert response.status_code == 200
-    assert log.call_args.args == ("p3_service_request endpoint=transcribe input=%s", "legacy_json")
-    assert "YWJj" not in str(log.call_args)
+    assert log.call_args.args == ("p3_service_request endpoint=transcribe input=%s", "multipart")
+    assert "abc" not in str(log.call_args)

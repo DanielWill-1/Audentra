@@ -135,7 +135,6 @@ def main() -> None:
             ):
                 api_headers = {
                     "HTTP_ORIGIN": "http://127.0.0.1:8000",
-                    "HTTP_X_INTERNAL_API_TOKEN": settings.P3_API_MARKER,
                 }
                 payload = {"text": "Development auth boundary check"}
                 assert (
