@@ -1,0 +1,130 @@
+{
+  "run_id": "activity-recent-forms-20261017",
+  "captured_at": "2026-10-17T14:16:54.816Z",
+  "source": "Current React/Vite routes with intercepted Supabase Auth/PostgREST synthetic fixture responses",
+  "source_provenance": {
+    "git_revision": "4fdd632bb18b5f7d9ee60c3073ef8da2aad65b61",
+    "worktree_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "file_count": 0,
+    "file_digests": {}
+  },
+  "fixture_identity": "11111111-1111-4111-8111-111111111111 (non-hosted synthetic account)",
+  "fixture_data": "Patient intake template, schedule, and filled-form row; all dummy-origin requests are intercepted",
+  "base_url": "http://127.0.0.1:15573",
+  "browser": "148.0.7778.96",
+  "waves": {
+    "w7": {
+      "wave": "W7",
+      "pages": [
+        {
+          "route": "/AIVoiceAutoFill?template=33333333-3333-4333-8333-333333333333",
+          "viewport": {
+            "name": "desktop",
+            "width": 1440,
+            "height": 900
+          },
+          "response_status": 200,
+          "url": "/AIVoiceAutoFill?template=33333333-3333-4333-8333-333333333333",
+          "title": "Audentra — Open-source voice-to-structured-data",
+          "heading": "AI Voice Auto-Fill",
+          "document_width": 1440,
+          "viewport_width": 1440,
+          "source_html_sha256": "08bc92735fbf8092a6c5a3d7ae7ae67e8441b8bd1936371ee7bad802820a9286",
+          "console_errors": [],
+          "failed_requests": [],
+          "screenshot": "voice-autofill-desktop.png"
+        },
+        {
+          "route": "/AIVoiceAutoFill?template=33333333-3333-4333-8333-333333333333",
+          "viewport": {
+            "name": "mobile",
+            "width": 390,
+            "height": 844
+          },
+          "response_status": 200,
+          "url": "/AIVoiceAutoFill?template=33333333-3333-4333-8333-333333333333",
+          "title": "Audentra — Open-source voice-to-structured-data",
+          "heading": "AI Voice Auto-Fill",
+          "document_width": 390,
+          "viewport_width": 390,
+          "source_html_sha256": "08bc92735fbf8092a6c5a3d7ae7ae67e8441b8bd1936371ee7bad802820a9286",
+          "console_errors": [],
+          "failed_requests": [],
+          "screenshot": "voice-autofill-mobile.png"
+        },
+        {
+          "route": "/filledtemplates",
+          "viewport": {
+            "name": "desktop",
+            "width": 1440,
+            "height": 900
+          },
+          "response_status": 200,
+          "url": "/filledtemplates",
+          "title": "Audentra — Open-source voice-to-structured-data",
+          "heading": "Your Filled Templates",
+          "document_width": 1440,
+          "viewport_width": 1440,
+          "source_html_sha256": "5a6c884f24de2e95a120d42acf47bb0532333d79f817c525e3f1aa684f640f1e",
+          "console_errors": [],
+          "failed_requests": [],
+          "screenshot": "filled-templates-desktop.png"
+        },
+        {
+          "route": "/filledtemplates",
+          "viewport": {
+            "name": "mobile",
+            "width": 390,
+            "height": 844
+          },
+          "response_status": 200,
+          "url": "/filledtemplates",
+          "title": "Audentra — Open-source voice-to-structured-data",
+          "heading": "Your Filled Templates",
+          "document_width": 390,
+          "viewport_width": 390,
+          "source_html_sha256": "5a6c884f24de2e95a120d42acf47bb0532333d79f817c525e3f1aa684f640f1e",
+          "console_errors": [],
+          "failed_requests": [],
+          "screenshot": "filled-templates-mobile.png"
+        },
+        {
+          "route": "/activitylog",
+          "viewport": {
+            "name": "desktop",
+            "width": 1440,
+            "height": 900
+          },
+          "response_status": 200,
+          "url": "/activitylog",
+          "title": "Audentra — Open-source voice-to-structured-data",
+          "heading": "Activity Log",
+          "document_width": 1440,
+          "viewport_width": 1440,
+          "source_html_sha256": "14c52402e5276e2b97eebe989fa6d13c51e74f99d7a6d9714986a6b10fb36810",
+          "console_errors": [],
+          "failed_requests": [],
+          "screenshot": "activity-log-desktop.png"
+        },
+        {
+          "route": "/activitylog",
+          "viewport": {
+            "name": "mobile",
+            "width": 390,
+            "height": 844
+          },
+          "response_status": 200,
+          "url": "/activitylog",
+          "title": "Audentra — Open-source voice-to-structured-data",
+          "heading": "Activity Log",
+          "document_width": 390,
+          "viewport_width": 390,
+          "source_html_sha256": "14c52402e5276e2b97eebe989fa6d13c51e74f99d7a6d9714986a6b10fb36810",
+          "console_errors": [],
+          "failed_requests": [],
+          "screenshot": "activity-log-mobile.png"
+        }
+      ]
+    }
+  }
+}

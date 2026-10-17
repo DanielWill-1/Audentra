@@ -2,6 +2,14 @@
 
 **Target:** native Windows, local Supabase, and the locked Django environment. The default **local-supabase** profile binds Django to loopback, uses DEBUG=False, and masks hosted database/Auth values from .env. The older **local-http** name now aliases this local-only profile. **demo-http** is the explicit profile for a hosted development/demo target. Production settings keep secure cookies and HTTPS redirect enabled.
 
+## One-command launch
+
+From Windows PowerShell at the repository root, run:
+
+    powershell -NoProfile -ExecutionPolicy Bypass -File .\start-local.ps1
+
+The launcher checks for `uv` and the Supabase CLI, installs the pinned managed Python and locked Django environment when needed, starts local Supabase, applies pending Supabase migrations with `supabase migration up --local`, provisions the synthetic demo account on first setup, builds static assets, applies Django's local session migrations, runs the local checks, and starts Waitress at `http://127.0.0.1:8000/`. It does not reset local database contents. Use `-Port 8001` to select another loopback port, and stop the foreground server with Ctrl+C. Docker Desktop must be running.
+
 ## First start
 
 Run the Django environment setup in PowerShell from migration/django:
@@ -15,6 +23,7 @@ Start the local Supabase stack from the repository root. From migration/django, 
 
     Push-Location ..\..
     supabase start
+    supabase migration up --local
     Pop-Location
 
 Back in migration/django, provision the restricted app roles and synthetic demo account:
@@ -56,6 +65,22 @@ The performance harness measures five fresh-context home loads and nine warm nav
 
 Run the same command before and after a performance change, using distinct output paths. The report records machine/browser details, route timing, and slow resource hosts without capturing request bodies or credential values.
 
+## Recent Forms and Activity Log
+
+Recent Forms lists saved form records only. It does not keep drafts or offer resume. Each row opens its exact saved record; that record can be downloaded as JSON. Deleting the saved form removes it from Recent Forms and creates a deletion event.
+
+Activity Log shows the signed-in account's own saved-form, template, sharing, review, and schedule actions. It supports category/search/date filters and lets the account owner remove a history entry. Removing an activity entry leaves the underlying business record unchanged. Event capture is transaction-bound to the saved action. Review comments, schedule descriptions, attendee values, form answers, and voice content are not copied into event metadata.
+
+The current local PostgreSQL acceptance check creates synthetic Auth/application rows inside one transaction and rolls them all back:
+
+    psql "postgresql://postgres:<local-db-password>@127.0.0.1:54322/postgres?sslmode=disable" -v ON_ERROR_STOP=1 -f supabase/tests/p11_activity_acceptance.sql
+
+Focused application regression checks use the isolated SQLite test settings:
+
+    uv run --locked pytest tests/test_p7_application.py tests/test_p5_data_layer.py -q
+
+Implementation details and what each check proves are recorded in [the feature plan](../features/ACTIVITY_RECENT_FORMS_IMPLEMENTATION_PLAN.md) and [the local closeout](../features/ACTIVITY_RECENT_FORMS_CLOSEOUT_2026-10-17.md).
+
 ## Local and hosted-demo configuration
 
 - .state\local-supabase.env contains machine-generated loopback connection settings and is ignored by Git. Do not copy it into .env.
@@ -84,7 +109,7 @@ Operational logs go to .state\logs\voiceform.log by default and to the console. 
 
 ## Safe schema operations
 
-Local Supabase migrations are applied by supabase start and the explicit local reset command. Django-owned session migrations run on default:
+Apply pending local Supabase migrations explicitly after the stack starts, using `supabase migration up --local`. The launcher performs this forward-only step automatically; it does not reset local data. The explicit local reset also reapplies repository migrations. Django-owned session migrations run on default:
 
     uv run --locked python manage.py migrate --plan --settings=config.settings.local_supabase --database default
 

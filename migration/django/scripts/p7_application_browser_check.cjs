@@ -5,9 +5,17 @@ const path = require('node:path');
 const { chromium } = require('playwright');
 const { captureSourceProvenance } = require('./p7_source_provenance.cjs');
 
+const browserLaunchOptions = {
+  headless: true,
+  ...(process.env.P7_CHROMIUM_EXECUTABLE_PATH
+    ? { executablePath: process.env.P7_CHROMIUM_EXECUTABLE_PATH }
+    : {}),
+};
+
 const root = path.resolve(__dirname, '..', '..', '..');
 const wave = process.argv.find((argument) => /^--wave=w[3-7]$/.test(argument))?.slice(-2) || 'w4';
 const routeFilter = process.argv.find((argument) => argument.startsWith('--route='))?.slice(8) || '';
+const currentOnly = process.argv.includes('--current-only');
 const run = process.env.P7_EVIDENCE_RUN || 'post-wave-review-20261012';
 const referenceRun = process.env.P7_REFERENCE_RUN || '';
 const baseUrl = process.env.P7_DJANGO_BASE_URL || 'http://127.0.0.1:18875';
@@ -42,6 +50,10 @@ const appRoutes = {
 const viewports = [
   { name: 'desktop', width: 1440, height: 900 },
   { name: 'mobile', width: 390, height: 844 },
+];
+const settingsAdditionalViewports = [
+  { name: 'narrow', width: 320, height: 844 },
+  { name: 'zoom-200-equivalent', width: 720, height: 900 },
 ];
 const results = {
   wave: wave.toUpperCase(),
@@ -156,7 +168,7 @@ const ROUTE_CONTRACTS = {
     buttons: ['Start voice form','Choose a template','View all forms','Save profile','Team options','Open reviews'],
     destinations: ['/AIVoiceAutoFill','/templates','/filledtemplates','/scheduler','/templates#collaboration'],
     fields: ['first_name','last_name','company','industry','language','aiProcessingSpeed','industrySpecialization','voiceSensitivity'],
-    accepted: ['Home, Team and Settings are workspace navigation destinations in both implementations.', 'Recent activity is browser-local and account-key scoped.', 'Invite/member management remains unavailable; sharing and reviews route to P5-backed template flows.', 'Dashboard shortcuts, profile controls, and local explanations are registered target additions; visible records use synthetic browser-local examples.'],
+    accepted: ['Home, Team and Settings are workspace navigation destinations in both implementations.', 'Recent Forms reads saved database records for the signed-in account; browser fixtures supply visibly synthetic rows only in this isolated capture.', 'Invite/member management remains unavailable; sharing and reviews route to P5-backed template flows.', 'Dashboard shortcuts and profile controls are registered target additions; recent form links open exact saved-record IDs.'],
     source_sections: ['Start with your voice', 'Recent forms', 'Templates', 'Upcoming', 'Team'],
     source_controls: ['Start voice form', 'Choose a template', 'View all forms', 'Browse library'],
     source_destinations: ['/AIVoiceAutoFill', '/templates', '/filledtemplates', '/scheduler'],
@@ -170,6 +182,7 @@ const ROUTE_CONTRACTS = {
     },
     source_copy: ['Speak naturally and Audentra will turn the conversation into structured form data.'],
     source_only: { controls: [
+      { feature: 'Resume', reason: 'Recent Forms lists saved records only; unfinished drafts and resume actions are outside the first release.' },
       { feature: 'Manage team →', reason: 'Source team membership actions remain a demo; available P5 sharing and reviews are linked from the Team view.' },
       { feature: 'Invite', reason: 'P4 email invitations and team membership changes are not configured in the current migration contract.' },
     ] },
@@ -178,7 +191,7 @@ const ROUTE_CONTRACTS = {
         { feature: 'Choose template', reason: 'The Django dashboard adds a direct template shortcut card.' },
         { feature: 'Filled forms', reason: 'The Django dashboard adds a direct saved-forms shortcut card.' },
         { feature: 'Create template', reason: 'The Django dashboard adds a direct template-builder shortcut card.' },
-        { feature: 'Patient intake', reason: 'This is the title of the synthetic recent-template fixture card, not an additional page section.' },
+        { feature: 'Patient intake', reason: 'This is the saved-form name in the synthetic browser fixture used for capture.' },
         { feature: 'Profile settings', reason: 'The Django dashboard adds account profile editing below its recent-work sections.' },
         { feature: 'Voice & AI settings', reason: 'The Django Settings panel adds browser-local preferences and does not change provider settings.' },
         { feature: 'Choose a supported action', reason: 'The Django Team dialog explains the supported sharing and review actions.' },
@@ -194,10 +207,11 @@ const ROUTE_CONTRACTS = {
       destinations: [
         { feature: '/templates#create-template', reason: 'The Django dashboard adds a direct anchor to the template builder.' },
         { pattern: '^/AIVoiceAutoFill\\?template=[0-9a-f-]{36}$', reason: 'The synthetic recent-template card links to the selected template using its fixture UUID.' },
+        { pattern: '^/filledtemplates\\?record=[0-9a-f-]{36}$', reason: 'Recent Forms opens the exact saved record instead of a generic or resumable draft page.' },
       ],
       copy: [
         { feature: 'Ready to listen', reason: 'The Django voice-start card adds a readiness badge.' },
-        { feature: 'Browser-local examples and history; they do not change saved forms.', reason: 'The Django dashboard discloses that its example activity is browser-local.' },
+        { feature: 'Your five most recently saved forms.', reason: 'Recent Forms is rendered from saved-form rows on the server.' },
         { feature: 'Your next scheduled events.', reason: 'The Django Upcoming schedule card adds an explanatory subtitle.' },
         { feature: 'No upcoming events. Create one in the scheduler.', reason: 'The Django empty schedule state links users to the local scheduler.' },
         { feature: 'Update your account profile.', reason: 'The Django profile editor adds explanatory copy.' },
@@ -364,17 +378,16 @@ const ROUTE_CONTRACTS = {
   },
   'scheduler-settings': {
     source_heading: 'Scheduler Settings',
-    heading: 'Scheduler Settings', sections: ['General Settings','Working Hours','Working Days'],
-    buttons: ['General','Notifications','Calendar','Privacy','Appearance','Integrations','Save Changes','Reset','Export'],
-    fields: ['defaultDuration','defaultReminderMinutes','workingHours.start','workingHours.end','timezone','workingDays','emailNotifications','pushNotifications','reminderNotifications','dailyDigest','weeklyReport','defaultView','weekStartsOn','showWeekends','showDeclinedEvents','shareCalendar','allowGuestInvites','showBusyTime','theme','colorScheme','compactView','googleCalendarSync','outlookSync','slackNotifications','teamsNotifications'],
-    destinations: ['/scheduler'],
-    accepted: ['Source settings remain local preferences; integrations and notifications do not connect to external services.', 'The Django page adds an explicit browser-local settings notice and a direct return link to the scheduler.'],
+    heading: 'Scheduler Settings', sections: ['Scheduling preferences', 'Working hours', 'Working days', 'Calendar display', 'Notification delivery', 'Connections & privacy'],
+    buttons: ['Scheduling','Calendar display','Notifications','Connections & privacy','Reset draft','Discard changes','Export','Import','Save settings'],
+    fields: ['defaultDuration','defaultReminderMinutes','workingHours.start','workingHours.end','workingDays','defaultView','weekStartsOn','showWeekends','compactView'],
+    destinations: ['/scheduler','/privacy','/security','/documentation#settings-preview'],
+    accepted: ['Settings are a versioned browser-local preview only. No setting changes real scheduler behavior, requests permissions, sends notifications, or connects a provider.', 'The redesigned page replaces six inert preference groups with four sections, an example calendar, visible draft/save state, and honest unavailable-capability cards.'],
     source_sections: ['General Settings', 'Working Hours', 'Working Days'],
     source_fields: ['Default Event Duration (minutes)', 'Default Reminder (minutes before)', 'Start Time', 'End Time'],
     source_controls: ['General', 'Notifications', 'Calendar', 'Privacy', 'Appearance', 'Integrations', 'Save Changes', 'Reset', 'Export'],
     source_destinations: ['/scheduler'],
     source_copy: ['Configure your scheduling preferences and integrations'],
-    source_fields: ['Default Event Duration (minutes)', 'Default Reminder (minutes before)', 'Start Time', 'End Time', 'Import'],
     field_map: {
       'Default Event Duration (minutes)': 'defaultDuration',
       'Default Reminder (minutes before)': 'defaultReminderMinutes',
@@ -382,10 +395,14 @@ const ROUTE_CONTRACTS = {
       'End Time': 'workingHours.end',
       Import: 'Import',
     },
-    control_map: { Reset: 'Reset', Export: 'Export', 'Save Changes': 'Save Changes' },
+    control_map: {},
     target_only: {
-      controls: [{ feature: 'Back to scheduler', reason: 'The Django settings page adds a direct return link to its calendar.' }],
-      copy: [{ feature: 'These preferences stay in this browser on this device. Notification and calendar integration toggles are local preferences only; no reminders or external sync are active.', reason: 'The Django page explains that settings are stored locally and integrations do not connect to external services.' }],
+      controls: [
+        { feature: 'Browser preview section rail', reason: 'The new four-section layout groups supported preview preferences and accurately marks real integrations as unavailable.' },
+        { feature: 'Example schedule', reason: 'The browser renders fictional sample dates locally; it does not read or create saved schedules.' },
+        { feature: 'Discard changes', reason: 'The revised browser-only state contract can restore the saved preference snapshot.' },
+      ],
+      copy: [{ feature: 'These settings change only the fictional example on this page.', reason: 'The current scheduler does not consume the saved browser preferences.' }],
     },
   },
   'voice-autofill': {
@@ -403,9 +420,9 @@ const ROUTE_CONTRACTS = {
   },
   'filled-templates': {
     source_heading: 'Your Filled Templates',
-    heading: 'Your Filled Templates', text: ['Sample Patient', 'Template Name:', 'Filled on:'], buttons: ['Delete'],
-    fields: ['action','record_id'], destinations: ['/dashboard'],
-    accepted: ['Source Form Data is visible by default; Django renders the same account-owned answers in the same initial state and uses browser-local time formatting for the saved timestamp.', 'The source Back to Dashboard button and empty-state Choose a Template action use React navigation handlers; Django exposes the equivalent destinations as local links. The source delete icon maps to the Django Delete button and adds a confirmation before the server-side delete. Browser examples are distinguished from hosted persistence evidence.'],
+    heading: 'Saved forms', buttons: ['View form', 'Download JSON', 'Delete', 'Back to Dashboard'],
+    fields: ['action','record_id'], destinations: ['/dashboard','/filledtemplates?record=55555555-5555-4555-8555-555555555555','/filledtemplates?download=55555555-5555-4555-8555-555555555555'],
+    accepted: ['Saved-form cards use owner-scoped summaries; answer values are shown only after opening the exact record or downloading its JSON.', 'The list supports bounded server pagination and POST/redirect/GET deletion. Browser fixtures are synthetic and do not prove hosted persistence.'],
     source_sections: ['Form Data:'],
     source_controls: ['Delete Template', 'Back to Dashboard'],
     source_destinations: [],
@@ -421,30 +438,26 @@ const ROUTE_CONTRACTS = {
   },
   'activity-log': {
     source_heading: 'Activity Log',
-    heading: 'Activity Log', fields: ['q','type','range'], buttons: ['Refresh'], destinations: ['/dashboard'],
-    accepted: ['Generic source Delete icons map to Django row-specific accessible labels; synthetic journeys verify row deletion. Source Download and Continue controls remain visibly unavailable because their source actions have no implementation. The feed remains local browser data and is not represented as a server audit log.'],
+    heading: 'Activity Log', sections: ['Activity entries'], fields: ['q','type','range','event_id'], buttons: ['Refresh','Apply filters','Remove from activity'], destinations: ['/dashboard','/filledtemplates?record=55555555-5555-4555-8555-555555555555','/templates?focus=33333333-3333-4333-8333-333333333333#template-33333333-3333-4333-8333-333333333333','/scheduler?edit=44444444-4444-4444-8444-444444444444'],
+    text: ['Actions saved by your account','This is a personal activity history'],
+    accepted: ['The active page now renders owner-scoped database events with GET filters and CSRF-protected removal. Browser fixtures exercise page behavior only; the local PostgreSQL acceptance check proves triggers, RLS, and transaction behavior.'],
     source_sections: ['Activity Log'],
     source_controls: ['Refresh', 'Download', 'Continue', 'Delete'],
     source_destinations: ['/dashboard'],
     source_copy: ['View all your recent activity and actions', 'Showing your recent activity and actions'],
     field_label_map: { 'Search activity...': 'Search activity' },
     control_map: {
-      Download: 'Download (unavailable)',
-      Continue: 'Continue (unavailable)',
-      Delete: 'Delete Patient Intake - John Smith',
+      Download: 'Download JSON',
+      Continue: 'View saved form',
+      Delete: 'Remove from activity',
     },
     target_only: {
       controls: [
-        { feature: 'Delete Alex Chen joined your team', reason: 'The Django activity feed gives each synthetic row-delete control a descriptive accessible name.' },
-        { feature: 'Delete Employee Onboarding - Maria Garcia', reason: 'The Django activity feed gives each synthetic row-delete control a descriptive accessible name.' },
-        { feature: 'Delete HR Onboarding Template', reason: 'The Django activity feed gives each synthetic row-delete control a descriptive accessible name.' },
-        { feature: 'Delete Patient Intake Form shared', reason: 'The Django activity feed gives each synthetic row-delete control a descriptive accessible name.' },
-        { feature: 'Delete Safety Inspection Checklist reviewed', reason: 'The Django activity feed gives each synthetic row-delete control a descriptive accessible name.' },
-        { feature: 'Delete Safety Inspection Report', reason: 'The Django activity feed gives each synthetic row-delete control a descriptive accessible name.' },
         { feature: 'Back to dashboard', reason: 'The Django activity view adds a direct dashboard return link.' },
-        { feature: 'Filters are unavailable', reason: 'The source shows an inactive filter-options icon; Django gives that no-op control an accessible unavailable label.' },
+        { feature: 'Open template', reason: 'Activity entries link to templates only while the current account can still access them.' },
+        { feature: 'Open schedule', reason: 'Activity entries link to schedules only while the current account can still access them.' },
       ],
-      copy: [{ feature: 'This page uses the existing local activity feed; it is not a server audit log.', reason: 'The Django activity view explains the boundary between local activity examples and server audit data.' }],
+      copy: [{ feature: 'Actions you save will appear here.', reason: 'The server-backed activity page provides an honest empty state.' }],
     },
   },
 };
@@ -890,7 +903,7 @@ async function capture(browser, [slug, route, expectedStatus], viewport) {
   assert.equal(info.has_react_bootstrap, false, `${route} must not load the React bundle`);
   if (expectedStatus === 200) assert.ok(info.heading, `${route} should render its heading`);
   if (route === '/filledtemplates' && expectedStatus === 200) {
-    const templateTitle = page.locator('article.card > .text-lg').first();
+    const templateTitle = page.locator('article.card .text-lg').first();
     try {
       await templateTitle.waitFor({ state: 'visible', timeout: 5000 });
     } catch (error) {
@@ -913,23 +926,36 @@ async function capture(browser, [slug, route, expectedStatus], viewport) {
       }));
       throw new Error(`Filled Templates initial title was not visible: ${JSON.stringify(state)}; ${error.message}`);
     }
-    assert.equal(await templateTitle.innerText(), 'Template Name: Patient intake');
+    assert.equal(await templateTitle.innerText(), 'Patient intake');
   }
 
   const screenshot = `${slug}-${viewport.name}.png`;
   await page.screenshot({ path: path.join(output, screenshot), fullPage: false });
   const djangoMarkup = await page.content();
   const djangoDigest = crypto.createHash('sha256').update(djangoMarkup).digest('hex');
-  const sourceMarkup = await fs.readFile(path.join(sourceOutput, `${slug}-${viewport.name}.html`), 'utf8');
-  const sourceDigest = crypto.createHash('sha256').update(sourceMarkup).digest('hex');
-  const sourceCapturePage = sourceReferencePages.find((item) =>
+  const sourceMarkup = currentOnly ? '' : await fs.readFile(path.join(sourceOutput, `${slug}-${viewport.name}.html`), 'utf8');
+  const sourceDigest = currentOnly ? null : crypto.createHash('sha256').update(sourceMarkup).digest('hex');
+  const sourceCapturePage = currentOnly ? null : sourceReferencePages.find((item) =>
     new URL(item.route, baseUrl).pathname === new URL(route, baseUrl).pathname
       && item.viewport?.name === viewport.name,
   );
-  assert.ok(sourceCapturePage, `${route} ${viewport.name} must exist in source run ${referenceRun}`);
-  assert.equal(sourceCapturePage.source_html_sha256, sourceDigest,
-    `${route} ${viewport.name} source HTML does not match the recorded source-run digest`);
-  const sourceInfo = await page.evaluate((markup) => {
+  if (!currentOnly) {
+    assert.ok(sourceCapturePage, `${route} ${viewport.name} must exist in source run ${referenceRun}`);
+    assert.equal(sourceCapturePage.source_html_sha256, sourceDigest,
+      `${route} ${viewport.name} source HTML does not match the recorded source-run digest`);
+  }
+  const sourceInfo = currentOnly ? {
+    heading: null,
+    section_headings: [],
+    field_names: [],
+    field_descriptors: [],
+    button_labels: [],
+    link_labels: [],
+    label_texts: [],
+    local_destinations: [],
+    text: '',
+    copy_blocks: [],
+  } : await page.evaluate((markup) => {
     const parsed = new DOMParser().parseFromString(markup, 'text/html');
     const target = parsed.querySelector('main') || parsed.querySelector('#root') || parsed.body;
     target.querySelectorAll('script,style,svg,.sr-only,[aria-hidden="true"]').forEach((item) => item.remove());
@@ -1048,12 +1074,14 @@ async function capture(browser, [slug, route, expectedStatus], viewport) {
   });
   const contract = ROUTE_CONTRACTS[slug];
   assert.ok(contract, `A route contract must be registered for ${slug}`);
-  if (contract.source_heading) {
+  if (!currentOnly && contract.source_heading) {
     assert.equal(sourceInfo.heading, contract.source_heading, `${route} source heading changed without a reviewed contract`);
   }
   assertRouteContract({ ...djangoInfo, heading: info.heading }, contract, `${route} (${viewport.name})`);
-  assertSourceRouteContract(sourceInfo, { ...djangoInfo, heading: info.heading }, contract, `${route} (${viewport.name})`);
-  if (viewport.name === 'desktop' && ['dashboard', 'scheduler-settings'].includes(slug)) {
+  if (!currentOnly && !['filled-templates', 'activity-log'].includes(slug)) {
+    assertSourceRouteContract(sourceInfo, { ...djangoInfo, heading: info.heading }, contract, `${route} (${viewport.name})`);
+  }
+  if (!currentOnly && viewport.name === 'desktop' && ['dashboard', 'scheduler-settings'].includes(slug)) {
     results.negative_control_checks.push(checkRealRouteNegativeControls(
       sourceInfo,
       { ...djangoInfo, heading: info.heading },
@@ -1067,8 +1095,8 @@ async function capture(browser, [slug, route, expectedStatus], viewport) {
     passed: true,
     source_html_sha256: sourceDigest,
     django_html_sha256: djangoDigest,
-    source_run_id: referenceRun,
-    source_worktree_digest: sourceReferenceManifest.source_provenance.worktree_digest,
+    source_run_id: currentOnly ? null : referenceRun,
+    source_worktree_digest: currentOnly ? null : sourceReferenceManifest.source_provenance.worktree_digest,
     source_heading: sourceInfo.heading,
     expected_heading: contract.heading,
     required_sections: contract.sections || [],
@@ -1155,34 +1183,43 @@ async function capture(browser, [slug, route, expectedStatus], viewport) {
   });
 
   if (wave === 'w4') {
-    const activityKey = await page.evaluate(() => {
-      const key = document.querySelector('[data-dashboard-activity-key]')?.dataset.dashboardActivityKey;
-      if (!key) throw new Error('The current-account dashboard history key is missing.');
-      localStorage.setItem(key, JSON.stringify([
-        { id: 'current-user-form', type: 'form_started', title: 'Synthetic browser-local form', time: new Date().toISOString(), user: 'Synthetic' },
+    await page.setExtraHTTPHeaders({ 'X-P7-Fixture-Reset': '1' });
+    await page.goto(baseUrl + '/dashboard', { waitUntil: 'domcontentloaded' });
+    await page.evaluate(() => {
+      localStorage.setItem('voiceform_activity_11111111-1111-4111-8111-111111111111', JSON.stringify([
+        { id: 'fake', type: 'form_started', title: 'Fake browser-local form', time: new Date().toISOString() },
       ]));
       localStorage.setItem('recentActivity', JSON.stringify([
-        { type: 'form_started', title: 'Unscoped prior-account form', time: new Date().toISOString() },
+        { id: 'old', type: 'form_completed', title: 'Unscoped fake form', time: new Date().toISOString() },
       ]));
-      localStorage.setItem('voiceform_activity_99999999-9999-4999-8999-999999999999', JSON.stringify([
-        { id: 'unrelated-account-form', type: 'form_started', title: 'Unrelated account form', time: new Date().toISOString(), user: 'Other account' },
-      ]));
-      return key;
     });
     await page.reload({ waitUntil: 'domcontentloaded' });
-    const activityRow = page.locator('[data-dashboard-recent-forms] li').filter({ hasText: 'Synthetic browser-local form' });
-    assert.equal(await activityRow.count(), 1);
-    assert.equal(await page.getByText('Unscoped prior-account form').count(), 0);
-    assert.equal(await page.getByText('Unrelated account form').count(), 0);
-    assert.equal(await activityRow.getByRole('link', { name: 'Resume' }).getAttribute('href'), '/AIVoiceAutoFill');
-    results.interactions.push({ route: '/dashboard', state: `reads populated current-account history, ignores other-account and unscoped data, and uses a fixed resume destination at ${viewport.name}` });
-    await page.evaluate((key) => localStorage.setItem(key, JSON.stringify([])), activityKey);
-    await page.reload({ waitUntil: 'domcontentloaded' });
-    assert.equal(await page.locator('[data-dashboard-recent-forms] li').count(), 0);
-    await page.getByText('No recent forms yet. Start a voice form to see it here.', { exact: true }).waitFor();
-    results.interactions.push({ route: '/dashboard', state: `empty current-account history shows its start-voice guidance at ${viewport.name}` });
-  }
+    const savedForm = page.locator('a[href="/filledtemplates?record=55555555-5555-4555-8555-555555555555"]');
+    await savedForm.waitFor();
+    assert.equal(await savedForm.count(), 1);
+    assert.equal(await page.getByText('Patient intake', { exact: true }).count() > 0, true);
+    assert.equal(await page.getByText('Fake browser-local form').count(), 0);
+    assert.equal(await page.getByText('Unscoped fake form').count(), 0);
+    assert.equal(await page.locator('[data-dashboard-recent-forms]').count(), 0);
+    results.interactions.push({
+      route: '/dashboard',
+      state: 'Recent Forms shows the saved database record and exact-record link; localStorage examples have no effect',
+    });
 
+    await page.setExtraHTTPHeaders({ 'X-P11-Recent-Forms-Empty': '1' });
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await page.getByText('No saved forms yet. Start a voice form to see it here.', { exact: true }).waitFor();
+
+    await page.setExtraHTTPHeaders({ 'X-P9-Filled-Error': '1' });
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await page.getByRole('alert').getByText('Recent forms are temporarily unavailable.', { exact: true }).waitFor();
+    assert.equal(await page.getByText('No saved forms yet. Start a voice form to see it here.', { exact: true }).count(), 0);
+    results.interactions.push({
+      route: '/dashboard',
+      state: 'empty and unavailable saved-form queries render separate honest states',
+    });
+    await page.setExtraHTTPHeaders({});
+  }
   if (wave === 'w4' && viewport.name === 'desktop') {
 
     await page.getByRole('link', { name: 'Settings', exact: true }).click();
@@ -1231,41 +1268,49 @@ async function capture(browser, [slug, route, expectedStatus], viewport) {
     await useTemplate.focus();
     await page.keyboard.press('Enter');
     await page.waitForURL(/\/AIVoiceAutoFill\?template=/);
-    await page.getByRole('heading', { name: 'Review form fields' }).waitFor();
-    await page.getByRole('button', { name: 'Send to assistant' }).waitFor();
+    await page.getByRole('heading', { name: 'Your draft form' }).waitFor();
+    await page.getByRole('button', { name: 'Send', exact: true }).waitFor();
     await page.screenshot({ path: path.join(output, `voice-autofill-selected-${viewport.name}.png`), fullPage: false });
     results.interactions.push({ route: '/AIVoiceAutoFill', state: `keyboard Enter activates the selected synthetic template chooser link and exposes the review, assistant, recorder, and save paths at ${viewport.name}` });
   }
   if (wave === 'w7' && slug === 'filled-templates') {
-    const savedCard = page.locator('article.card').filter({ hasText: 'Sample Patient' });
+    const savedCard = page.locator('article.card').filter({ hasText: 'Patient intake' });
     await savedCard.waitFor();
-    await savedCard.getByRole('heading', { name: 'Form Data:' }).waitFor();
-    await savedCard.locator('li').filter({ hasText: 'Sample Patient' }).waitFor();
     const renderedDate = await savedCard.locator('[data-local-datetime]').textContent();
     const expectedDate = await savedCard.locator('[data-local-datetime]').evaluate((element) => new Date(element.dateTime).toLocaleString());
     assert.equal(renderedDate, expectedDate, 'saved dates should use the same browser-local formatting as the React source page');
-    assert.equal(await savedCard.locator('details').count(), 0, 'saved answers remain visible in the initial state without an extra disclosure control');
+    await savedCard.getByRole('link', { name: 'View form' }).click();
+    await page.waitForURL(/\/filledtemplates\?record=/);
+    await page.getByText('"Sample Patient"', { exact: true }).waitFor();
+    const [savedDownload] = await Promise.all([
+      page.waitForEvent('download'),
+      page.getByRole('link', { name: 'Download JSON' }).click(),
+    ]);
+    const savedDownloadPath = await savedDownload.path();
+    assert.ok(savedDownloadPath, 'saved-form download should produce readable JSON bytes');
+    const savedPayload = JSON.parse(await fs.readFile(savedDownloadPath, 'utf8'));
+    assert.equal(savedPayload.form_data.patient_name, 'Sample Patient');
     page.once('dialog', (dialog) => dialog.accept());
-    const deleteSavedForm = savedCard.getByRole('button', { name: 'Delete' });
+    const deleteSavedForm = page.getByRole('button', { name: 'Delete form' });
     await deleteSavedForm.focus();
     await page.keyboard.press('Enter');
     await page.getByRole('status').getByText('Filled form deleted.').waitFor();
-    await page.getByRole('heading', { name: 'No filled templates found' }).waitFor();
-    assert.equal(await page.locator('article.card').filter({ hasText: 'Sample Patient' }).count(), 0);
+    await page.getByRole('heading', { name: 'No saved forms yet' }).waitFor();
+    assert.equal(await page.locator('article.card').filter({ hasText: 'Patient intake' }).count(), 0);
     await page.screenshot({ path: path.join(output, `filled-templates-empty-${viewport.name}.png`), fullPage: false });
-    const chooseTemplate = page.getByRole('link', { name: 'Choose a Template' });
+    const chooseTemplate = page.getByRole('link', { name: 'Choose a template' });
     await chooseTemplate.focus();
     await page.keyboard.press('Enter');
     await page.waitForURL('**/templates');
     await page.getByRole('heading', { name: 'Templates', exact: true }).waitFor();
-    results.interactions.push({ route: '/filledtemplates', state: 'saved answers and browser-local timestamp match the source initial state; confirmed keyboard delete reaches the empty state, and Choose a Template returns to /templates by keyboard' });
+    results.interactions.push({ route: '/filledtemplates', state: 'summary opens the exact saved record, JSON download preserves stored answers, and confirmed deletion returns to an honest empty state' });
   }
   if (wave === 'w7' && slug === 'filled-templates') {
     await page.setExtraHTTPHeaders({ 'X-P9-Filled-Error': '1' });
     const unavailableResponse = await page.goto(`${baseUrl}/filledtemplates`, { waitUntil: 'domcontentloaded' });
     assert.equal(unavailableResponse?.status(), 200);
     await page.getByRole('alert').getByText('Filled forms are temporarily unavailable.').waitFor();
-    await page.getByRole('heading', { name: 'No filled templates found' }).waitFor();
+    assert.equal(await page.getByRole('heading', { name: 'No saved forms yet' }).count(), 0);
     assert.equal(await page.locator('article.card').count(), 0);
     await page.screenshot({ path: path.join(output, `filled-templates-error-${viewport.name}.png`), fullPage: false });
     results.interactions.push({ route: '/filledtemplates', state: `synthetic listing failure displays safe recovery feedback and an empty state at ${viewport.name}` });
@@ -2010,190 +2055,231 @@ async function capture(browser, [slug, route, expectedStatus], viewport) {
   }
   if (wave === 'w6' && slug === 'scheduler-settings' && viewport.name === 'mobile') {
     const tabs = page.getByRole('tab');
-    assert.equal(await tabs.count(), 6);
-    for (const name of ['General', 'Notifications', 'Calendar', 'Privacy', 'Appearance', 'Integrations']) {
-      assert.equal(await page.getByRole('tab', { name }).isVisible(), true, `${name} settings tab must be visible on mobile`);
+    const tabNames = ['Scheduling', 'Calendar display', 'Notifications', 'Connections & privacy'];
+    assert.equal(await tabs.count(), tabNames.length);
+    assert.equal(await page.getByRole('tablist').getAttribute('aria-orientation'), 'horizontal');
+    for (const name of tabNames) {
+      assert.equal(await page.getByRole('tab', { name }).isVisible(), true, name + ' section must be visible on mobile');
     }
-    const generalTab = page.getByRole('tab', { name: 'General' });
-    await generalTab.focus();
-    for (const name of ['Notifications', 'Calendar', 'Privacy', 'Appearance', 'Integrations']) {
+    const firstTab = page.getByRole('tab', { name: tabNames[0] });
+    await firstTab.focus();
+    for (const name of tabNames.slice(1)) {
       await page.keyboard.press('ArrowRight');
-      assert.equal(await page.evaluate(() => document.activeElement?.textContent?.trim()), name, `${name} should be reachable with mobile arrow-key navigation`);
+      assert.equal(await page.evaluate(() => document.activeElement?.textContent?.trim()), name);
       assert.equal(await page.getByRole('tab', { name }).getAttribute('aria-selected'), 'true');
     }
-    assert.equal(await page.locator('[data-settings-panel="integrations"]').isVisible(), true);
+    assert.equal(await page.locator('[data-settings-panel="connections"]').isVisible(), true);
     await page.keyboard.press('ArrowRight');
-    assert.equal(await page.evaluate(() => document.activeElement?.textContent?.trim()), 'General', 'mobile arrow-key navigation should wrap to the first tab');
-    assert.equal(await generalTab.getAttribute('aria-selected'), 'true');
+    assert.equal(await page.evaluate(() => document.activeElement?.textContent?.trim()), tabNames[0], 'mobile tab movement should wrap');
+    assert.equal(await firstTab.getAttribute('aria-selected'), 'true');
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth), true);
-    results.interactions.push({ route: '/scheduler-settings', state: 'all six settings tabs remain visible, selectable, and within the mobile viewport' });
+    await page.screenshot({ path: path.join(output, 'scheduler-settings-mobile.png'), fullPage: false });
+    results.interactions.push({ route: '/scheduler-settings', viewport: 'mobile', state: 'four responsive settings sections are visible, selectable by horizontal arrow keys, and fit the viewport' });
   }
   if (wave === 'w6' && slug === 'scheduler-settings' && viewport.name === 'desktop') {
-    const tabNames = ['General', 'Notifications', 'Calendar', 'Privacy', 'Appearance', 'Integrations'];
+    const tabNames = ['Scheduling', 'Calendar display', 'Notifications', 'Connections & privacy'];
+    const tabs = page.getByRole('tab');
+    assert.equal(await tabs.count(), tabNames.length);
+    assert.equal(await page.getByRole('tablist').getAttribute('aria-orientation'), 'vertical');
     for (const name of tabNames) {
       const tab = page.getByRole('tab', { name });
       await tab.click();
       assert.equal(await tab.getAttribute('aria-selected'), 'true');
-      assert.equal(await page.locator(`[data-settings-panel="${name.toLowerCase()}"]`).isVisible(), true);
+      const panelId = await tab.getAttribute('aria-controls');
+      assert.equal(await page.locator('#' + panelId).isVisible(), true);
+      assert.equal(await tab.getAttribute('id'), await page.locator('#' + panelId).getAttribute('aria-labelledby'));
     }
-    await page.getByRole('tab', { name: 'General' }).click();
-    await page.getByRole('tab', { name: 'General' }).focus();
-    await page.keyboard.press('ArrowRight');
-    assert.equal(await page.getByRole('tab', { name: 'Notifications' }).getAttribute('aria-selected'), 'true');
-    assert.equal(await page.locator('[data-settings-panel="notifications"]').isVisible(), true);
+    const scheduleTab = page.getByRole('tab', { name: 'Scheduling' });
+    await scheduleTab.focus();
+    await page.keyboard.press('ArrowDown');
+    assert.equal(await page.getByRole('tab', { name: 'Calendar display' }).getAttribute('aria-selected'), 'true');
     await page.keyboard.press('Home');
-    assert.equal(await page.getByRole('tab', { name: 'General' }).getAttribute('aria-selected'), 'true');
+    assert.equal(await scheduleTab.getAttribute('aria-selected'), 'true');
     await page.keyboard.press('End');
-    assert.equal(await page.getByRole('tab', { name: 'Integrations' }).getAttribute('aria-selected'), 'true');
-    await page.keyboard.press('ArrowRight');
-    assert.equal(await page.getByRole('tab', { name: 'General' }).getAttribute('aria-selected'), 'true');
-    await page.keyboard.press('Home');
-    assert.deepEqual(
-      await page.locator('[data-settings-panel="general"] h2, [data-settings-panel="general"] h3, [data-settings-panel="general"] legend').allTextContents(),
-      ['General Settings', 'Working Hours', 'Working Days'],
-    );
-    const expectedUserId = await page.locator('[data-settings-key]').getAttribute('data-settings-user-id');
-    const settingsKey = await page.locator('[data-settings-key]').getAttribute('data-settings-key');
-    const duration = page.locator('[data-setting="defaultDuration"]');
-    await duration.fill('45');
-    await page.locator('[data-setting="timezone"]').selectOption('Europe/London');
-    await page.locator('[data-settings-save]').focus();
-    await page.keyboard.press('Enter');
-    assert.equal(await page.locator('[data-settings-status]').innerText(), 'Settings saved in this browser.');
-    let stored = JSON.parse(await page.evaluate((key) => localStorage.getItem(key), settingsKey));
-    assert.equal(stored.defaultDuration, 45);
-    assert.equal(stored.timezone, 'Europe/London');
-    await page.reload({ waitUntil: 'domcontentloaded' });
-    assert.equal(await page.locator('[data-setting="defaultDuration"]').inputValue(), '45');
+    assert.equal(await page.getByRole('tab', { name: 'Connections & privacy' }).getAttribute('aria-selected'), 'true');
+    await page.keyboard.press('ArrowDown');
+    assert.equal(await scheduleTab.getAttribute('aria-selected'), 'true');
+    await scheduleTab.click();
 
-    await page.locator('[data-settings-reset]').focus();
-    await page.keyboard.press('Space');
+    const keyElement = page.locator('[data-settings-key]');
+    const settingsKey = await keyElement.getAttribute('data-settings-key');
+    assert.match(settingsKey, /^scheduler_settings_/);
+    assert.equal(await keyElement.getAttribute('data-settings-user-id'), null, 'the DOM and exported preferences must not expose an account identifier');
+    assert.equal(await page.locator('[data-settings-status]').isVisible(), true, 'save and error feedback must be visible');
+    assert.equal(await page.locator('[data-settings-dirty]').isVisible(), false);
+    assert.equal(await page.locator('[data-settings-save]').isDisabled(), true);
     assert.equal(await page.locator('[data-setting="defaultDuration"]').inputValue(), '60');
-    await page.locator('[data-settings-save]').focus();
-    await page.keyboard.press('Enter');
-    assert.equal(JSON.parse(await page.evaluate((key) => localStorage.getItem(key), settingsKey)).defaultDuration, 60);
 
-    const importedSettings = {
-      defaultDuration: 75,
-      timezone: 'Europe/London',
-      workingDays: ['monday', 'wednesday', 'friday'],
-    };
-    await page.locator('[data-settings-import]').setInputFiles({
-      name: 'scheduler-settings.json',
-      mimeType: 'application/json',
-      buffer: Buffer.from(JSON.stringify({ user_id: expectedUserId, settings: importedSettings })),
+    const serviceRequests = [];
+    page.on('request', (request) => {
+      if (['fetch', 'xhr'].includes(request.resourceType())) serviceRequests.push(request.url());
     });
-    await page.getByText('Settings imported into this form. Save settings to keep them.').waitFor();
-    assert.equal(await page.locator('[data-setting="defaultDuration"]').inputValue(), '75');
+    assert.equal(await page.evaluate((key) => localStorage.getItem(key), settingsKey), null);
+    assert.equal(await page.locator('[data-settings-status]').innerText(), 'Using local defaults. Changes preview only.');
+    await page.screenshot({ path: path.join(output, 'scheduler-settings-desktop.png'), fullPage: false });
+
+    await page.locator('[data-setting="defaultDuration"]').fill('75');
+    await page.locator('[data-setting="defaultReminderMinutes"]').selectOption('0');
+    await page.locator('[data-setting="workingHours.start"]').fill('10:00');
+    await page.locator('[data-setting="workingHours.end"]').fill('16:00');
+    for (const day of ['tuesday', 'wednesday', 'thursday', 'friday']) {
+      await page.locator('[data-setting-array="workingDays"][value="' + day + '"]').uncheck();
+    }
+    assert.equal(await page.locator('[data-settings-dirty]').isVisible(), true);
+    assert.equal(await page.evaluate(() => {
+      const event = new Event('beforeunload', { cancelable: true });
+      window.dispatchEvent(event);
+      return event.defaultPrevented;
+    }), true, 'a dirty draft warns before leaving the page');
+    assert.match(await page.locator('[data-preview-event-time]').innerText(), /1 hr 15 min/);
+    assert.equal(await page.locator('[data-preview-reminder]').innerText(), 'No reminder in this example');
+    assert.equal(await page.locator('[data-preview-hours]').innerText(), '10:00–16:00');
+    assert.equal(await page.evaluate((key) => localStorage.getItem(key), settingsKey), null,
+      'editing updates the fictional preview but not saved browser state');
+
+    await page.getByRole('tab', { name: 'Calendar display' }).click();
+    await page.locator('[data-setting="defaultView"]').selectOption('week');
+    assert.equal(await page.locator('[data-preview-title]').innerText(), 'Example week');
+    assert.equal(await page.locator('[data-preview-weekdays] span').first().innerText(), 'MO');
+    await page.locator('[data-setting="weekStartsOn"]').selectOption('0');
+    assert.equal(await page.locator('[data-preview-weekdays] span').first().innerText(), 'SU');
+    await page.locator('[data-setting="showWeekends"]').uncheck();
+    assert.equal(await page.locator('[data-preview-weekdays] span').count(), 5);
+    assert.equal(await page.locator('[data-preview-calendar] > div').count(), 5,
+      'disabling weekends should remove weekend columns from the sample week');
+    await page.locator('[data-setting="compactView"]').check();
+    assert.equal(await page.locator('[data-preview-event]').evaluate((element) => element.classList.contains('p-2')), true);
+
+    await page.getByRole('tab', { name: 'Notifications' }).click();
+    assert.equal(await page.getByText('Email reminders', { exact: true }).count(), 1);
+    assert.equal(await page.getByText('Unavailable', { exact: true }).count(), 4);
+    assert.equal(await page.locator('[data-setting^="email"],[data-setting^="push"],[data-setting^="google"],[data-setting^="outlook"]').count(), 0);
+    await page.getByRole('tab', { name: 'Connections & privacy' }).click();
+    assert.equal(await page.getByText('Not connected', { exact: true }).count(), 2);
+
     await page.locator('[data-settings-save]').focus();
     await page.keyboard.press('Enter');
-    stored = JSON.parse(await page.evaluate((key) => localStorage.getItem(key), settingsKey));
-    assert.deepEqual(stored.workingDays, ['monday', 'wednesday', 'friday']);
+    assert.equal(await page.locator('[data-settings-status]').innerText(), 'Settings saved in this browser on this device.');
+    assert.equal(await page.evaluate(() => {
+      const event = new Event('beforeunload', { cancelable: true });
+      window.dispatchEvent(event);
+      return event.defaultPrevented;
+    }), false, 'a saved draft no longer warns before leaving');
+    let stored = JSON.parse(await page.evaluate((key) => localStorage.getItem(key), settingsKey));
+    assert.equal(stored.schema_version, 1);
+    assert.deepEqual(Object.keys(stored).sort(), ['schema_version', 'settings']);
+    assert.equal(stored.settings.defaultDuration, 75);
+    assert.equal(stored.settings.defaultReminderMinutes, 0);
+    assert.equal(stored.settings.workingHours.start, '10:00');
+    assert.deepEqual(stored.settings.workingDays, ['monday']);
+    assert.equal(stored.settings.weekStartsOn, 0);
+    assert.equal(stored.settings.compactView, true);
+    assert.deepEqual(serviceRequests, [], 'Settings save must not call scheduler, activity, or provider services');
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    assert.equal(await page.locator('[data-setting="defaultDuration"]').inputValue(), '75');
+    assert.equal(await page.locator('[data-settings-status]').innerText(), 'Saved settings loaded from this browser. Changes preview only.');
+    assert.equal(await page.locator('[data-preview-title]').innerText(), 'Example week');
 
+    await page.locator('[data-setting-array="workingDays"][value="monday"]').uncheck();
+    assert.equal(await page.locator('[data-preview-days]').innerText(), 'No working days selected');
+    assert.match(await page.locator('[data-preview-event-time]').innerText(), /No sample event/);
+    assert.equal(await page.locator('[data-preview-calendar] .bg-blue-700').count(), 0,
+      'an empty workweek should show availability without inventing an event');
+    assert.equal(await page.evaluate((key) => JSON.parse(localStorage.getItem(key)).settings.workingDays.length, settingsKey), 1);
+    await page.locator('[data-settings-discard]').click();
+    assert.equal(await page.locator('[data-preview-days]').innerText(), 'Monday');
+
+    await page.locator('[data-settings-import]').setInputFiles({
+      name: 'legacy-wrapper.json',
+      mimeType: 'application/json',
+      buffer: Buffer.from(JSON.stringify({ exported_at: '2026-01-01T00:00:00Z', user_id: 'another-account', settings: { defaultDuration: 105, workingDays: [] } })),
+    });
+    await page.getByText('Settings imported into the draft. Review it, then save to keep the changes.').waitFor();
+    assert.equal(await page.locator('[data-setting="defaultDuration"]').inputValue(), '105');
+    assert.equal(await page.locator('[data-preview-days]').innerText(), 'No working days selected');
+    assert.equal(JSON.parse(await page.evaluate((key) => localStorage.getItem(key), settingsKey)).settings.defaultDuration, 75,
+      'an import must leave saved settings unchanged until Save');
+    await page.locator('[data-settings-save]').click();
+    stored = JSON.parse(await page.evaluate((key) => localStorage.getItem(key), settingsKey));
+    assert.equal(stored.settings.defaultDuration, 105);
+    assert.deepEqual(stored.settings.workingDays, []);
+
+    await page.locator('[data-settings-import]').setInputFiles({
+      name: 'legacy-raw.json',
+      mimeType: 'application/json',
+      buffer: Buffer.from(JSON.stringify({ defaultDuration: 90, defaultView: 'week', timezone: 'America/New_York' })),
+    });
+    await page.getByText('Settings imported into the draft. Review it, then save to keep the changes.').waitFor();
+    assert.equal(await page.locator('[data-setting="defaultDuration"]').inputValue(), '90');
+    assert.equal(await page.locator('[data-setting="defaultView"]').inputValue(), 'week');
+    const beforeExport = JSON.parse(await page.evaluate((key) => localStorage.getItem(key), settingsKey));
+    const [download] = await Promise.all([
+      page.waitForEvent('download'),
+      page.locator('[data-settings-export]').click(),
+    ]);
+    const downloadPath = await download.path();
+    assert.ok(downloadPath, 'settings export should produce readable bytes');
+    const exported = JSON.parse(await fs.readFile(downloadPath, 'utf8'));
+    assert.deepEqual(Object.keys(exported).sort(), ['schema_version', 'settings']);
+    assert.equal(exported.schema_version, 1);
+    assert.equal(exported.settings.defaultDuration, 90, 'export should use the current draft');
+    assert.equal(exported.settings.defaultView, 'week');
+    assert.equal(Object.hasOwn(exported, 'user_id'), false);
+    assert.equal(Object.hasOwn(exported.settings, 'timezone'), false, 'retired legacy settings are not re-exported');
+    assert.deepEqual(JSON.parse(await page.evaluate((key) => localStorage.getItem(key), settingsKey)), beforeExport,
+      'export must not persist the draft');
+
+    const beforeInvalidDraft = await page.locator('[data-setting="defaultDuration"]').inputValue();
+    const savedBeforeInvalid = await page.evaluate((key) => localStorage.getItem(key), settingsKey);
     await page.locator('[data-settings-import]').setInputFiles({
       name: 'invalid-settings.json',
       mimeType: 'application/json',
-      buffer: Buffer.from('{'),
-    });
-    await page.waitForFunction(() => /JSON|property|position/i.test(document.querySelector('[data-settings-status]').textContent));
-    await page.locator('[data-settings-import]').setInputFiles({
-      name: 'unsupported-settings.json',
-      mimeType: 'application/json',
-      buffer: Buffer.from(JSON.stringify({ settings: { theme: 'cosmic' } })),
-    });
-    await page.getByText('A selected settings option is not supported.', { exact: true }).waitFor();
-
-    const [download] = await Promise.all([
-      page.waitForEvent('download'),
-      page.locator('[data-settings-export]').focus().then(() => page.keyboard.press('Enter')),
-    ]);
-    const downloadPath = await download.path();
-    assert.ok(downloadPath, 'settings export should produce readable downloaded bytes');
-    const exported = JSON.parse(await fs.readFile(downloadPath, 'utf8'));
-    assert.equal(exported.user_id, expectedUserId);
-    assert.equal(exported.settings.defaultDuration, 75);
-    assert.equal(exported.settings.timezone, 'Europe/London');
-    assert.deepEqual(exported.settings.workingDays, ['monday', 'wednesday', 'friday']);
-    assert.equal(await page.locator('[data-settings-status]').innerText(), 'Settings exported.');
-
-    const savedBeforeInvalidValues = await page.evaluate((key) => localStorage.getItem(key), settingsKey);
-    await page.evaluate(() => {
-      window.__settingsExportObjectCount = 0;
-      const createObjectURL = URL.createObjectURL.bind(URL);
-      URL.createObjectURL = (...args) => {
-        window.__settingsExportObjectCount += 1;
-        return createObjectURL(...args);
-      };
-    });
-    await duration.fill('0');
-    await page.locator('[data-settings-save]').click();
-    assert.equal(
-      await page.locator('[data-settings-status]').innerText(),
-      'Default event duration must be a multiple of 15 minutes between 15 and 10080.',
-      'saving a source-invalid duration must be rejected',
-    );
-    assert.equal(await page.evaluate((key) => localStorage.getItem(key), settingsKey), savedBeforeInvalidValues);
-    await page.locator('[data-settings-export]').click();
-    assert.equal(
-      await page.locator('[data-settings-status]').innerText(),
-      'Default event duration must be a multiple of 15 minutes between 15 and 10080.',
-      'exporting a source-invalid duration must be rejected',
-    );
-    assert.equal(await page.evaluate(() => window.__settingsExportObjectCount), 0);
-
-    await page.locator('[data-settings-import]').setInputFiles({
-      name: 'invalid-duration.json',
-      mimeType: 'application/json',
       buffer: Buffer.from(JSON.stringify({ settings: { defaultDuration: 0 } })),
     });
-    await page.getByText('Default event duration must be a multiple of 15 minutes between 15 and 10080.', { exact: true }).waitFor();
-    assert.equal(await page.evaluate((key) => localStorage.getItem(key), settingsKey), savedBeforeInvalidValues);
+    await page.getByText('Choose a duration from 15 to 10,080 minutes in 15-minute steps.', { exact: true }).waitFor();
+    assert.equal(await page.locator('[data-setting="defaultDuration"]').inputValue(), beforeInvalidDraft,
+      'invalid imports must not partially update the draft');
     await page.locator('[data-settings-import]').setInputFiles({
-      name: 'invalid-reminder.json',
+      name: 'future-settings.json',
       mimeType: 'application/json',
-      buffer: Buffer.from(JSON.stringify({ settings: { defaultReminderMinutes: 7 } })),
+      buffer: Buffer.from(JSON.stringify({ schema_version: 2, settings: { defaultDuration: 120 } })),
     });
-    await page.getByText('Choose a supported reminder interval.', { exact: true }).waitFor();
-    assert.equal(await page.evaluate((key) => localStorage.getItem(key), settingsKey), savedBeforeInvalidValues);
-
+    await page.getByText('This settings file uses a newer format. Update VoiceForm before importing it.', { exact: true }).waitFor();
     await page.locator('[data-settings-import]').setInputFiles({
-      name: 'invalid-working-hours.json',
+      name: 'oversized-settings.json',
       mimeType: 'application/json',
-      buffer: Buffer.from(JSON.stringify({ settings: { workingHours: { start: '25:99', end: '17:00' } } })),
+      buffer: Buffer.alloc(100001, 'x'),
     });
-    await page.getByText('Working hours must use valid 24-hour times (HH:MM).', { exact: true }).waitFor();
-    assert.equal(await page.evaluate((key) => localStorage.getItem(key), settingsKey), savedBeforeInvalidValues);
+    await page.getByText('Settings file is too large. Choose a file smaller than 100 KB.', { exact: true }).waitFor();
+    assert.equal(await page.evaluate((key) => localStorage.getItem(key), settingsKey), savedBeforeInvalid);
 
-    await page.reload({ waitUntil: 'domcontentloaded' });
-    await page.locator('[data-setting="workingHours.start"]').fill('');
+    await page.locator('[data-setting="defaultDuration"]').fill('0');
+    assert.equal(await page.locator('[data-settings-error="defaultDuration"]').innerText(), 'Choose a duration from 15 to 10,080 minutes in 15-minute steps.');
     await page.locator('[data-settings-save]').click();
-    assert.equal(
-      await page.locator('[data-settings-status]').innerText(),
-      'Working hours must use valid 24-hour times (HH:MM).',
-      'saving an empty time control must be rejected',
-    );
-    assert.equal(await page.evaluate((key) => localStorage.getItem(key), settingsKey), savedBeforeInvalidValues);
-    await page.reload({ waitUntil: 'domcontentloaded' });
+    assert.equal(await page.locator('[data-settings-status]').innerText(), 'Fix the highlighted fields before saving.');
+    assert.equal(await page.evaluate(() => document.activeElement?.getAttribute('data-setting')), 'defaultDuration');
+    assert.equal(await page.evaluate((key) => localStorage.getItem(key), settingsKey), savedBeforeInvalid);
+    await page.locator('[data-setting="defaultDuration"]').fill('90');
+    await page.locator('[data-setting="workingHours.start"]').fill('18:00');
+    await page.locator('[data-setting="workingHours.end"]').fill('17:00');
+    await page.locator('[data-settings-save]').click();
+    assert.equal(await page.locator('[data-settings-error="workingHours.end"]').innerText(), 'End time must be later than start time.');
+    assert.equal(await page.evaluate(() => document.activeElement?.getAttribute('data-setting')), 'workingHours.end');
+    assert.equal(await page.evaluate((key) => localStorage.getItem(key), settingsKey), savedBeforeInvalid);
+    await page.locator('[data-settings-discard]').click();
+    assert.equal(await page.locator('[data-setting="defaultDuration"]').inputValue(), '105');
+    assert.equal(await page.locator('[data-setting="workingHours.start"]').inputValue(), '10:00');
+    assert.equal(await page.locator('[data-settings-dirty]').isVisible(), false);
 
-    for (const [tabName, controlName] of [
-      ['Notifications', 'emailNotifications'],
-      ['Privacy', 'shareCalendar'],
-      ['Integrations', 'googleCalendarSync'],
-    ]) {
-      await page.getByRole('tab', { name: tabName }).click();
-      await page.locator(`[data-setting="${controlName}"]`).check();
-      await page.locator('[data-settings-save]').click();
-      const preferences = JSON.parse(await page.evaluate((key) => localStorage.getItem(key), settingsKey));
-      assert.equal(preferences[controlName], true, `${controlName} is stored locally`);
-    }
-    results.interactions.push({
-      route: '/scheduler-settings',
-      state: 'all six tabs, account-scoped save/reload/reset, local-only toggles, JSON import/export, and rejection of invalid duration/time values without overwriting stored settings pass',
-      download_name: download.suggestedFilename(),
-      verified_fields: ['user_id', 'defaultDuration', 'timezone', 'workingDays'],
-    });
-    assert.equal(await page.locator('[data-settings-status]').innerText(), 'Settings saved in this browser.');
-    await page.screenshot({ path: path.join(output, 'scheduler-settings-imported-desktop.png'), fullPage: false });
+    await page.locator('[data-setting="defaultDuration"]').fill('90');
+    page.once('dialog', (dialog) => dialog.accept());
+    await page.locator('[data-settings-reset]').click();
+    assert.equal(await page.locator('[data-setting="defaultDuration"]').inputValue(), '60');
+    assert.equal(await page.locator('[data-settings-dirty]').isVisible(), true);
+    assert.equal(await page.evaluate((key) => JSON.parse(localStorage.getItem(key)).settings.defaultDuration, settingsKey), 105,
+      'Reset changes the draft and does not overwrite saved preferences');
+    await page.locator('[data-settings-save]').click();
+    assert.equal(JSON.parse(await page.evaluate((key) => localStorage.getItem(key), settingsKey)).settings.defaultDuration, 60);
 
     const storageContext = await browser.newContext({ viewport });
     const storagePage = await storageContext.newPage();
@@ -2206,120 +2292,143 @@ async function capture(browser, [slug, route, expectedStatus], viewport) {
         },
       });
     });
-    await storagePage.goto(`${baseUrl}/scheduler-settings`, { waitUntil: 'domcontentloaded' });
-    await storagePage.getByText('Saved settings could not be read. Defaults are shown; saving will replace the unreadable value.').waitFor();
+    await storagePage.goto(baseUrl + '/scheduler-settings', { waitUntil: 'domcontentloaded' });
+    await storagePage.getByText(/Saved settings could not be read.*synthetic storage read denied/).waitFor();
+    await storagePage.locator('[data-setting="defaultDuration"]').fill('45');
     await storagePage.locator('[data-settings-save]').click();
-    await storagePage.getByText('synthetic storage write denied', { exact: true }).waitFor();
-    results.interactions.push({ route: '/scheduler-settings', state: 'localStorage read/write failures announce a recoverable error and retain editable defaults' });
+    await storagePage.getByText(/Settings could not be saved.*synthetic storage write denied/).waitFor();
+    assert.equal(await storagePage.locator('[data-setting="defaultDuration"]').inputValue(), '45');
+    assert.equal(await storagePage.locator('[data-settings-dirty]').isVisible(), true);
     await storageContext.close();
+
+    const quotaContext = await browser.newContext({ viewport });
+    const quotaPage = await quotaContext.newPage();
+    await quotaPage.addInitScript(() => {
+      Object.defineProperty(window, 'localStorage', {
+        configurable: true,
+        value: {
+          getItem() { return null; },
+          setItem() { throw new DOMException('synthetic quota limit', 'QuotaExceededError'); },
+        },
+      });
+    });
+    await quotaPage.goto(baseUrl + '/scheduler-settings', { waitUntil: 'domcontentloaded' });
+    await quotaPage.locator('[data-setting="defaultDuration"]').fill('45');
+    await quotaPage.locator('[data-settings-save]').click();
+    await quotaPage.getByText(/QuotaExceededError|synthetic quota limit/).waitFor();
+    assert.equal(await quotaPage.locator('[data-settings-dirty]').isVisible(), true);
+    await quotaContext.close();
+
+    const corruptContext = await browser.newContext({ viewport });
+    const corruptPage = await corruptContext.newPage();
+    await corruptPage.addInitScript(() => {
+      localStorage.setItem('scheduler_settings_11111111-1111-4111-8111-111111111111', '{');
+    });
+    await corruptPage.goto(baseUrl + '/scheduler-settings', { waitUntil: 'domcontentloaded' });
+    await corruptPage.getByText(/Saved settings could not be read/).waitFor();
+    await corruptPage.locator('[data-setting="defaultDuration"]').fill('45');
+    await corruptPage.locator('[data-settings-save]').click();
+    assert.equal(JSON.parse(await corruptPage.evaluate(() => localStorage.getItem('scheduler_settings_11111111-1111-4111-8111-111111111111'))).schema_version, 1,
+      'a corrupt value is replaced only after an explicit successful Save');
+    await corruptContext.close();
+
+    results.interactions.push({
+      route: '/scheduler-settings',
+      viewport: 'desktop',
+      state: 'four accessible sections, every preview control, unsaved/discard/reset, versioned save/reload, both legacy import formats, identity-free draft export, atomic invalid/future/oversized rejection, empty workweek, invalid field focus, corrupt/denied/quota storage recovery, and zero service requests pass',
+      download_name: download.suggestedFilename(),
+      verified_fields: ['defaultDuration', 'defaultReminderMinutes', 'workingHours', 'workingDays', 'defaultView', 'weekStartsOn', 'showWeekends', 'compactView'],
+    });
   }
   if (wave === 'w7' && slug === 'activity-log') {
-    const key = await page.locator('[data-activity-root]').getAttribute('data-activity-key');
-    assert.equal(key, 'voiceform_activity_11111111-1111-4111-8111-111111111111');
-    await page.evaluate((activityKey) => {
-      localStorage.removeItem(activityKey);
-      localStorage.setItem('recentActivity', JSON.stringify([
-        { id: 'other-account', type: 'form_completed', title: 'Prior account private item', time: new Date().toISOString(), user: 'Other' },
+    const rows = page.locator('[data-activity-list] li');
+    assert.equal(await rows.count(), 5);
+    assert.equal(await page.locator('[data-activity-root]').count(), 0);
+    const activityList = page.locator('[data-activity-list]');
+    assert.equal(await activityList.getByText('Forms', { exact: true }).count(), 1);
+    assert.equal(await activityList.getByText('Templates', { exact: true }).count(), 1);
+    assert.equal(await activityList.getByText('Sharing', { exact: true }).count(), 1);
+    assert.equal(await activityList.getByText('Reviews', { exact: true }).count(), 1);
+    assert.equal(await activityList.getByText('Schedules', { exact: true }).count(), 1);
+
+    await page.evaluate(() => {
+      localStorage.setItem('voiceform_activity_11111111-1111-4111-8111-111111111111', JSON.stringify([
+        { id: 'fake', type: 'form_completed', title: 'Fake browser activity', time: new Date().toISOString() },
       ]));
-    }, key);
-    await page.reload({ waitUntil: 'domcontentloaded' });
-    await page.getByRole('heading', { name: 'Patient Intake - John Smith' }).waitFor();
-    assert.equal(await page.getByText('Prior account private item').count(), 0);
-    assert.ok(await page.evaluate((activityKey) => localStorage.getItem(activityKey), key));
-    assert.ok(await page.evaluate(() => localStorage.getItem('recentActivity')));
-    results.interactions.push({ route: '/activitylog', state: `account-scoped activity ignores but preserves unscoped legacy activity data at ${viewport.name}` });
-
-    const xssTitle = '<img src=x onerror="window.__activityXss=true"> Current account record';
-    const items = [
-      { id: 'xss', type: 'form_completed', title: xssTitle, description: 'needle first', time: new Date().toISOString(), user: 'Current account' },
-      { id: 'recent', type: 'form_started', title: 'Recent synthetic record', description: 'needle second', time: new Date(Date.now() - 2 * 86400000).toISOString(), user: 'Current account' },
-      { id: 'old', type: 'template_created', title: 'Older synthetic record', description: 'old item', time: new Date(Date.now() - 8 * 86400000).toISOString(), user: 'Current account' },
-    ];
-    await page.evaluate(({ activityKey, seeded }) => localStorage.setItem(activityKey, JSON.stringify(seeded)), { activityKey: key, seeded: items });
-    await page.reload({ waitUntil: 'domcontentloaded' });
-    const activityRows = page.locator('[data-activity-list] article');
-    await page.waitForFunction(() => document.querySelectorAll('[data-activity-list] article').length === 3);
-    assert.equal(await page.getByRole('heading', { name: xssTitle }).count(), 1);
-    const titleLayout = await page.getByRole('heading', { name: xssTitle }).evaluate((heading) => {
-      const text = heading.getBoundingClientRect();
-      const actions = heading.closest('article')?.querySelector('[data-activity-actions]')?.getBoundingClientRect();
-      return {
-        clientWidth: heading.clientWidth,
-        scrollWidth: heading.scrollWidth,
-        overlapsActions: Boolean(actions && text.left < actions.right && text.right > actions.left && text.top < actions.bottom && text.bottom > actions.top),
-      };
+      localStorage.setItem('recentActivity', JSON.stringify([
+        { id: 'old', type: 'form_completed', title: 'Unscoped fake activity', time: new Date().toISOString() },
+      ]));
     });
-    assert.ok(titleLayout.scrollWidth <= titleLayout.clientWidth + 1, 'untrusted activity titles should wrap inside their column');
-    assert.equal(titleLayout.overlapsActions, false, 'untrusted activity titles should not overlap row actions');
-    assert.equal(await page.locator('[data-activity-list] img').count(), 0);
-    assert.equal(await page.evaluate(() => window.__activityXss || false), false);
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    assert.equal(await page.locator('[data-activity-list] li').count(), 5);
+    assert.equal(await page.getByText('Fake browser activity').count(), 0);
+    assert.equal(await page.getByText('Unscoped fake activity').count(), 0);
 
-    const search = page.locator('[data-activity-filter] [name="q"]');
-    const type = page.locator('[data-activity-filter] [name="type"]');
-    const range = page.locator('[data-activity-filter] [name="range"]');
-    await search.focus();
-    await page.keyboard.type('needle');
-    assert.equal(await activityRows.count(), 2);
-    await type.focus();
-    await page.keyboard.press('ArrowDown');
-    await page.keyboard.press('Tab');
-    assert.equal(await activityRows.count(), 1);
-    await range.focus();
-    await page.keyboard.press('ArrowDown');
-    await page.keyboard.press('Tab');
-    assert.equal(await activityRows.count(), 1);
-    await type.focus();
-    await page.keyboard.press('ArrowUp');
-    await page.keyboard.press('Tab');
-    await search.focus();
-    await page.keyboard.press('Control+A');
-    await page.keyboard.press('Backspace');
-    await range.focus();
-    await page.keyboard.press('ArrowDown');
-    await page.keyboard.press('Tab');
-    assert.equal(await activityRows.count(), 2);
-    await range.focus();
-    await page.keyboard.press('ArrowDown');
-    await page.keyboard.press('Tab');
-    assert.equal(await activityRows.count(), 3);
-    assert.equal((await page.locator('[data-activity-status]').innerText()).trim(), '3 activity items shown.');
-    await page.screenshot({ path: path.join(output, `activity-populated-${viewport.name}.png`), fullPage: false });
-
-    page.once('dialog', (dialog) => dialog.accept());
-    const deleteActivity = page.getByRole('button', { name: `Delete ${xssTitle}` });
-    await deleteActivity.focus();
-    await page.keyboard.press('Enter');
-    assert.equal(await activityRows.count(), 2);
-    assert.equal((await page.locator('[data-activity-status]').innerText()).trim(), 'Activity item deleted.');
-    assert.equal(await page.evaluate((activityKey) => JSON.parse(localStorage.getItem(activityKey)).some((item) => item.id === 'xss'), key), false);
-    await page.evaluate((activityKey) => localStorage.setItem(activityKey, JSON.stringify([
-      { id: 'refreshed', type: 'template_created', title: 'Refreshed account item', description: '', time: new Date().toISOString(), user: 'Current account' },
-    ])), key);
-    await page.locator('[data-activity-refresh]').click();
-    await page.getByRole('heading', { name: 'Refreshed account item' }).waitFor();
-    assert.equal(await activityRows.count(), 1);
-    assert.equal((await page.locator('[data-activity-status]').innerText()).trim(), 'Activity refreshed from this browser.');
-    await search.fill('no matching item');
-    await page.getByText('Try adjusting your filters to see more results', { exact: true }).waitFor();
-    assert.equal((await page.locator('[data-activity-status]').innerText()).trim(), '0 activity items shown.');
-    assert.equal(await page.getByRole('link', { name: 'Return to Dashboard' }).getAttribute('href'), '/dashboard');
-    await search.fill('');
-    await range.focus();
-    await page.keyboard.press('Home');
-    await page.keyboard.press('Tab');
-    assert.equal(await range.inputValue(), 'all');
-    await page.evaluate((activityKey) => localStorage.setItem(activityKey, JSON.stringify([])), key);
-    await page.locator('[data-activity-refresh]').click();
+    await page.locator('[data-activity-filter] [name="q"]').fill('no matching activity');
+    await page.getByRole('button', { name: 'Apply filters' }).click();
     await page.getByRole('heading', { name: 'No activity found' }).waitFor();
-    await page.getByText('Start using the platform to see your activity here', { exact: true }).waitFor();
-    assert.equal(await page.locator('[data-activity-count]').innerText(), '0 activities');
-    assert.equal((await page.locator('[data-activity-status]').innerText()).trim(), 'Activity refreshed from this browser.');
-    assert.equal(await page.getByRole('link', { name: 'Return to Dashboard' }).getAttribute('href'), '/dashboard');
-    await page.screenshot({ path: path.join(output, `activity-empty-${viewport.name}.png`), fullPage: false });
+    assert.equal(await page.locator('[data-activity-list] li').count(), 0);
+    await page.screenshot({ path: path.join(output, 'activity-empty-filter-desktop.png'), fullPage: false });
+
+    await page.goto(baseUrl + '/activitylog', { waitUntil: 'domcontentloaded' });
+    await page.locator('[data-activity-filter] [name="type"]').selectOption('forms');
+    await page.getByRole('button', { name: 'Apply filters' }).click();
+    await page.getByText('Form saved', { exact: true }).waitFor();
+    assert.equal(await page.locator('[data-activity-list] li').count(), 1);
+    page.once('dialog', (dialog) => dialog.accept());
+    await page.getByRole('button', { name: 'Remove from activity' }).click();
+    await page.getByRole('status').getByText('Activity entry removed.', { exact: false }).waitFor();
+    assert.equal(await page.locator('[data-activity-list] li').count(), 0);
+    await page.screenshot({ path: path.join(output, 'activity-removed-desktop.png'), fullPage: false });
+
+    await page.goto(baseUrl + '/dashboard', { waitUntil: 'domcontentloaded' });
+    const savedForm = page.locator('a[href="/filledtemplates?record=55555555-5555-4555-8555-555555555555"]');
+    await savedForm.waitFor();
+    assert.equal(await savedForm.count(), 1, 'removing activity leaves the saved form available');
+    results.interactions.push({
+      route: '/activitylog',
+      state: 'server-rendered activity categories and filters work; browser-local examples do not affect entries; confirmed activity removal leaves the saved form intact',
+    });
+
+    await page.setExtraHTTPHeaders({ 'X-P7-Fixture-User': 'reviewer' });
+    await page.goto(baseUrl + '/activitylog', { waitUntil: 'domcontentloaded' });
+    await page.getByRole('heading', { name: 'No activity found' }).waitFor();
+    assert.equal(await page.locator('[data-activity-list] li').count(), 0);
     assert.deepEqual(consoleErrors, [], 'activity interactions should not emit browser errors');
-    results.interactions.push({ route: '/activitylog', state: `search/type/date filters, XSS-safe text, keyboard-confirmed deletion, refresh, and empty state work on account-scoped records at ${viewport.name}` });
-    results.interactions.push({ route: '/activitylog', state: `a truly empty account activity feed shows the source empty state and returns to /dashboard at ${viewport.name}` });
+    results.interactions.push({
+      route: '/activitylog',
+      state: 'a separate synthetic account receives an honest empty activity state',
+    });
+  }  await page.close();
+}
+
+async function checkSettingsWithoutJavaScript(browser) {
+  const page = await browser.newPage({
+    viewport: { width: 320, height: 844 },
+    javaScriptEnabled: false,
+  });
+  const response = await page.goto(`${baseUrl}/scheduler-settings`, { waitUntil: 'domcontentloaded' });
+  assert.equal(response?.status(), 200);
+  assert.equal(await page.getByRole('heading', { name: 'Scheduler Settings', level: 1 }).count(), 1);
+  await page.getByText(/JavaScript is needed to load your saved preferences, update the preview, import, or save\./).waitFor();
+  for (const [href, label] of [
+    ['/scheduler', 'Back to scheduler'],
+    ['/privacy', 'Privacy'],
+    ['/security', 'Security'],
+    ['/documentation', 'Documentation'],
+  ]) {
+    const link = page.locator(`noscript a[href="${href}"]`);
+    assert.equal(await link.count(), 1, `${label} fallback link should remain available without JavaScript`);
+    assert.equal((await link.textContent()).trim(), label);
   }
+  assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth), true,
+    'narrow Settings fallback must not overflow without JavaScript');
+  await page.screenshot({ path: path.join(output, 'scheduler-settings-no-javascript-narrow.png'), fullPage: false });
+  results.interactions.push({
+    route: '/scheduler-settings',
+    viewport: 'narrow-no-javascript',
+    state: 'visible JavaScript explanation and Back, Privacy, Security, and Documentation links remain usable',
+  });
   await page.close();
 }
 
@@ -2590,33 +2699,45 @@ async function checkAuthJourneys(browser) {
 
 async function main() {
   await fs.mkdir(output, { recursive: true });
-  assert.ok(referenceRun, 'Set P7_REFERENCE_RUN to the exact freshly captured source evidence run.');
-  const sourceManifestPath = path.join(sourceOutput, 'capture-results.json');
-  sourceReferenceManifest = JSON.parse(await fs.readFile(sourceManifestPath, 'utf8'));
-  assert.equal(sourceReferenceManifest.run_id, referenceRun,
-    'The selected source manifest must identify the exact requested reference run.');
-  assert.equal(sourceReferenceManifest.waves?.[wave]?.wave, wave.toUpperCase(),
-    `Source run ${referenceRun} has no ${wave.toUpperCase()} capture.`);
-  const currentSourceProvenance = captureSourceProvenance(root);
-  assert.deepEqual(sourceReferenceManifest.source_provenance, currentSourceProvenance,
-    'The source working tree changed after its captured reference run; recapture source before comparison.');
-  sourceReferencePages = sourceReferenceManifest.waves[wave].pages;
-  results.source_reference = {
-    run_id: referenceRun,
-    captured_at: sourceReferenceManifest.captured_at,
-    git_revision: currentSourceProvenance.git_revision,
-    worktree_digest: currentSourceProvenance.worktree_digest,
-    file_count: currentSourceProvenance.file_count,
-    source_manifest_sha256: crypto.createHash('sha256').update(await fs.readFile(sourceManifestPath)).digest('hex'),
-  };
+  if (currentOnly) {
+    sourceReferenceManifest = null;
+    sourceReferencePages = [];
+    results.source_reference = { mode: 'current-only', note: 'No archived React runtime or source page was used as an acceptance target.' };
+  } else {
+    assert.ok(referenceRun, 'Set P7_REFERENCE_RUN to the exact freshly captured source evidence run.');
+    const sourceManifestPath = path.join(sourceOutput, 'capture-results.json');
+    sourceReferenceManifest = JSON.parse(await fs.readFile(sourceManifestPath, 'utf8'));
+    assert.equal(sourceReferenceManifest.run_id, referenceRun,
+      'The selected source manifest must identify the exact requested source run.');
+    assert.equal(sourceReferenceManifest.waves?.[wave]?.wave, wave.toUpperCase(),
+      `Source run ${referenceRun} has no ${wave.toUpperCase()} capture.`);
+    const currentSourceProvenance = captureSourceProvenance(root);
+    assert.deepEqual(sourceReferenceManifest.source_provenance, currentSourceProvenance,
+      'The source working tree changed after its captured source run; recapture source before comparison.');
+    sourceReferencePages = sourceReferenceManifest.waves[wave].pages;
+    results.source_reference = {
+      run_id: referenceRun,
+      captured_at: sourceReferenceManifest.captured_at,
+      git_revision: currentSourceProvenance.git_revision,
+      worktree_digest: currentSourceProvenance.worktree_digest,
+      file_count: currentSourceProvenance.file_count,
+      source_manifest_sha256: crypto.createHash('sha256').update(await fs.readFile(sourceManifestPath)).digest('hex'),
+    };
+  }
   results.negative_control_checks = [];
-  const browser = await chromium.launch({ headless: true });
+  const browser = await chromium.launch(browserLaunchOptions);
   results.browser = browser.version();
   try {
     const routesToCapture = appRoutes[wave].filter(([slug]) => !routeFilter || slug === routeFilter);
     assert.ok(routesToCapture.length, `No ${wave.toUpperCase()} route matches ${routeFilter || 'the requested route set'}.`);
     for (const route of routesToCapture) {
-      for (const viewport of viewports) await capture(browser, route, viewport);
+      const routeViewports = route[0] === 'scheduler-settings'
+        ? [...viewports, ...settingsAdditionalViewports]
+        : viewports;
+      for (const viewport of routeViewports) await capture(browser, route, viewport);
+    }
+    if (wave === 'w6' && routesToCapture.some(([slug]) => slug === 'scheduler-settings')) {
+      await checkSettingsWithoutJavaScript(browser);
     }
     if (wave === 'w3' && !routeFilter) await checkAuthJourneys(browser);
   } finally {

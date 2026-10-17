@@ -1,0 +1,260 @@
+{
+  "source": "Django pages, W2 test settings (DEBUG=false; preview and legacy fallback disabled)",
+  "base_url": "http://127.0.0.1:18875",
+  "browser": "155.0.8059.80",
+  "pages": [
+    {
+      "route": "/documentation",
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "title": "Documentation | Audentra",
+      "heading": "Documentation",
+      "body_font": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "document_width": 1440,
+      "viewport_width": 1440,
+      "font_status": "loaded",
+      "has_react_root": false,
+      "has_react_bootstrap": false,
+      "local_links": [
+        "/AIVoiceAutoFill",
+        "/AIVoiceAutoFill",
+        "/AIVoiceAutoFill",
+        "/activitylog",
+        "/filledtemplates",
+        "/filledtemplates",
+        "/filledtemplates",
+        "/help-center",
+        "/privacy",
+        "/privacy",
+        "/scheduler",
+        "/scheduler-settings",
+        "/security",
+        "/security",
+        "/templates",
+        "/templates",
+        "/templates",
+        "/templates#collaboration"
+      ],
+      "comparison": {
+        "acceptance_mode": "current-documentation-contract",
+        "note": "The rewritten guide is checked against current content and interactions below, not historical React copy."
+      }
+    },
+    {
+      "route": "/documentation",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "title": "Documentation | Audentra",
+      "heading": "Documentation",
+      "body_font": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "document_width": 390,
+      "viewport_width": 390,
+      "font_status": "loaded",
+      "has_react_root": false,
+      "has_react_bootstrap": false,
+      "local_links": [
+        "/AIVoiceAutoFill",
+        "/AIVoiceAutoFill",
+        "/AIVoiceAutoFill",
+        "/activitylog",
+        "/filledtemplates",
+        "/filledtemplates",
+        "/filledtemplates",
+        "/help-center",
+        "/privacy",
+        "/privacy",
+        "/scheduler",
+        "/scheduler-settings",
+        "/security",
+        "/security",
+        "/templates",
+        "/templates",
+        "/templates",
+        "/templates#collaboration"
+      ],
+      "comparison": {
+        "acceptance_mode": "current-documentation-contract",
+        "note": "The rewritten guide is checked against current content and interactions below, not historical React copy."
+      }
+    },
+    {
+      "route": "/documentation",
+      "viewport": {
+        "name": "narrow",
+        "width": 320,
+        "height": 780
+      },
+      "title": "Documentation | Audentra",
+      "heading": "Documentation",
+      "body_font": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "document_width": 320,
+      "viewport_width": 320,
+      "font_status": "loaded",
+      "has_react_root": false,
+      "has_react_bootstrap": false,
+      "local_links": [
+        "/AIVoiceAutoFill",
+        "/AIVoiceAutoFill",
+        "/AIVoiceAutoFill",
+        "/activitylog",
+        "/filledtemplates",
+        "/filledtemplates",
+        "/filledtemplates",
+        "/help-center",
+        "/privacy",
+        "/privacy",
+        "/scheduler",
+        "/scheduler-settings",
+        "/security",
+        "/security",
+        "/templates",
+        "/templates",
+        "/templates",
+        "/templates#collaboration"
+      ],
+      "comparison": {
+        "acceptance_mode": "current-documentation-contract",
+        "note": "The rewritten guide is checked against current content and interactions below, not historical React copy."
+      }
+    },
+    {
+      "route": "/documentation",
+      "viewport": {
+        "name": "zoom-200-equivalent",
+        "width": 720,
+        "height": 900
+      },
+      "title": "Documentation | Audentra",
+      "heading": "Documentation",
+      "body_font": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\"",
+      "document_width": 720,
+      "viewport_width": 720,
+      "font_status": "loaded",
+      "has_react_root": false,
+      "has_react_bootstrap": false,
+      "local_links": [
+        "/AIVoiceAutoFill",
+        "/AIVoiceAutoFill",
+        "/AIVoiceAutoFill",
+        "/activitylog",
+        "/filledtemplates",
+        "/filledtemplates",
+        "/filledtemplates",
+        "/help-center",
+        "/privacy",
+        "/privacy",
+        "/scheduler",
+        "/scheduler-settings",
+        "/security",
+        "/security",
+        "/templates",
+        "/templates",
+        "/templates",
+        "/templates#collaboration"
+      ],
+      "comparison": {
+        "acceptance_mode": "current-documentation-contract",
+        "note": "The rewritten guide is checked against current content and interactions below, not historical React copy."
+      }
+    }
+  ],
+  "interactions": [
+    {
+      "route": "/documentation",
+      "viewport": "desktop",
+      "activation": [
+        "Enter",
+        "Space"
+      ],
+      "state": "independent copy targets preserve displayed code and trigger focus"
+    },
+    {
+      "route": "/documentation",
+      "viewport": "desktop",
+      "activation": "Space",
+      "state": "clipboard denial exposes accessible recovery feedback"
+    },
+    {
+      "route": "/documentation",
+      "viewport": "desktop",
+      "activation": "Enter",
+      "state": "all ten visible contents links target a section at this viewport"
+    },
+    {
+      "route": "/documentation",
+      "viewport": "mobile",
+      "activation": [
+        "Enter",
+        "Space"
+      ],
+      "state": "independent copy targets preserve displayed code and trigger focus"
+    },
+    {
+      "route": "/documentation",
+      "viewport": "mobile",
+      "activation": "Space",
+      "state": "clipboard denial exposes accessible recovery feedback"
+    },
+    {
+      "route": "/documentation",
+      "viewport": "mobile",
+      "activation": "Enter",
+      "state": "all ten visible contents links target a section at this viewport"
+    },
+    {
+      "route": "/documentation",
+      "viewport": "narrow",
+      "activation": [
+        "Enter",
+        "Space"
+      ],
+      "state": "independent copy targets preserve displayed code and trigger focus"
+    },
+    {
+      "route": "/documentation",
+      "viewport": "narrow",
+      "activation": "Space",
+      "state": "clipboard denial exposes accessible recovery feedback"
+    },
+    {
+      "route": "/documentation",
+      "viewport": "narrow",
+      "activation": "Enter",
+      "state": "all ten visible contents links target a section at this viewport"
+    },
+    {
+      "route": "/documentation",
+      "viewport": "zoom-200-equivalent",
+      "activation": [
+        "Enter",
+        "Space"
+      ],
+      "state": "independent copy targets preserve displayed code and trigger focus"
+    },
+    {
+      "route": "/documentation",
+      "viewport": "zoom-200-equivalent",
+      "activation": "Space",
+      "state": "clipboard denial exposes accessible recovery feedback"
+    },
+    {
+      "route": "/documentation",
+      "viewport": "zoom-200-equivalent",
+      "activation": "Enter",
+      "state": "all ten visible contents links target a section at this viewport"
+    },
+    {
+      "route": "/documentation",
+      "viewport": "narrow-no-javascript",
+      "state": "complete content and all ten in-page links work without JavaScript; copy controls are hidden for manual code selection"
+    }
+  ],
+  "local_probes": [],
+  "browser_cleanup": "forced-after-timeout"
+}

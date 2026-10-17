@@ -6,51 +6,15 @@ See the [P10 preparation handoff](../../HANDOFF_2026-10-15_P10_PREPARATION.md), 
 
 P4 development Auth and P5 hosted data/RLS/Storage/pooler acceptance pass; see [P4 report](../../docs/auth/P4_REPORT.md) and [P5 verification](../../docs/data/P5_VERIFICATION.md). P7 routes resolve directly to Django pages and application views; the React proxy and route rollback bridge have been retired.
 
-## Local operation and P10 reference
+## Local operation
 
-P9 closeout and P10 local preparation are complete. The local schema alignment and the runtime implementation are recorded in the [P5 local results](../../docs/data/P5_LOCAL_ALIGNMENT_RESULTS.json) and [P10 evidence](../../docs/deployment/evidence/p10/p10-20261015-runtime-01/commands.md). Django continues to use the existing hosted development connections. Follow the [P10 local runbook](../../docs/deployment/P10_LOCAL_RUNBOOK.md) for reproducible setup. Recording/provider and physical-device checks remain deferred or excluded as recorded there. Deployment remains a later decision.
+The supported local launch is the repository-root [`start-local.ps1`](../../start-local.ps1) command described in the [root README](../../README.md). It starts the `local-supabase` profile with loopback Supabase services, applies pending Supabase forward migrations without a reset, builds and collects static files, applies Django migrations to the local default database, and runs the Waitress server. It does not reset the local database.
 
-## Setup
+The [P10 local runbook](../../docs/deployment/P10_LOCAL_RUNBOOK.md) contains the underlying manual setup, guarded local reset, demo-account recovery, health checks, and troubleshooting steps. `demo-http` remains a separate explicit profile for a hosted development/demo target. Do not use it for normal local launches or local reset operations.
 
-Run commands from this directory in PowerShell.
+`/livez` reports process status; `/readyz` checks both database aliases; `/healthz` retains the earlier database-readiness behavior. The local profile uses HTTP on loopback, sets `DEBUG=False`, and disables secure-cookie and HTTPS-redirect flags only for local HTTP. Production settings retain secure cookies and HTTPS redirect. The [deployment runbook](../../docs/deployment/P10_DEPLOYMENT_RUNBOOK.md) describes the deferred same-host TLS proxy contract, and the [rollback runbook](../../docs/deployment/P10_ROLLBACK_RUNBOOK.md) separates code/traffic rollback from targeted data repair.
 
-1. Install the managed Python 3.12 runtime locally, then point uv at this project's ignored cache and virtualenv:
-
-       uv python install 3.12.10 --managed-python --install-dir .python --cache-dir .uv-cache
-       $env:UV_CACHE_DIR = (Join-Path $PWD ".uv-cache")
-       $env:UV_PROJECT_ENVIRONMENT = ".venv-p2"
-
-2. Configure the local profile values described in the [P10 local runbook](../../docs/deployment/P10_LOCAL_RUNBOOK.md). The archived `legacy/.env.example` belongs to the retired browser app and is not a Django settings template. Keep the Django `.env` private and use only the dedicated django_app and django_data database roles.
-3. Install and lock dependencies with the locally managed interpreter:
-
-       uv sync --locked --python .python\cpython-3.12.10-windows-x86_64-none\python.exe
-
-4. Download and SHA-256 verify the pinned Tailwind standalone executable into ignored .state/, then build the Tailwind 3 CSS:
-
-       powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build_static.ps1
-
-5. Run checks, focused lint/type/tests and collect static files:
-
-       uv run --locked python manage.py check --settings=config.settings.local_http
-       powershell -NoProfile -ExecutionPolicy Bypass -File scripts/run_ruff.ps1 check .
-       uv run --locked python -m mypy config apps tests
-       uv run --locked python -m pytest -q
-       uv run --locked python manage.py collectstatic --noinput --settings=config.settings.local_http
-       uv run --locked python scripts/p10_preflight.py --profile local-http
-
-6. Apply only Django-owned migrations to default after the restricted database URL is configured:
-
-       uv run python manage.py migrate --database=default
-
-7. Start the production-style local HTTP server on loopback:
-
-       uv run --locked python scripts/serve_p10.py --profile local-http
-
-The foreground server stops with Ctrl+C. `/livez` reports process status, `/readyz` checks both PostgreSQL aliases, and `/healthz` preserves the earlier database-readiness behavior. The local profile is explicitly HTTP and loopback-only; it sets `DEBUG=False`, disables secure-cookie and HTTPS-redirect flags only for this profile, and serves the collected manifest through WhiteNoise. Production settings retain secure cookies and HTTPS redirect.
-
-The [deployment runbook](../../docs/deployment/P10_DEPLOYMENT_RUNBOOK.md) describes the same-host TLS proxy contract. The [rollback runbook](../../docs/deployment/P10_ROLLBACK_RUNBOOK.md) separates code/traffic rollback from targeted data repair. The selected production host, domain, proxy, Auth policy, provider accounts, external secrets, and deployment remain owner decisions.
-
-The Tailwind and Ruff helpers stage their locked Windows executables in the OS temporary directory as a workaround for launch failures observed in this Windows runner. OneDrive was not established as the cause. Native Python DLL loading also failed inside the Codex Windows sandbox; the same checks passed with approved execution outside it.
+The active runtime, P9/P10 local acceptance, and P11 local retirement are recorded in the [migration state](../../MIGRATION_STATE.md), [P10 release-candidate review](../../docs/deployment/P10_W5_RELEASE_CANDIDATE_REVIEW.md), and [P11 closeout](../../HANDOFF_2026-10-17_P11_LEGACY_RETIREMENT.md). Deployment and production soak remain deferred. Physical mobile testing and physical recording edge cases/audibility remain excluded or reserved for owner review.
 
 ## Test isolation and current handoff
 
@@ -61,6 +25,14 @@ P3 service endpoints are disabled by default. For deterministic local service ch
 ## P5 application data
 
 P5 adds unmanaged Django models and services for profiles, templates, UUID-based sharing, reviews, scheduling, filled forms and private template files. Supabase remains the data store; all application queries use a verified principal and a transaction-local `authenticated` RLS context on the `supabase` alias. Django sessions/migration state remain on the separate `default`/`django` alias.
+
+## Recent Forms and Activity Log
+
+Recent Forms is based on `filled_templates`, not browser storage. The dashboard queries only five saved-form summaries; the full list pages through 25 summaries at a time. Opening a row uses its exact UUID, checks owner access, and shows the stored answers with JSON values preserved. Download returns a no-store JSON attachment. Saving a voice form carries a submission UUID through the form steps; the owner/key unique index and immutable-key guard prevent retry duplicates. A same-key, same-payload retry returns the original record, while changed payload under a used key returns an error and keeps the entered values on the page.
+
+Activity Log uses the unmanaged `ActivityEvent` model and an allowlisted presentation registry. PostgreSQL triggers record successful form, template, share, review, and schedule changes inside the business transaction. The feed is owner-scoped by RLS and never accepts direct authenticated insert or update. Only the owner can remove a feed row; removal does not affect the linked saved form or other business data. The database events are personal history, not recipient notifications or a tamper-proof audit trail.
+
+The local Supabase migrations `20261017120000_activity_recent_forms.sql` and `20261017123000_activity_capture_completeness.sql` add the schema and capture rules. New local runs apply pending files with `supabase migration up --local`; the root launcher runs this after `supabase start`. The local acceptance SQL uses synthetic UUID accounts inside a transaction and finishes with rollback. See the [feature plan](../../docs/features/ACTIVITY_RECENT_FORMS_IMPLEMENTATION_PLAN.md), [closeout](../../docs/features/ACTIVITY_RECENT_FORMS_CLOSEOUT_2026-10-17.md), and [local runbook](../../docs/deployment/P10_LOCAL_RUNBOOK.md).
 
 P5 direct-host and local PostgreSQL checks pass. The final hosted probe also passed through the shared transaction pooler with the restricted project-scoped `django_data` login: 65 checks, A/B/A identity and private-row isolation, transaction cleanup, forced rollback/recovery, reused Django client connection and exact cleanup. Transaction mode uses transaction-local search paths and disables Psycopg prepared statements. See [P5 contracts](../../docs/data/P5_CONTRACTS.md), [RLS matrix](../../docs/data/P5_RLS_MATRIX.md), [verification](../../docs/data/P5_VERIFICATION.md) and [report](../../docs/data/P5_REPORT.md). P6 verification is in [P6_VERIFICATION.md](../../docs/rendering/P6_VERIFICATION.md).
 

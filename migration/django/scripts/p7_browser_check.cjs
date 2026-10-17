@@ -3,9 +3,20 @@ const fs = require('node:fs/promises');
 const path = require('node:path');
 const { chromium } = require('playwright');
 
+const browserLaunchOptions = {
+  headless: true,
+  ...(process.env.P7_CHROMIUM_EXECUTABLE_PATH
+    ? { executablePath: process.env.P7_CHROMIUM_EXECUTABLE_PATH }
+    : {}),
+};
+const trace = (message) => {
+  if (process.env.P7_BROWSER_TRACE === '1') process.stderr.write(`[p7-browser] ${message}\n`);
+};
+
 const baseUrl = process.env.P7_DJANGO_BASE_URL || 'http://127.0.0.1:8000';
 const root = path.resolve(__dirname, '..', '..', '..');
 const wave = process.argv.includes('--wave=w2') ? 'w2' : 'w1';
+const routeFilter = process.argv.find((argument) => argument.startsWith('--route='))?.slice(8) || '';
 const p9EvidenceDir = process.env.P9_EVIDENCE_DIR ? path.resolve(process.env.P9_EVIDENCE_DIR) : null;
 const legacyDir = p9EvidenceDir
   ? path.join(p9EvidenceDir, 'source', wave)
@@ -42,6 +53,11 @@ const routes = wave === 'w2' ? [['home', '/'], ['documentation', '/documentation
 const viewports = [
   { name: 'desktop', width: 1440, height: 900 },
   { name: 'mobile', width: 390, height: 844 },
+];
+const documentationViewports = [
+  ...viewports,
+  { name: 'narrow', width: 320, height: 780 },
+  { name: 'zoom-200-equivalent', width: 720, height: 900 },
 ];
 const results = {
   source: `Django pages, ${wave.toUpperCase()} test settings (DEBUG=false; preview and legacy fallback disabled)`,
@@ -102,6 +118,25 @@ function verifyContentParityGuard() {
 
 async function saveScreenshot(page, filename) {
   await page.screenshot({ path: path.join(evidenceDir, filename), fullPage: true });
+}
+
+async function closeBrowser(browser) {
+  const child = typeof browser.process === 'function' ? browser.process() : null;
+  let timeoutId;
+  const closed = await Promise.race([
+    browser.close().then(() => 'closed', () => {
+      child?.kill();
+      return 'forced-after-close-error';
+    }),
+    new Promise((resolve) => {
+      timeoutId = setTimeout(() => {
+        child?.kill();
+        resolve('forced-after-timeout');
+      }, 5000);
+    }),
+  ]);
+  clearTimeout(timeoutId);
+  return closed;
 }
 
 async function compareControlContracts(page, sourceMarkup, route) {
@@ -257,6 +292,22 @@ async function checkPage(browser, slug, route, viewport, references) {
   assert.equal(pageInfo.has_react_bootstrap, false, `${route} should not load a React bundle`);
   assert.equal(pageInfo.document_width > pageInfo.viewport_width, false,
     `${route} should not overflow at ${viewport.width}px`);
+
+  if (route === '/documentation') {
+    assert.equal(pageInfo.heading, 'Documentation', 'the rewritten public guide should expose its current heading');
+    await saveScreenshot(page, `${slug}-${viewport.name}.png`);
+    results.pages.push({
+      route,
+      viewport,
+      ...pageInfo,
+      comparison: {
+        acceptance_mode: 'current-documentation-contract',
+        note: 'The rewritten guide is checked against current content and interactions below, not historical React copy.',
+      },
+    });
+    await page.close();
+    return;
+  }
 
   const source = references.pages.find((item) =>
     item.route === route && item.viewport.width === viewport.width);
@@ -474,7 +525,6 @@ async function checkSourceInactiveControls(browser) {
       route: '/help-center',
       names: ['Browse Videos', 'Start Chat', 'Contact Us', 'Book Demo', 'Helpful', 'Not helpful', 'Read Article →', 'Start Live Chat', 'Email Support'],
     },
-    { route: '/documentation', names: ['Download full template →'] },
   ];
   for (const viewport of viewports) {
     for (const routeControls of controls) {
@@ -522,28 +572,60 @@ async function checkSourceInactiveControls(browser) {
 }
 
 async function checkDocumentation(browser) {
-  for (const viewport of viewports) {
+  for (const viewport of documentationViewports) {
+    trace(`documentation ${viewport.name}: start`);
     const context = await browser.newContext({
       permissions: ['clipboard-read', 'clipboard-write'],
       viewport: { width: viewport.width, height: viewport.height },
     });
     const successPage = await context.newPage();
     await successPage.goto(`${baseUrl}/documentation`, { waitUntil: 'domcontentloaded' });
-    const copyButton = successPage.getByRole('button', { name: 'Copy' }).first();
-    const displayedCode = await successPage.locator('pre code').first().textContent();
+    trace(`documentation ${viewport.name}: loaded`);
+    assert.equal(await successPage.getByRole('heading', { name: 'Documentation', level: 1 }).count(), 1);
+    assert.equal(await successPage.locator('[data-copy-code]').count(), 3, 'each code example has an explicit copy control');
+    assert.equal(await successPage.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth), true,
+      `${viewport.name} documentation must not overflow the page width`);
+    const copyButton = successPage.locator('[data-copy-code="code-form-fields"]');
+    const displayedCode = await successPage.locator('#code-form-fields').textContent();
     await copyButton.focus();
     await successPage.keyboard.press('Enter');
     const copiedButton = successPage.getByRole('button', { name: 'Copied' }).first();
     await copiedButton.waitFor();
-    await successPage.getByText('Copied code to clipboard.', { exact: true }).waitFor();
-    const successFeedback = successPage.locator('[data-copy-feedback]').first();
+    const successFeedback = successPage.locator('#copy-feedback-fields');
+    await successFeedback.waitFor();
+    assert.equal((await successFeedback.textContent()).trim(), 'Copied this code block to the clipboard.');
     assert.equal(await successFeedback.getAttribute('aria-live'), 'polite');
     assert.equal(await copiedButton.evaluate((element) => document.activeElement === element), true,
       'Documentation clipboard success must preserve focus on its trigger');
     const copiedCode = await successPage.evaluate(() => navigator.clipboard.readText());
     assert.equal(copiedCode.replace(/\r\n/g, '\n'), (displayedCode || '').replace(/\r\n/g, '\n'));
+    trace(`documentation ${viewport.name}: first copy`);
+    const secondCopy = successPage.locator('[data-copy-code="code-start-local"]');
+    await secondCopy.focus();
+    await successPage.keyboard.press('Space');
+    const secondFeedback = successPage.locator('#copy-feedback-start');
+    await secondFeedback.waitFor();
+    assert.equal((await secondFeedback.textContent()).trim(), 'Copied this code block to the clipboard.');
+    assert.equal(await successPage.evaluate(() => navigator.clipboard.readText()), await successPage.locator('#code-start-local').textContent(),
+      'each copy button must use its own code block');
+    trace(`documentation ${viewport.name}: second copy`);
+    const extractionDetails = successPage.locator('details').filter({ has: successPage.locator('#code-extract-request') });
+    await extractionDetails.locator('summary').click();
+    const thirdCopy = successPage.locator('[data-copy-code="code-extract-request"]');
+    await thirdCopy.focus();
+    await successPage.keyboard.press('Enter');
+    const thirdFeedback = successPage.locator('#copy-feedback-extract');
+    await thirdFeedback.waitFor();
+    assert.equal((await thirdFeedback.textContent()).trim(), 'Copied this code block to the clipboard.');
+    assert.equal(
+      (await successPage.evaluate(() => navigator.clipboard.readText())).replace(/\r\n/g, '\n'),
+      (await successPage.locator('#code-extract-request').textContent()).replace(/\r\n/g, '\n'),
+      'the third copy control must target its own code block');
+    assert.equal(await thirdCopy.evaluate((element) => document.activeElement === element), true);
+    trace(`documentation ${viewport.name}: third copy`);
     await saveScreenshot(successPage, `documentation-copy-success-${viewport.name}.png`);
-    results.interactions.push({ route: '/documentation', viewport: viewport.name, activation: 'Enter', state: 'copy preserves displayed code and reports clipboard success' });
+    trace(`documentation ${viewport.name}: success screenshot`);
+    results.interactions.push({ route: '/documentation', viewport: viewport.name, activation: ['Enter', 'Space'], state: 'independent copy targets preserve displayed code and trigger focus' });
 
     const deniedPage = await context.newPage();
     await deniedPage.addInitScript(() => {
@@ -553,31 +635,73 @@ async function checkDocumentation(browser) {
       });
     });
     await deniedPage.goto(`${baseUrl}/documentation`, { waitUntil: 'domcontentloaded' });
-    const deniedCopy = deniedPage.getByRole('button', { name: 'Copy' }).first();
+    const deniedCopy = deniedPage.locator('[data-copy-code="code-form-fields"]');
     await deniedCopy.focus();
     await deniedPage.keyboard.press('Space');
-    await deniedPage.getByText('Copy failed. Select and copy this block above.', { exact: true }).waitFor();
-    const deniedFeedback = deniedPage.locator('[data-copy-feedback]').first();
+    await deniedPage.getByText('Copy failed. Select and copy the code block above.', { exact: true }).waitFor();
+    const deniedFeedback = deniedPage.locator('#copy-feedback-fields');
     assert.equal(await deniedFeedback.getAttribute('aria-live'), 'polite');
-    assert.equal(await deniedPage.getByRole('button', { name: 'Copy' }).first()
+    assert.equal(await deniedPage.locator('[data-copy-code="code-form-fields"]')
       .evaluate((element) => document.activeElement === element), true,
     'Documentation clipboard denial must preserve focus on its trigger');
     await saveScreenshot(deniedPage, `documentation-copy-denied-${viewport.name}.png`);
+    trace(`documentation ${viewport.name}: denied copy`);
     results.interactions.push({ route: '/documentation', viewport: viewport.name, activation: 'Space', state: 'clipboard denial exposes accessible recovery feedback' });
 
-    if (viewport.name === 'desktop') {
-      const toc = successPage.locator('a[href="#pipeline"]').first();
-      await toc.focus();
-      await toc.press('Enter');
-      assert.equal(new URL(successPage.url()).hash, '#pipeline');
-      results.interactions.push({ route: '/documentation', viewport: viewport.name, activation: 'Enter', state: 'keyboard-operable section navigation' });
-    } else {
-      assert.equal(await successPage.locator('aside a[href="#pipeline"]').isVisible().catch(() => false), false,
-        'mobile documentation must not leave the desktop-only section index focusable');
-      results.interactions.push({ route: '/documentation', viewport: viewport.name, state: 'desktop-only section index is hidden on mobile; visible links are covered by the cross-route keyboard destination audit' });
+    const toc = successPage.getByRole('navigation', { name: 'Documentation sections' });
+    const sectionLinks = toc.locator('a[href^="#"]');
+    assert.equal(await sectionLinks.count(), 10, 'the contents index includes the user and developer sections');
+    for (let index = 0; index < await sectionLinks.count(); index += 1) {
+      const link = sectionLinks.nth(index);
+      const href = await link.getAttribute('href');
+      assert.equal(await link.isVisible(), true, `${viewport.name} contents link ${href} must be visible`);
+      assert.equal(await successPage.locator(href).count(), 1, `${href} must target a section`);
+      await link.focus();
+      assert.equal(await link.evaluate((element) => document.activeElement === element), true,
+        `${viewport.name} contents link ${href} must receive keyboard focus`);
+      await Promise.all([
+        successPage.waitForURL((url) => url.hash === href, { timeout: 3000 }),
+        successPage.keyboard.press('Enter'),
+      ]);
+      assert.equal(new URL(successPage.url()).hash, href, `keyboard navigation should reach ${href}`);
     }
+    results.interactions.push({ route: '/documentation', viewport: viewport.name, activation: 'Enter', state: 'all ten visible contents links target a section at this viewport' });
+    trace(`documentation ${viewport.name}: anchors`);
     await context.close();
+    trace(`documentation ${viewport.name}: complete`);
   }
+}
+
+async function checkDocumentationWithoutJavaScript(browser) {
+  trace('documentation no-js: start');
+  const viewport = { name: 'narrow-no-javascript', width: 320, height: 780 };
+  const page = await browser.newPage({
+    viewport: { width: viewport.width, height: viewport.height },
+    javaScriptEnabled: false,
+  });
+  const response = await page.goto(`${baseUrl}/documentation`, { waitUntil: 'domcontentloaded' });
+  assert.equal(response?.status(), 200);
+  assert.equal(await page.getByRole('heading', { name: 'Documentation', level: 1 }).count(), 1);
+  assert.equal(await page.locator('[data-copy-code]:visible').count(), 0,
+    'copy controls stay hidden without their JavaScript handler; code remains available for manual selection');
+  assert.equal(await page.getByText('From template to saved form', { exact: true }).count(), 1);
+  assert.equal(await page.getByText('Start the current app locally', { exact: true }).count(), 1);
+  assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth), true,
+    'narrow Documentation must not overflow without JavaScript');
+  const links = await page.locator('nav[aria-label="Documentation sections"] a[href^="#"]').evaluateAll((items) =>
+    items.map((item) => item.getAttribute('href')));
+  assert.equal(links.length, 10);
+  for (const href of links) assert.equal(await page.locator(href).count(), 1, `${href} must resolve without JavaScript`);
+  await page.locator('nav[aria-label="Documentation sections"] a[href="#pipeline"]').click();
+  assert.equal(new URL(page.url()).hash, '#pipeline', 'section navigation should work without JavaScript');
+  await saveScreenshot(page, 'documentation-no-javascript-narrow.png');
+  results.interactions.push({
+    route: '/documentation',
+    viewport: viewport.name,
+    state: 'complete content and all ten in-page links work without JavaScript; copy controls are hidden for manual code selection',
+  });
+  await page.close();
+  trace('documentation no-js: complete');
 }
 
 async function checkLocalDenials(browser) {
@@ -625,7 +749,7 @@ async function checkCompiledRollback() {
   const expectedBundles = inventory.assets
     .filter((asset) => asset.path.startsWith('/assets/'))
     .map((asset) => asset.path);
-  const browser = await chromium.launch({ headless: true });
+  const browser = await chromium.launch(browserLaunchOptions);
   rollbackResults.browser = browser.version();
   try {
     for (const viewport of viewports) {
@@ -699,33 +823,49 @@ async function main() {
   verifyContentParityGuard();
   await fs.mkdir(evidenceDir, { recursive: true });
   const references = JSON.parse(await fs.readFile(path.join(legacyDir, 'capture-results.json'), 'utf8'));
-  const browser = await chromium.launch({ headless: true });
+  const routesToCheck = routes.filter(([, route]) => !routeFilter || route === routeFilter);
+  assert.ok(routesToCheck.length, `No ${wave.toUpperCase()} route matches ${routeFilter || 'the requested route set'}.`);
+  const browser = await chromium.launch(browserLaunchOptions);
+  trace('browser launched');
   results.browser = browser.version();
+  let browserCleanup = 'closed';
   try {
-    for (const [slug, route] of routes) {
-      for (const viewport of viewports) {
+    for (const [slug, route] of routesToCheck) {
+      const routeViewports = route === '/documentation' ? documentationViewports : viewports;
+      for (const viewport of routeViewports) {
         await checkPage(browser, slug, route, viewport, references);
       }
     }
     if (wave === 'w1') {
-      await checkPrivacy(browser);
-      await checkHelpCenter(browser);
-      await checkSourceInactiveControls(browser);
-      await checkLocalDenials(browser);
-    } else {
+      if (!routeFilter || routeFilter === '/privacy') await checkPrivacy(browser);
+      if (!routeFilter) {
+        await checkHelpCenter(browser);
+        await checkSourceInactiveControls(browser);
+        await checkLocalDenials(browser);
+      }
+    } else if (routesToCheck.some(([, route]) => route === '/documentation')) {
       await checkDocumentation(browser);
+      await checkDocumentationWithoutJavaScript(browser);
     }
   } finally {
-    await browser.close();
+    browserCleanup = await closeBrowser(browser);
+    trace(`browser ${browserCleanup}`);
   }
+  trace('writing browser results');
+  results.browser_cleanup = browserCleanup;
   await fs.writeFile(path.join(evidenceDir, 'browser-results.json'), `${JSON.stringify(results, null, 2)}\n`, 'utf8');
-  process.stdout.write(`${JSON.stringify({
+  trace('browser results written');
+  const summary = {
     pages: results.pages.length,
     interactions: results.interactions,
     local_probes: results.local_probes,
     overflows: results.pages.filter((page) => page.document_width > page.viewport_width).map((page) => page.route),
+    browser_cleanup: browserCleanup,
     output: evidenceDir,
-  }, null, 2)}\n`);
+  };
+  process.stdout.write(`${JSON.stringify(summary, null, 2)}\n`, () => {
+    if (browserCleanup !== 'closed') process.exit(0);
+  });
 }
 
 const task = process.argv.includes('--rollback') ? checkCompiledRollback() : main();

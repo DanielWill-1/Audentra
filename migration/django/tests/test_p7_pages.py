@@ -97,16 +97,51 @@ def test_w2_home_and_documentation_render_full_local_pages() -> None:
     assert b"One interface. Different workflows." in home.content
     assert b"Designed with sensitive data in mind." in home.content
     assert b"/AIVoiceAutoFill" in home.content
-    assert "Documentation & Architecture Guide" in _first_heading_text(documentation.content)
-    assert b'id="quickstart"' in documentation.content
-    assert b'id="pipeline"' in documentation.content
-    assert b'id="schema-engine"' in documentation.content
-    assert b'id="guides"' in documentation.content
-    assert b"<button" in documentation.content and b">Copy</button>" in documentation.content
-    assert b"ClinicalPatientIntake" in documentation.content
-    assert b"https://github.com/DanielWill-1/Audentra/discussions" in documentation.content
+    assert "Documentation" == _first_heading_text(documentation.content)
+    for anchor in (
+        "quickstart",
+        "pipeline",
+        "schema-engine",
+        "guides",
+        "saved-forms",
+        "activity",
+        "settings-preview",
+        "voice-data",
+        "local-start",
+        "http-reference",
+    ):
+        assert f'id="{anchor}"'.encode() in documentation.content
+        assert f'href="#{anchor}"'.encode() in documentation.content
+    assert b'>Copy</button>' in documentation.content
+    for code_id in ("code-form-fields", "code-start-local", "code-extract-request"):
+        assert f'id="{code_id}"'.encode() in documentation.content
+        assert f'data-copy-code="{code_id}"'.encode() in documentation.content
+    for route in (
+        "/templates",
+        "/AIVoiceAutoFill",
+        "/filledtemplates",
+        "/activitylog",
+        "/scheduler",
+        "/scheduler-settings",
+        "/privacy",
+        "/security",
+        "/help-center",
+    ):
+        assert f'href="{route}"'.encode() in documentation.content
+    assert b"powershell -NoProfile -ExecutionPolicy Bypass -File .\\start-local.ps1" in documentation.content
+    assert b"/api/transcribe/" in documentation.content
+    assert b"/api/tts/" in documentation.content
+    assert b"/api/ai/extract/" in documentation.content
+    assert b"ClinicalPatientIntake" not in documentation.content
+    assert b"Draft-07" not in documentation.content
+    assert b"Schema compile check passed" not in documentation.content
+    assert b"Download full template" not in documentation.content
+    assert b"../../docs/" not in documentation.content
     assert b'data-active-route="/documentation"' in documentation.content
-    assert "aria-live" in (ROOT / "migration" / "django" / "static" / "js" / "pages.js").read_text()
+    assert b'aria-live="polite"' in documentation.content
+    page_script = (ROOT / "migration" / "django" / "static" / "js" / "pages.js").read_text()
+    assert 'closest("button[data-copy-code]")' in page_script
+    assert 'document.getElementById(blockId)' in page_script
 
 
 @override_settings(ALLOWED_HOSTS=["localhost"])

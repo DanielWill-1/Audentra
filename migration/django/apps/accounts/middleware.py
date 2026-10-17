@@ -62,11 +62,11 @@ class SupabasePrincipalMiddleware:
             or request.path_info in settings.P7_PROTECTED_PATHS
         ):
             response["Cache-Control"] = "no-store"
-            response["Referrer-Policy"] = (
+            response.setdefault("Referrer-Policy", (
                 "no-referrer"
                 if request.path_info.startswith("/reset-password")
                 else "same-origin"
-            )
+            ))
         return response
 
 

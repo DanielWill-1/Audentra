@@ -1,0 +1,58 @@
+{
+  "run_id": "activity-recent-forms-dashboard-20261017",
+  "captured_at": "2026-10-17T14:39:36.559Z",
+  "source": "Current React/Vite routes with intercepted Supabase Auth/PostgREST synthetic fixture responses",
+  "source_provenance": {
+    "git_revision": "4fdd632bb18b5f7d9ee60c3073ef8da2aad65b61",
+    "worktree_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "file_count": 0,
+    "file_digests": {}
+  },
+  "fixture_identity": "11111111-1111-4111-8111-111111111111 (non-hosted synthetic account)",
+  "fixture_data": "Patient intake template, schedule, and filled-form row; all dummy-origin requests are intercepted",
+  "base_url": "http://127.0.0.1:15573",
+  "browser": "148.0.7778.96",
+  "waves": {
+    "w4": {
+      "wave": "W4",
+      "pages": [
+        {
+          "route": "/dashboard",
+          "viewport": {
+            "name": "desktop",
+            "width": 1440,
+            "height": 900
+          },
+          "response_status": 200,
+          "url": "/dashboard",
+          "title": "Audentra — Open-source voice-to-structured-data",
+          "heading": "What would you like to work on?",
+          "document_width": 1440,
+          "viewport_width": 1440,
+          "source_html_sha256": "7bae923b8230181849e0400ad0a6b510e20ed8290a18e56e48896069c485c3ed",
+          "console_errors": [],
+          "failed_requests": [],
+          "screenshot": "dashboard-desktop.png"
+        },
+        {
+          "route": "/dashboard",
+          "viewport": {
+            "name": "mobile",
+            "width": 390,
+            "height": 844
+          },
+          "response_status": 200,
+          "url": "/dashboard",
+          "title": "Audentra — Open-source voice-to-structured-data",
+          "heading": "What would you like to work on?",
+          "document_width": 390,
+          "viewport_width": 390,
+          "source_html_sha256": "7bae923b8230181849e0400ad0a6b510e20ed8290a18e56e48896069c485c3ed",
+          "console_errors": [],
+          "failed_requests": [],
+          "screenshot": "dashboard-mobile.png"
+        }
+      ]
+    }
+  }
+}

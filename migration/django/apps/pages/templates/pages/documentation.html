@@ -1,3 +1,198 @@
-{% extends 'base_public.html' %}
-{% block page_title %}Documentation & Architecture Guide | Audentra{% endblock %}
-{% block content %}{{ source_markup }}{% endblock %}
+{% extends "base_public.html" %}
+{% block page_title %}Documentation | Audentra{% endblock %}
+{% block content %}
+<section class="bg-background">
+  <div class="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
+    <header class="max-w-3xl">
+      <p class="text-xs font-semibold uppercase tracking-[0.18em] text-primary">VoiceForm guide</p>
+      <h1 class="mt-3 text-4xl font-semibold tracking-tight text-text-primary sm:text-5xl">Documentation</h1>
+      <p class="mt-5 text-lg leading-8 text-text-secondary">Learn how to build a reusable form, fill and review it, and keep the saved record. This guide describes the current Django application and its local development setup.</p>
+      <div class="mt-6 flex flex-wrap gap-3"><a class="button-primary" href="/templates">Open templates</a><a class="button-secondary" href="/AIVoiceAutoFill">Start a voice form</a></div>
+    </header>
+
+    <div class="mt-10 grid gap-8 lg:grid-cols-[14rem_minmax(0,1fr)]">
+      <nav class="h-fit rounded-xl border border-border bg-white p-4 lg:sticky lg:top-5" aria-label="Documentation sections">
+        <h2 class="mb-3 text-sm font-semibold text-text-primary">On this page</h2>
+        <ol class="grid grid-cols-2 gap-1 text-sm sm:grid-cols-3 lg:grid-cols-1">
+          <li><a class="block rounded-md px-2 py-1.5 text-text-secondary hover:bg-surface-subtle hover:text-text-primary" href="#quickstart">Start here</a></li>
+          <li><a class="block rounded-md px-2 py-1.5 text-text-secondary hover:bg-surface-subtle hover:text-text-primary" href="#pipeline">Voice workflow</a></li>
+          <li><a class="block rounded-md px-2 py-1.5 text-text-secondary hover:bg-surface-subtle hover:text-text-primary" href="#schema-engine">Template fields</a></li>
+          <li><a class="block rounded-md px-2 py-1.5 text-text-secondary hover:bg-surface-subtle hover:text-text-primary" href="#saved-forms">Saved forms</a></li>
+          <li><a class="block rounded-md px-2 py-1.5 text-text-secondary hover:bg-surface-subtle hover:text-text-primary" href="#activity">Activity</a></li>
+          <li><a class="block rounded-md px-2 py-1.5 text-text-secondary hover:bg-surface-subtle hover:text-text-primary" href="#guides">Sharing and schedules</a></li>
+          <li><a class="block rounded-md px-2 py-1.5 text-text-secondary hover:bg-surface-subtle hover:text-text-primary" href="#settings-preview">Settings preview</a></li>
+          <li><a class="block rounded-md px-2 py-1.5 text-text-secondary hover:bg-surface-subtle hover:text-text-primary" href="#voice-data">Voice and data</a></li>
+          <li><a class="block rounded-md px-2 py-1.5 text-text-secondary hover:bg-surface-subtle hover:text-text-primary" href="#local-start">Run locally</a></li>
+          <li><a class="block rounded-md px-2 py-1.5 text-text-secondary hover:bg-surface-subtle hover:text-text-primary" href="#http-reference">Internal HTTP routes</a></li>
+        </ol>
+      </nav>
+
+      <article class="min-w-0 space-y-12 text-[15px] leading-7 text-text-secondary">
+        <section id="quickstart" class="scroll-mt-8" aria-labelledby="quickstart-heading">
+          <p class="text-xs font-semibold uppercase tracking-[0.16em] text-primary">For form users</p>
+          <h2 id="quickstart-heading" class="mt-2 text-2xl font-semibold tracking-tight text-text-primary">From template to saved form</h2>
+          <ol class="mt-5 grid gap-3 sm:grid-cols-2">
+            <li class="rounded-xl border border-border bg-white p-5"><span class="text-xs font-semibold text-primary">01</span><h3 class="mt-2 font-semibold text-text-primary">Choose or create a template</h3><p class="mt-1 text-sm leading-6">A template defines the prompts and input types for the form. Create one in <a class="font-medium text-primary underline" href="/templates">Templates</a>, or open an existing one.</p></li>
+            <li class="rounded-xl border border-border bg-white p-5"><span class="text-xs font-semibold text-primary">02</span><h3 class="mt-2 font-semibold text-text-primary">Fill the form</h3><p class="mt-1 text-sm leading-6">Use typed answers or the voice assistant. You can choose a template first, or open <a class="font-medium text-primary underline" href="/AIVoiceAutoFill">AI Voice Auto-Fill</a> and select one.</p></li>
+            <li class="rounded-xl border border-border bg-white p-5"><span class="text-xs font-semibold text-primary">03</span><h3 class="mt-2 font-semibold text-text-primary">Review every value</h3><p class="mt-1 text-sm leading-6">Suggestions update a draft. Correct the visible fields yourself and submit only when they are ready.</p></li>
+            <li class="rounded-xl border border-border bg-white p-5"><span class="text-xs font-semibold text-primary">04</span><h3 class="mt-2 font-semibold text-text-primary">Save, then reopen the record</h3><p class="mt-1 text-sm leading-6">Choose <strong class="font-semibold text-text-primary">Save filled form</strong>. Find the record in <a class="font-medium text-primary underline" href="/filledtemplates">Saved forms</a> or the dashboard’s five most recent items.</p></li>
+          </ol>
+          <p class="mt-4 rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm leading-6 text-blue-950">The voice conversation is not a saved form. The record is created only when you review the form and save it.</p>
+        </section>
+
+        <section id="pipeline" class="scroll-mt-8" aria-labelledby="pipeline-heading">
+          <p class="text-xs font-semibold uppercase tracking-[0.16em] text-primary">Voice workflow</p>
+          <h2 id="pipeline-heading" class="mt-2 text-2xl font-semibold tracking-tight text-text-primary">Record, transcribe, review</h2>
+          <p class="mt-3">On <a class="font-medium text-primary underline" href="/AIVoiceAutoFill">AI Voice Auto-Fill</a>, select a template and either type an answer or select <strong class="font-semibold text-text-primary">Record</strong>. The browser asks for microphone access when recording starts. You may stop, listen, and transcribe the clip before sending, or send the recording with your message.</p>
+          <ol class="mt-5 space-y-3">
+            <li class="flex gap-3 rounded-lg border border-border bg-white p-4"><span class="font-mono text-xs font-semibold text-primary">1</span><span><strong class="font-semibold text-text-primary">Provide an answer.</strong> Use typed text if you do not want to record, or record a short response.</span></li>
+            <li class="flex gap-3 rounded-lg border border-border bg-white p-4"><span class="font-mono text-xs font-semibold text-primary">2</span><span><strong class="font-semibold text-text-primary">Check the transcript and suggestions.</strong> The assistant can ask a follow-up and propose values for matching fields. Invalid values can be rejected.</span></li>
+            <li class="flex gap-3 rounded-lg border border-border bg-white p-4"><span class="font-mono text-xs font-semibold text-primary">3</span><span><strong class="font-semibold text-text-primary">Review the form itself.</strong> Required fields and field types are checked when you submit. You can edit every displayed value before saving.</span></li>
+            <li class="flex gap-3 rounded-lg border border-border bg-white p-4"><span class="font-mono text-xs font-semibold text-primary">4</span><span><strong class="font-semibold text-text-primary">Save the completed form.</strong> A successful save opens its record in <a class="font-medium text-primary underline" href="/filledtemplates">Saved forms</a>.</span></li>
+          </ol>
+          <p class="mt-4 text-sm leading-6">If microphone access or a provider request fails, the page shows an error. You can still type answers and review the form. See <a class="font-medium text-primary underline" href="#voice-data">Voice and data use</a> before sending information for cloud processing.</p>
+        </section>
+
+        <section id="schema-engine" class="scroll-mt-8" aria-labelledby="fields-heading">
+          <p class="text-xs font-semibold uppercase tracking-[0.16em] text-primary">Template format</p>
+          <h2 id="fields-heading" class="mt-2 text-2xl font-semibold tracking-tight text-text-primary">Define fields in <code class="rounded bg-surface-subtle px-1.5 py-0.5 font-mono text-base">form_data.fields</code></h2>
+          <p class="mt-3">Templates store a list of field definitions. Each field has an <code class="rounded bg-surface-subtle px-1 font-mono text-sm">id</code> and a <code class="rounded bg-surface-subtle px-1 font-mono text-sm">type</code>; labels, required markers, and type-specific options describe the form. The application uses these definitions directly. It does not run a JSON Schema compiler.</p>
+          <div class="mt-5 overflow-hidden rounded-xl border border-slate-700 bg-slate-950">
+            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 px-4 py-3"><span class="font-mono text-xs text-slate-300">Example form_data.fields · JSON</span><div class="flex items-center gap-3"><span id="copy-feedback-fields" class="text-xs text-slate-200" role="status" aria-live="polite"></span><button hidden class="rounded-md border border-white/20 px-3 py-1 text-xs font-medium text-white hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-blue-300" type="button" data-copy-code="code-form-fields" aria-controls="copy-feedback-fields">Copy</button></div></div>
+            <pre class="max-w-full overflow-x-auto p-4 font-mono text-xs leading-6 text-slate-100 sm:text-sm"><code id="code-form-fields">{
+  "fields": [
+    {
+      "id": "full_name",
+      "label": "Full name",
+      "type": "text",
+      "required": true
+    },
+    {
+      "id": "email",
+      "label": "Email",
+      "type": "email",
+      "required": true
+    },
+    {
+      "id": "contact_method",
+      "label": "Preferred contact method",
+      "type": "select",
+      "required": true,
+      "options": ["Email", "Phone"]
+    },
+    {
+      "id": "age",
+      "label": "Age",
+      "type": "number",
+      "required": false,
+      "min": 0,
+      "max": 120
+    }
+  ]
+}</code></pre>
+          </div>
+          <div class="mt-5 grid gap-3 sm:grid-cols-2">
+            <div class="rounded-lg border border-border bg-white p-4"><h3 class="font-semibold text-text-primary">Supported field types</h3><p class="mt-1 text-sm leading-6"><code class="font-mono">text</code>, <code class="font-mono">email</code>, <code class="font-mono">number</code>, <code class="font-mono">date</code>, <code class="font-mono">select</code>, <code class="font-mono">radio</code>, and <code class="font-mono">checkbox</code>.</p></div>
+            <div class="rounded-lg border border-border bg-white p-4"><h3 class="font-semibold text-text-primary">Field-specific rules</h3><p class="mt-1 text-sm leading-6">Use <code class="font-mono">options</code> for select/radio fields, <code class="font-mono">min</code>/<code class="font-mono">max</code> for numbers, and <code class="font-mono">minLength</code>/<code class="font-mono">maxLength</code> for text. Required values are checked on form submission.</p></div>
+          </div>
+          <p class="mt-4 text-sm leading-6">Build a form with the visual editor on <a class="font-medium text-primary underline" href="/templates">Templates</a>, or export a template JSON file there. Keep field IDs stable: voice suggestions are matched to the field ID or label.</p>
+        </section>
+
+        <section id="saved-forms" class="scroll-mt-8" aria-labelledby="saved-heading">
+          <p class="text-xs font-semibold uppercase tracking-[0.16em] text-primary">Saved records</p>
+          <h2 id="saved-heading" class="mt-2 text-2xl font-semibold tracking-tight text-text-primary">Recent Forms and Saved forms</h2>
+          <p class="mt-3">The dashboard shows the five most recently saved form records. Select <strong class="font-semibold text-text-primary">View</strong> to open that exact record. The <a class="font-medium text-primary underline" href="/filledtemplates">Saved forms</a> page shows account-owned records in pages, lets you inspect a record, download its JSON, or delete it. Deletion requires confirmation and removes the saved record.</p>
+          <div class="mt-5 grid gap-3 sm:grid-cols-2">
+            <div class="rounded-lg border border-border bg-white p-4"><h3 class="font-semibold text-text-primary">Saved forms are completed records</h3><p class="mt-1 text-sm leading-6">The voice form’s conversation and unsaved field draft are not listed here. This release does not save or resume unfinished drafts.</p></div>
+            <div class="rounded-lg border border-border bg-white p-4"><h3 class="font-semibold text-text-primary">Download the data you need</h3><p class="mt-1 text-sm leading-6">Use <strong class="font-semibold text-text-primary">Download JSON</strong> on a record to get its stored field values and template reference.</p></div>
+          </div>
+        </section>
+
+        <section id="activity" class="scroll-mt-8" aria-labelledby="activity-heading">
+          <p class="text-xs font-semibold uppercase tracking-[0.16em] text-primary">Personal history</p>
+          <h2 id="activity-heading" class="mt-2 text-2xl font-semibold tracking-tight text-text-primary">Use the Activity Log</h2>
+          <p class="mt-3">The <a class="font-medium text-primary underline" href="/activitylog">Activity Log</a> records saved actions in five categories: Forms, Templates, Sharing, Reviews, and Schedules. Search by text, choose a category, and select a date range. Matching entries can be paged through. Links open a related record only while your account still has access.</p>
+          <p class="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-6 text-amber-950"><strong>Removing history is different from deleting a record.</strong> “Remove from activity” removes that history entry. It does not delete its saved form, template, share, review, or schedule.</p>
+        </section>
+
+        <section id="guides" class="scroll-mt-8 space-y-7" aria-labelledby="guides-heading">
+          <div><p class="text-xs font-semibold uppercase tracking-[0.16em] text-primary">Workspace guides</p><h2 id="guides-heading" class="mt-2 text-2xl font-semibold tracking-tight text-text-primary">Sharing, reviews, and schedules</h2><p class="mt-3">These features use the existing template and scheduler pages. They do not create external invitation links or deliver reminder messages.</p></div>
+          <section id="sharing-reviews" class="scroll-mt-8 rounded-xl border border-border bg-white p-5 sm:p-6" aria-labelledby="sharing-heading">
+            <h3 id="sharing-heading" class="text-lg font-semibold text-text-primary">Share a template or review it</h3>
+            <ol class="mt-3 list-decimal space-y-2 pl-5 text-sm leading-6"><li>Open <a class="font-medium text-primary underline" href="/templates#collaboration">Templates → Collaboration and reviews</a>.</li><li>To share, enter recipient UUIDs for existing accounts and choose a role. No invitation email or anonymous share link is created.</li><li>Request a review or submit a rating and comment for the owner. Reviewers can update their own review; the owner can process items in the review queue.</li></ol>
+          </section>
+          <section id="schedules" class="scroll-mt-8 rounded-xl border border-border bg-white p-5 sm:p-6" aria-labelledby="schedules-heading">
+            <h3 id="schedules-heading" class="text-lg font-semibold text-text-primary">Create and manage a schedule</h3>
+            <p class="mt-3 text-sm leading-6">Use <a class="font-medium text-primary underline" href="/scheduler">Scheduler</a> to create a form review, team meeting, training, maintenance, or other event. You can edit, complete, cancel, or delete an event and filter the calendar. Reminder minutes are stored as schedule metadata; reminder delivery is not active.</p>
+          </section>
+        </section>
+
+        <section id="settings-preview" class="scroll-mt-8" aria-labelledby="settings-heading">
+          <p class="text-xs font-semibold uppercase tracking-[0.16em] text-primary">Scheduler Settings</p>
+          <h2 id="settings-heading" class="mt-2 text-2xl font-semibold tracking-tight text-text-primary">Preview preferences in your browser</h2>
+          <p class="mt-3">The protected <a class="font-medium text-primary underline" href="/scheduler-settings">Scheduler Settings</a> page controls a fictional sample event and calendar. Duration, reminder offset, working hours/days, calendar view, week start, weekends, and compact display update that example only. They do not change actual events or availability rules.</p>
+          <ul class="mt-3 list-disc space-y-2 pl-5 text-sm leading-6"><li>Changes stay in a draft until you save. Discard restores the last saved version; Reset puts defaults in the draft.</li><li>Preferences are stored in this browser profile on this device. They are not synchronized between devices or used as server scheduling settings.</li><li>Import accepts supported preferences from the current version and older browser exports; export contains preferences only, with no account identifier.</li><li>Calendar connections and reminder delivery are unavailable. The page does not request calendar or notification permissions.</li></ul>
+        </section>
+
+        <section id="voice-data" class="scroll-mt-8" aria-labelledby="data-heading">
+          <p class="text-xs font-semibold uppercase tracking-[0.16em] text-primary">Voice and data use</p>
+          <h2 id="data-heading" class="mt-2 text-2xl font-semibold tracking-tight text-text-primary">Know what is sent for processing</h2>
+          <p class="mt-3">Microphone access starts only after you choose to record. If a real cloud provider is selected and configured, VoiceForm asks for consent before its first cloud AI request. Depending on the action, the app can send a recording for transcription, typed message and recent conversation with field definitions and current draft values for extraction, or reply text for speech synthesis. The current consent notice names Groq Whisper, GPT-OSS, and Orpheus for these configured paths. Mock mode uses local mock adapters and is not evidence that a live provider handled a request.</p>
+          <p class="mt-3">The consent notice explains that the app owner has Zero Data Retention disabled for the Groq organization and that Groq may log inference inputs and outputs for reliability or abuse investigations for up to 30 days, plus usage metadata. Provider configuration can vary between deployments. Review the current <a class="font-medium text-primary underline" href="/privacy">Privacy Notice</a> and <a class="font-medium text-primary underline" href="/security">Security page</a> before sending sensitive information.</p>
+          <p class="mt-3">Transcription upload limits are configured by the server and may also be constrained by the browser or hosting layer. The Django development default is 20 MiB for the request and audio limit; the effective limit may be lower elsewhere. Do not treat a client-side limit as a guarantee for another deployment.</p>
+        </section>
+
+        <section id="local-start" class="scroll-mt-8" aria-labelledby="local-heading">
+          <p class="text-xs font-semibold uppercase tracking-[0.16em] text-primary">For developers</p>
+          <h2 id="local-heading" class="mt-2 text-2xl font-semibold tracking-tight text-text-primary">Start the current app locally</h2>
+          <p class="mt-3">On Windows, install PowerShell, <code class="rounded bg-surface-subtle px-1 font-mono text-sm">uv</code>, the Supabase CLI, and Docker Desktop. Start Docker Desktop, open PowerShell at the repository root, and run:</p>
+          <div class="mt-4 overflow-hidden rounded-xl border border-slate-700 bg-slate-950">
+            <div class="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 px-4 py-3"><span class="font-mono text-xs text-slate-300">PowerShell · repository root</span><div class="flex items-center gap-3"><span id="copy-feedback-start" class="text-xs text-slate-200" role="status" aria-live="polite"></span><button hidden class="rounded-md border border-white/20 px-3 py-1 text-xs font-medium text-white hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-blue-300" type="button" data-copy-code="code-start-local" aria-controls="copy-feedback-start">Copy</button></div></div>
+            <pre class="max-w-full overflow-x-auto p-4 font-mono text-xs leading-6 text-slate-100 sm:text-sm"><code id="code-start-local">powershell -NoProfile -ExecutionPolicy Bypass -File .\start-local.ps1</code></pre>
+          </div>
+          <p class="mt-4">The launcher prepares the locked Python environment, starts local Supabase, applies forward migrations without a reset, builds static CSS, checks Django, and starts Waitress. Then open <a class="font-medium text-primary underline" href="http://127.0.0.1:8000/">http://127.0.0.1:8000/</a>. Stop the foreground server with <kbd class="rounded border border-border bg-white px-1.5 py-0.5 font-mono text-xs text-text-primary">Ctrl+C</kbd>.</p>
+          <p class="mt-3">Use <code class="rounded bg-surface-subtle px-1 font-mono text-sm">-Port 8001</code> when you need a different local port. First setup may download the managed Python, dependencies, and pinned Tailwind executable. The repository README and <code class="rounded bg-surface-subtle px-1 font-mono text-sm">docs/deployment/P10_LOCAL_RUNBOOK.md</code> contain recovery and manual setup details.</p>
+          <div class="mt-5 grid gap-3 sm:grid-cols-2">
+            <div class="rounded-lg border border-border bg-white p-4"><h3 class="font-semibold text-text-primary">Active stack</h3><p class="mt-1 text-sm leading-6">Python 3.12, Django 5.2, server-rendered Django templates, HTMX, JavaScript, and Tailwind CSS. Waitress serves the WSGI app and WhiteNoise serves static files. Supabase provides local Auth and PostgreSQL for the one-command development setup.</p></div>
+            <div class="rounded-lg border border-border bg-white p-4"><h3 class="font-semibold text-text-primary">Legacy application</h3><p class="mt-1 text-sm leading-6">The former React, Vite, Express, and Node workflow is archived under <code class="font-mono">legacy/</code>. It is retained for source reference and is not used by the current Django launcher or runtime.</p></div>
+          </div>
+        </section>
+
+        <section id="http-reference" class="scroll-mt-8" aria-labelledby="http-heading">
+          <p class="text-xs font-semibold uppercase tracking-[0.16em] text-primary">Developer reference</p>
+          <h2 id="http-heading" class="mt-2 text-2xl font-semibold tracking-tight text-text-primary">Internal HTTP routes</h2>
+          <p class="mt-3">These are internal routes used by the application, not a supported public SDK. Requests are POST-only and require the verified VoiceForm session, the normal Django CSRF token, the configured private-service boundary, and an enabled service. Cloud consent is required when the selected speech or AI provider is real rather than mock.</p>
+          <div class="mt-5 overflow-x-auto rounded-xl border border-border bg-white">
+            <table class="w-full min-w-[42rem] border-collapse text-left text-sm"><caption class="sr-only">Internal speech and AI HTTP endpoints</caption><thead class="bg-surface-subtle text-xs uppercase tracking-wide text-text-secondary"><tr><th scope="col" class="px-4 py-3">Route</th><th scope="col" class="px-4 py-3">Request body</th><th scope="col" class="px-4 py-3">Successful response</th></tr></thead><tbody class="divide-y divide-border">
+              <tr><th scope="row" class="px-4 py-4 font-mono text-xs text-text-primary">POST /api/transcribe/</th><td class="px-4 py-4">multipart/form-data: <code class="font-mono text-xs">audio</code> file and <code class="font-mono text-xs">mimeType</code>.</td><td class="px-4 py-4">JSON object with <code class="font-mono text-xs">transcript</code>.</td></tr>
+              <tr><th scope="row" class="px-4 py-4 font-mono text-xs text-text-primary">POST /api/tts/</th><td class="px-4 py-4">JSON object with <code class="font-mono text-xs">text</code>; optional <code class="font-mono text-xs">voice</code> and <code class="font-mono text-xs">options</code>.</td><td class="px-4 py-4">JSON object with base64 <code class="font-mono text-xs">audioContent</code> and <code class="font-mono text-xs">metadata</code>.</td></tr>
+              <tr><th scope="row" class="px-4 py-4 font-mono text-xs text-text-primary">POST /api/ai/extract/</th><td class="px-4 py-4">JSON object with <code class="font-mono text-xs">userInput</code>, <code class="font-mono text-xs">formFields</code>, <code class="font-mono text-xs">currentFormData</code>, and <code class="font-mono text-xs">conversation</code>.</td><td class="px-4 py-4">JSON object with assistant <code class="font-mono text-xs">response</code> and validated <code class="font-mono text-xs">extractedData</code>.</td></tr>
+            </tbody></table>
+          </div>
+          <p class="mt-4 text-sm leading-6">Errors are JSON objects with an <code class="font-mono">error</code> message. Depending on the failure, responses can report missing authentication, CSRF or private-boundary rejection, disabled service, invalid content, request size, rate limit, missing consent, or provider failure. Limits and provider availability come from the server configuration.</p>
+
+          <details class="mt-5 rounded-xl border border-border bg-white p-4"><summary class="cursor-pointer font-semibold text-text-primary">Example extraction request body</summary>
+            <div class="mt-4 overflow-hidden rounded-lg border border-slate-700 bg-slate-950">
+              <div class="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 px-4 py-3"><span class="font-mono text-xs text-slate-300">JSON · same-origin application request</span><div class="flex items-center gap-3"><span id="copy-feedback-extract" class="text-xs text-slate-200" role="status" aria-live="polite"></span><button hidden class="rounded-md border border-white/20 px-3 py-1 text-xs font-medium text-white hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-blue-300" type="button" data-copy-code="code-extract-request" aria-controls="copy-feedback-extract">Copy</button></div></div>
+              <pre class="max-w-full overflow-x-auto p-4 font-mono text-xs leading-6 text-slate-100 sm:text-sm"><code id="code-extract-request">{
+  "userInput": "My name is Ana and I prefer email.",
+  "formFields": [
+    {"id": "full_name", "label": "Full name", "type": "text", "required": true},
+    {"id": "contact_method", "label": "Preferred contact method", "type": "select", "options": ["Email", "Phone"]}
+  ],
+  "currentFormData": {},
+  "conversation": []
+}</code></pre>
+            </div>
+          </details>
+        </section>
+
+        <footer class="rounded-xl border border-border bg-white p-5 sm:p-6">
+          <h2 class="text-lg font-semibold text-text-primary">Need a hand?</h2>
+          <p class="mt-2 text-sm leading-6">The <a class="font-medium text-primary underline" href="/help-center">Help Center</a> has user guides. For data handling, read the <a class="font-medium text-primary underline" href="/privacy">Privacy Notice</a> and <a class="font-medium text-primary underline" href="/security">Security page</a>.</p>
+        </footer>
+      </article>
+    </div>
+  </div>
+</section>
+{% endblock %}

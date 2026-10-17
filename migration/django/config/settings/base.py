@@ -24,6 +24,7 @@ INSTALLED_APPS = [
     "apps.application.apps.ApplicationConfig",
     "apps.templates_app.apps.TemplatesAppConfig",
     "apps.scheduler.apps.SchedulerConfig",
+    "apps.activity.apps.ActivityConfig",
     "apps.voice",
 ]
 

@@ -1,0 +1,2968 @@
+{
+  "wave": "W7",
+  "captured_at": "2026-10-17T14:37:08.115Z",
+  "source": "Django DEBUG=False browser settings with isolated synthetic identity/data fixtures",
+  "fixture_identity": "11111111-1111-4111-8111-111111111111 (non-hosted synthetic account)",
+  "fixture_data": "Patient intake template, one schedule, one filled-form row; no database or provider writes",
+  "base_url": "http://127.0.0.1:18875",
+  "source_reference": {
+    "run_id": "activity-recent-forms-20261017",
+    "captured_at": "2026-10-17T14:16:54.816Z",
+    "git_revision": "4fdd632bb18b5f7d9ee60c3073ef8da2aad65b61",
+    "worktree_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "file_count": 0,
+    "source_manifest_sha256": "7c6994968860af23ff331cd4c4dc559bae00a26251d3df17065a3414574f8e27"
+  },
+  "browser": "148.0.7778.96",
+  "pages": [
+    {
+      "route": "/AIVoiceAutoFill",
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "response_status": 200,
+      "title": "AI Voice Auto-Fill · Audentra",
+      "heading": "AI Voice Auto-Fill",
+      "filled_titles": [],
+      "document_width": 1440,
+      "viewport_width": 1440,
+      "has_react_root": false,
+      "has_react_bootstrap": false,
+      "console_errors": [],
+      "expected_local_404_diagnostic": false,
+      "responses": [
+        {
+          "path": "/AIVoiceAutoFill",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_voice.js",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_media.js",
+          "status": 200
+        },
+        {
+          "path": "/AIVoiceAutoFill",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_voice.js",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_media.js",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        }
+      ],
+      "screenshot": "voice-autofill-desktop.png",
+      "comparison": {
+        "source_heading": "AI Voice Auto-Fill",
+        "django_heading": "AI Voice Auto-Fill",
+        "source_text_characters": 228,
+        "django_text_characters": 249,
+        "normalized_text_exact_match": false,
+        "source_section_headings": [
+          "Choose a Form Template",
+          "Patient intake"
+        ],
+        "django_section_headings": [
+          "Choose a Form Template",
+          "Patient intake"
+        ],
+        "source_field_names": [],
+        "django_field_names": [],
+        "source_field_names_missing_from_django": [],
+        "source_button_labels": [],
+        "django_button_labels": [],
+        "source_button_labels_missing_from_django": [],
+        "source_local_destinations": [
+          "/dashboard"
+        ],
+        "django_local_destinations": [
+          "/AIVoiceAutoFill?template=33333333-3333-4333-8333-333333333333",
+          "/dashboard"
+        ],
+        "django_link_labels": [
+          "Back to dashboard",
+          "Use template"
+        ],
+        "source_local_destinations_missing_from_django": [],
+        "source_text_tokens_missing_from_django": [
+          "PoweredChoose",
+          "TemplateSelect",
+          "assistancePatient",
+          "intakehealthcareSynthetic",
+          "template2",
+          "fieldsAI"
+        ],
+        "django_text_tokens_added": [
+          "←AI",
+          "Powered",
+          "Choose",
+          "Template",
+          "Select",
+          "template",
+          "template",
+          "assistance",
+          "Patient",
+          "intake",
+          "Healthcare",
+          "Synthetic",
+          "2",
+          "fields",
+          "Use"
+        ]
+      }
+    },
+    {
+      "route": "/AIVoiceAutoFill",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "response_status": 200,
+      "title": "AI Voice Auto-Fill · Audentra",
+      "heading": "AI Voice Auto-Fill",
+      "filled_titles": [],
+      "document_width": 390,
+      "viewport_width": 390,
+      "has_react_root": false,
+      "has_react_bootstrap": false,
+      "console_errors": [],
+      "expected_local_404_diagnostic": false,
+      "responses": [
+        {
+          "path": "/AIVoiceAutoFill",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_voice.js",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_media.js",
+          "status": 200
+        },
+        {
+          "path": "/AIVoiceAutoFill",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_voice.js",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_media.js",
+          "status": 200
+        }
+      ],
+      "screenshot": "voice-autofill-mobile.png",
+      "comparison": {
+        "source_heading": "AI Voice Auto-Fill",
+        "django_heading": "AI Voice Auto-Fill",
+        "source_text_characters": 228,
+        "django_text_characters": 249,
+        "normalized_text_exact_match": false,
+        "source_section_headings": [
+          "Choose a Form Template",
+          "Patient intake"
+        ],
+        "django_section_headings": [
+          "Choose a Form Template",
+          "Patient intake"
+        ],
+        "source_field_names": [],
+        "django_field_names": [],
+        "source_field_names_missing_from_django": [],
+        "source_button_labels": [],
+        "django_button_labels": [],
+        "source_button_labels_missing_from_django": [],
+        "source_local_destinations": [
+          "/dashboard"
+        ],
+        "django_local_destinations": [
+          "/AIVoiceAutoFill?template=33333333-3333-4333-8333-333333333333",
+          "/dashboard"
+        ],
+        "django_link_labels": [
+          "Back to dashboard",
+          "Use template"
+        ],
+        "source_local_destinations_missing_from_django": [],
+        "source_text_tokens_missing_from_django": [
+          "PoweredChoose",
+          "TemplateSelect",
+          "assistancePatient",
+          "intakehealthcareSynthetic",
+          "template2",
+          "fieldsAI"
+        ],
+        "django_text_tokens_added": [
+          "←AI",
+          "Powered",
+          "Choose",
+          "Template",
+          "Select",
+          "template",
+          "template",
+          "assistance",
+          "Patient",
+          "intake",
+          "Healthcare",
+          "Synthetic",
+          "2",
+          "fields",
+          "Use"
+        ]
+      }
+    },
+    {
+      "route": "/filledtemplates",
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "response_status": 200,
+      "title": "Saved forms · Audentra",
+      "heading": "Saved forms",
+      "filled_titles": [],
+      "document_width": 1440,
+      "viewport_width": 1440,
+      "has_react_root": false,
+      "has_react_bootstrap": false,
+      "console_errors": [],
+      "expected_local_404_diagnostic": false,
+      "responses": [
+        {
+          "path": "/filledtemplates",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/filledtemplates",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/filledtemplates",
+          "status": 200
+        },
+        {
+          "path": "/filledtemplates",
+          "status": 302
+        },
+        {
+          "path": "/filledtemplates",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/templates",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_templates.js",
+          "status": 200
+        },
+        {
+          "path": "/filledtemplates",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        }
+      ],
+      "screenshot": "filled-templates-desktop.png",
+      "comparison": {
+        "source_heading": "Your Filled Templates",
+        "django_heading": "Saved forms",
+        "source_text_characters": 215,
+        "django_text_characters": 155,
+        "normalized_text_exact_match": false,
+        "source_section_headings": [
+          "Form Data:"
+        ],
+        "django_section_headings": [
+          "Patient intake"
+        ],
+        "source_field_names": [],
+        "django_field_names": [
+          "action",
+          "csrfmiddlewaretoken",
+          "page",
+          "record_id"
+        ],
+        "source_field_names_missing_from_django": [],
+        "source_button_labels": [
+          "Back to Dashboard",
+          "Delete Template"
+        ],
+        "django_button_labels": [
+          "Delete"
+        ],
+        "source_button_labels_missing_from_django": [
+          "Back to Dashboard",
+          "Delete Template"
+        ],
+        "source_local_destinations": [],
+        "django_local_destinations": [
+          "/dashboard",
+          "/filledtemplates?download=55555555-5555-4555-8555-555555555555",
+          "/filledtemplates?record=55555555-5555-4555-8555-555555555555"
+        ],
+        "django_link_labels": [
+          "Back to Dashboard",
+          "Download JSON",
+          "View form"
+        ],
+        "source_local_destinations_missing_from_django": [],
+        "source_text_tokens_missing_from_django": [
+          "Your",
+          "Filled",
+          "TemplatesManage",
+          "all",
+          "previously",
+          "filled",
+          "templates",
+          "here.Back",
+          "DashboardTemplate",
+          "Name:",
+          "intakeFilled",
+          "on:",
+          "13:30:00Form",
+          "Data:patient_name:",
+          "Sample",
+          "Patientemail:",
+          "patient@example.invalid"
+        ],
+        "django_text_tokens_added": [
+          "Saved",
+          "formsReview",
+          "and",
+          "download",
+          "forms",
+          "saved",
+          "to",
+          "account.Back",
+          "Dashboard",
+          "intakeSaved",
+          "13:30:00",
+          "View",
+          "form",
+          "Download",
+          "JSON",
+          "Delete",
+          "Page",
+          "1"
+        ]
+      }
+    },
+    {
+      "route": "/filledtemplates",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "response_status": 200,
+      "title": "Saved forms · Audentra",
+      "heading": "Saved forms",
+      "filled_titles": [],
+      "document_width": 390,
+      "viewport_width": 390,
+      "has_react_root": false,
+      "has_react_bootstrap": false,
+      "console_errors": [],
+      "expected_local_404_diagnostic": false,
+      "responses": [
+        {
+          "path": "/filledtemplates",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/filledtemplates",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/filledtemplates",
+          "status": 200
+        },
+        {
+          "path": "/filledtemplates",
+          "status": 302
+        },
+        {
+          "path": "/filledtemplates",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/templates",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_templates.js",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/filledtemplates",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        }
+      ],
+      "screenshot": "filled-templates-mobile.png",
+      "comparison": {
+        "source_heading": "Your Filled Templates",
+        "django_heading": "Saved forms",
+        "source_text_characters": 215,
+        "django_text_characters": 155,
+        "normalized_text_exact_match": false,
+        "source_section_headings": [
+          "Form Data:"
+        ],
+        "django_section_headings": [
+          "Patient intake"
+        ],
+        "source_field_names": [],
+        "django_field_names": [
+          "action",
+          "csrfmiddlewaretoken",
+          "page",
+          "record_id"
+        ],
+        "source_field_names_missing_from_django": [],
+        "source_button_labels": [
+          "Back to Dashboard",
+          "Delete Template"
+        ],
+        "django_button_labels": [
+          "Delete"
+        ],
+        "source_button_labels_missing_from_django": [
+          "Back to Dashboard",
+          "Delete Template"
+        ],
+        "source_local_destinations": [],
+        "django_local_destinations": [
+          "/dashboard",
+          "/filledtemplates?download=55555555-5555-4555-8555-555555555555",
+          "/filledtemplates?record=55555555-5555-4555-8555-555555555555"
+        ],
+        "django_link_labels": [
+          "Back to Dashboard",
+          "Download JSON",
+          "View form"
+        ],
+        "source_local_destinations_missing_from_django": [],
+        "source_text_tokens_missing_from_django": [
+          "Your",
+          "Filled",
+          "TemplatesManage",
+          "all",
+          "previously",
+          "filled",
+          "templates",
+          "here.Back",
+          "DashboardTemplate",
+          "Name:",
+          "intakeFilled",
+          "on:",
+          "13:30:00Form",
+          "Data:patient_name:",
+          "Sample",
+          "Patientemail:",
+          "patient@example.invalid"
+        ],
+        "django_text_tokens_added": [
+          "Saved",
+          "formsReview",
+          "and",
+          "download",
+          "forms",
+          "saved",
+          "to",
+          "account.Back",
+          "Dashboard",
+          "intakeSaved",
+          "13:30:00",
+          "View",
+          "form",
+          "Download",
+          "JSON",
+          "Delete",
+          "Page",
+          "1"
+        ]
+      }
+    },
+    {
+      "route": "/activitylog",
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "response_status": 200,
+      "title": "Activity Log · Audentra",
+      "heading": "Activity Log",
+      "filled_titles": [],
+      "document_width": 1440,
+      "viewport_width": 1440,
+      "has_react_root": false,
+      "has_react_bootstrap": false,
+      "console_errors": [],
+      "expected_local_404_diagnostic": false,
+      "responses": [
+        {
+          "path": "/activitylog",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_activity.js",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/activitylog",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_activity.js",
+          "status": 200
+        },
+        {
+          "path": "/activitylog",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_activity.js",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/activitylog",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_activity.js",
+          "status": 200
+        },
+        {
+          "path": "/activitylog",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_activity.js",
+          "status": 200
+        },
+        {
+          "path": "/activitylog",
+          "status": 302
+        },
+        {
+          "path": "/activitylog",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_activity.js",
+          "status": 200
+        },
+        {
+          "path": "/dashboard",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_dashboard.js",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/activitylog",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_activity.js",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        }
+      ],
+      "screenshot": "activity-log-desktop.png",
+      "comparison": {
+        "source_heading": "Activity Log",
+        "django_heading": "Activity Log",
+        "source_text_characters": 964,
+        "django_text_characters": 980,
+        "normalized_text_exact_match": false,
+        "source_section_headings": [
+          "Activity Log",
+          "Patient Intake - John Smith",
+          "Safety Inspection Report",
+          "HR Onboarding Template",
+          "Alex Chen joined your team",
+          "Patient Intake Form shared",
+          "Employee Onboarding - Maria Garcia",
+          "Safety Inspection Checklist reviewed"
+        ],
+        "django_section_headings": [
+          "Activity entries",
+          "Form saved",
+          "Template created",
+          "Template shared",
+          "Review created",
+          "Schedule created"
+        ],
+        "source_field_names": [],
+        "django_field_names": [
+          "action",
+          "action",
+          "action",
+          "action",
+          "action",
+          "csrfmiddlewaretoken",
+          "csrfmiddlewaretoken",
+          "csrfmiddlewaretoken",
+          "csrfmiddlewaretoken",
+          "csrfmiddlewaretoken",
+          "event_id",
+          "event_id",
+          "event_id",
+          "event_id",
+          "event_id",
+          "page",
+          "page",
+          "page",
+          "page",
+          "page",
+          "q",
+          "q",
+          "q",
+          "q",
+          "q",
+          "q",
+          "range",
+          "range",
+          "range",
+          "range",
+          "range",
+          "range",
+          "type",
+          "type",
+          "type",
+          "type",
+          "type",
+          "type"
+        ],
+        "source_field_names_missing_from_django": [],
+        "source_button_labels": [
+          "Continue",
+          "Delete",
+          "Delete",
+          "Delete",
+          "Delete",
+          "Delete",
+          "Delete",
+          "Delete",
+          "Download",
+          "Download",
+          "Refresh"
+        ],
+        "django_button_labels": [
+          "Apply filters",
+          "Remove from activity",
+          "Remove from activity",
+          "Remove from activity",
+          "Remove from activity",
+          "Remove from activity"
+        ],
+        "source_button_labels_missing_from_django": [
+          "Continue",
+          "Delete",
+          "Delete",
+          "Delete",
+          "Delete",
+          "Delete",
+          "Delete",
+          "Delete",
+          "Download",
+          "Download",
+          "Refresh"
+        ],
+        "source_local_destinations": [
+          "/dashboard"
+        ],
+        "django_local_destinations": [
+          "/activitylog?q=&type=all&range=all&page=1",
+          "/dashboard",
+          "/filledtemplates?record=55555555-5555-4555-8555-555555555555",
+          "/scheduler?edit=44444444-4444-4444-8444-444444444444",
+          "/templates?focus=33333333-3333-4333-8333-333333333333#template-33333333-3333-4333-8333-333333333333",
+          "/templates?focus=33333333-3333-4333-8333-333333333333#template-33333333-3333-4333-8333-333333333333",
+          "/templates?focus=33333333-3333-4333-8333-333333333333#template-33333333-3333-4333-8333-333333333333"
+        ],
+        "django_link_labels": [
+          "Back to dashboard",
+          "Open schedule",
+          "Open template",
+          "Open template",
+          "Open template",
+          "Refresh",
+          "View saved form"
+        ],
+        "source_local_destinations_missing_from_django": [],
+        "source_text_tokens_missing_from_django": [
+          "LogView",
+          "all",
+          "your",
+          "your",
+          "recent",
+          "recent",
+          "actionsAll",
+          "TypesForm",
+          "CompletedTemplate",
+          "CreatedTeam",
+          "InvitationsTemplate",
+          "SharedForm",
+          "StartedTemplate",
+          "ReviewedAll",
+          "TimeTodayLast",
+          "DaysLast",
+          "30",
+          "Days7",
+          "activitiesActivity",
+          "LogShowing",
+          "actionsPatient",
+          "Intake",
+          "Intake",
+          "-",
+          "-",
+          "John",
+          "SmithCompletedCompleted",
+          "in",
+          "in",
+          "1:34",
+          "minutesOct",
+          "minutesOct",
+          "17,",
+          "17,",
+          "17,",
+          "2026,",
+          "2026,",
+          "2026,",
+          "2026,",
+          "2026,",
+          "2026,",
+          "2026,",
+          "05:46",
+          "PMYouForm",
+          "PMYouForm",
+          "CompletedSafety",
+          "CompletedSafety",
+          "Inspection",
+          "Inspection",
+          "ReportIn",
+          "ProgressStarted",
+          "minutes",
+          "agoOct",
+          "07:16",
+          "StartedHR",
+          "Onboarding",
+          "Onboarding",
+          "TemplateCreatedNew",
+          "createdOct",
+          "03:46",
+          "PMYouTemplate",
+          "PMYouTemplate",
+          "CreatedAlex",
+          "Chen",
+          "joined",
+          "teamJoinedAccepted",
+          "invitationOct",
+          "16,",
+          "07:46",
+          "07:46",
+          "07:46",
+          "07:46",
+          "PMSystemTeam",
+          "InvitationPatient",
+          "Form",
+          "sharedSharedShared",
+          "with",
+          "with",
+          "2",
+          "team",
+          "membersOct",
+          "15,",
+          "SharedEmployee",
+          "Maria",
+          "GarciaCompletedCompleted",
+          "2:15",
+          "14,",
+          "PMAlex",
+          "ChenForm",
+          "Checklist",
+          "reviewedReviewedApproved",
+          "5-star",
+          "ratingOct",
+          "13,",
+          "PMMaria",
+          "JohnsonTemplate",
+          "Reviewed"
+        ],
+        "django_text_tokens_added": [
+          "Activity",
+          "LogActions",
+          "saved",
+          "saved",
+          "saved",
+          "by",
+          "accountRefresh",
+          "This",
+          "is",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "personal",
+          "activity",
+          "history",
+          "for",
+          "forms,",
+          "templates,",
+          "sharing,",
+          "reviews,",
+          "schedules.",
+          "Times",
+          "date",
+          "filters",
+          "filters",
+          "use",
+          "UTC.",
+          "Search",
+          "CategoryAll",
+          "activityFormsTemplatesSharingReviewsSchedules",
+          "Date",
+          "rangeAll",
+          "timeToday",
+          "(UTC)Last",
+          "daysLast",
+          "days",
+          "Apply",
+          "entries5",
+          "matching",
+          "entries",
+          "·",
+          "·",
+          "·",
+          "·",
+          "page",
+          "1",
+          "1",
+          "FormsForm",
+          "savedPatient",
+          "intakeSaved",
+          "filled",
+          "form17/10/2026,",
+          "20:02:14",
+          "View",
+          "form",
+          "Remove",
+          "Remove",
+          "Remove",
+          "Remove",
+          "Remove",
+          "from",
+          "from",
+          "from",
+          "from",
+          "from",
+          "activityTemplatesTemplate",
+          "createdPatient",
+          "createdPatient",
+          "intakeCreated",
+          "intakeCreated",
+          "intakeCreated",
+          "template17/10/2026,",
+          "19:57:14",
+          "Open",
+          "Open",
+          "Open",
+          "Open",
+          "template",
+          "template",
+          "template",
+          "activitySharingTemplate",
+          "sharedPatient",
+          "intakeShared",
+          "Role:",
+          "viewer17/10/2026,",
+          "19:52:14",
+          "activityReviewsReview",
+          "review",
+          "Status:",
+          "Status:",
+          "pending17/10/2026,",
+          "19:47:14",
+          "activitySchedulesSchedule",
+          "createdReview",
+          "patient",
+          "scheduled",
+          "event",
+          "scheduled17/10/2026,",
+          "19:42:14",
+          "schedule",
+          "Page"
+        ]
+      }
+    },
+    {
+      "route": "/activitylog",
+      "viewport": {
+        "name": "mobile",
+        "width": 390,
+        "height": 844
+      },
+      "response_status": 200,
+      "title": "Activity Log · Audentra",
+      "heading": "Activity Log",
+      "filled_titles": [],
+      "document_width": 390,
+      "viewport_width": 390,
+      "has_react_root": false,
+      "has_react_bootstrap": false,
+      "console_errors": [],
+      "expected_local_404_diagnostic": false,
+      "responses": [
+        {
+          "path": "/activitylog",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_activity.js",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/activitylog",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_activity.js",
+          "status": 200
+        },
+        {
+          "path": "/activitylog",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_activity.js",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/activitylog",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_activity.js",
+          "status": 200
+        },
+        {
+          "path": "/activitylog",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_activity.js",
+          "status": 200
+        },
+        {
+          "path": "/activitylog",
+          "status": 302
+        },
+        {
+          "path": "/activitylog",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_activity.js",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/dashboard",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_dashboard.js",
+          "status": 200
+        },
+        {
+          "path": "/activitylog",
+          "status": 200
+        },
+        {
+          "path": "/static/css/app.css",
+          "status": 200
+        },
+        {
+          "path": "/static/js/shell.js",
+          "status": 200
+        },
+        {
+          "path": "/static/js/p7_activity.js",
+          "status": 200
+        },
+        {
+          "path": "/static/icons/sprite.svg",
+          "status": 200
+        }
+      ],
+      "screenshot": "activity-log-mobile.png",
+      "comparison": {
+        "source_heading": "Activity Log",
+        "django_heading": "Activity Log",
+        "source_text_characters": 964,
+        "django_text_characters": 980,
+        "normalized_text_exact_match": false,
+        "source_section_headings": [
+          "Activity Log",
+          "Patient Intake - John Smith",
+          "Safety Inspection Report",
+          "HR Onboarding Template",
+          "Alex Chen joined your team",
+          "Patient Intake Form shared",
+          "Employee Onboarding - Maria Garcia",
+          "Safety Inspection Checklist reviewed"
+        ],
+        "django_section_headings": [
+          "Activity entries",
+          "Form saved",
+          "Template created",
+          "Template shared",
+          "Review created",
+          "Schedule created"
+        ],
+        "source_field_names": [],
+        "django_field_names": [
+          "action",
+          "action",
+          "action",
+          "action",
+          "action",
+          "csrfmiddlewaretoken",
+          "csrfmiddlewaretoken",
+          "csrfmiddlewaretoken",
+          "csrfmiddlewaretoken",
+          "csrfmiddlewaretoken",
+          "event_id",
+          "event_id",
+          "event_id",
+          "event_id",
+          "event_id",
+          "page",
+          "page",
+          "page",
+          "page",
+          "page",
+          "q",
+          "q",
+          "q",
+          "q",
+          "q",
+          "q",
+          "range",
+          "range",
+          "range",
+          "range",
+          "range",
+          "range",
+          "type",
+          "type",
+          "type",
+          "type",
+          "type",
+          "type"
+        ],
+        "source_field_names_missing_from_django": [],
+        "source_button_labels": [
+          "Continue",
+          "Delete",
+          "Delete",
+          "Delete",
+          "Delete",
+          "Delete",
+          "Delete",
+          "Delete",
+          "Download",
+          "Download",
+          "Refresh"
+        ],
+        "django_button_labels": [
+          "Apply filters",
+          "Remove from activity",
+          "Remove from activity",
+          "Remove from activity",
+          "Remove from activity",
+          "Remove from activity"
+        ],
+        "source_button_labels_missing_from_django": [
+          "Continue",
+          "Delete",
+          "Delete",
+          "Delete",
+          "Delete",
+          "Delete",
+          "Delete",
+          "Delete",
+          "Download",
+          "Download",
+          "Refresh"
+        ],
+        "source_local_destinations": [
+          "/dashboard"
+        ],
+        "django_local_destinations": [
+          "/activitylog?q=&type=all&range=all&page=1",
+          "/dashboard",
+          "/filledtemplates?record=55555555-5555-4555-8555-555555555555",
+          "/scheduler?edit=44444444-4444-4444-8444-444444444444",
+          "/templates?focus=33333333-3333-4333-8333-333333333333#template-33333333-3333-4333-8333-333333333333",
+          "/templates?focus=33333333-3333-4333-8333-333333333333#template-33333333-3333-4333-8333-333333333333",
+          "/templates?focus=33333333-3333-4333-8333-333333333333#template-33333333-3333-4333-8333-333333333333"
+        ],
+        "django_link_labels": [
+          "Back to dashboard",
+          "Open schedule",
+          "Open template",
+          "Open template",
+          "Open template",
+          "Refresh",
+          "View saved form"
+        ],
+        "source_local_destinations_missing_from_django": [],
+        "source_text_tokens_missing_from_django": [
+          "LogView",
+          "all",
+          "your",
+          "your",
+          "recent",
+          "recent",
+          "actionsAll",
+          "TypesForm",
+          "CompletedTemplate",
+          "CreatedTeam",
+          "InvitationsTemplate",
+          "SharedForm",
+          "StartedTemplate",
+          "ReviewedAll",
+          "TimeTodayLast",
+          "DaysLast",
+          "30",
+          "Days7",
+          "activitiesActivity",
+          "LogShowing",
+          "actionsPatient",
+          "Intake",
+          "Intake",
+          "-",
+          "-",
+          "John",
+          "SmithCompletedCompleted",
+          "in",
+          "in",
+          "1:34",
+          "minutesOct",
+          "minutesOct",
+          "17,",
+          "17,",
+          "17,",
+          "2026,",
+          "2026,",
+          "2026,",
+          "2026,",
+          "2026,",
+          "2026,",
+          "2026,",
+          "05:46",
+          "PMYouForm",
+          "PMYouForm",
+          "CompletedSafety",
+          "CompletedSafety",
+          "Inspection",
+          "Inspection",
+          "ReportIn",
+          "ProgressStarted",
+          "minutes",
+          "agoOct",
+          "07:16",
+          "StartedHR",
+          "Onboarding",
+          "Onboarding",
+          "TemplateCreatedNew",
+          "createdOct",
+          "03:46",
+          "PMYouTemplate",
+          "PMYouTemplate",
+          "CreatedAlex",
+          "Chen",
+          "joined",
+          "teamJoinedAccepted",
+          "invitationOct",
+          "16,",
+          "07:46",
+          "07:46",
+          "07:46",
+          "07:46",
+          "PMSystemTeam",
+          "InvitationPatient",
+          "Form",
+          "sharedSharedShared",
+          "with",
+          "with",
+          "2",
+          "team",
+          "membersOct",
+          "15,",
+          "SharedEmployee",
+          "Maria",
+          "GarciaCompletedCompleted",
+          "2:15",
+          "14,",
+          "PMAlex",
+          "ChenForm",
+          "Checklist",
+          "reviewedReviewedApproved",
+          "5-star",
+          "ratingOct",
+          "13,",
+          "PMMaria",
+          "JohnsonTemplate",
+          "Reviewed"
+        ],
+        "django_text_tokens_added": [
+          "Activity",
+          "LogActions",
+          "saved",
+          "saved",
+          "saved",
+          "by",
+          "accountRefresh",
+          "This",
+          "is",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "a",
+          "personal",
+          "activity",
+          "history",
+          "for",
+          "forms,",
+          "templates,",
+          "sharing,",
+          "reviews,",
+          "schedules.",
+          "Times",
+          "date",
+          "filters",
+          "filters",
+          "use",
+          "UTC.",
+          "Search",
+          "CategoryAll",
+          "activityFormsTemplatesSharingReviewsSchedules",
+          "Date",
+          "rangeAll",
+          "timeToday",
+          "(UTC)Last",
+          "daysLast",
+          "days",
+          "Apply",
+          "entries5",
+          "matching",
+          "entries",
+          "·",
+          "·",
+          "·",
+          "·",
+          "page",
+          "1",
+          "1",
+          "FormsForm",
+          "savedPatient",
+          "intakeSaved",
+          "filled",
+          "form17/10/2026,",
+          "20:02:16",
+          "View",
+          "form",
+          "Remove",
+          "Remove",
+          "Remove",
+          "Remove",
+          "Remove",
+          "from",
+          "from",
+          "from",
+          "from",
+          "from",
+          "activityTemplatesTemplate",
+          "createdPatient",
+          "createdPatient",
+          "intakeCreated",
+          "intakeCreated",
+          "intakeCreated",
+          "template17/10/2026,",
+          "19:57:16",
+          "Open",
+          "Open",
+          "Open",
+          "Open",
+          "template",
+          "template",
+          "template",
+          "activitySharingTemplate",
+          "sharedPatient",
+          "intakeShared",
+          "Role:",
+          "viewer17/10/2026,",
+          "19:52:16",
+          "activityReviewsReview",
+          "review",
+          "Status:",
+          "Status:",
+          "pending17/10/2026,",
+          "19:47:16",
+          "activitySchedulesSchedule",
+          "createdReview",
+          "patient",
+          "scheduled",
+          "event",
+          "scheduled17/10/2026,",
+          "19:42:16",
+          "schedule",
+          "Page"
+        ]
+      }
+    }
+  ],
+  "interactions": [
+    {
+      "route": "/AIVoiceAutoFill",
+      "state": "keyboard Enter activates the selected synthetic template chooser link and exposes the review, assistant, recorder, and save paths at desktop"
+    },
+    {
+      "route": "/AIVoiceAutoFill",
+      "state": "keyboard Enter activates the selected synthetic template chooser link and exposes the review, assistant, recorder, and save paths at mobile"
+    },
+    {
+      "route": "/filledtemplates",
+      "state": "summary opens the exact saved record, JSON download preserves stored answers, and confirmed deletion returns to an honest empty state"
+    },
+    {
+      "route": "/filledtemplates",
+      "state": "synthetic listing failure displays safe recovery feedback and an empty state at desktop"
+    },
+    {
+      "route": "/filledtemplates",
+      "state": "summary opens the exact saved record, JSON download preserves stored answers, and confirmed deletion returns to an honest empty state"
+    },
+    {
+      "route": "/filledtemplates",
+      "state": "synthetic listing failure displays safe recovery feedback and an empty state at mobile"
+    },
+    {
+      "route": "/activitylog",
+      "state": "server-rendered activity categories and filters work; browser-local examples do not affect entries; confirmed activity removal leaves the saved form intact"
+    },
+    {
+      "route": "/activitylog",
+      "state": "a separate synthetic account receives an honest empty activity state"
+    },
+    {
+      "route": "/activitylog",
+      "state": "server-rendered activity categories and filters work; browser-local examples do not affect entries; confirmed activity removal leaves the saved form intact"
+    },
+    {
+      "route": "/activitylog",
+      "state": "a separate synthetic account receives an honest empty activity state"
+    }
+  ],
+  "route_contracts": [
+    {
+      "route": "/AIVoiceAutoFill",
+      "viewport": "desktop",
+      "passed": true,
+      "source_html_sha256": "08bc92735fbf8092a6c5a3d7ae7ae67e8441b8bd1936371ee7bad802820a9286",
+      "django_html_sha256": "3823ce52446ed720d1c5c760208eabfeb1de8194c67fcf0d9f6d9379a487bba1",
+      "source_run_id": "activity-recent-forms-20261017",
+      "source_worktree_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_heading": "AI Voice Auto-Fill",
+      "expected_heading": "AI Voice Auto-Fill",
+      "required_sections": [
+        "Choose a Form Template"
+      ],
+      "required_fields": [],
+      "required_controls": [
+        "Use template"
+      ],
+      "required_destinations": [
+        "/dashboard",
+        "/AIVoiceAutoFill?template=33333333-3333-4333-8333-333333333333"
+      ],
+      "accepted_source_differences": [
+        "Both captures start at template selection; the source template card has no button or link semantics, so Django exposes an accessible Use template button. Selected-template review is captured and tested separately.",
+        "Browser API interception is synthetic and does not establish live provider or hosted persistence.",
+        "The Django chooser adds a direct return link to the dashboard."
+      ],
+      "mapped_source_sections": {},
+      "mapped_source_fields": {},
+      "mapped_source_field_types": {},
+      "mapped_source_field_labels": {},
+      "mapped_source_field_required": {},
+      "mapped_source_controls": {},
+      "source_contract": {
+        "sections": [
+          "Choose a Form Template",
+          "Patient intake"
+        ],
+        "fields": [],
+        "buttons": [],
+        "links": [],
+        "destinations": [
+          "/dashboard"
+        ],
+        "copy_blocks": [
+          "Speak naturally to fill forms with AI assistance",
+          "Select a form template to fill using AI voice assistance",
+          "Synthetic browser-capture template"
+        ]
+      },
+      "django_contract": {
+        "sections": [
+          "Choose a Form Template",
+          "Patient intake"
+        ],
+        "fields": [],
+        "buttons": [],
+        "links": [
+          "Back to dashboard",
+          "Use template"
+        ],
+        "destinations": [
+          "/AIVoiceAutoFill?template=33333333-3333-4333-8333-333333333333",
+          "/dashboard"
+        ],
+        "copy_blocks": [
+          "Speak naturally to fill forms with AI assistance",
+          "Select a form template to fill using AI voice assistance"
+        ]
+      },
+      "source_feature_counts": {
+        "sections": 2,
+        "fields": 0,
+        "controls": 0,
+        "destinations": 1,
+        "copy_blocks": 3
+      }
+    },
+    {
+      "route": "/AIVoiceAutoFill",
+      "viewport": "mobile",
+      "passed": true,
+      "source_html_sha256": "08bc92735fbf8092a6c5a3d7ae7ae67e8441b8bd1936371ee7bad802820a9286",
+      "django_html_sha256": "3823ce52446ed720d1c5c760208eabfeb1de8194c67fcf0d9f6d9379a487bba1",
+      "source_run_id": "activity-recent-forms-20261017",
+      "source_worktree_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_heading": "AI Voice Auto-Fill",
+      "expected_heading": "AI Voice Auto-Fill",
+      "required_sections": [
+        "Choose a Form Template"
+      ],
+      "required_fields": [],
+      "required_controls": [
+        "Use template"
+      ],
+      "required_destinations": [
+        "/dashboard",
+        "/AIVoiceAutoFill?template=33333333-3333-4333-8333-333333333333"
+      ],
+      "accepted_source_differences": [
+        "Both captures start at template selection; the source template card has no button or link semantics, so Django exposes an accessible Use template button. Selected-template review is captured and tested separately.",
+        "Browser API interception is synthetic and does not establish live provider or hosted persistence.",
+        "The Django chooser adds a direct return link to the dashboard."
+      ],
+      "mapped_source_sections": {},
+      "mapped_source_fields": {},
+      "mapped_source_field_types": {},
+      "mapped_source_field_labels": {},
+      "mapped_source_field_required": {},
+      "mapped_source_controls": {},
+      "source_contract": {
+        "sections": [
+          "Choose a Form Template",
+          "Patient intake"
+        ],
+        "fields": [],
+        "buttons": [],
+        "links": [],
+        "destinations": [
+          "/dashboard"
+        ],
+        "copy_blocks": [
+          "Speak naturally to fill forms with AI assistance",
+          "Select a form template to fill using AI voice assistance",
+          "Synthetic browser-capture template"
+        ]
+      },
+      "django_contract": {
+        "sections": [
+          "Choose a Form Template",
+          "Patient intake"
+        ],
+        "fields": [],
+        "buttons": [],
+        "links": [
+          "Back to dashboard",
+          "Use template"
+        ],
+        "destinations": [
+          "/AIVoiceAutoFill?template=33333333-3333-4333-8333-333333333333",
+          "/dashboard"
+        ],
+        "copy_blocks": [
+          "Speak naturally to fill forms with AI assistance",
+          "Select a form template to fill using AI voice assistance"
+        ]
+      },
+      "source_feature_counts": {
+        "sections": 2,
+        "fields": 0,
+        "controls": 0,
+        "destinations": 1,
+        "copy_blocks": 3
+      }
+    },
+    {
+      "route": "/filledtemplates",
+      "viewport": "desktop",
+      "passed": true,
+      "source_html_sha256": "5a6c884f24de2e95a120d42acf47bb0532333d79f817c525e3f1aa684f640f1e",
+      "django_html_sha256": "2938724cc5183f850fc3d2a4959b530c92ebdffc6c84778fe47050357d61f214",
+      "source_run_id": "activity-recent-forms-20261017",
+      "source_worktree_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_heading": "Your Filled Templates",
+      "expected_heading": "Saved forms",
+      "required_sections": [],
+      "required_fields": [
+        "action",
+        "record_id"
+      ],
+      "required_controls": [
+        "View form",
+        "Download JSON",
+        "Delete",
+        "Back to Dashboard"
+      ],
+      "required_destinations": [
+        "/dashboard",
+        "/filledtemplates?record=55555555-5555-4555-8555-555555555555",
+        "/filledtemplates?download=55555555-5555-4555-8555-555555555555"
+      ],
+      "accepted_source_differences": [
+        "Saved-form cards use owner-scoped summaries; answer values are shown only after opening the exact record or downloading its JSON.",
+        "The list supports bounded server pagination and POST/redirect/GET deletion. Browser fixtures are synthetic and do not prove hosted persistence."
+      ],
+      "mapped_source_sections": {},
+      "mapped_source_fields": {},
+      "mapped_source_field_types": {},
+      "mapped_source_field_labels": {},
+      "mapped_source_field_required": {},
+      "mapped_source_controls": {
+        "Delete Template": "Delete"
+      },
+      "source_contract": {
+        "sections": [
+          "Form Data:"
+        ],
+        "fields": [],
+        "buttons": [
+          "Back to Dashboard",
+          "Delete Template"
+        ],
+        "links": [],
+        "destinations": [],
+        "copy_blocks": [
+          "Manage all your previously filled templates here."
+        ]
+      },
+      "django_contract": {
+        "sections": [
+          "Patient intake"
+        ],
+        "fields": [
+          {
+            "identity": "csrfmiddlewaretoken",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "action",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "record_id",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "page",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          }
+        ],
+        "buttons": [
+          "Delete"
+        ],
+        "links": [
+          "Back to Dashboard",
+          "Download JSON",
+          "View form"
+        ],
+        "destinations": [
+          "/dashboard",
+          "/filledtemplates?download=55555555-5555-4555-8555-555555555555",
+          "/filledtemplates?record=55555555-5555-4555-8555-555555555555"
+        ],
+        "copy_blocks": [
+          "Review and download forms saved to your account."
+        ]
+      },
+      "source_feature_counts": {
+        "sections": 1,
+        "fields": 0,
+        "controls": 2,
+        "destinations": 0,
+        "copy_blocks": 1
+      }
+    },
+    {
+      "route": "/filledtemplates",
+      "viewport": "mobile",
+      "passed": true,
+      "source_html_sha256": "5a6c884f24de2e95a120d42acf47bb0532333d79f817c525e3f1aa684f640f1e",
+      "django_html_sha256": "da6c4eaae6bd9481ede5fb58b3fddcb121e7a25333679bb131b894874eb78758",
+      "source_run_id": "activity-recent-forms-20261017",
+      "source_worktree_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_heading": "Your Filled Templates",
+      "expected_heading": "Saved forms",
+      "required_sections": [],
+      "required_fields": [
+        "action",
+        "record_id"
+      ],
+      "required_controls": [
+        "View form",
+        "Download JSON",
+        "Delete",
+        "Back to Dashboard"
+      ],
+      "required_destinations": [
+        "/dashboard",
+        "/filledtemplates?record=55555555-5555-4555-8555-555555555555",
+        "/filledtemplates?download=55555555-5555-4555-8555-555555555555"
+      ],
+      "accepted_source_differences": [
+        "Saved-form cards use owner-scoped summaries; answer values are shown only after opening the exact record or downloading its JSON.",
+        "The list supports bounded server pagination and POST/redirect/GET deletion. Browser fixtures are synthetic and do not prove hosted persistence."
+      ],
+      "mapped_source_sections": {},
+      "mapped_source_fields": {},
+      "mapped_source_field_types": {},
+      "mapped_source_field_labels": {},
+      "mapped_source_field_required": {},
+      "mapped_source_controls": {
+        "Delete Template": "Delete"
+      },
+      "source_contract": {
+        "sections": [
+          "Form Data:"
+        ],
+        "fields": [],
+        "buttons": [
+          "Back to Dashboard",
+          "Delete Template"
+        ],
+        "links": [],
+        "destinations": [],
+        "copy_blocks": [
+          "Manage all your previously filled templates here."
+        ]
+      },
+      "django_contract": {
+        "sections": [
+          "Patient intake"
+        ],
+        "fields": [
+          {
+            "identity": "csrfmiddlewaretoken",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "action",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "record_id",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "page",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          }
+        ],
+        "buttons": [
+          "Delete"
+        ],
+        "links": [
+          "Back to Dashboard",
+          "Download JSON",
+          "View form"
+        ],
+        "destinations": [
+          "/dashboard",
+          "/filledtemplates?download=55555555-5555-4555-8555-555555555555",
+          "/filledtemplates?record=55555555-5555-4555-8555-555555555555"
+        ],
+        "copy_blocks": [
+          "Review and download forms saved to your account."
+        ]
+      },
+      "source_feature_counts": {
+        "sections": 1,
+        "fields": 0,
+        "controls": 2,
+        "destinations": 0,
+        "copy_blocks": 1
+      }
+    },
+    {
+      "route": "/activitylog",
+      "viewport": "desktop",
+      "passed": true,
+      "source_html_sha256": "14c52402e5276e2b97eebe989fa6d13c51e74f99d7a6d9714986a6b10fb36810",
+      "django_html_sha256": "ff7026af8ce60996887d80cfc7344d53108f9a4a865f60d34617a071b58ce561",
+      "source_run_id": "activity-recent-forms-20261017",
+      "source_worktree_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_heading": "Activity Log",
+      "expected_heading": "Activity Log",
+      "required_sections": [
+        "Activity entries"
+      ],
+      "required_fields": [
+        "q",
+        "type",
+        "range",
+        "event_id"
+      ],
+      "required_controls": [
+        "Refresh",
+        "Apply filters",
+        "Remove from activity"
+      ],
+      "required_destinations": [
+        "/dashboard",
+        "/filledtemplates?record=55555555-5555-4555-8555-555555555555",
+        "/templates?focus=33333333-3333-4333-8333-333333333333#template-33333333-3333-4333-8333-333333333333",
+        "/scheduler?edit=44444444-4444-4444-8444-444444444444"
+      ],
+      "accepted_source_differences": [
+        "The active page now renders owner-scoped database events with GET filters and CSRF-protected removal. Browser fixtures exercise page behavior only; the local PostgreSQL acceptance check proves triggers, RLS, and transaction behavior."
+      ],
+      "mapped_source_sections": {},
+      "mapped_source_fields": {},
+      "mapped_source_field_types": {},
+      "mapped_source_field_labels": {
+        "Search activity...": "Search activity"
+      },
+      "mapped_source_field_required": {},
+      "mapped_source_controls": {
+        "Download": "Download JSON",
+        "Continue": "View saved form",
+        "Delete": "Remove from activity"
+      },
+      "source_contract": {
+        "sections": [
+          "Activity Log",
+          "Patient Intake - John Smith",
+          "Safety Inspection Report",
+          "HR Onboarding Template",
+          "Alex Chen joined your team",
+          "Patient Intake Form shared",
+          "Employee Onboarding - Maria Garcia",
+          "Safety Inspection Checklist reviewed"
+        ],
+        "fields": [
+          {
+            "identity": "",
+            "label": "Search activity...",
+            "type": "text",
+            "required": false,
+            "options": []
+          }
+        ],
+        "buttons": [
+          "Continue",
+          "Delete",
+          "Delete",
+          "Delete",
+          "Delete",
+          "Delete",
+          "Delete",
+          "Delete",
+          "Download",
+          "Download",
+          "Refresh"
+        ],
+        "links": [],
+        "destinations": [
+          "/dashboard"
+        ],
+        "copy_blocks": [
+          "View all your recent activity and actions",
+          "Showing your recent activity and actions",
+          "Completed in 1:34 minutes",
+          "Started 30 minutes ago",
+          "New template created",
+          "Accepted invitation",
+          "Shared with 2 team members",
+          "Completed in 2:15 minutes",
+          "Approved with 5-star rating"
+        ]
+      },
+      "django_contract": {
+        "sections": [
+          "Activity entries",
+          "Form saved",
+          "Template created",
+          "Template shared",
+          "Review created",
+          "Schedule created"
+        ],
+        "fields": [
+          {
+            "identity": "q",
+            "label": "Search activity",
+            "type": "search",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "type",
+            "label": "Category",
+            "type": "select-one",
+            "required": false,
+            "options": [
+              "All activity",
+              "Forms",
+              "Templates",
+              "Sharing",
+              "Reviews",
+              "Schedules"
+            ]
+          },
+          {
+            "identity": "range",
+            "label": "Date range",
+            "type": "select-one",
+            "required": false,
+            "options": [
+              "All time",
+              "Today (UTC)",
+              "Last 7 days",
+              "Last 30 days"
+            ]
+          },
+          {
+            "identity": "csrfmiddlewaretoken",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "action",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "event_id",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "q",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "type",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "range",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "page",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "csrfmiddlewaretoken",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "action",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "event_id",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "q",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "type",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "range",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "page",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "csrfmiddlewaretoken",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "action",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "event_id",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "q",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "type",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "range",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "page",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "csrfmiddlewaretoken",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "action",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "event_id",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "q",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "type",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "range",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "page",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "csrfmiddlewaretoken",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "action",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "event_id",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "q",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "type",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "range",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "page",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          }
+        ],
+        "buttons": [
+          "Apply filters",
+          "Remove from activity",
+          "Remove from activity",
+          "Remove from activity",
+          "Remove from activity",
+          "Remove from activity"
+        ],
+        "links": [
+          "Back to dashboard",
+          "Open schedule",
+          "Open template",
+          "Open template",
+          "Open template",
+          "Refresh",
+          "View saved form"
+        ],
+        "destinations": [
+          "/activitylog?q=&type=all&range=all&page=1",
+          "/dashboard",
+          "/filledtemplates?record=55555555-5555-4555-8555-555555555555",
+          "/scheduler?edit=44444444-4444-4444-8444-444444444444",
+          "/templates?focus=33333333-3333-4333-8333-333333333333#template-33333333-3333-4333-8333-333333333333",
+          "/templates?focus=33333333-3333-4333-8333-333333333333#template-33333333-3333-4333-8333-333333333333",
+          "/templates?focus=33333333-3333-4333-8333-333333333333#template-33333333-3333-4333-8333-333333333333"
+        ],
+        "copy_blocks": [
+          "Actions saved by your account",
+          "This is a personal activity history for saved forms, templates, sharing, reviews, and schedules. Times and date filters use UTC.",
+          "5 matching entries · page 1"
+        ]
+      },
+      "source_feature_counts": {
+        "sections": 8,
+        "fields": 1,
+        "controls": 11,
+        "destinations": 1,
+        "copy_blocks": 9
+      }
+    },
+    {
+      "route": "/activitylog",
+      "viewport": "mobile",
+      "passed": true,
+      "source_html_sha256": "14c52402e5276e2b97eebe989fa6d13c51e74f99d7a6d9714986a6b10fb36810",
+      "django_html_sha256": "d31e3e92fc554ff86d6b892f89e9f31d4873efc06dd4e75625e41689c02f4886",
+      "source_run_id": "activity-recent-forms-20261017",
+      "source_worktree_digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_heading": "Activity Log",
+      "expected_heading": "Activity Log",
+      "required_sections": [
+        "Activity entries"
+      ],
+      "required_fields": [
+        "q",
+        "type",
+        "range",
+        "event_id"
+      ],
+      "required_controls": [
+        "Refresh",
+        "Apply filters",
+        "Remove from activity"
+      ],
+      "required_destinations": [
+        "/dashboard",
+        "/filledtemplates?record=55555555-5555-4555-8555-555555555555",
+        "/templates?focus=33333333-3333-4333-8333-333333333333#template-33333333-3333-4333-8333-333333333333",
+        "/scheduler?edit=44444444-4444-4444-8444-444444444444"
+      ],
+      "accepted_source_differences": [
+        "The active page now renders owner-scoped database events with GET filters and CSRF-protected removal. Browser fixtures exercise page behavior only; the local PostgreSQL acceptance check proves triggers, RLS, and transaction behavior."
+      ],
+      "mapped_source_sections": {},
+      "mapped_source_fields": {},
+      "mapped_source_field_types": {},
+      "mapped_source_field_labels": {
+        "Search activity...": "Search activity"
+      },
+      "mapped_source_field_required": {},
+      "mapped_source_controls": {
+        "Download": "Download JSON",
+        "Continue": "View saved form",
+        "Delete": "Remove from activity"
+      },
+      "source_contract": {
+        "sections": [
+          "Activity Log",
+          "Patient Intake - John Smith",
+          "Safety Inspection Report",
+          "HR Onboarding Template",
+          "Alex Chen joined your team",
+          "Patient Intake Form shared",
+          "Employee Onboarding - Maria Garcia",
+          "Safety Inspection Checklist reviewed"
+        ],
+        "fields": [
+          {
+            "identity": "",
+            "label": "Search activity...",
+            "type": "text",
+            "required": false,
+            "options": []
+          }
+        ],
+        "buttons": [
+          "Continue",
+          "Delete",
+          "Delete",
+          "Delete",
+          "Delete",
+          "Delete",
+          "Delete",
+          "Delete",
+          "Download",
+          "Download",
+          "Refresh"
+        ],
+        "links": [],
+        "destinations": [
+          "/dashboard"
+        ],
+        "copy_blocks": [
+          "View all your recent activity and actions",
+          "Showing your recent activity and actions",
+          "Completed in 1:34 minutes",
+          "Started 30 minutes ago",
+          "New template created",
+          "Accepted invitation",
+          "Shared with 2 team members",
+          "Completed in 2:15 minutes",
+          "Approved with 5-star rating"
+        ]
+      },
+      "django_contract": {
+        "sections": [
+          "Activity entries",
+          "Form saved",
+          "Template created",
+          "Template shared",
+          "Review created",
+          "Schedule created"
+        ],
+        "fields": [
+          {
+            "identity": "q",
+            "label": "Search activity",
+            "type": "search",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "type",
+            "label": "Category",
+            "type": "select-one",
+            "required": false,
+            "options": [
+              "All activity",
+              "Forms",
+              "Templates",
+              "Sharing",
+              "Reviews",
+              "Schedules"
+            ]
+          },
+          {
+            "identity": "range",
+            "label": "Date range",
+            "type": "select-one",
+            "required": false,
+            "options": [
+              "All time",
+              "Today (UTC)",
+              "Last 7 days",
+              "Last 30 days"
+            ]
+          },
+          {
+            "identity": "csrfmiddlewaretoken",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "action",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "event_id",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "q",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "type",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "range",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "page",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "csrfmiddlewaretoken",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "action",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "event_id",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "q",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "type",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "range",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "page",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "csrfmiddlewaretoken",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "action",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "event_id",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "q",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "type",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "range",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "page",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "csrfmiddlewaretoken",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "action",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "event_id",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "q",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "type",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "range",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "page",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "csrfmiddlewaretoken",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "action",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "event_id",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "q",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "type",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "range",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          },
+          {
+            "identity": "page",
+            "label": "",
+            "type": "hidden",
+            "required": false,
+            "options": []
+          }
+        ],
+        "buttons": [
+          "Apply filters",
+          "Remove from activity",
+          "Remove from activity",
+          "Remove from activity",
+          "Remove from activity",
+          "Remove from activity"
+        ],
+        "links": [
+          "Back to dashboard",
+          "Open schedule",
+          "Open template",
+          "Open template",
+          "Open template",
+          "Refresh",
+          "View saved form"
+        ],
+        "destinations": [
+          "/activitylog?q=&type=all&range=all&page=1",
+          "/dashboard",
+          "/filledtemplates?record=55555555-5555-4555-8555-555555555555",
+          "/scheduler?edit=44444444-4444-4444-8444-444444444444",
+          "/templates?focus=33333333-3333-4333-8333-333333333333#template-33333333-3333-4333-8333-333333333333",
+          "/templates?focus=33333333-3333-4333-8333-333333333333#template-33333333-3333-4333-8333-333333333333",
+          "/templates?focus=33333333-3333-4333-8333-333333333333#template-33333333-3333-4333-8333-333333333333"
+        ],
+        "copy_blocks": [
+          "Actions saved by your account",
+          "This is a personal activity history for saved forms, templates, sharing, reviews, and schedules. Times and date filters use UTC.",
+          "5 matching entries · page 1"
+        ]
+      },
+      "source_feature_counts": {
+        "sections": 8,
+        "fields": 1,
+        "controls": 11,
+        "destinations": 1,
+        "copy_blocks": 9
+      }
+    }
+  ],
+  "negative_control_checks": []
+}

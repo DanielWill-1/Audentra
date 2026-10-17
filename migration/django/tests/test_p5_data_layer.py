@@ -10,6 +10,7 @@ from uuid import UUID
 import pytest
 from apps.accounts.models import Profile
 from apps.accounts.principals import SupabaseUser
+from apps.activity.models import ActivityEvent
 from apps.db.pooler import connection_profile
 from apps.db.rls import (
     RlsContextError,
@@ -135,7 +136,15 @@ def test_require_context_rejects_wrong_alias_and_missing_context() -> None:
 
 def test_unmanaged_model_routing_and_migration_separation() -> None:
     router = DjangoStateRouter()
-    for model in (Profile, Template, TemplateShare, TemplateReview, ScheduledEvent, FilledTemplate):
+    for model in (
+        Profile,
+        Template,
+        TemplateShare,
+        TemplateReview,
+        ScheduledEvent,
+        FilledTemplate,
+        ActivityEvent,
+    ):
         assert model._meta.managed is False
         assert router.db_for_read(model) == "supabase"
         assert router.db_for_write(model) == "supabase"

@@ -23,11 +23,25 @@ def list_filled(user: SupabaseUser, *, limit: int = 100, offset: int = 0) -> lis
     with rls_context(user):
         require_rls_context()
         rows = list(
-            FilledTemplate.objects.using("supabase").order_by("-created_at", "id")[
+            FilledTemplate.objects.using("supabase").order_by("-created_at", "-id")[
                 offset : offset + limit
             ]
         )
         return [_filled_data(row) for row in rows]
+
+
+def list_filled_summaries(
+    user: SupabaseUser, *, limit: int = 100, offset: int = 0
+) -> list[dict[str, Any]]:
+    if not 1 <= limit <= 250 or offset < 0:
+        raise ValueError("Invalid filled-form summary options.")
+    with rls_context(user):
+        require_rls_context()
+        return list(
+            FilledTemplate.objects.using("supabase")
+            .order_by("-created_at", "-id")
+            .values("id", "template_name", "created_at")[offset : offset + limit]
+        )
 
 
 def get_filled(user: SupabaseUser, record_id: UUID) -> dict[str, Any] | None:

@@ -169,10 +169,8 @@ def _render_page(request: HttpRequest, route: str, slug: str) -> HttpResponse:
         if isinstance(help_context, HttpResponse):
             return help_context
         context.update(help_context)
-    elif route in {"/", "/documentation"}:
-        context.update(
-            {"source_markup": _reviewed_source_markup("home" if route == "/" else "documentation")}
-        )
+    elif route == "/":
+        context.update({"source_markup": _reviewed_source_markup("home")})
     return render(request, f"pages/{slug}.html", context)
 
 

@@ -1,0 +1,11 @@
+{% extends "base_scheduler.html" %}
+{% block title %}{{ item.template_name }} · Saved form{% endblock %}
+{% block content %}
+<header class="border-b border-border bg-surface"><div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-4 py-6 sm:px-6 lg:px-8"><div><p class="text-sm text-text-muted">Saved form</p><h1 class="text-2xl font-bold text-text-primary">{{ item.template_name }}</h1><p class="mt-2 text-sm text-text-secondary">Saved <time datetime="{{ item.created_at|date:'c' }}" data-local-datetime>{{ item.created_at|date:"Y-m-d H:i:s" }} UTC</time></p></div><a class="button-secondary" href="/filledtemplates">All saved forms</a></div></header>
+<main class="mx-auto max-w-4xl space-y-6 px-4 py-8 sm:px-6 lg:px-8">
+  {% if notice %}<p class="notice-success" role="status">{{ notice }}</p>{% endif %}{% if error %}<p class="notice-error" role="alert">{{ error }}</p>{% endif %}
+  <section class="card p-6" aria-labelledby="answers-title"><div class="flex flex-wrap items-center justify-between gap-3"><h2 id="answers-title" class="text-lg font-semibold">Saved answers</h2><div class="flex flex-wrap gap-3"><a class="button-primary" href="/filledtemplates?download={{ item.id }}">Download JSON</a><form method="post" data-filled-delete-form onsubmit="return confirm('Delete this saved form?')">{% csrf_token %}<input type="hidden" name="action" value="delete"><input type="hidden" name="record_id" value="{{ item.id }}"><button class="button-secondary" type="submit">Delete form</button></form></div></div>
+    <dl class="mt-6 divide-y divide-border">{% for answer in answers %}<div class="grid gap-2 py-4 sm:grid-cols-[minmax(10rem,1fr)_2fr]"><dt class="font-medium text-text-primary">{{ answer.key }}</dt><dd><pre class="whitespace-pre-wrap break-words font-sans text-sm text-text-secondary">{{ answer.value }}</pre></dd></div>{% empty %}<p class="py-4 text-sm text-text-secondary">No answers were saved in this form.</p>{% endfor %}</dl>
+  </section>
+</main>
+{% endblock %}

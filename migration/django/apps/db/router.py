@@ -5,7 +5,7 @@ class DjangoStateRouter:
     """Keep sessions and other Django-owned foundation tables off the data alias."""
 
     state_apps = {"sessions"}
-    data_apps = {"accounts", "scheduler", "templates_app", "voice"}
+    data_apps = {"accounts", "activity", "scheduler", "templates_app", "voice"}
 
     def db_for_read(self, model: Any, **hints: Any) -> str:
         del hints

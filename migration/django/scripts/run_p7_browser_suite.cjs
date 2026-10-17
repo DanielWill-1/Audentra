@@ -258,6 +258,7 @@ async function main() {
       for (const wave of waves) {
         const args = [`--wave=${wave}`];
         if (requestedRoute) args.push(requestedRoute);
+        if (process.argv.includes('--current-only')) args.push('--current-only');
         runNode(appCheck, args, {
           P7_DJANGO_BASE_URL: `http://127.0.0.1:${djangoPort}`,
           P7_EVIDENCE_RUN: evidenceRun,

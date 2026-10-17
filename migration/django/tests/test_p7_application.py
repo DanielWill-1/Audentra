@@ -15,6 +15,8 @@ from apps.accounts import profile_selectors, profile_services
 from apps.accounts.principals import SupabaseUser
 from apps.accounts.services.gotrue import AuthServiceError
 from apps.accounts.services.tokens import _principal
+from apps.activity import selectors as activity_selectors
+from apps.activity import services as activity_services
 from apps.ai import services as ai_services
 from apps.api.consent import CLOUD_AI_CONSENT_POLICY_VERSION
 from apps.scheduler import selectors as schedule_selectors
@@ -35,6 +37,7 @@ OTHER_ID = UUID("22222222-2222-4222-8222-222222222222")
 TEMPLATE_ID = UUID("33333333-3333-4333-8333-333333333333")
 EVENT_ID = UUID("44444444-4444-4444-8444-444444444444")
 RECORD_ID = UUID("55555555-5555-4555-8555-555555555555")
+SUBMISSION_KEY = UUID("aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa")
 SHARE_ID = UUID("66666666-6666-4666-8666-666666666666")
 REVIEW_ID = UUID("77777777-7777-4777-8777-777777777777")
 VERIFIED_USER = _principal(str(USER_ID), "synthetic@example.invalid", {"first_name": "Demo"})
@@ -224,15 +227,17 @@ def test_all_protected_pages_render_for_a_verified_session(
         schedule_selectors, "search_events", lambda *_args, **_kwargs: [SAMPLE_EVENT]
     )
     monkeypatch.setattr(filled_selectors, "list_filled", lambda *_args, **_kwargs: [])
+    monkeypatch.setattr(filled_selectors, "list_filled_summaries", lambda *_args, **_kwargs: [])
+    monkeypatch.setattr(activity_selectors, "list_activity", lambda *_args, **_kwargs: ([], 0))
 
     for route, heading in (
         ("/dashboard", "What would you like to work on?"),
         ("/templates", "Templates"),
         ("/scheduler", "Scheduler"),
         ("/manage-schedules", "Manage All Schedules"),
-        ("/scheduler-settings", "Scheduler settings"),
+        ("/scheduler-settings", "Scheduler Settings"),
         ("/AIVoiceAutoFill", "AI Voice Auto-Fill"),
-        ("/filledtemplates", "Your Filled Templates"),
+        ("/filledtemplates", "Saved forms"),
         ("/activitylog", "Activity Log"),
     ):
         response = authenticated_client.get(route)
@@ -294,6 +299,7 @@ def test_profile_post_uses_verified_identity_and_requires_csrf(
         },
     )
     _template_reads(monkeypatch)
+    monkeypatch.setattr(filled_selectors, "list_filled_summaries", lambda *_args, **_kwargs: [])
     monkeypatch.setattr(schedule_selectors, "upcoming_events", lambda *_args, **_kwargs: [])
     monkeypatch.setattr(
         schedule_selectors,
@@ -861,6 +867,9 @@ def test_voice_extraction_matches_ids_and_labels_then_saves_only_after_review(
     assert extracted.status_code == 200
     assert b"Ana Rivera" in extracted.content
     assert b"I captured the patient name." in extracted.content
+    form_key = re.search(rb'name="submission_key" value="([0-9a-f-]+)"', extracted.content)
+    assert form_key is not None
+    submission_key = UUID(form_key.group(1).decode())
 
     with patch.object(filled_services, "save_filled", return_value={"id": RECORD_ID}) as save:
         saved = authenticated_client.post(
@@ -868,17 +877,19 @@ def test_voice_extraction_matches_ids_and_labels_then_saves_only_after_review(
             {
                 "action": "save",
                 "template_id": str(TEMPLATE_ID),
+                "submission_key": str(submission_key),
                 "conversation_json": "[]",
                 "field_patient_name": "Ana Rivera",
                 "field_email": "ana@example.invalid",
             },
         )
     assert saved.status_code == 302
-    assert saved.headers["Location"] == "/filledtemplates"
+    assert saved.headers["Location"] == f"/filledtemplates?record={RECORD_ID}"
     save.assert_called_once_with(
         VERIFIED_USER,
         {"patient_name": "Ana Rivera", "email": "ana@example.invalid"},
         template_id=TEMPLATE_ID,
+        submission_key=submission_key,
     )
 
     with patch.object(filled_services, "save_filled") as save_missing:
@@ -887,6 +898,7 @@ def test_voice_extraction_matches_ids_and_labels_then_saves_only_after_review(
             {
                 "action": "save",
                 "template_id": str(TEMPLATE_ID),
+                "submission_key": str(submission_key),
                 "conversation_json": "[]",
                 "field_patient_name": "",
             },
@@ -894,6 +906,23 @@ def test_voice_extraction_matches_ids_and_labels_then_saves_only_after_review(
     assert incomplete.status_code == 200
     assert b"Complete the required fields: Patient name" in incomplete.content
     save_missing.assert_not_called()
+
+    with patch.object(filled_services, "save_filled") as save_invalid_key:
+        invalid_key = authenticated_client.post(
+            "/AIVoiceAutoFill",
+            {
+                "action": "save",
+                "template_id": str(TEMPLATE_ID),
+                "submission_key": "not-a-uuid",
+                "conversation_json": "[]",
+                "field_patient_name": "Ana Rivera",
+                "field_email": "ana@example.invalid",
+            },
+        )
+    assert invalid_key.status_code == 200
+    assert b"This form session is invalid. Reopen the form before saving." in invalid_key.content
+    assert b"Ana Rivera" in invalid_key.content
+    save_invalid_key.assert_not_called()
 
 
 @pytest.mark.django_db(databases=[])
@@ -903,27 +932,106 @@ def test_filled_forms_are_owner_scoped_and_delete_uses_service(
 ) -> None:
     monkeypatch.setattr(
         filled_selectors,
-        "list_filled",
-        lambda user, **_kwargs: [
+        "list_filled_summaries",
+        lambda _user, **_kwargs: [
             {
                 "id": RECORD_ID,
-                "user_id": user.id,
-                "template_id": TEMPLATE_ID,
                 "template_name": "Patient intake",
-                "form_data": {"patient_name": "Ana"},
-                "created_at": "2026-10-11T10:00:00Z",
+                "created_at": datetime(2026, 10, 11, 10, tzinfo=UTC),
             },
         ],
     )
     page = authenticated_client.get("/filledtemplates")
     assert page.status_code == 200
-    assert b"Patient intake" in page.content and b"Ana" in page.content
+    assert b"Patient intake" in page.content and b"Ana" not in page.content
     with patch.object(filled_services, "delete_filled", return_value=True) as delete:
         response = authenticated_client.post(
             "/filledtemplates", {"action": "delete", "record_id": str(RECORD_ID)}
         )
-    assert response.status_code == 200
+    assert response.status_code == 302
+    assert response.headers["Location"] == "/filledtemplates?page=1&notice=deleted"
     delete.assert_called_once_with(VERIFIED_USER, RECORD_ID)
+
+
+@pytest.mark.django_db(databases=[])
+def test_saved_form_detail_and_json_download_preserve_exact_values(
+    authenticated_client: Client,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    saved = {
+        "id": RECORD_ID,
+        "user_id": USER_ID,
+        "template_id": TEMPLATE_ID,
+        "template_name": "Patient intake",
+        "form_data": {"consent": False, "count": 0, "note": "", "nested": {"ok": True}},
+        "created_at": datetime(2026, 10, 12, 10, tzinfo=UTC),
+    }
+    monkeypatch.setattr(
+        filled_selectors,
+        "get_filled",
+        lambda user, record_id: saved if user.id == USER_ID and record_id == RECORD_ID else None,
+    )
+
+    detail = authenticated_client.get(f"/filledtemplates?record={RECORD_ID}")
+    assert detail.status_code == 200
+    for value in (b"false", b"0", b"&quot;&quot;", b"nested", b"true"):
+        assert value in detail.content
+
+    download = authenticated_client.get(f"/filledtemplates?download={RECORD_ID}")
+    assert download.status_code == 200
+    assert download["Cache-Control"] == "no-store"
+    assert download["Referrer-Policy"] == "no-referrer"
+    assert json.loads(download.content)["form_data"] == saved["form_data"]
+
+    unavailable = authenticated_client.get(f"/filledtemplates?record={OTHER_ID}")
+    assert unavailable.status_code == 404
+
+
+@pytest.mark.django_db(databases=[])
+def test_activity_filters_render_database_rows_and_remove_only_history(
+    authenticated_client: Client,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    event = {
+        "id": REVIEW_ID,
+        "event_type": "form_saved",
+        "entity_kind": "filled_form",
+        "entity_id": RECORD_ID,
+        "related_template_id": TEMPLATE_ID,
+        "label": "Patient intake",
+        "metadata": {},
+        "occurred_at": datetime(2026, 10, 17, 10, tzinfo=UTC),
+        "category": "Forms",
+        "title": "Form saved",
+        "summary": "Saved a filled form",
+        "target_url": f"/filledtemplates?record={RECORD_ID}",
+        "target_label": "View saved form",
+    }
+    monkeypatch.setattr(activity_selectors, "list_activity", lambda *_args, **_kwargs: ([event], 1))
+
+    page = authenticated_client.get("/activitylog?q=Patient&type=forms&range=week")
+    assert page.status_code == 200
+    assert b"Patient intake" in page.content
+    assert f"/filledtemplates?record={RECORD_ID}".encode() in page.content
+    assert b"Remove from activity" in page.content
+
+    with patch.object(activity_services, "remove_activity_event", return_value=True) as remove:
+        response = authenticated_client.post(
+            "/activitylog",
+            {
+                "action": "remove",
+                "event_id": str(REVIEW_ID),
+                "q": "Patient",
+                "type": "forms",
+                "range": "week",
+                "page": "1",
+            },
+        )
+    assert response.status_code == 302
+    assert response.headers["Location"] == (
+        "/activitylog?q=Patient&type=forms&range=week&page=1&notice=removed"
+    )
+    remove.assert_called_once_with(VERIFIED_USER, REVIEW_ID)
 
 
 @pytest.mark.django_db(databases=[])
@@ -934,7 +1042,7 @@ def test_filled_forms_report_a_read_failure_without_rendering_stale_records(
     def unavailable(*_args: object, **_kwargs: object) -> list[dict[str, object]]:
         raise DatabaseError("synthetic filled-list failure")
 
-    monkeypatch.setattr(filled_selectors, "list_filled", unavailable)
+    monkeypatch.setattr(filled_selectors, "list_filled_summaries", unavailable)
     response = authenticated_client.get("/filledtemplates")
     assert response.status_code == 200
     assert b"Filled forms are temporarily unavailable." in response.content
@@ -1009,15 +1117,26 @@ def test_voice_form_media_transcription_to_filled_record_flow_is_deterministic(
         "template_id": TEMPLATE_ID,
         "template_name": "Patient intake",
         "form_data": {"patient_name": "Ana Rivera", "email": ""},
-        "created_at": "2026-10-12T10:00:00Z",
+        "created_at": datetime(2026, 10, 12, 10, tzinfo=UTC),
     }
-    monkeypatch.setattr(filled_selectors, "list_filled", lambda *_args, **_kwargs: [filled_row])
+    monkeypatch.setattr(
+        filled_selectors,
+        "list_filled_summaries",
+        lambda *_args, **_kwargs: [
+            {
+                "id": RECORD_ID,
+                "template_name": "Patient intake",
+                "created_at": filled_row["created_at"],
+            }
+        ],
+    )
     with patch.object(filled_services, "save_filled", return_value={"id": RECORD_ID}) as save:
         saved = authenticated_client.post(
             "/AIVoiceAutoFill",
             {
                 "action": "save",
                 "template_id": str(TEMPLATE_ID),
+                "submission_key": str(SUBMISSION_KEY),
                 "conversation_json": json.dumps(
                     [
                         {"type": "user", "content": transcript},
@@ -1029,20 +1148,21 @@ def test_voice_form_media_transcription_to_filled_record_flow_is_deterministic(
             },
         )
     assert saved.status_code == 302
-    assert saved.headers["Location"] == "/filledtemplates"
+    assert saved.headers["Location"] == f"/filledtemplates?record={RECORD_ID}"
     save.assert_called_once_with(
         VERIFIED_USER,
         {"patient_name": "Ana Rivera", "email": ""},
         template_id=TEMPLATE_ID,
+        submission_key=SUBMISSION_KEY,
     )
 
     listed = authenticated_client.get("/filledtemplates")
-    assert listed.status_code == 200 and b"Ana Rivera" in listed.content
+    assert listed.status_code == 200 and b"Patient intake" in listed.content
     with patch.object(filled_services, "delete_filled", return_value=True) as delete:
         deleted = authenticated_client.post(
             "/filledtemplates", {"action": "delete", "record_id": str(RECORD_ID)}
         )
-    assert deleted.status_code == 200 and b"Filled form deleted." in deleted.content
+    assert deleted.status_code == 302
     delete.assert_called_once_with(VERIFIED_USER, RECORD_ID)
 
 

@@ -3,7 +3,7 @@
 {% block page_title %}Home · Audentra{% endblock %}
 {% block extra_head %}<script src="{% static 'js/p7_dashboard.js' %}" defer></script>{% endblock %}
 {% block content %}
-<div class="mx-auto max-w-[1200px] space-y-10 px-6 py-8 md:px-10" data-dashboard-activity-key="{{ activity_key }}">
+<div class="mx-auto max-w-[1200px] space-y-10 px-6 py-8 md:px-10">
   <section id="dashboard-home" data-dashboard-panel="home">
   <header class="mb-8">
     <div class="mb-2 flex items-center gap-2 font-mono text-xs text-text-muted"><span>Audentra</span><span aria-hidden="true">/</span><span class="text-text-primary">Home</span></div>
@@ -13,7 +13,16 @@
   {% if notice %}<p role="status" class="notice-success">{{ notice }}</p>{% endif %}{% if error %}<p role="alert" class="notice-error">{{ error }}</p>{% endif %}{% if data_error %}<p role="status" class="notice-warning">{{ data_error }}</p>{% endif %}
   <section class="card mb-10 flex flex-col gap-6 p-6 md:p-8 lg:flex-row lg:items-center" aria-labelledby="start-voice-title"><div class="min-w-0 flex-1"><p class="mb-4 inline-flex items-center gap-2 rounded-full bg-voice-soft px-3 py-1 text-xs font-medium text-voice"><span class="h-2 w-2 rounded-full bg-voice" aria-hidden="true"></span>Ready to listen</p><h2 id="start-voice-title" class="mb-2 font-headline-h3 text-headline-h3 font-semibold text-text-primary">Start with your voice</h2><p class="mb-6 max-w-xl font-body-large text-body-large leading-relaxed text-text-secondary">Speak naturally and Audentra will turn the conversation into structured form data.</p><div class="flex flex-wrap items-center gap-3"><a class="button-primary" href="/AIVoiceAutoFill">{% include "fragments/icon.html" with name="mic" class_name="h-4 w-4" %}Start voice form</a><a class="button-secondary" href="/templates">Choose a template{% include "fragments/icon.html" with name="arrow-right" class_name="h-4 w-4" %}</a></div></div><span class="hidden h-8 shrink-0 items-center gap-[3px] text-voice lg:flex" aria-hidden="true"><i class="h-4 w-[3px] rounded-full bg-voice/40"></i><i class="h-7 w-[3px] rounded-full bg-voice"></i><i class="h-3 w-[3px] rounded-full bg-voice/60"></i><i class="h-6 w-[3px] rounded-full bg-voice"></i><i class="h-8 w-[3px] rounded-full bg-voice"></i><i class="h-4 w-[3px] rounded-full bg-voice/80"></i></span></section>
   <section class="mb-10 grid gap-4 sm:grid-cols-3" aria-label="Workspace shortcuts"><a class="rounded-xl border border-border bg-surface p-5 transition-colors hover:border-border-strong" href="/templates">{% include "fragments/icon.html" with name="file-text" class_name="mb-3 h-5 w-5 text-primary" %}<h2 class="font-body-medium text-body-medium text-text-primary">Choose template</h2><p class="font-metadata text-metadata text-text-muted">Browse your schemas</p></a><a class="rounded-xl border border-border bg-surface p-5 transition-colors hover:border-border-strong" href="/filledtemplates">{% include "fragments/icon.html" with name="check-circle" class_name="mb-3 h-5 w-5 text-success" %}<h2 class="font-body-medium text-body-medium text-text-primary">Filled forms</h2><p class="font-metadata text-metadata text-text-muted">Inspect completed records</p></a><a class="rounded-xl border border-border bg-surface p-5 transition-colors hover:border-border-strong" href="/templates#create-template">{% include "fragments/icon.html" with name="plus" class_name="mb-3 h-5 w-5 text-text-primary" %}<h2 class="font-body-medium text-body-medium text-text-primary">Create template</h2><p class="font-metadata text-metadata text-text-muted">JSON Schema or Pydantic</p></a></section>
-  <section class="mb-10" aria-labelledby="recent-forms-title" data-dashboard-recent-forms-root><div class="flex items-center justify-between"><div><h2 id="recent-forms-title" class="font-headline-h3 text-headline-h3 font-semibold text-text-primary">Recent forms</h2><p class="mt-1 text-xs text-text-muted">Browser-local examples and history; they do not change saved forms.</p></div><a class="font-metadata text-metadata text-primary transition-colors hover:text-brand-hover" href="/filledtemplates">View all forms <span aria-hidden="true">→</span></a></div><ul class="divide-y divide-border overflow-hidden rounded-xl border border-border bg-surface" data-dashboard-recent-forms></ul><p class="rounded-xl border border-border bg-surface p-5 font-body text-body text-text-secondary" data-dashboard-recent-forms-empty hidden>No recent forms yet. Start a voice form to see it here.</p><p class="text-xs text-text-muted" data-dashboard-recent-forms-status role="status" aria-live="polite"></p></section>
+  <section class="mb-10" aria-labelledby="recent-forms-title">
+    <div class="flex items-center justify-between">
+      <div><h2 id="recent-forms-title" class="font-headline-h3 text-headline-h3 font-semibold text-text-primary">Recent forms</h2><p class="mt-1 text-xs text-text-muted">Your five most recently saved forms.</p></div>
+      <a class="font-metadata text-metadata text-primary transition-colors hover:text-brand-hover" href="/filledtemplates">View all forms <span aria-hidden="true">→</span></a>
+    </div>
+    {% if recent_forms_error %}<p class="mt-4 notice-warning" role="alert">{{ recent_forms_error }}</p>
+    {% elif recent_forms %}<ul class="mt-4 divide-y divide-border overflow-hidden rounded-xl border border-border bg-surface" aria-label="Recent saved forms">
+      {% for form in recent_forms %}<li class="flex flex-wrap items-center justify-between gap-3 px-6 py-4"><div class="min-w-0"><p class="truncate font-body-medium text-body-medium font-medium text-text-primary">{{ form.template_name }}</p><p class="font-metadata text-metadata text-text-muted">Saved <time datetime="{{ form.created_at|date:'c' }}" data-local-datetime>{{ form.created_at|date:"Y-m-d H:i:s" }} UTC</time></p></div><div class="flex items-center gap-3"><span class="rounded bg-success/10 px-2.5 py-1 font-label-code text-label-code font-medium text-success">Saved</span><a class="font-metadata text-metadata text-primary hover:text-brand-hover" href="/filledtemplates?record={{ form.id }}">View</a></div></li>{% endfor %}
+    </ul>{% else %}<p class="mt-4 rounded-xl border border-border bg-surface p-5 font-body text-body text-text-secondary">No saved forms yet. Start a voice form to see it here.</p>{% endif %}
+  </section>
   <section class="mb-10 space-y-4" aria-labelledby="templates-title"><div class="flex items-center justify-between"><h2 id="templates-title" class="font-headline-h3 text-headline-h3 font-semibold text-text-primary">Templates</h2><a class="font-metadata text-metadata text-primary transition-colors hover:text-brand-hover" href="/templates">View all</a></div>
     {% if templates %}<div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">{% for template in templates %}<article class="card p-5"><p class="text-xs uppercase tracking-wide text-text-muted">{{ template.category }}</p><h3 class="mt-2 font-semibold">{{ template.name }}</h3><p class="mt-2 line-clamp-2 text-sm text-text-secondary">{{ template.description|default:"Voice-powered form template" }}</p><a class="mt-4 inline-block text-sm font-medium underline" href="/AIVoiceAutoFill?template={{ template.id }}">Use template</a></article>{% endfor %}</div>{% else %}<p class="card p-5 text-sm text-text-secondary">No templates are available yet. Create a template to get started.</p>{% endif %}
   </section>
@@ -35,15 +44,48 @@
     <div class="card p-6"><div class="flex flex-wrap items-center justify-between gap-4"><div><h2 id="team-title" class="text-xl font-semibold">Team workspace</h2><p class="mt-1 text-sm text-text-secondary">Team membership stays a demo state. Sharing and reviews use the existing template workspace.</p></div><button class="button-secondary" type="button" data-modal-open="team-demo" aria-haspopup="dialog" aria-expanded="false">Team options</button></div><div class="mt-4 flex flex-wrap gap-3"><a class="button-secondary" href="/templates#collaboration">Share with an existing account</a><a class="button-secondary" href="/templates#collaboration">Open reviews</a></div></div>
   </section>
   <section id="settings" data-dashboard-panel="settings" class="hidden max-w-[1200px] space-y-6" hidden data-dashboard-settings>
-    <header><div class="mb-2 flex items-center gap-2 font-mono text-xs text-text-muted"><span>Audentra</span><span aria-hidden="true">/</span><span class="text-text-primary">Settings</span></div><h1 class="text-3xl font-semibold tracking-tight text-text-primary">Settings</h1></header>
-    <div class="card p-6"><p class="mb-5 text-sm font-medium text-text-secondary">Browser preferences</p><h2 id="dashboard-settings-title" class="mb-2 text-xl font-semibold">Voice &amp; AI settings</h2><p class="mb-5 text-sm text-text-secondary">These preferences are saved in this browser and do not change provider settings.</p>
-    <form data-dashboard-preferences class="grid gap-4 sm:grid-cols-2">
-      <label class="field-label">Language<select class="field-input" name="language"><option>English (US)</option><option>English (UK)</option><option>Spanish</option><option>French</option><option>German</option></select></label>
-      <label class="field-label">Processing speed<select class="field-input" name="aiProcessingSpeed"><option>Real-time (Recommended)</option><option>Fast</option><option>Balanced</option><option>Accurate</option></select></label>
-      <label class="field-label">Industry specialization<select class="field-input" name="industrySpecialization"><option>Healthcare</option><option>Field Work &amp; Construction</option><option>Human Resources</option><option>Legal Services</option><option>Education</option><option>General Business</option></select></label>
-      <label class="field-label">Voice sensitivity <output data-sensitivity-output>7</output><input class="field-input" type="range" name="voiceSensitivity" min="1" max="10" step="1" value="7"></label>
-    </form>
-    <p class="mt-4 text-sm text-text-secondary" data-dashboard-settings-status role="status" aria-live="polite">Preferences are ready.</p>
+    <header class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+      <div><div class="mb-2 flex items-center gap-2 font-mono text-xs text-text-muted"><span>Audentra</span><span aria-hidden="true">/</span><span class="text-text-primary">Settings</span></div><h1 class="text-3xl font-semibold tracking-tight text-text-primary">Dashboard settings</h1><p class="mt-2 max-w-2xl text-sm leading-6 text-text-secondary">Set your preferred language and voice form defaults for this browser.</p></div>
+      <span class="inline-flex w-fit items-center gap-2 rounded-full border border-border bg-surface px-3 py-1.5 text-xs font-medium text-text-secondary"><span class="h-2 w-2 rounded-full bg-text-muted" aria-hidden="true"></span><span data-dashboard-preferences-state>Browser preferences</span></span>
+    </header>
+    <div class="grid gap-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(17rem,0.8fr)]">
+      <form data-dashboard-preferences class="space-y-6" novalidate>
+        <section class="card p-6" aria-labelledby="voice-preferences-title">
+          <div class="mb-5 border-b border-border pb-4"><p class="text-xs font-semibold uppercase tracking-[0.14em] text-primary">01 / Voice input</p><h2 id="voice-preferences-title" class="mt-2 text-xl font-semibold text-text-primary">Voice preferences</h2><p class="mt-1 text-sm text-text-secondary">Choose the language and input sensitivity you prefer.</p></div>
+          <div class="grid gap-5 sm:grid-cols-2">
+            <label class="field-label">Language
+              <select class="field-input mt-2" name="language" disabled><option>English (US)</option><option>English (UK)</option><option>Spanish</option><option>French</option><option>German</option></select>
+              <span class="mt-1 block text-xs font-normal text-text-muted">Used as your preferred language in this browser.</span>
+            </label>
+            <label class="field-label">Voice sensitivity <output class="ml-1 rounded bg-surface-subtle px-2 py-0.5 text-xs font-medium text-text-primary" data-sensitivity-output>7 / 10</output>
+              <input class="field-input mt-3 accent-primary" type="range" name="voiceSensitivity" min="1" max="10" step="1" value="7" aria-describedby="sensitivity-help" disabled>
+              <span id="sensitivity-help" class="mt-1 block text-xs font-normal text-text-muted">Higher values respond to quieter speech.</span>
+            </label>
+          </div>
+        </section>
+        <section class="card p-6" aria-labelledby="ai-preferences-title">
+          <div class="mb-5 border-b border-border pb-4"><p class="text-xs font-semibold uppercase tracking-[0.14em] text-primary">02 / Form assistance</p><h2 id="ai-preferences-title" class="mt-2 text-xl font-semibold text-text-primary">AI assistance preferences</h2><p class="mt-1 text-sm text-text-secondary">Set the defaults you would like to use when working with forms.</p></div>
+          <div class="grid gap-5 sm:grid-cols-2">
+            <label class="field-label">Response pace
+              <select class="field-input mt-2" name="aiProcessingSpeed" disabled><option>Real-time (Recommended)</option><option>Fast</option><option>Balanced</option><option>Accurate</option></select>
+              <span class="mt-1 block text-xs font-normal text-text-muted">A preference for the pace of future assistance.</span>
+            </label>
+            <label class="field-label">Industry context
+              <select class="field-input mt-2" name="industrySpecialization" disabled><option>Healthcare</option><option>Field Work &amp; Construction</option><option>Human Resources</option><option>Legal Services</option><option>Education</option><option>General Business</option></select>
+              <span class="mt-1 block text-xs font-normal text-text-muted">Helps describe the type of forms you usually work with.</span>
+            </label>
+          </div>
+        </section>
+        <div class="flex flex-wrap items-center justify-end gap-3 rounded-xl border border-border bg-surface p-4">
+          <button class="button-secondary" type="button" data-dashboard-settings-reset disabled>Reset to defaults</button>
+          <button class="button-secondary" type="button" data-dashboard-settings-discard disabled>Discard changes</button>
+          <button class="button-primary" type="button" data-dashboard-settings-save disabled>Save preferences</button>
+        </div>
+      </form>
+      <aside class="space-y-6">
+        <section class="card p-6" aria-labelledby="preferences-storage-title"><p class="text-xs font-semibold uppercase tracking-[0.14em] text-text-muted">Preference storage</p><h2 id="preferences-storage-title" class="mt-2 text-lg font-semibold text-text-primary">Saved to this browser</h2><p class="mt-2 text-sm leading-6 text-text-secondary">Your choices are stored locally in this browser. They are not synced to your account or shared with other devices.</p><div class="mt-5 rounded-lg border border-border bg-surface-subtle p-4"><p class="text-sm font-medium text-text-primary">Current app behavior</p><p class="mt-1 text-sm leading-6 text-text-secondary">These preferences do not change account settings, connect a provider, or alter the live voice and AI processing flows.</p></div></section>
+        <section class="rounded-xl border border-primary/20 bg-primary/5 p-5" aria-labelledby="settings-status-title"><h2 id="settings-status-title" class="text-sm font-semibold text-text-primary">Preference status</h2><p class="mt-2 text-sm leading-6 text-text-secondary" data-dashboard-settings-status role="status" aria-live="polite">Preferences are ready.</p><noscript><p class="mt-3 text-sm text-text-secondary">Enable JavaScript to change and save browser preferences.</p></noscript></section>
+      </aside>
     </div>
   </section>
 </div>

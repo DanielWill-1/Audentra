@@ -19,6 +19,7 @@ class FilledTemplate(models.Model):
     )
     template_name = models.TextField()
     form_data = models.JSONField()
+    submission_key = models.UUIDField(null=True)
     created_at = models.DateTimeField(db_default=Now())
 
     class Meta:

@@ -7,10 +7,13 @@ from collections.abc import Callable
 from datetime import UTC, date, datetime, time, timedelta
 from typing import Any
 from urllib.parse import urlencode
-from uuid import UUID
+from uuid import UUID, uuid4
 
 from apps.accounts import profile_selectors, profile_services
 from apps.accounts.principals import SupabaseUser
+from apps.activity import selectors as activity_selectors
+from apps.activity import services as activity_services
+from apps.activity.presentation import CATEGORY_TYPES
 from apps.ai import services as ai_services
 from apps.api.consent import (
     CLOUD_AI_CONSENT_POLICY_VERSION,
@@ -80,6 +83,24 @@ def _as_uuid(value: str) -> UUID:
         return UUID(value)
     except (ValueError, TypeError, AttributeError) as error:
         raise ValueError("Choose a valid record.") from error
+
+
+def _query_page(value: str | None) -> int:
+    if value in {None, ""}:
+        return 1
+    if not value.isascii() or not value.isdigit() or len(value) > 5:
+        raise ValueError("Choose a valid page.")
+    page = int(value)
+    if not 1 <= page <= 10000:
+        raise ValueError("Choose a valid page.")
+    return page
+
+
+def _record_uuid_or_404(value: str) -> UUID:
+    try:
+        return _as_uuid(value)
+    except ValueError as error:
+        raise Http404 from error
 
 
 def _json_object(value: str, *, max_bytes: int = 1_000_000) -> dict[str, Any]:
@@ -183,7 +204,6 @@ def dashboard(request: HttpRequest) -> HttpResponse:
     context: dict[str, Any] = {
         "notice": notice,
         "error": error,
-        "activity_key": f"voiceform_activity_{user.id}",
     }
     try:
         context["profile"] = profile_selectors.get_profile(user)
@@ -204,6 +224,11 @@ def dashboard(request: HttpRequest) -> HttpResponse:
                 "company": "",
                 "industry": "",
             }
+    try:
+        context["recent_forms"] = filled_selectors.list_filled_summaries(user, limit=5)
+    except (DatabaseError, ValueError):
+        context["recent_forms"] = []
+        context["recent_forms_error"] = "Recent forms are temporarily unavailable."
     return _page(request, route, "application/dashboard.html", context)
 
 
@@ -485,6 +510,14 @@ def templates_page(request: HttpRequest) -> HttpResponse:
             ascending=sort_ascending,
             limit=100,
         )
+        if "focus" in request.GET:
+            focused_id = _record_uuid_or_404(request.GET.get("focus", ""))
+            focused_template = template_selectors.get_template(user, focused_id)
+            if focused_template is None:
+                raise Http404
+            if all(item.get("id") != focused_id for item in context["templates"]):
+                context["templates"].append(focused_template)
+            context["focused_template_id"] = focused_id
         for template in context["templates"]:
             for review in template.get("reviews", []):
                 review["can_edit"] = review.get("reviewer_id") == user.id
@@ -848,7 +881,15 @@ def scheduler_settings(request: HttpRequest) -> HttpResponse:
         "application/scheduler_settings.html",
         {
             "local_settings_key": f"scheduler_settings_{user.id}",
-            "settings_user_id": str(user.id),
+            "settings_days": (
+                ("monday", "Monday"),
+                ("tuesday", "Tuesday"),
+                ("wednesday", "Wednesday"),
+                ("thursday", "Thursday"),
+                ("friday", "Friday"),
+                ("saturday", "Saturday"),
+                ("sunday", "Sunday"),
+            ),
         },
     )
 
@@ -883,9 +924,18 @@ def voice_autofill(request: HttpRequest) -> HttpResponse:
     notice = ""
     error = ""
     template_id: UUID | None = None
+    submission_key: UUID | None = None
+    invalid_submission_key = False
     if request.method == "POST":
         try:
             template_id = _as_uuid(request.POST.get("template_id", ""))
+            action = request.POST.get("action", "")
+            if action != "select":
+                try:
+                    submission_key = _as_uuid(request.POST.get("submission_key", ""))
+                except ValueError:
+                    invalid_submission_key = True
+                    submission_key = uuid4()
         except ValueError as exception:
             error = str(exception)
     else:
@@ -915,6 +965,7 @@ def voice_autofill(request: HttpRequest) -> HttpResponse:
                 if len(fields) != len(raw_fields):
                     raise ValueError("This template contains an unsupported field definition.")
                 if request.method == "GET":
+                    submission_key = uuid4()
                     conversation = [
                         {
                             "type": "assistant",
@@ -979,9 +1030,19 @@ def voice_autofill(request: HttpRequest) -> HttpResponse:
                 if missing:
                     error = "Complete the required fields: " + ", ".join(missing[:8])
                     form_data = values
+                elif invalid_submission_key:
+                    error = "This form session is invalid. Reopen the form before saving."
+                    form_data = values
                 else:
-                    filled_services.save_filled(user, values, template_id=template_id)
-                    return redirect("/filledtemplates")
+                    form_data = values
+                    assert submission_key is not None
+                    saved = filled_services.save_filled(
+                        user,
+                        values,
+                        template_id=template_id,
+                        submission_key=submission_key,
+                    )
+                    return redirect(f"/filledtemplates?record={saved['id']}")
             elif action == "select":
                 return redirect(f"/AIVoiceAutoFill?template={template_id}")
             elif action == "return":
@@ -1037,6 +1098,7 @@ def voice_autofill(request: HttpRequest) -> HttpResponse:
             "form_data_json": json.dumps(form_data, ensure_ascii=False),
             "conversation": conversation,
             "conversation_json": json.dumps(conversation, ensure_ascii=False),
+            "submission_key": submission_key or uuid4(),
             "notice": notice,
             "error": error,
             "max_audio_bytes": settings.P3_MAX_AUDIO_BYTES,
@@ -1058,41 +1120,253 @@ def filled_templates(request: HttpRequest) -> HttpResponse:
         if request.POST.get("action") != "delete":
             return HttpResponseNotAllowed(["GET", "POST"])
         try:
-            if not filled_services.delete_filled(user, _as_uuid(request.POST.get("record_id", ""))):
+            page = _query_page(request.POST.get("page"))
+            if not filled_services.delete_filled(
+                user, _as_uuid(request.POST.get("record_id", ""))
+            ):
                 raise ValueError("This filled form is no longer available to your account.")
-            notice = "Filled form deleted."
+            return redirect(f"/filledtemplates?page={page}&notice=deleted")
         except (ValueError, DatabaseError) as exception:
             error = (
                 str(exception)
                 if isinstance(exception, ValueError)
                 else "The filled form could not be deleted."
             )
+
+    if "record" in request.GET and "download" in request.GET:
+        return HttpResponse("Choose either a saved-form page or a download.", status=400)
+    if "record" in request.GET or "download" in request.GET:
+        key = "download" if "download" in request.GET else "record"
+        record_id = _record_uuid_or_404(request.GET.get(key, ""))
+        try:
+            item = filled_selectors.get_filled(user, record_id)
+        except (DatabaseError, ValueError):
+            return _page(
+                request,
+                route,
+                "application/filled_templates.html",
+                {
+                    "filled": [],
+                    "notice": "",
+                    "error": "Filled forms are temporarily unavailable.",
+                    "list_unavailable": True,
+                    "page": 1,
+                },
+                status=503,
+            )
+        if item is None:
+            raise Http404
+        if key == "download":
+            safe_name = re.sub(r"[^A-Za-z0-9_-]+", "-", item["template_name"]).strip("-_")
+            safe_name = (safe_name or "saved-form")[:80]
+            return _json_download(
+                f"{safe_name}-{item['id']}.json",
+                {
+                    "id": str(item["id"]),
+                    "template_id": str(item["template_id"]) if item["template_id"] else None,
+                    "template_name": item["template_name"],
+                    "created_at": item["created_at"].isoformat(),
+                    "form_data": item["form_data"],
+                },
+            )
+        answer_rows = [
+            {"key": name, "value": json.dumps(value, ensure_ascii=False, indent=2)}
+            for name, value in item["form_data"].items()
+        ]
+        notice_codes = {"deleted": "The saved form was deleted."}
+        detail_notice = notice_codes.get(request.GET.get("notice", ""), "")
+        return _page(
+            request,
+            route,
+            "application/filled_template_detail.html",
+            {"item": item, "answers": answer_rows, "notice": detail_notice, "error": error},
+        )
+
+    notice_codes = {"deleted": "Filled form deleted."}
+    notice = notice_codes.get(request.GET.get("notice", ""), "")
     try:
-        rows = filled_selectors.list_filled(user, limit=250)
+        page = _query_page(request.GET.get("page"))
+    except ValueError as exception:
+        page = 1
+        error = str(exception)
+    offset = (page - 1) * 25
+    try:
+        rows = filled_selectors.list_filled_summaries(user, limit=26, offset=offset)
+        has_next = len(rows) > 25
+        filled = rows[:25]
+        list_unavailable = False
     except (DatabaseError, ValueError):
-        rows = []
+        filled = []
+        has_next = False
+        list_unavailable = True
         error = error or "Filled forms are temporarily unavailable."
     return _page(
         request,
         route,
         "application/filled_templates.html",
-        {"filled": rows, "notice": notice, "error": error},
+        {
+            "filled": filled,
+            "notice": notice,
+            "error": error,
+            "list_unavailable": list_unavailable,
+            "page": page,
+            "previous_page": page - 1 if page > 1 else None,
+            "next_page": page + 1 if has_next else None,
+        },
+        status=400 if error == "Choose a valid page." else 200,
     )
 
 
-@require_safe
+def _activity_filters(source: Any) -> dict[str, Any]:
+    search = str(source.get("q", "")).strip()
+    category = str(source.get("type", "all"))
+    date_range = str(source.get("range", "all"))
+    page = _query_page(source.get("page"))
+    if len(search) > 120:
+        raise ValueError("Activity search must be at most 120 characters.")
+    if category not in {"all", *CATEGORY_TYPES}:
+        raise ValueError("Choose a supported activity category.")
+    if date_range not in {"all", "today", "week", "month"}:
+        raise ValueError("Choose a supported activity date range.")
+    return {"search": search, "category": category, "range": date_range, "page": page}
+
+
+def _activity_query(filters: dict[str, Any], *, notice: str = "") -> str:
+    values = {
+        "q": filters["search"],
+        "type": filters["category"],
+        "range": filters["range"],
+        "page": str(filters["page"]),
+    }
+    if notice:
+        values["notice"] = notice
+    return "/activitylog?" + urlencode(values)
+
+
+@require_http_methods(["GET", "POST"])
 def activity_log(request: HttpRequest) -> HttpResponse:
     route = "/activitylog"
     user, denial = _guard(request, route)
     if denial is not None:
         return denial
     assert user is not None
+
+    if request.method == "POST":
+        if request.POST.get("action") != "remove":
+            return HttpResponseNotAllowed(["GET", "POST"])
+        try:
+            filters = _activity_filters(request.POST)
+            removed = activity_services.remove_activity_event(
+                user, _as_uuid(request.POST.get("event_id", ""))
+            )
+            return redirect(_activity_query(filters, notice="removed" if removed else "missing"))
+        except ValueError:
+            return HttpResponse("Choose a valid activity entry and filters.", status=400)
+        except DatabaseError:
+            filters = {"search": "", "category": "all", "range": "all", "page": 1}
+            try:
+                events, total = activity_selectors.list_activity(user)
+            except DatabaseError:
+                events, total = [], 0
+            return _page(
+                request,
+                route,
+                "application/activity_log.html",
+                {
+                    "events": events,
+                    "total": total,
+                    "filters": filters,
+                    "error": "Activity could not be updated. Please try again.",
+                    "category_choices": _activity_category_choices(),
+                    "range_choices": _activity_range_choices(),
+                    "page": 1,
+                    "refresh_url": "/activitylog",
+                },
+                status=503,
+            )
+
+    notice_codes = {
+        "removed": "Activity entry removed. The saved form or other record is unchanged.",
+        "missing": "That activity entry is no longer available.",
+    }
+    notice = notice_codes.get(request.GET.get("notice", ""), "")
+    error = ""
+    status_code = 200
+    try:
+        filters = _activity_filters(request.GET)
+    except ValueError as exception:
+        filters = {"search": "", "category": "all", "range": "all", "page": 1}
+        events, total = [], 0
+        error = str(exception)
+        status_code = 400
+    else:
+        try:
+            events, total = activity_selectors.list_activity(
+                user,
+                search=filters["search"],
+                category=filters["category"],
+                date_range=filters["range"],
+                limit=26,
+                offset=(filters["page"] - 1) * 25,
+            )
+        except (DatabaseError, ValueError):
+            events, total = [], 0
+            error = "Activity is temporarily unavailable. Please refresh in a moment."
+            status_code = 503
+
+    has_next = len(events) > 25
+    events = events[:25]
+    refresh_url = _activity_query(filters)
+    previous_url = (
+        _activity_query({**filters, "page": filters["page"] - 1})
+        if filters["page"] > 1
+        else ""
+    )
+    next_url = (
+        _activity_query({**filters, "page": filters["page"] + 1}) if has_next else ""
+    )
     return _page(
         request,
         route,
         "application/activity_log.html",
-        {"activity_key": f"voiceform_activity_{user.id}"},
+        {
+            "events": events,
+            "total": total,
+            "filters": filters,
+            "notice": notice,
+            "error": error,
+            "category_choices": _activity_category_choices(),
+            "range_choices": _activity_range_choices(),
+            "page": filters["page"],
+            "previous_page": filters["page"] - 1 if filters["page"] > 1 else None,
+            "next_page": filters["page"] + 1 if has_next else None,
+            "previous_url": previous_url,
+            "next_url": next_url,
+            "refresh_url": refresh_url,
+            "timezone_label": "UTC",
+        },
+        status=status_code,
     )
+
+
+def _activity_category_choices() -> list[dict[str, str]]:
+    return [
+        {"value": "all", "label": "All activity"},
+        {"value": "forms", "label": "Forms"},
+        {"value": "templates", "label": "Templates"},
+        {"value": "sharing", "label": "Sharing"},
+        {"value": "reviews", "label": "Reviews"},
+        {"value": "schedules", "label": "Schedules"},
+    ]
+
+
+def _activity_range_choices() -> list[dict[str, str]]:
+    return [
+        {"value": "all", "label": "All time"},
+        {"value": "today", "label": "Today (UTC)"},
+        {"value": "week", "label": "Last 7 days"},
+        {"value": "month", "label": "Last 30 days"},
+    ]
 
 
 APPLICATION_PAGE_VIEWS.update(

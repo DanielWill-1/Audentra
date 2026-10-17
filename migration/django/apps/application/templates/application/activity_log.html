@@ -3,29 +3,27 @@
 {% block title %}Activity Log · Audentra{% endblock %}
 {% block extra_head %}<script src="{% static 'js/p7_activity.js' %}" defer></script>{% endblock %}
 {% block content %}
-<div data-activity-root data-activity-key="{{ activity_key }}">
-<header class="border-b border-border bg-surface"><div class="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-6 sm:px-6 lg:px-8"><div class="flex min-w-0 items-center"><a class="mr-4 shrink-0 text-text-secondary hover:text-text-primary" href="/dashboard" aria-label="Back to dashboard"><svg class="h-5 w-5" aria-hidden="true" focusable="false"><use href="{% static 'icons/sprite.svg' %}#icon-arrow-left"></use></svg></a><div class="min-w-0"><h1 class="text-2xl font-bold text-text-primary">Activity Log</h1><p class="text-[15px] text-text-secondary">View all your recent activity and actions</p></div></div><button class="icon-button shrink-0" type="button" aria-label="Refresh" title="Refresh" data-activity-refresh>↻</button></div></header>
-<div class="mx-auto max-w-7xl space-y-6 px-4 py-8 sm:px-6 lg:px-8">
-  <p class="text-sm text-text-secondary">This page uses the existing local activity feed; it is not a server audit log.</p>
-  <div data-activity-status class="sr-only" role="status" aria-live="polite"></div>
-  <form data-activity-filter class="mb-8 flex flex-col gap-4 rounded-2xl border border-gray-200 bg-white p-6 md:flex-row md:items-center md:justify-between" role="search">
-    <div class="flex min-w-0 flex-1 flex-col gap-4 sm:flex-row">
-      <div class="relative min-w-0 flex-1">
-        <svg class="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" aria-hidden="true" focusable="false"><use href="{% static 'icons/sprite.svg' %}#icon-search"></use></svg>
-        <label class="sr-only" for="activity-search">Search activity</label>
-        <input id="activity-search" class="w-full rounded-lg border border-gray-300 py-2 pl-10 pr-4 focus:border-blue-500 focus:ring-2 focus:ring-blue-500" type="text" name="q" placeholder="Search activity...">
-      </div>
-      <label class="sr-only" for="activity-type">Activity type</label>
-      <select id="activity-type" class="rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-500" name="type"><option value="all">All Types</option><option value="form_completed">Form Completed</option><option value="template_created">Template Created</option><option value="team_invite">Team Invitations</option><option value="template_shared">Template Shared</option><option value="form_started">Form Started</option><option value="template_reviewed">Template Reviewed</option></select>
-      <label class="sr-only" for="activity-range">Date range</label>
-      <select id="activity-range" class="rounded-lg border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-2 focus:ring-blue-500" name="range"><option value="all">All Time</option><option value="today">Today</option><option value="week">Last 7 Days</option><option value="month">Last 30 Days</option></select>
-    </div>
-    <div class="flex items-center justify-end gap-2">
-      <span class="text-sm text-gray-600" data-activity-count></span>
-      <button class="rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600" type="button" aria-label="Filters are unavailable" aria-disabled="true" title="Filters"><svg class="h-4 w-4" aria-hidden="true" focusable="false"><use href="{% static 'icons/sprite.svg' %}#icon-sliders-horizontal"></use></svg></button>
-    </div>
+<header class="border-b border-border bg-surface"><div class="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-6 sm:px-6 lg:px-8"><div class="flex min-w-0 items-center"><a class="mr-4 shrink-0 text-text-secondary hover:text-text-primary" href="/dashboard" aria-label="Back to dashboard"><svg class="h-5 w-5" aria-hidden="true" focusable="false"><use href="{% static 'icons/sprite.svg' %}#icon-arrow-left"></use></svg></a><div class="min-w-0"><h1 class="text-2xl font-bold text-text-primary">Activity Log</h1><p class="text-[15px] text-text-secondary">Actions saved by your account</p></div></div><a class="button-secondary shrink-0" href="{{ refresh_url }}">Refresh</a></div></header>
+<main class="mx-auto max-w-7xl space-y-6 px-4 py-8 sm:px-6 lg:px-8">
+  {% if notice %}<p class="notice-success" role="status">{{ notice }}</p>{% endif %}{% if error %}<p class="notice-error" role="alert">{{ error }}</p>{% endif %}
+  <p class="text-sm text-text-secondary">This is a personal activity history for saved forms, templates, sharing, reviews, and schedules. Times and date filters use {{ timezone_label }}.</p>
+  <form method="get" action="/activitylog" class="flex flex-col gap-4 rounded-2xl border border-gray-200 bg-white p-6 md:flex-row md:items-end" role="search" data-activity-filter>
+    <label class="field-label min-w-0 flex-1">Search activity<input class="field-input" type="search" name="q" maxlength="120" value="{{ filters.search }}" placeholder="Search form, template, or event name"></label>
+    <label class="field-label">Category<select class="field-input" name="type">{% for choice in category_choices %}<option value="{{ choice.value }}" {% if filters.category == choice.value %}selected{% endif %}>{{ choice.label }}</option>{% endfor %}</select></label>
+    <label class="field-label">Date range<select class="field-input" name="range">{% for choice in range_choices %}<option value="{{ choice.value }}" {% if filters.range == choice.value %}selected{% endif %}>{{ choice.label }}</option>{% endfor %}</select></label>
+    <button class="button-primary" type="submit">Apply filters</button>
   </form>
-  <section class="card divide-y divide-border"><div class="border-b border-border p-6" data-activity-list-heading><h2 class="text-lg font-semibold">Activity Log</h2><p class="mt-1 text-sm text-text-secondary">Showing your recent activity and actions</p></div><div data-activity-list aria-label="Activity items"></div></section>
-</div>
-</div>
+  {% if events %}
+    <section class="card divide-y divide-border" aria-labelledby="activity-list-title"><div class="flex flex-wrap items-center justify-between gap-3 p-6"><div><h2 id="activity-list-title" class="text-lg font-semibold">Activity entries</h2><p class="mt-1 text-sm text-text-secondary">{{ total }} matching entr{{ total|pluralize:"y,ies" }} · page {{ page }}</p></div></div>
+      <ul class="divide-y divide-border" aria-label="Activity entries" data-activity-list>
+        {% for event in events %}<li class="flex flex-col gap-4 p-5 sm:flex-row sm:items-start sm:justify-between sm:p-6"><div class="min-w-0"><div class="flex flex-wrap items-center gap-2"><span class="rounded-full bg-surface-subtle px-2.5 py-1 text-xs font-medium text-text-secondary">{{ event.category }}</span><h3 class="font-semibold text-text-primary">{{ event.title }}</h3></div><p class="mt-2 break-words text-sm text-text-primary">{{ event.label }}</p><p class="mt-1 text-sm text-text-secondary">{{ event.summary }}</p><p class="mt-2 text-xs text-text-muted"><time datetime="{{ event.occurred_at|date:'c' }}" data-local-datetime>{{ event.occurred_at|date:"Y-m-d H:i:s" }} UTC</time></p>
+          {% if event.target_url %}<a class="mt-3 inline-block text-sm font-medium text-primary underline" href="{{ event.target_url }}">{{ event.target_label }}</a>{% elif event.entity_kind == "filled_form" or event.entity_kind == "template" or event.entity_kind == "schedule" or event.related_template_id %}<p class="mt-3 text-xs text-text-muted">The related record is no longer available.</p>{% endif %}
+        </div><form method="post" class="shrink-0" data-activity-remove>{% csrf_token %}<input type="hidden" name="action" value="remove"><input type="hidden" name="event_id" value="{{ event.id }}"><input type="hidden" name="q" value="{{ filters.search }}"><input type="hidden" name="type" value="{{ filters.category }}"><input type="hidden" name="range" value="{{ filters.range }}"><input type="hidden" name="page" value="{{ page }}"><button class="text-sm font-medium text-text-secondary underline hover:text-red-700" type="submit">Remove from activity</button></form></li>{% endfor %}
+      </ul>
+    </section>
+    <nav class="flex items-center justify-between" aria-label="Activity pages">{% if previous_url %}<a class="button-secondary" href="{{ previous_url }}">Previous</a>{% else %}<span></span>{% endif %}<span class="text-sm text-text-secondary">Page {{ page }}</span>{% if next_url %}<a class="button-secondary" href="{{ next_url }}">Next</a>{% else %}<span></span>{% endif %}</nav>
+  {% elif not error %}
+    <section class="card p-8 text-center"><h2 class="text-lg font-semibold">No activity found</h2><p class="mt-2 text-sm text-text-secondary">Actions you save will appear here.</p><a class="mt-4 inline-block text-sm font-medium text-primary underline" href="/dashboard">Return to dashboard</a></section>
+  {% endif %}
+</main>
 {% endblock %}

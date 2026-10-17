@@ -2,7 +2,7 @@
 
 from collections.abc import Callable, Sequence
 from contextlib import ExitStack
-from datetime import UTC, date, datetime, time
+from datetime import UTC, date, datetime, time, timedelta
 from time import time as unix_time
 from typing import Any, cast
 from unittest.mock import patch
@@ -68,11 +68,15 @@ FIXTURE_OTHER_USER_EVENT: dict[str, Any] = {
 }
 FIXTURE_FILLED: dict[str, Any] = {
     "id": UUID("55555555-5555-4555-8555-555555555555"),
+    "user_id": FIXTURE_USER.id,
+    "template_id": FIXTURE_TEMPLATE["id"],
     "template_name": "Patient intake",
     "form_data": {"patient_name": "Sample Patient", "email": "patient@example.invalid"},
     "created_at": datetime(2026, 10, 12, 8, tzinfo=UTC),
 }
 _BROWSER_FILLED_RECORDS = [FIXTURE_FILLED]
+_BROWSER_ACTIVITY_EVENTS: list[dict[str, Any]] = []
+_BROWSER_ACTIVITY_READY = False
 _BROWSER_SCHEDULE_EVENTS = [FIXTURE_EVENT, FIXTURE_OTHER_USER_EVENT]
 _BROWSER_TEMPLATES: list[dict[str, Any]] = []
 _BROWSER_TEMPLATE_FILES: dict[str, tuple[UUID, bytes, str]] = {}
@@ -522,14 +526,18 @@ def _save_fixture_filled(
     *,
     template_id: UUID | None = None,
     template_name: str = "",
+    submission_key: UUID | None = None,
 ) -> dict[str, Any]:
     if user.id != FIXTURE_USER.id or template_id != FIXTURE_TEMPLATE["id"]:
         raise ValueError("This template is unavailable to the synthetic browser account.")
     row = {
         "id": uuid4(),
+        "user_id": user.id,
+        "template_id": template_id,
         "template_name": FIXTURE_TEMPLATE["name"],
         "form_data": dict(form_data),
         "created_at": datetime.now(UTC),
+        "submission_key": submission_key,
     }
     _BROWSER_FILLED_RECORDS.insert(0, row)
     return row
@@ -541,6 +549,184 @@ def _list_fixture_filled(
     if user.id != FIXTURE_USER.id:
         return []
     return _BROWSER_FILLED_RECORDS[offset : offset + limit]
+
+
+def _list_fixture_filled_summaries(
+    user: SupabaseUser, *, limit: int = 100, offset: int = 0
+) -> list[dict[str, Any]]:
+    if user.id != FIXTURE_USER.id:
+        return []
+    rows = sorted(
+        _BROWSER_FILLED_RECORDS,
+        key=lambda row: (row["created_at"], str(row["id"])),
+        reverse=True,
+    )
+    return [
+        {key: row[key] for key in ("id", "template_name", "created_at")}
+        for row in rows[offset : offset + limit]
+    ]
+
+
+def _empty_fixture_filled_summaries(
+    _user: SupabaseUser, *, limit: int = 100, offset: int = 0
+) -> list[dict[str, Any]]:
+    del limit, offset
+    return []
+
+
+def _get_fixture_filled(user: SupabaseUser, record_id: UUID) -> dict[str, Any] | None:
+    if user.id != FIXTURE_USER.id:
+        return None
+    return next((row for row in _BROWSER_FILLED_RECORDS if row["id"] == record_id), None)
+
+
+def _make_fixture_activity_events() -> list[dict[str, Any]]:
+    now = datetime.now(UTC)
+    events = [
+        (
+            "form_saved",
+            "filled_form",
+            FIXTURE_FILLED["id"],
+            None,
+            "Patient intake",
+            "Forms",
+            "Form saved",
+            "Saved a filled form",
+            f"/filledtemplates?record={FIXTURE_FILLED['id']}",
+            "View saved form",
+        ),
+        (
+            "template_created",
+            "template",
+            FIXTURE_TEMPLATE["id"],
+            FIXTURE_TEMPLATE["id"],
+            "Patient intake",
+            "Templates",
+            "Template created",
+            "Created a template",
+            f"/templates?focus={FIXTURE_TEMPLATE['id']}#template-{FIXTURE_TEMPLATE['id']}",
+            "Open template",
+        ),
+        (
+            "template_shared",
+            "share",
+            UUID("77777777-7777-4777-8777-777777777777"),
+            FIXTURE_TEMPLATE["id"],
+            "Patient intake",
+            "Sharing",
+            "Template shared",
+            "Shared a template · Role: viewer",
+            f"/templates?focus={FIXTURE_TEMPLATE['id']}#template-{FIXTURE_TEMPLATE['id']}",
+            "Open template",
+        ),
+        (
+            "review_created",
+            "review",
+            UUID("99999999-9999-4999-8999-999999999999"),
+            FIXTURE_TEMPLATE["id"],
+            "Patient intake",
+            "Reviews",
+            "Review created",
+            "Created a review · Status: pending",
+            f"/templates?focus={FIXTURE_TEMPLATE['id']}#template-{FIXTURE_TEMPLATE['id']}",
+            "Open template",
+        ),
+        (
+            "schedule_created",
+            "schedule",
+            FIXTURE_EVENT["id"],
+            None,
+            FIXTURE_EVENT["title"],
+            "Schedules",
+            "Schedule created",
+            "Created a scheduled event · Status: scheduled",
+            f"/scheduler?edit={FIXTURE_EVENT['id']}",
+            "Open schedule",
+        ),
+    ]
+    return [
+        {
+            "id": UUID(f"{index:08d}-aaaa-4aaa-8aaa-{index:012d}"),
+            "user_id": FIXTURE_USER.id,
+            "event_type": event_type,
+            "entity_kind": entity_kind,
+            "entity_id": entity_id,
+            "related_template_id": template_id,
+            "label": label,
+            "metadata": {},
+            "occurred_at": now - timedelta(minutes=index * 5),
+            "category": category,
+            "title": title,
+            "summary": summary,
+            "target_url": target_url,
+            "target_label": target_label,
+        }
+        for index, (
+            event_type,
+            entity_kind,
+            entity_id,
+            template_id,
+            label,
+            category,
+            title,
+            summary,
+            target_url,
+            target_label,
+        ) in enumerate(events, start=1)
+    ]
+
+
+def _list_fixture_activity(
+    user: SupabaseUser,
+    *,
+    search: str = "",
+    category: str = "all",
+    date_range: str = "all",
+    limit: int = 25,
+    offset: int = 0,
+) -> tuple[list[dict[str, Any]], int]:
+    if user.id != FIXTURE_USER.id:
+        return [], 0
+    category_types = {
+        "forms": {"form_saved", "form_deleted"},
+        "templates": {"template_created", "template_updated", "template_deleted"},
+        "sharing": {"template_shared", "share_role_changed", "template_unshared"},
+        "reviews": {"review_created", "review_updated", "review_status_changed", "review_deleted"},
+        "schedules": {
+            "schedule_created",
+            "schedule_updated",
+            "schedule_status_changed",
+            "schedule_deleted",
+        },
+    }
+    rows = list(_BROWSER_ACTIVITY_EVENTS)
+    if category in category_types:
+        rows = [row for row in rows if row["event_type"] in category_types[category]]
+    if search:
+        term = search.casefold()
+        rows = [
+            row
+            for row in rows
+            if term in row["label"].casefold() or term in row["event_type"].casefold()
+        ]
+    now = datetime.now(UTC)
+    if date_range == "today":
+        rows = [row for row in rows if row["occurred_at"].date() == now.date()]
+    elif date_range == "week":
+        rows = [row for row in rows if row["occurred_at"] >= now - timedelta(days=7)]
+    elif date_range == "month":
+        rows = [row for row in rows if row["occurred_at"] >= now - timedelta(days=30)]
+    return rows[offset : offset + limit], len(rows)
+
+
+def _remove_fixture_activity(user: SupabaseUser, event_id: UUID) -> bool:
+    if user.id != FIXTURE_USER.id:
+        return False
+    for index, row in enumerate(_BROWSER_ACTIVITY_EVENTS):
+        if row["id"] == event_id:
+            del _BROWSER_ACTIVITY_EVENTS[index]
+            return True
+    return False
 
 
 def _raise_fixture_filled_error(*args: Any, **kwargs: Any) -> list[dict[str, Any]]:
@@ -711,6 +897,7 @@ class P7FixtureAuthenticationMiddleware:
         self.get_response = get_response
 
     def __call__(self, request: HttpRequest) -> HttpResponse:
+        global _BROWSER_ACTIVITY_READY
         fixture_path = request.path_info.rstrip("/")
         if (
             request.headers.get("X-P7-Fixture-Reset") == "1"
@@ -726,10 +913,16 @@ class P7FixtureAuthenticationMiddleware:
                 _reset_browser_schedule_fixtures(fixture_event_date)
             if fixture_path == "/templates":
                 _reset_browser_templates()
-            if fixture_path == "/filledtemplates":
+            if fixture_path in {"/dashboard", "/filledtemplates"}:
                 _BROWSER_FILLED_RECORDS[:] = [
                     {**FIXTURE_FILLED, "form_data": dict(FIXTURE_FILLED["form_data"])}
                 ]
+            if fixture_path == "/activitylog":
+                _BROWSER_ACTIVITY_EVENTS[:] = _make_fixture_activity_events()
+                _BROWSER_ACTIVITY_READY = True
+        if fixture_path == "/activitylog" and not _BROWSER_ACTIVITY_READY:
+            _BROWSER_ACTIVITY_EVENTS[:] = _make_fixture_activity_events()
+            _BROWSER_ACTIVITY_READY = True
         session_auth = request.session.get(AUTH_SESSION_KEY)
         synthetic_session = (
             isinstance(session_auth, dict)
@@ -983,6 +1176,26 @@ class P7FixtureAuthenticationMiddleware:
             )
             stack.enter_context(
                 patch(
+                    "apps.application.views.filled_selectors.list_filled_summaries",
+                    side_effect=(
+                        _raise_fixture_filled_error
+                        if request.headers.get("X-P9-Filled-Error") == "1"
+                        else (
+                            _empty_fixture_filled_summaries
+                            if request.headers.get("X-P11-Recent-Forms-Empty") == "1"
+                            else _list_fixture_filled_summaries
+                        )
+                    ),
+                )
+            )
+            stack.enter_context(
+                patch(
+                    "apps.application.views.filled_selectors.get_filled",
+                    side_effect=_get_fixture_filled,
+                )
+            )
+            stack.enter_context(
+                patch(
                     "apps.application.views.filled_services.save_filled",
                     side_effect=_save_fixture_filled,
                 )
@@ -991,6 +1204,18 @@ class P7FixtureAuthenticationMiddleware:
                 patch(
                     "apps.application.views.filled_services.delete_filled",
                     side_effect=_delete_fixture_filled,
+                )
+            )
+            stack.enter_context(
+                patch(
+                    "apps.application.views.activity_selectors.list_activity",
+                    side_effect=_list_fixture_activity,
+                )
+            )
+            stack.enter_context(
+                patch(
+                    "apps.application.views.activity_services.remove_activity_event",
+                    side_effect=_remove_fixture_activity,
                 )
             )
             response = self.get_response(request)

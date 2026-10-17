@@ -24,39 +24,46 @@
 })();
 
 (() => {
-  document.addEventListener('click', async (event) => {
+  document.querySelectorAll("button[data-copy-code]").forEach((button) => {
+    const codeBlock = document.getElementById(button.dataset.copyCode || "");
+    const feedback = document.getElementById(button.getAttribute("aria-controls") || "");
+    if (codeBlock instanceof HTMLElement && feedback instanceof HTMLElement) button.hidden = false;
+  });
+
+  document.addEventListener("click", async (event) => {
     const target = event.target instanceof Element ? event.target : null;
-    const button = target?.closest('[data-copy-code], body[data-active-route="/documentation"] button');
+    const button = target?.closest("button[data-copy-code]");
     if (!(button instanceof HTMLButtonElement)) return;
-    if (!button.hasAttribute('data-copy-code') && !['Copy', 'Copied'].includes(button.innerText.trim())) return;
 
-    const section = button.closest('section');
-    const block = section?.querySelector('pre code');
-    if (!(block instanceof HTMLElement) || !section) return;
-    let feedback = section.querySelector('[data-copy-feedback]');
+    const blockId = button.dataset.copyCode;
+    const block = blockId ? document.getElementById(blockId) : null;
+    if (!(block instanceof HTMLElement)) return;
+
+    const feedbackId = button.getAttribute("aria-controls");
+    let feedback = feedbackId ? document.getElementById(feedbackId) : null;
     if (!(feedback instanceof HTMLElement)) {
-      feedback = document.createElement('p');
-      feedback.className = 'sr-only';
-      feedback.setAttribute('data-copy-feedback', '');
-      feedback.setAttribute('aria-live', 'polite');
-      section.append(feedback);
+      feedback = button.parentElement?.querySelector("[data-copy-feedback]") || null;
+    }
+    if (!(feedback instanceof HTMLElement)) return;
+
+    const copyLabel = button.dataset.copyLabel || "Copy";
+    button.dataset.copyLabel = copyLabel;
+    window.clearTimeout(button.__audentraCopyTimer);
+    feedback.textContent = "";
+    button.textContent = copyLabel;
+
+    try {
+      if (!navigator.clipboard?.writeText) throw new Error("Clipboard unavailable");
+      await navigator.clipboard.writeText(block.textContent || "");
+      button.textContent = "Copied";
+      feedback.textContent = "Copied this code block to the clipboard.";
+    } catch {
+      feedback.textContent = "Copy failed. Select and copy the code block above.";
     }
 
-    window.clearTimeout(button.__audentraCopyTimer);
-    button.textContent = 'Copy';
-    feedback.textContent = '';
-    try {
-      if (!navigator.clipboard?.writeText) throw new Error('Clipboard unavailable');
-      await navigator.clipboard.writeText(block.textContent || '');
-      button.textContent = 'Copied';
-      feedback.textContent = 'Copied code to clipboard.';
-    } catch {
-      button.textContent = 'Copy';
-      feedback.textContent = 'Copy failed. Select and copy this block above.';
-    }
     button.__audentraCopyTimer = window.setTimeout(() => {
-      button.textContent = 'Copy';
-      feedback.textContent = '';
-    }, 2000);
+      button.textContent = copyLabel;
+      feedback.textContent = "";
+    }, 2500);
   });
 })();
