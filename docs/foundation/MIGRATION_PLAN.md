@@ -2,21 +2,21 @@
 
 **Version:** 2.7
 **Updated:** 2026-10-17, P11 local closeout
-**Current task:** P10 local-first implementation is complete and the owner accepted the local release candidate. Local P11 legacy retirement was subsequently authorized without deployment or soak entry gates and is now implemented; see the [P11 closeout](HANDOFF_2026-10-17_P11_LEGACY_RETIREMENT.md). Deployment remains deferred. See the [P10 review](docs/deployment/P10_W5_RELEASE_CANDIDATE_REVIEW.md).
+**Current task:** P10 local-first implementation is complete and the owner accepted the local release candidate. Local P11 legacy retirement was subsequently authorized without deployment or soak entry gates and is now implemented; see the [P11 closeout](../handoffs/HANDOFF_2026-10-17_P11_LEGACY_RETIREMENT.md). Deployment remains deferred. See the [P10 review](../deployment/P10_W5_RELEASE_CANDIDATE_REVIEW.md).
 
 **Owner scope revision:** The owner's 2026-10-11 request replaces the earlier SMTP/legacy-account/React compatibility gates. Supabase Python SDK + Django + HTMX signup/login/session/refresh/password-change/logout passed against fresh hosted accounts. The project remains development-only and signup confirmation is disabled with authorization; email recovery is separate.
 
-**Architecture reference:** [Existing Python plan](docs/python-migration-plan.md), including v0.3 revisions  
+**Architecture reference:** [Existing Python plan](../python-migration-plan.md), including v0.3 revisions  
 **State:** [MIGRATION_STATE.md](MIGRATION_STATE.md)  
-**Completed P2 brief:** [P2_IMPLEMENTATION_PROMPT.md](docs/foundation/P2_IMPLEMENTATION_PROMPT.md)
-**Archived P3 brief:** [P3_IMPLEMENTATION_PROMPT.md](docs/services/P3_IMPLEMENTATION_PROMPT.md)
-**Archived P4 scope and execution record:** [P4_IMPLEMENTATION_PROMPT.md](docs/auth/P4_IMPLEMENTATION_PROMPT.md), [P4_REPORT.md](docs/auth/P4_REPORT.md)
-**Archived P5 closure brief:** [P5_CLOSURE_PROMPT.md](docs/data/P5_CLOSURE_PROMPT.md) — hosted shared transaction-pooler gate passed; P5 is complete
-**P6 implementation evidence:** [archived brief](docs/rendering/P6_IMPLEMENTATION_PROMPT.md), [report](docs/rendering/P6_REPORT.md), [verification](docs/rendering/P6_VERIFICATION.md), [review](docs/rendering/P6_REVIEW.md), [route ownership](docs/rendering/P6_ROUTE_OWNERSHIP.json), [asset inventory](docs/rendering/P6_ASSET_INVENTORY.md), [rollback](docs/rendering/P6_ROLLBACK.md)
-**P7 W1 result:** The [W1 report](docs/pages/P7_W1_REPORT.md), [verification](docs/pages/P7_W1_VERIFICATION.md), [review](docs/pages/P7_W1_REVIEW.md), [asset provenance](docs/pages/P7_W1_ASSETS.md) and [route ownership](docs/pages/P7_W1_ROUTE_OWNERSHIP.json) record the delivered wave. Its [executed brief](docs/pages/P7_W1_IMPLEMENTATION_PROMPT.md) is archived.
-**P7/P8 closeout review:** Preserve the master/closeout briefs and historical session review. The later [P7 finding closeout](docs/pages/P7_SR_CLOSEOUT_2026-10-13.md) closed SR-1 through SR-4 before P9 started; P8 remains a separate deterministic prerequisite.
-**P3 evidence:** [P3_REPORT.md](docs/services/P3_REPORT.md), [P3_CONTRACTS.md](docs/services/P3_CONTRACTS.md), [P3_REVIEW.md](docs/services/P3_REVIEW.md)
-**P2 evidence:** [P2_REPORT.md](docs/foundation/P2_REPORT.md), [P2_REVIEW.md](docs/foundation/P2_REVIEW.md)
+**Completed P2 brief:** [P2_IMPLEMENTATION_PROMPT.md](P2_IMPLEMENTATION_PROMPT.md)
+**Archived P3 brief:** [P3_IMPLEMENTATION_PROMPT.md](../services/P3_IMPLEMENTATION_PROMPT.md)
+**Archived P4 scope and execution record:** [P4_IMPLEMENTATION_PROMPT.md](../auth/P4_IMPLEMENTATION_PROMPT.md), [P4_REPORT.md](../auth/P4_REPORT.md)
+**Archived P5 closure brief:** [P5_CLOSURE_PROMPT.md](../data/P5_CLOSURE_PROMPT.md) — hosted shared transaction-pooler gate passed; P5 is complete
+**P6 implementation evidence:** [archived brief](../rendering/P6_IMPLEMENTATION_PROMPT.md), [report](../rendering/P6_REPORT.md), [verification](../rendering/P6_VERIFICATION.md), [review](../rendering/P6_REVIEW.md), [route ownership](../rendering/P6_ROUTE_OWNERSHIP.json), [asset inventory](../rendering/P6_ASSET_INVENTORY.md), [rollback](../rendering/P6_ROLLBACK.md)
+**P7 W1 result:** The [W1 report](../pages/P7_W1_REPORT.md), [verification](../pages/P7_W1_VERIFICATION.md), [review](../pages/P7_W1_REVIEW.md), [asset provenance](../pages/P7_W1_ASSETS.md) and [route ownership](../pages/P7_W1_ROUTE_OWNERSHIP.json) record the delivered wave. Its [executed brief](../pages/P7_W1_IMPLEMENTATION_PROMPT.md) is archived.
+**P7/P8 closeout review:** Preserve the master/closeout briefs and historical session review. The later [P7 finding closeout](../pages/P7_SR_CLOSEOUT_2026-10-13.md) closed SR-1 through SR-4 before P9 started; P8 remains a separate deterministic prerequisite.
+**P3 evidence:** [P3_REPORT.md](../services/P3_REPORT.md), [P3_CONTRACTS.md](../services/P3_CONTRACTS.md), [P3_REVIEW.md](../services/P3_REVIEW.md)
+**P2 evidence:** [P2_REPORT.md](P2_REPORT.md), [P2_REVIEW.md](P2_REVIEW.md)
 
 ## 1. Goal and authority
 
@@ -26,7 +26,7 @@ Move Audentra from React/TypeScript/Vite and Express to Django, Python services,
 
 Preserve approved design, routes, copy, data semantics and working flows. Record intentional behavior changes before implementation. The former legacy stack remained runnable through P10 and was archived locally under P11.
 
-This file consolidates scope and session evidence. The project is development/testing only, without production users or Docker. P1 is finalized under accepted exceptions; P2 is complete/reviewed; P3 bounded code findings are closed and live speech evidence remains later. P4 now follows the owner's clean development-only Auth scope. Hosted fresh-account and HTMX/browser evidence passes. [P4_REPORT.md](docs/auth/P4_REPORT.md) records the remaining credential-retirement approval and production/email-recovery limitations.
+This file consolidates scope and session evidence. The project is development/testing only, without production users or Docker. P1 is finalized under accepted exceptions; P2 is complete/reviewed; P3 bounded code findings are closed and live speech evidence remains later. P4 now follows the owner's clean development-only Auth scope. Hosted fresh-account and HTMX/browser evidence passes. [P4_REPORT.md](../auth/P4_REPORT.md) records the remaining credential-retirement approval and production/email-recovery limitations.
 
 Source precedence:
 
@@ -158,7 +158,7 @@ P4 requires P3. P5b requires P4/P5a. W1/W2 do not wait for authenticated/data ph
 
 **Limits:** No UI or business logic port. Preserve runtime while deploying a replacement credential. Prepare reviewable local repair before requesting destructive shared-remote authorization. Keep old ancestry out of clean history; coordinate clean re-clones or reviewed transfer of changes.
 
-**P5 verification:** The pre-change target had no `filled_templates` table. P5 created the account-scoped table and owner-only RLS; hosted isolation and owner-delete checks pass. See [P5_TARGET_INVENTORY.json](docs/data/P5_TARGET_INVENTORY.json) and [P5_REPORT.md](docs/data/P5_REPORT.md).
+**P5 verification:** The pre-change target had no `filled_templates` table. P5 created the account-scoped table and owner-only RLS; hosted isolation and owner-delete checks pass. See [P5_TARGET_INVENTORY.json](../data/P5_TARGET_INVENTORY.json) and [P5_REPORT.md](../data/P5_REPORT.md).
 
 #### Recovery preflight result and bounded procedure
 
@@ -189,7 +189,7 @@ The repair proposal is limited to the P0 paths, history, scanner gate and incide
 
 ### P1: baseline
 
-**Status:** Finalized with owner-accepted exceptions on 2026-10-10; [acceptance record](docs/parity/P1_ACCEPTANCE.md) is authoritative for this handoff. The [archived brief](docs/parity/P1_IMPLEMENTATION_PROMPT.md) preserves the original scope. Q21 retains /activitylog and all 25 routes.
+**Status:** Finalized with owner-accepted exceptions on 2026-10-10; [acceptance record](../parity/P1_ACCEPTANCE.md) is authoritative for this handoff. The [archived brief](../parity/P1_IMPLEMENTATION_PROMPT.md) preserves the original scope. Q21 retains /activitylog and all 25 routes.
 
 **Delivered:** Python capture/comparison harness, guarded deterministic seeder, synthetic contracts, 27 passing tests (two browser skips), CI workflow, route manifest, source flow/difference register and review of all 24 historical desktop PNGs. Supabase metadata inspection confirmed an empty approved hosted testing target; private configuration/link alignment was corrected.
 
@@ -201,7 +201,7 @@ The repair proposal is limited to the P0 paths, history, scanner gate and incide
 
 ### P2: foundation
 
-**Status:** Complete within the bounded scope. See [P2_REPORT.md](docs/foundation/P2_REPORT.md) for checks, live role/schema results and limitations. Do not rerun remote bootstrap or migrations as part of a later phase.
+**Status:** Complete within the bounded scope. See [P2_REPORT.md](P2_REPORT.md) for checks, live role/schema results and limitations. Do not rerun remote bootstrap or migrations as part of a later phase.
 
 **Brief choices:** Dedicated django-schema database sessions and django_migrations; restricted django_app state role and separate metadata-only django_data connector; no admin/account models/Auth implementation; standalone Tailwind with legacy major version/tokens. Preserve existing project-wide PUBLIC grants; inherited public-schema USAGE does not grant table access, so prove no public CREATE or application-table rights instead of changing global ACLs. These are bounded defaults, not retrospective owner answers to all historical questions.
 
@@ -215,7 +215,7 @@ The repair proposal is limited to the P0 paths, history, scanner gate and incide
 
 **Entry:** P2 and scoped provider/mock configuration with contract fixtures.
 
-**Executed brief:** [P3_IMPLEMENTATION_PROMPT.md](docs/services/P3_IMPLEMENTATION_PROMPT.md). P2's test isolation remains intact. [P3_REVIEW.md](docs/services/P3_REVIEW.md) records the original three findings and their bounded corrections; [P3_REPORT.md](docs/services/P3_REPORT.md) retains initial and follow-up evidence. P3 live speech-provider evidence remains open for later voice/P9 verification.
+**Executed brief:** [P3_IMPLEMENTATION_PROMPT.md](../services/P3_IMPLEMENTATION_PROMPT.md). P2's test isolation remains intact. [P3_REVIEW.md](../services/P3_REVIEW.md) records the original three findings and their bounded corrections; [P3_REPORT.md](../services/P3_REPORT.md) retains initial and follow-up evidence. P3 live speech-provider evidence remains open for later voice/P9 verification.
 
 **Scope:** Port mounted STT/TTS, extraction prompt/parsing and field matching. Preserve JSON/base64 contracts and response keys; add multipart. Implement transitional credential checks and private/origin boundary.
 
@@ -231,7 +231,7 @@ The repair proposal is limited to the P0 paths, history, scanner gate and incide
 
 **Scope:** Supabase Auth is the sole provider, using its Python SDK with Django forms and locally vendored HTMX. No Django Auth. Clean email/password signup/login, server-side PostgreSQL sessions, serialized refresh, POST logout, protected routes and authenticated password changes. Mandatory signup confirmation is disabled with owner authorization. No custom SMTP, paid service, OAuth, React Auth compatibility or old-user testing. Keep the project and application data intact.
 
-**Acceptance:** Fresh hosted signup → login → protected session → logout, token refresh, password change/CSRF, real HTMX browser, and PostgreSQL race protection pass. Isolated regression, SDK, lint/type/framework and static checks are recorded in [P4_REPORT.md](docs/auth/P4_REPORT.md). The probe deletes only its own generated account/session rows and sends no email.
+**Acceptance:** Fresh hosted signup → login → protected session → logout, token refresh, password change/CSRF, real HTMX browser, and PostgreSQL race protection pass. Isolated regression, SDK, lint/type/framework and static checks are recorded in [P4_REPORT.md](../auth/P4_REPORT.md). The probe deletes only its own generated account/session rows and sends no email.
 
 **Security:** The supplied publishable key is configured; local generated secret-shaped build content is cleaned. A replacement server-only cleanup credential is prepared. Automatic approval review blocked broader revocation because unknown CI consumers may break; obtain explicit approval for exact key retirement and update external consumers. Do not claim completed rotation while pending.
 
@@ -240,13 +240,13 @@ The repair proposal is limited to the P0 paths, history, scanner gate and incide
 
 ### P5a: schema reconciliation
 
-**Entry:** P2, safe Supabase environment, recorded new-development contracts for absent objects and artifact/config authorization. Product decisions precede schema additions for deferred features. The [archived P5 closure brief](docs/data/P5_CLOSURE_PROMPT.md) records native Windows/no-Docker verification bounds.
+**Entry:** P2, safe Supabase environment, recorded new-development contracts for absent objects and artifact/config authorization. Product decisions precede schema additions for deferred features. The [archived P5 closure brief](../data/P5_CLOSURE_PROMPT.md) records native Windows/no-Docker verification bounds.
 
 **Scope:** Sanitized schema reference, historical replay, classified deltas/data shape, fresh-install baseline and separate guarded live remediation. Verify tables, policies and Storage configuration instead of inferring them from client types.
 
 **Exit:** Each delta has a disposition; baseline matches intended schema; empty-target remediation matches the documented result; second application changes nothing. Record reference date/provenance and unknowns. Review schema-only exports for sensitive defaults/configuration.
 
-**P5 status:** Baseline and both additive migrations are applied to the verified development target. The native baseline + Storage policy and empty-target remediation paths produce identical normalized catalogs; the remediation is idempotent and policy assertions pass. Hosted catalog and direct-connection service evidence are in [P5_REPORT.md](docs/data/P5_REPORT.md). The target had no application schema to restore, so the isolated remediation started from an equivalent empty application schema with minimal Auth/Storage stubs; this is not represented as a full Supabase restore. A current hosted SQL dump was unavailable under the restricted runtime role; the sanitized hosted catalog JSON is retained instead.
+**P5 status:** Baseline and both additive migrations are applied to the verified development target. The native baseline + Storage policy and empty-target remediation paths produce identical normalized catalogs; the remediation is idempotent and policy assertions pass. Hosted catalog and direct-connection service evidence are in [P5_REPORT.md](../data/P5_REPORT.md). The target had no application schema to restore, so the isolated remediation started from an equivalent empty application schema with minimal Auth/Storage stubs; this is not represented as a full Supabase restore. A current hosted SQL dump was unavailable under the restricted runtime role; the sanitized hosted catalog JSON is retained instead.
 
 **Limits:** Existing migrations, including P0, remain append-only references. No live write before restored-copy verification and authorization; no guessed tables, destructive changes, data replacement or insertion into historical migration order.
 
@@ -258,7 +258,7 @@ The repair proposal is limited to the P0 paths, history, scanner gate and incide
 
 **Exit:** Policy-specific owner/non-owner matrix, rejection outside RLS context, alias isolation, pooler/user-switch checks, Storage round trips and differential CRUD. Preserve verified participant access for shared/review records.
 
-**P5 status:** Profile/template/share/review/scheduler/filled-form/Storage services are implemented. The hosted direct-connection run is archived; the final shared transaction-pooler run passed 65 checks with the project-scoped restricted login, A/B/A claims and private-row isolation, transaction cleanup, forced rollback/recovery, client reuse and exact cleanup. Transaction-mode settings disable prepared statements and use transaction-local search paths. P5a/P5b and overall P5 are complete. See [P5_VERIFICATION.md](docs/data/P5_VERIFICATION.md) and [P5_HOSTED_RESULTS.json](docs/data/P5_HOSTED_RESULTS.json).
+**P5 status:** Profile/template/share/review/scheduler/filled-form/Storage services are implemented. The hosted direct-connection run is archived; the final shared transaction-pooler run passed 65 checks with the project-scoped restricted login, A/B/A claims and private-row isolation, transaction cleanup, forced rollback/recovery, client reuse and exact cleanup. Transaction-mode settings disable prepared statements and use transaction-local search paths. P5a/P5b and overall P5 are complete. See [P5_VERIFICATION.md](../data/P5_VERIFICATION.md) and [P5_HOSTED_RESULTS.json](../data/P5_HOSTED_RESULTS.json).
 
 **Limits:** No schema/policy redesign. Resolve necessary schema expansion before coding it.
 
@@ -274,7 +274,7 @@ The repair proposal is limited to the P0 paths, history, scanner gate and incide
 
 ### P7: seven page waves
 
-The [archived master brief](docs/pages/P7_P8_IMPLEMENTATION_PROMPT.md) defines W1–W7/P8 source-preservation and acceptance requirements. Routes and substantial flows are implemented, but [review](docs/pages/P7_P8_SESSION_REVIEW_2026-10-13.md) reopens comparisons/layouts, invalid settings and source/browser timezone proof. These remain P7 work.
+The [archived master brief](../pages/P7_P8_IMPLEMENTATION_PROMPT.md) defines W1–W7/P8 source-preservation and acceptance requirements. Routes and substantial flows are implemented, but [review](../pages/P7_P8_SESSION_REVIEW_2026-10-13.md) reopens comparisons/layouts, invalid settings and source/browser timezone proof. These remain P7 work.
 
 | Wave | Routes | Entry dependencies |
 |---|---|---|
@@ -292,7 +292,7 @@ The [archived master brief](docs/pages/P7_P8_IMPLEMENTATION_PROMPT.md) defines W
 
 ### P8: media bridge
 
-**Disposition:** P8-R1–R6 are closed within deterministic and development-session boundaries; see [P8 verification](docs/services/P8_VERIFICATION.md), [review addendum](docs/services/P8_REVIEW_2026-10-12.md#2026-10-13-final-disposition) and [device checklist](docs/services/P8_DEVICE_CHECKLIST.md). Physical device/live provider checks remain explicitly not run and are assigned to P9.
+**Disposition:** P8-R1–R6 are closed within deterministic and development-session boundaries; see [P8 verification](../services/P8_VERIFICATION.md), [review addendum](../services/P8_REVIEW_2026-10-12.md#2026-10-13-final-disposition) and [device checklist](../services/P8_DEVICE_CHECKLIST.md). Physical device/live provider checks remain explicitly not run and are assigned to P9.
 
 **Entry:** P3/P6; complete before W7.
 
@@ -304,17 +304,17 @@ The [archived master brief](docs/pages/P7_P8_IMPLEMENTATION_PROMPT.md) defines W
 
 ### P9: full parity gate
 
-**Result:** Complete within the owner's 2026-10-15 scope. All 25 route rows, 37 hosted route/security checks and restricted P5 schema comparison pass. The supplemental read-only hosted capture confirms the private bucket, 20 MiB limit and MIME allowlist. P9-D9 accepts the Chrome mobile responsive correction. Recording/provider checks and physical/manual items retain the owner's deferred or excluded status; see the [P9 report](docs/parity/P9_REPORT.md).
+**Result:** Complete within the owner's 2026-10-15 scope. All 25 route rows, 37 hosted route/security checks and restricted P5 schema comparison pass. The supplemental read-only hosted capture confirms the private bucket, 20 MiB limit and MIME allowlist. P9-D9 accepts the Chrome mobile responsive correction. Recording/provider checks and physical/manual items retain the owner's deferred or excluded status; see the [P9 report](../parity/P9_REPORT.md).
 
-**Scope / exit:** The current P9 matrix and [report](docs/parity/P9_REPORT.md) record completed in-scope acceptance and explicit owner scope boundaries. The P1 full-state flag remains separate and unchanged. The later P10 entry instruction supersedes the earlier wait-before-P10 status; it does not reopen deferred recording or device work.
+**Scope / exit:** The current P9 matrix and [report](../parity/P9_REPORT.md) record completed in-scope acceptance and explicit owner scope boundaries. The P1 full-state flag remains separate and unchanged. The later P10 entry instruction supersedes the earlier wait-before-P10 status; it does not reopen deferred recording or device work.
 
 **Limits:** Verification findings do not authorize general refactoring or features.
 
 ### P10: local-first release candidate before deployment
 
-**Entry:** P7/P8 and current-scope P9 are closed. The 2026-10-15 runtime/configuration preparation sub-sprint passed; the owner subsequently authorized five expanded P10 waves, all of which now have implementation evidence and owner acceptance of the local RC. See the [P10 closeout](docs/deployment/P10_W5_RELEASE_CANDIDATE_REVIEW.md). The owner says Google will not be used and instructs leaving the tracked service-account key unchanged; the prior exposure remains unresolved. P4 Supabase credential retirement remains a pre-deployment gate. Deployment is currently deferred.
+**Entry:** P7/P8 and current-scope P9 are closed. The 2026-10-15 runtime/configuration preparation sub-sprint passed; the owner subsequently authorized five expanded P10 waves, all of which now have implementation evidence and owner acceptance of the local RC. See the [P10 closeout](../deployment/P10_W5_RELEASE_CANDIDATE_REVIEW.md). The owner says Google will not be used and instructs leaving the tracked service-account key unchanged; the prior exposure remains unresolved. P4 Supabase credential retirement remains a pre-deployment gate. Deployment is currently deferred.
 
-**Scope:** Follow the five waves in the [active P10 brief](docs/deployment/P10_IMPLEMENTATION_PROMPT.md): (1) implement Groq conversational form filling with GPT-OSS 120B, Whisper Large V3 Turbo, and Orpheus v1 English on Free tier only; (2) resume recording lifecycle after provider integration; (3) implement and evidence backend privacy/security controls and decide the end-user cloud policy; (4) intake and fix owner-reported website issues; and (5) merge performance/error improvements with local-first hardening and release-candidate readiness. Run locally against the local Supabase CLI stack by default. The hosted installation is a synthetic-data demo. The former Scope 11 voice work belongs to P10 Waves 1–2. Keep physical mobile out of scope and leave physical recording edge cases/audibility to the owner for manual review.
+**Scope:** Follow the five waves in the [active P10 brief](../deployment/P10_IMPLEMENTATION_PROMPT.md): (1) implement Groq conversational form filling with GPT-OSS 120B, Whisper Large V3 Turbo, and Orpheus v1 English on Free tier only; (2) resume recording lifecycle after provider integration; (3) implement and evidence backend privacy/security controls and decide the end-user cloud policy; (4) intake and fix owner-reported website issues; and (5) merge performance/error improvements with local-first hardening and release-candidate readiness. Run locally against the local Supabase CLI stack by default. The hosted installation is a synthetic-data demo. The former Scope 11 voice work belongs to P10 Waves 1–2. Keep physical mobile out of scope and leave physical recording edge cases/audibility to the owner for manual review.
 
 **P10 exit:** All five waves have concrete evidence and the owner has reviewed the release candidate. The 2026-10-15 sub-sprint passing does not pass any expanded P10 wave by itself. Report local product readiness and hosted-demo readiness separately. A claim requiring a provider configuration, contract, certification, selected region, TLS host, or organizational audit remains gated until its evidence exists.
 
@@ -332,7 +332,7 @@ The [archived master brief](docs/pages/P7_P8_IMPLEMENTATION_PROMPT.md) defines W
 
 **Limits:** P11 is a local source/runtime migration only. Do not deploy, change hosted credentials, run production migrations, switch traffic, or start a soak. Preserve Supabase data, migration history, designs, original screenshots, documentation, and comparison evidence. The former application code is archived rather than discarded.
 
-**Status:** Implemented locally on 2026-10-17; see [P11 closeout](HANDOFF_2026-10-17_P11_LEGACY_RETIREMENT.md). No deployment or hosted changes were made.
+**Status:** Implemented locally on 2026-10-17; see [P11 closeout](../handoffs/HANDOFF_2026-10-17_P11_LEGACY_RETIREMENT.md). No deployment or hosted changes were made.
 
 ## 5. Decision register
 
@@ -393,13 +393,13 @@ Completion requires stated gates or a user-accepted bounded exception. Missing e
 
 ## 7. Change control and handoffs
 
-**Current status (2026-10-17):** P9 and all five P10 waves are closed within the owner-accepted local scope. P11 local source retirement is complete; deployment and production soak remain deferred. See the [P11 closeout](HANDOFF_2026-10-17_P11_LEGACY_RETIREMENT.md), [migration state](MIGRATION_STATE.md), [P10 readiness](docs/deployment/P10_READINESS.md), and [P10 release-candidate review](docs/deployment/P10_W5_RELEASE_CANDIDATE_REVIEW.md). The 2026-10-15 preparation status remains historical evidence.
+**Current status (2026-10-17):** P9 and all five P10 waves are closed within the owner-accepted local scope. P11 local source retirement is complete; deployment and production soak remain deferred. See the [P11 closeout](../handoffs/HANDOFF_2026-10-17_P11_LEGACY_RETIREMENT.md), [migration state](MIGRATION_STATE.md), [P10 readiness](../deployment/P10_READINESS.md), and [P10 release-candidate review](../deployment/P10_W5_RELEASE_CANDIDATE_REVIEW.md). The 2026-10-15 preparation status remains historical evidence.
 
 Before expanding scope, record trigger, affected files/routes/data, necessity, alternatives, checks, recovery and user authorization. Update the brief after approval. Keep unrelated work in a backlog.
 
 Each handoff reads state/plan/prompt, preserves completed work/user changes, refreshes stale evidence and executes only the authorized task. An old prompt cannot authorize a new phase.
 
-Current session record: [P11 local closeout](HANDOFF_2026-10-17_P11_LEGACY_RETIREMENT.md), [P10 wave-plan handoff](HANDOFF_2026-10-16_P10_WAVE_PLAN.md), and [P10 readiness](docs/deployment/P10_READINESS.md). The [P9 closeout](HANDOFF_2026-10-14_P9_CLOSEOUT.md), [local-readiness scope review](HANDOFF_2026-10-14_LOCAL_READINESS.md), and [P9 kickoff](HANDOFF_2026-10-13_033145_IST.md) retain their dated evidence. P9/P10 and local P11 are complete in scope; deployment remains deferred.
+Current session record: [P11 local closeout](../handoffs/HANDOFF_2026-10-17_P11_LEGACY_RETIREMENT.md), [P10 wave-plan handoff](../handoffs/HANDOFF_2026-10-16_P10_WAVE_PLAN.md), and [P10 readiness](../deployment/P10_READINESS.md). The [P9 closeout](../handoffs/HANDOFF_2026-10-14_P9_CLOSEOUT.md), [local-readiness scope review](../handoffs/HANDOFF_2026-10-14_LOCAL_READINESS.md), and [P9 kickoff](../handoffs/HANDOFF_2026-10-13_033145_IST.md) retain their dated evidence. P9/P10 and local P11 are complete in scope; deployment remains deferred.
 
 ## 8. Corrections to older documents
 

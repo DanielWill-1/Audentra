@@ -1,6 +1,6 @@
 # Session handoff: P5/P6 delivered; P7/P8 complete
 
-**Superseded current status — 2026-10-12 02:03:54 IST:** Preserve the history below, but earlier unconditional P7/P8 completion claims are superseded by the [dated handoff](HANDOFF_2026-10-12_020354_IST.md), [P7 review](docs/pages/P7_REVIEW_2026-10-12.md) and [P8 review](docs/services/P8_REVIEW_2026-10-12.md). Root prompt.md now prepares P8 repair; the [executed all-wave brief](docs/pages/P7_P8_IMPLEMENTATION_PROMPT.md) is archived.
+**Superseded current status — 2026-10-12 02:03:54 IST:** Preserve the history below, but earlier unconditional P7/P8 completion claims are superseded by the [dated handoff](HANDOFF_2026-10-12_020354_IST.md), [P7 review](../pages/P7_REVIEW_2026-10-12.md) and [P8 review](../services/P8_REVIEW_2026-10-12.md). Root prompt.md now prepares P8 repair; the [executed all-wave brief](../pages/P7_P8_IMPLEMENTATION_PROMPT.md) is archived.
 
 **Recorded:** 2026-10-11  
 **Updated:** 2026-10-12 (complete P7/P8 execution and aggregate verification)
@@ -8,12 +8,12 @@
 **Workspace:** `C:\Users\danie\OneDrive\Documents\GitHub\voiceform\VoiceForm`  
 **HEAD at original handoff:** `b66efbb`
 **HEAD at start of P7/P8 execution:** `acba9564752f1c121b81d17f59fca4d3f2b9b0f8`; preserve the pre-existing dirty working tree.
-**Current status:** P5/P6/P7/P8 are delivered. P7 now owns all 25 route-manifest paths locally with zero normal legacy fallbacks, and W1 review findings R1–R4 are closed. The full seven-wave/P8 execution, hosted W5/W6 route check, and aggregate verification are documented in [P7_REPORT.md](docs/pages/P7_REPORT.md) and [P7_VERIFICATION.md](docs/pages/P7_VERIFICATION.md).
+**Current status:** P5/P6/P7/P8 are delivered. P7 now owns all 25 route-manifest paths locally with zero normal legacy fallbacks, and W1 review findings R1–R4 are closed. The full seven-wave/P8 execution, hosted W5/W6 route check, and aggregate verification are documented in [P7_REPORT.md](../pages/P7_REPORT.md) and [P7_VERIFICATION.md](../pages/P7_VERIFICATION.md).
 **Scope of this document:** P5/P6 history and the latest P7/P8 completion handoff. P9 parity/release acceptance, P10 deployment/soak, and P11 legacy retirement remain separate.
 
 ## P7/P8 completion handoff — 2026-10-12
 
-The executed [root prompt](prompt.md) covers all seven P7 waves and the separate P8 media bridge. The final [route inventory](docs/pages/P7_ROUTE_OWNERSHIP.json) resolves every manifest route to its registered Django URL name/view and records the effective fallback progression 10 → 8 → 8 → 7 → 6 → 3 → 0. Per-wave reports, verification, assets, ownership snapshots, screenshots, and source captures remain under `docs/pages/`.
+The executed [root prompt](../../prompt.md) covers all seven P7 waves and the separate P8 media bridge. The final [route inventory](../pages/P7_ROUTE_OWNERSHIP.json) resolves every manifest route to its registered Django URL name/view and records the effective fallback progression 10 → 8 → 8 → 7 → 6 → 3 → 0. Per-wave reports, verification, assets, ownership snapshots, screenshots, and source captures remain under `docs/pages/`.
 
 The final verification passed 145 Django tests, Django's system check, mypy over 92 files, Ruff, JavaScript syntax checks, pinned Tailwind build/token validation, and `collectstatic`. Browser evidence covers 50 desktop/mobile captures and 14 interactions; P8 passed 12 fake-media checks. A hosted shared-pooler Django route run passed 11 W5 sharing checks plus four W6 schedule persistence/export/delete checks using three synthetic accounts; zero emails were sent and exact fixture cleanup passed.
 
@@ -33,16 +33,16 @@ The probe distinguishes configured mode from behavioral verification, validates 
 
 ### P5 closure completion (2026-10-11)
 
-The hosted probe passed through the shared transaction pooler using the restricted `django_data.<project-ref>` login. All 65 checks passed, including A/B/A verified role/claims and private-template isolation, transaction-entry cleanup, forced SQL-error rollback and recovery, and Django client connection reuse. Three synthetic accounts were created and deleted, no emails were sent, and `cleanup_ok` is true. Sanitized observations are in [P5_HOSTED_RESULTS.json](docs/data/P5_HOSTED_RESULTS.json); the earlier direct-host result remains archived separately. P5 is complete.
+The hosted probe passed through the shared transaction pooler using the restricted `django_data.<project-ref>` login. All 65 checks passed, including A/B/A verified role/claims and private-template isolation, transaction-entry cleanup, forced SQL-error rollback and recovery, and Django client connection reuse. Three synthetic accounts were created and deleted, no emails were sent, and `cleanup_ok` is true. Sanitized observations are in [P5_HOSTED_RESULTS.json](../data/P5_HOSTED_RESULTS.json); the earlier direct-host result remains archived separately. P5 is complete.
 
 Read these in order:
 
 1. Latest owner instructions, then this handoff.
-2. [MIGRATION_STATE.md](MIGRATION_STATE.md) for current status and [MIGRATION_PLAN.md](MIGRATION_PLAN.md) for authoritative scope/gates.
-3. Root [prompt.md](prompt.md) and the aggregate [P7 report](docs/pages/P7_REPORT.md)/[verification](docs/pages/P7_VERIFICATION.md) for completed P7/P8, [P7_W1_REVIEW.md](docs/pages/P7_W1_REVIEW.md) for dated R1–R4 dispositions, and the per-wave reports/assets/evidence for detail. [Archived P6 scope](docs/rendering/P6_IMPLEMENTATION_PROMPT.md), [P6_REPORT.md](docs/rendering/P6_REPORT.md), [P6_VERIFICATION.md](docs/rendering/P6_VERIFICATION.md) and [P6_REVIEW.md](docs/rendering/P6_REVIEW.md) retain P6 evidence and finding closure. The completed P5 brief is archived as [P5_CLOSURE_PROMPT.md](docs/data/P5_CLOSURE_PROMPT.md).
-4. [P5_REPORT.md](docs/data/P5_REPORT.md), [P5_VERIFICATION.md](docs/data/P5_VERIFICATION.md), and [P5_HOSTED_RESULTS.json](docs/data/P5_HOSTED_RESULTS.json).
-5. [P5_CONTRACTS.md](docs/data/P5_CONTRACTS.md), [P5_RLS_MATRIX.md](docs/data/P5_RLS_MATRIX.md), and [schema reconciliation](docs/schema-reconciliation.md).
-6. For P6/P7 routing and design context, use [P1 acceptance](docs/parity/P1_ACCEPTANCE.md), [route manifest](docs/parity/route-manifest.json), [flow inventory](docs/parity/flows.md), [Django README](migration/django/README.md) and the current P6 evidence linked above.
+2. [MIGRATION_STATE.md](../foundation/MIGRATION_STATE.md) for current status and [MIGRATION_PLAN.md](../foundation/MIGRATION_PLAN.md) for authoritative scope/gates.
+3. Root [prompt.md](../../prompt.md) and the aggregate [P7 report](../pages/P7_REPORT.md)/[verification](../pages/P7_VERIFICATION.md) for completed P7/P8, [P7_W1_REVIEW.md](../pages/P7_W1_REVIEW.md) for dated R1–R4 dispositions, and the per-wave reports/assets/evidence for detail. [Archived P6 scope](../rendering/P6_IMPLEMENTATION_PROMPT.md), [P6_REPORT.md](../rendering/P6_REPORT.md), [P6_VERIFICATION.md](../rendering/P6_VERIFICATION.md) and [P6_REVIEW.md](../rendering/P6_REVIEW.md) retain P6 evidence and finding closure. The completed P5 brief is archived as [P5_CLOSURE_PROMPT.md](../data/P5_CLOSURE_PROMPT.md).
+4. [P5_REPORT.md](../data/P5_REPORT.md), [P5_VERIFICATION.md](../data/P5_VERIFICATION.md), and [P5_HOSTED_RESULTS.json](../data/P5_HOSTED_RESULTS.json).
+5. [P5_CONTRACTS.md](../data/P5_CONTRACTS.md), [P5_RLS_MATRIX.md](../data/P5_RLS_MATRIX.md), and [schema reconciliation](../schema-reconciliation.md).
+6. For P6/P7 routing and design context, use [P1 acceptance](../parity/P1_ACCEPTANCE.md), [route manifest](../parity/route-manifest.json), [flow inventory](../parity/flows.md), [Django README](../../migration/django/README.md) and the current P6 evidence linked above.
 
 Older reports describe the situation when written. For example, P3's initial report retained unresolved code findings that its later review closed, and early schema inventories correctly described the pre-P5 empty target. Use the newer review/current inventory when interpreting those records.
 
@@ -83,11 +83,11 @@ P1 recorded all 25 routes and inspected 24 historical 1440-pixel-wide PNGs. Seve
 
 P2 placed Django under `migration/django/`. The `default` database alias holds Django-owned sessions and migration bookkeeping in a dedicated `django` schema with restricted `django_app`. Application data uses a separate `supabase` alias and `django_data`. Django Auth/admin are not installed. Native Windows Tailwind builds independently of the original frontend. The root has no `manage.py`; run Django from its project directory.
 
-Evidence: [P2_REPORT.md](docs/foundation/P2_REPORT.md), [P2_REVIEW.md](docs/foundation/P2_REVIEW.md), and [P1_ACCEPTANCE.md](docs/parity/P1_ACCEPTANCE.md).
+Evidence: [P2_REPORT.md](../foundation/P2_REPORT.md), [P2_REVIEW.md](../foundation/P2_REVIEW.md), and [P1_ACCEPTANCE.md](../parity/P1_ACCEPTANCE.md).
 
 ### P3 service work
 
-Speech/transcription/TTS and Groq extraction were ported behind documented contracts. Later review corrected retry/status/UTF-16 boundary issues; use [P3_REVIEW.md](docs/services/P3_REVIEW.md) with [P3_CONTRACTS.md](docs/services/P3_CONTRACTS.md), rather than treating the initial [P3_REPORT.md](docs/services/P3_REPORT.md) as final status.
+Speech/transcription/TTS and Groq extraction were ported behind documented contracts. Later review corrected retry/status/UTF-16 boundary issues; use [P3_REVIEW.md](../services/P3_REVIEW.md) with [P3_CONTRACTS.md](../services/P3_CONTRACTS.md), rather than treating the initial [P3_REPORT.md](../services/P3_REPORT.md) as final status.
 
 Mock checks do not prove real microphone/device behavior or live Google/Groq results. Missing server-only provider setup and live comparisons remain recorded limitations; P5/P6 do not require paid speech calls or reopening those services.
 
@@ -99,7 +99,7 @@ Mandatory signup confirmation was disabled for development. Fresh hosted signup/
 
 Local exposed frontend artifacts were cleaned and replacement credential configuration prepared. Broad credential revocation was rejected by automatic approval review because unknown consumers, including CI, could be affected. Retirement remains separately approval-dependent. Do not retry it under P5/P6 or describe replacement preparation as completed revocation.
 
-Evidence: [P4_REPORT.md](docs/auth/P4_REPORT.md) and [credential rotation record](docs/auth/P4_CREDENTIAL_ROTATION.json). Older SMTP/legacy-account gates are superseded.
+Evidence: [P4_REPORT.md](../auth/P4_REPORT.md) and [credential rotation record](../auth/P4_CREDENTIAL_ROTATION.json). Older SMTP/legacy-account gates are superseded.
 
 ## 5. P5 implementation completed this session
 
@@ -123,7 +123,7 @@ Evidence: [P4_REPORT.md](docs/auth/P4_REPORT.md) and [credential rotation record
 | Filled forms | Save/list/detail/delete; owner derived from verified identity; supplied template must be readable | `apps/voice/filled_services.py`, `selectors.py`, `models.py` |
 | Private files | Validated upload/download/delete/replacement, exact object cleanup, current verified bearer per request | `apps/storage/services.py` |
 
-All paths in the table are relative to `migration/django/`. Service inputs/outputs are specified in [P5_CONTRACTS.md](docs/data/P5_CONTRACTS.md). No dashboard, template, scheduler, filled-form, or recorder page was migrated by implementing these services.
+All paths in the table are relative to `migration/django/`. Service inputs/outputs are specified in [P5_CONTRACTS.md](../data/P5_CONTRACTS.md). No dashboard, template, scheduler, filled-form, or recorder page was migrated by implementing these services.
 
 Scheduler behavior preserves entered date/time values and the legacy helper's UTC-derived date boundaries. A product timezone correction is deferred rather than silently changing the contract.
 
@@ -145,18 +145,18 @@ P5 created `users`, `templates`, `template_shares`, `template_reviews`, `schedul
 
 | Artifact | Intended use |
 |---|---|
-| [Fresh baseline](supabase/baseline/00000000000000_baseline.sql) | Fresh target only; do not replay wholesale over the existing target |
-| [Guarded reconciliation](supabase/migrations/20261011100000_p5_reconcile.sql) | Additive existing-target path, applied to development |
-| [Share role correction](supabase/migrations/20261011150000_p5_share_role_bounds.sql) | Owner/editor/admin bounds and owner visibility correction, applied to development |
-| [Storage policies](supabase/storage/template_files_policies.sql) | Guarded fresh-install Storage policy artifact |
-| [Supabase config](supabase/config.toml) | Private bucket/size/MIME configuration |
-| [Target inventory](docs/data/P5_TARGET_INVENTORY.json) | Sanitized current hosted catalog/role/config evidence |
+| [Fresh baseline](../../supabase/baseline/00000000000000_baseline.sql) | Fresh target only; do not replay wholesale over the existing target |
+| [Guarded reconciliation](../../supabase/migrations/20261011100000_p5_reconcile.sql) | Additive existing-target path, applied to development |
+| [Share role correction](../../supabase/migrations/20261011150000_p5_share_role_bounds.sql) | Owner/editor/admin bounds and owner visibility correction, applied to development |
+| [Storage policies](../../supabase/storage/template_files_policies.sql) | Guarded fresh-install Storage policy artifact |
+| [Supabase config](../../supabase/config.toml) | Private bucket/size/MIME configuration |
+| [Target inventory](../data/P5_TARGET_INVENTORY.json) | Sanitized current hosted catalog/role/config evidence |
 
 Historical migrations remain unchanged. No blind `db push`, database reset, unrelated dump import, historical-user backfill, or application data purge was performed.
 
 ### Inventory and documentation work
 
-[P5_OPERATION_INVENTORY.md](docs/data/P5_OPERATION_INVENTORY.md) records 41 `.from` expressions: 39 PostgREST, one Storage upload, and one local `getPublicUrl` expression; 40 involve network operations. Older counts of 38 are obsolete. Expressions are not a count of distinct HTTP endpoints.
+[P5_OPERATION_INVENTORY.md](../data/P5_OPERATION_INVENTORY.md) records 41 `.from` expressions: 39 PostgREST, one Storage upload, and one local `getPublicUrl` expression; 40 involve network operations. Older counts of 38 are obsolete. Expressions are not a count of distinct HTTP endpoints.
 
 The session produced or refreshed P5 contracts, decisions, RLS matrix, target inventory, read-only preflight SQL, hosted results, verification/report, schema reconciliation and native replay records. Status/pointers were aligned in root `prompt.md`, `MIGRATION_STATE.md`, `MIGRATION_PLAN.md`, README files, `docs/prompt.md`, the older Python plan's current note, and historical table documentation. The full older plan remains historical reference where it conflicts with the consolidated scope.
 
@@ -186,9 +186,9 @@ The sandbox initially denied a connection before any generated accounts were cre
 
 ### Native replay and hosted dump limitations
 
-Historical replay succeeded through `20250628064557_aged_tree.sql` and first failed at `20250628065741_precious_brook.sql` because `template_shares` was absent. This establishes incomplete self-contained history in that replay environment, not the history of another hosted project. See [P5_REPLAY.md](supabase/schema_dump/P5_REPLAY.md) and its log.
+Historical replay succeeded through `20250628064557_aged_tree.sql` and first failed at `20250628065741_precious_brook.sql` because `template_shares` was absent. This establishes incomplete self-contained history in that replay environment, not the history of another hosted project. See [P5_REPLAY.md](../../supabase/schema_dump/P5_REPLAY.md) and its log.
 
-`supabase db dump --linked` unexpectedly began pulling a Docker PostgreSQL image. It was interrupted before the dump/container execution. A partial image cache may remain; do not issue further Docker commands. Its empty output file was removed. [20261011-pre-p5-public-schema.sql](supabase/schema_dump/20261011-pre-p5-public-schema.sql) preserves only historical pre-change schema material and is not the current schema.
+`supabase db dump --linked` unexpectedly began pulling a Docker PostgreSQL image. It was interrupted before the dump/container execution. A partial image cache may remain; do not issue further Docker commands. Its empty output file was removed. [20261011-pre-p5-public-schema.sql](../../supabase/schema_dump/20261011-pre-p5-public-schema.sql) preserves only historical pre-change schema material and is not the current schema.
 
 Native `pg_dump --schema-only` reached hosted PostgreSQL with `django_data` but failed the `ACCESS SHARE` lock on `public.users`, because that connector has no direct table SELECT grant. No runtime privileges were widened. There is no full current hosted SQL dump; use the reviewed migrations and current catalog JSON while retaining that limitation.
 
@@ -282,7 +282,7 @@ Original files remain for reference. Their historical React data contracts may d
 
 Build reusable Django public/application rendering shells and shared fragments, with explicit routing back to existing legacy pages. Preserve the site's established design and allow comparisons while migration continues.
 
-Required inputs were the P2 foundation, P1 route manifest/design references and existing assets/tokens. P5's pooler gate is closed. The owner subsequently authorized P6 implementation under the [archived P6 brief](docs/rendering/P6_IMPLEMENTATION_PROMPT.md); implementation/review evidence is linked above.
+Required inputs were the P2 foundation, P1 route manifest/design references and existing assets/tokens. P5's pooler gate is closed. The owner subsequently authorized P6 implementation under the [archived P6 brief](../rendering/P6_IMPLEMENTATION_PROMPT.md); implementation/review evidence is linked above.
 
 ### Implementation work to include in the future P6 prompt
 
@@ -337,7 +337,7 @@ Do not use `git clean`, broad delete, `db reset`, blind `db push`, original-fold
 
 ## 12. Historical continuation prompts
 
-These prompts describe the earlier sequence before P5 closed and are historical. The archived P6/W1 briefs and reports retain their executed scope. Root [prompt.md](prompt.md) records the completed seven-wave P7/P8 execution; use the aggregate [P7 report](docs/pages/P7_REPORT.md) and [verification](docs/pages/P7_VERIFICATION.md) for current status. [MIGRATION_PLAN.md](MIGRATION_PLAN.md) records the completion and separate P9–P11 gates.
+These prompts describe the earlier sequence before P5 closed and are historical. The archived P6/W1 briefs and reports retain their executed scope. Root [prompt.md](../../prompt.md) records the completed seven-wave P7/P8 execution; use the aggregate [P7 report](../pages/P7_REPORT.md) and [verification](../pages/P7_VERIFICATION.md) for current status. [MIGRATION_PLAN.md](../foundation/MIGRATION_PLAN.md) records the completion and separate P9–P11 gates.
 
 ### Next session: finish P5 only
 

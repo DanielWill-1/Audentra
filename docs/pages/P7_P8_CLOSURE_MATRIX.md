@@ -3,7 +3,7 @@
 **Execution baseline:** HEAD `4e3e5c7e0a3bc383cea5d8b6b4d2ce18693469a6` with a pre-existing dirty tree at closeout entry (recorded in `git status --short` on 2026-10-12); this is not a clean-tree baseline. The prompt's earlier `acba956` baseline is stale. Existing P7/P8 implementation and historical evidence were present at this HEAD; closeout edits and evidence are layered on top.
 **Runtime:** Native Windows Django under `migration/django/`; isolated tests use `config.settings.test`. Browser evidence must use DEBUG=False, previews off, and legacy fallback disabled/unavailable. The approved development Supabase target may be used only with restricted project-scoped pooler identities and synthetic fixtures.
 **Source baseline:** P1 route manifest remains the 25-path source contract (13 public, four Auth, eight application); owner inventory reports 25 local owners and zero normal fallbacks. Baseline application test count was 145 passed and Django check passed in the dated review; those results predate this execution.
-**Status key:** Updated 2026-10-13 after the SR-1 through SR-4 closeout. P7 and P8 deterministic acceptance are closed within the documented development boundaries; P9 has started after its acceptance matrix was created. Physical-device/live-provider checks remain NOT RUN and are assigned to P9. See [P7 finding closeout](P7_SR_CLOSEOUT_2026-10-13.md) and [current handoff](../../HANDOFF_2026-10-13_033145_IST.md).
+**Status key:** Updated 2026-10-13 after the SR-1 through SR-4 closeout. P7 and P8 deterministic acceptance are closed within the documented development boundaries; P9 has started after its acceptance matrix was created. Physical-device/live-provider checks remain NOT RUN and are assigned to P9. See [P7 finding closeout](P7_SR_CLOSEOUT_2026-10-13.md) and [current handoff](../handoffs/HANDOFF_2026-10-13_033145_IST.md).
 
 | ID / requirement | Wave / route / source control | Existing implementation and evidence | Missing repair or acceptance evidence | Test/evidence path and fixture boundary | Outcome / exception |
 |---|---|---|---|---|---|
@@ -40,7 +40,7 @@ The current source inventory is recorded in [flows.md](../parity/flows.md). Duri
 
 ## Final acceptance ledger
 
-The independent review superseded the earlier 26/26 closure claim and correctly reopened P7 for SR-1–SR-4. Those findings are now closed by [P7 finding closeout](P7_SR_CLOSEOUT_2026-10-13.md). P8 deterministic media/session checks pass; physical-device/live-provider evidence remains NOT RUN for P9. P9 is in progress after its acceptance matrix was created before the first route-inventory command. See the [historical review](P7_P8_SESSION_REVIEW_2026-10-13.md) and [current handoff](../../HANDOFF_2026-10-13_033145_IST.md).
+The independent review superseded the earlier 26/26 closure claim and correctly reopened P7 for SR-1–SR-4. Those findings are now closed by [P7 finding closeout](P7_SR_CLOSEOUT_2026-10-13.md). P8 deterministic media/session checks pass; physical-device/live-provider evidence remains NOT RUN for P9. P9 is in progress after its acceptance matrix was created before the first route-inventory command. See the [historical review](P7_P8_SESSION_REVIEW_2026-10-13.md) and [current handoff](../handoffs/HANDOFF_2026-10-13_033145_IST.md).
 
 ## SR-1 through SR-4 closeout
 

@@ -57,9 +57,9 @@ Follow-up on 2026-10-17: the documented local setup provisioned only the synthet
 The five waves have linked implementation and review evidence, the full Django test suite and Ruff pass, and the owner accepts the local release candidate. P10 implementation is complete for local development and synthetic-demo scope. The browser smoke follow-up passed on port 8001; the pre-existing port 8000 process remains unresponsive and was not stopped or modified.
 
 - P4 Supabase project-secret/legacy-key retirement remains a pre-deployment security gate. Automatic approval review rejected broad revocation because unknown external CI/application consumers could break; no key was changed in this closeout. See the [P4 report](../auth/P4_REPORT.md).
-- The tracked Google `service-account.json` private-key blob remains reachable in local refs. The owner says Google will not be used and instructed leaving the key unchanged; no key contents were inspected and no rotation or removal was performed. The exposure remains unresolved and is a pre-deployment security risk. See [migration state](../../MIGRATION_STATE.md).
+- The tracked Google `service-account.json` private-key blob remains reachable in local refs. The owner says Google will not be used and instructed leaving the key unchanged; no key contents were inspected and no rotation or removal was performed. The exposure remains unresolved and is a pre-deployment security risk. See [migration state](../foundation/MIGRATION_STATE.md).
 - No public host/domain, TLS path, production database/storage configuration, or deployment decision exists. Do not treat the local release candidate as production approval.
 - At the time of this P10 closeout, P11 remained queued pending a later owner decision. The later decision is recorded below.
 
-**Later owner decision (2026-10-17):** Local P11 legacy retirement is authorized without deployment, soak, telemetry, or recovery-reference entry gates. Deployment remains deferred. See [P11 closeout](../../HANDOFF_2026-10-17_P11_LEGACY_RETIREMENT.md).
+**Later owner decision (2026-10-17):** Local P11 legacy retirement is authorized without deployment, soak, telemetry, or recovery-reference entry gates. Deployment remains deferred. See [P11 closeout](../handoffs/HANDOFF_2026-10-17_P11_LEGACY_RETIREMENT.md).
 

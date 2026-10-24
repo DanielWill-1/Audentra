@@ -1,14 +1,14 @@
 # Audentra / VoiceForm
 
-Audentra (VoiceForm) is a web application for working with reusable forms and templates, including voice-assisted form filling. The active application is the Django project in [`migration/django/`](migration/django/). The former React and Express application is archived under [`legacy/`](legacy/) for reference; it is not part of the active build or runtime.
+Audentra (VoiceForm) is a web application for working with reusable forms and templates, including voice-assisted form filling. The active application is the Django project in [`migration/django/`](../migration/django/). The former React and Express application is archived under [`legacy/`](../legacy/) for reference; it is not part of the active build or runtime.
 
 ## Project status
 
 P9 parity, all five P10 local-first implementation waves, and local P11 legacy retirement are complete within the approved local scope. Django is the repository's sole active application runtime. P11 moved the old app and its build/runtime configuration into `legacy/`, removed the Django-to-React fallback, and retired the old API authentication and transcription paths.
 
-The owner accepted the local release candidate. Production deployment, hosted changes, traffic switching, production migrations, and production soak remain deferred. Some device checks are excluded, and the recorded credential follow-ups remain pre-deployment work. See the [P10 release-candidate review](docs/deployment/P10_W5_RELEASE_CANDIDATE_REVIEW.md), [P11 closeout](HANDOFF_2026-10-17_P11_LEGACY_RETIREMENT.md), and [migration state](MIGRATION_STATE.md).
+The owner accepted the local release candidate. Production deployment, hosted changes, traffic switching, production migrations, and production soak remain deferred. Some device checks are excluded, and the recorded credential follow-ups remain pre-deployment work. See the [P10 release-candidate review](deployment/P10_W5_RELEASE_CANDIDATE_REVIEW.md), [P11 closeout](handoffs/HANDOFF_2026-10-17_P11_LEGACY_RETIREMENT.md), and [migration state](foundation/MIGRATION_STATE.md).
 
-The Recent Forms and Activity Log feature is now implemented against the local Supabase database. Recent Forms contains saved records only; the personal activity feed captures forms, templates, sharing, reviews, and schedules. The schema was applied locally without resetting existing data. The implementation record and limits are in the [feature plan](docs/features/ACTIVITY_RECENT_FORMS_IMPLEMENTATION_PLAN.md) and [local closeout](docs/features/ACTIVITY_RECENT_FORMS_CLOSEOUT_2026-10-17.md); hosted migrations and deployment remain deferred.
+The Recent Forms and Activity Log feature is now implemented against the local Supabase database. Recent Forms contains saved records only; the personal activity feed captures forms, templates, sharing, reviews, and schedules. The schema was applied locally without resetting existing data. The implementation record and limits are in the [feature plan](features/ACTIVITY_RECENT_FORMS_IMPLEMENTATION_PLAN.md) and [local closeout](features/ACTIVITY_RECENT_FORMS_CLOSEOUT_2026-10-17.md); hosted migrations and deployment remain deferred.
 
 ## Active technology stack
 
@@ -49,7 +49,7 @@ Open [http://127.0.0.1:8000/](http://127.0.0.1:8000/) after the server starts. T
 powershell -NoProfile -ExecutionPolicy Bypass -File .\start-local.ps1 -Port 8001
 ```
 
-The launcher uses the `local-supabase` settings profile and targets the local loopback database/Auth services. It does not reset local database contents or modify hosted services. First-time setup may download the managed Python, Python dependencies, and pinned Tailwind executable. For recovery, database reset instructions, provider setup, and troubleshooting, see the [P10 local runbook](docs/deployment/P10_LOCAL_RUNBOOK.md).
+The launcher uses the `local-supabase` settings profile and targets the local loopback database/Auth services. It does not reset local database contents or modify hosted services. First-time setup may download the managed Python, Python dependencies, and pinned Tailwind executable. For recovery, database reset instructions, provider setup, and troubleshooting, see the [P10 local runbook](deployment/P10_LOCAL_RUNBOOK.md).
 
 The local server exposes `/livez` for process health and `/readyz` for database readiness. The status and readiness checks do not indicate production deployment or hosted-service status.
 
@@ -59,7 +59,7 @@ Dashboard Recent Forms links to the five latest saved records for the signed-in 
 
 Activity Log renders database events for forms, templates, sharing, reviews, and schedules. Search, category, and UTC date filters run on the server; history removal deletes only the activity row. The feed is private to the account that performed the action. Activity metadata carries only safe labels and bounded change/status/role facts; it does not include form answers, review comments, schedule descriptions, attendee values, or voice transcripts.
 
-The first release does not save unfinished drafts or resume forms. See the [implementation plan](docs/features/ACTIVITY_RECENT_FORMS_IMPLEMENTATION_PLAN.md), [local PostgreSQL and application acceptance record](docs/features/ACTIVITY_RECENT_FORMS_CLOSEOUT_2026-10-17.md), and the [local runbook](docs/deployment/P10_LOCAL_RUNBOOK.md) for behavior, schema migrations, checks, and remaining deployment boundary.
+The first release does not save unfinished drafts or resume forms. See the [implementation plan](features/ACTIVITY_RECENT_FORMS_IMPLEMENTATION_PLAN.md), [local PostgreSQL and application acceptance record](features/ACTIVITY_RECENT_FORMS_CLOSEOUT_2026-10-17.md), and the [local runbook](deployment/P10_LOCAL_RUNBOOK.md) for behavior, schema migrations, checks, and remaining deployment boundary.
 
 ## Legacy application and retained evidence
 
@@ -71,24 +71,25 @@ Historical screenshots, design references, route-parity evidence, database migra
 
 | Path | Contents |
 | --- | --- |
-| [`start-local.ps1`](start-local.ps1) | One-command Windows launcher for the local application |
-| [`migration/django/`](migration/django/) | Active Django project, templates, static assets, services, and tests |
-| [`legacy/`](legacy/) | Archived React/Vite/Express application and former build/runtime files |
-| [`supabase/`](supabase/) | Supabase configuration, migrations, bootstrap SQL, seed data, and RLS checks |
-| [`docs/deployment/`](docs/deployment/) | Local operation, release-candidate, rollback, and deployment runbooks |
-| [`docs/features/`](docs/features/) | Feature plans and implementation closeouts |
-| [`docs/parity/`](docs/parity/) | Route parity reports, acceptance records, and comparison evidence |
-| [`page-screenshots/`](page-screenshots/) | Retained design and historical route screenshots |
-| [`MIGRATION_PLAN.md`](MIGRATION_PLAN.md), [`MIGRATION_STATE.md`](MIGRATION_STATE.md) | Phase scope, decisions, and current migration status |
+| [`start-local.ps1`](../start-local.ps1) | One-command Windows launcher for the local application |
+| [`migration/django/`](../migration/django/) | Active Django project, templates, static assets, services, and tests |
+| [`legacy/`](../legacy/) | Archived React/Vite/Express application and former build/runtime files |
+| [`supabase/`](../supabase/) | Supabase configuration, migrations, bootstrap SQL, seed data, and RLS checks |
+| [`docs/deployment/`](deployment/) | Local operation, release-candidate, rollback, and deployment runbooks |
+| [`docs/features/`](features/) | Feature plans and implementation closeouts |
+| [Local LLM roadmap](features/AI_LOCAL_LLM_ROADMAP.md) | Local model plan and low-resource/cloud alternatives |
+| [`docs/parity/`](parity/) | Route parity reports, acceptance records, and comparison evidence |
+| [`page-screenshots/`](../page-screenshots/) | Retained design and historical route screenshots |
+| [`MIGRATION_PLAN.md`](foundation/MIGRATION_PLAN.md), [`MIGRATION_STATE.md`](foundation/MIGRATION_STATE.md) | Phase scope, decisions, and current migration status |
 
 ## Configuration and data safety
 
 - Keep private provider settings in the ignored `migration/django/.env`; never commit API keys, database URLs, or service-role keys.
 - The local launch profile uses generated, ignored files under `migration/django/.state/` and validates loopback Supabase endpoints before setup.
 - The demo account and patient-intake template contain synthetic data. Use fictional information for local reviews.
-- Cloud AI requests are optional and require the app's consent flow. Provider retention and configuration limits are documented in the [P10 review](docs/deployment/P10_W3_PRIVACY_SECURITY_REVIEW.md) and local runbook.
+- Cloud AI requests are optional and require the app's consent flow. Provider retention and configuration limits are documented in the [P10 review](deployment/P10_W3_PRIVACY_SECURITY_REVIEW.md) and local runbook.
 - Do not treat a successful local launch as authorization or readiness to deploy. Production host, external secrets, hosted changes, and soak require a later owner decision.
 
 ## Development references
 
-The [Django project README](migration/django/README.md) documents the application internals and development checks. The [local runbook](docs/deployment/P10_LOCAL_RUNBOOK.md) has manual setup steps and recovery instructions. The [deployment runbook](docs/deployment/P10_DEPLOYMENT_RUNBOOK.md) records the deferred production architecture and its controls.
+The [Django project README](../migration/django/README.md) documents the application internals and development checks. The [local runbook](deployment/P10_LOCAL_RUNBOOK.md) has manual setup steps and recovery instructions. The [deployment runbook](deployment/P10_DEPLOYMENT_RUNBOOK.md) records the deferred production architecture and its controls.

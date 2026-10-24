@@ -4,7 +4,7 @@ The completed P5 closure brief is archived as [P5_CLOSURE_PROMPT.md](P5_CLOSURE_
 
 | Record | Purpose |
 |---|---|
-| [HANDOFF_P5_P6.md](../../HANDOFF_P5_P6.md) | P5 closure history and completed P6 handoff; P7 is next |
+| [HANDOFF_P5_P6.md](../handoffs/HANDOFF_P5_P6.md) | P5 closure history and completed P6 handoff; P7 is next |
 | [P5_OPERATION_INVENTORY.md](P5_OPERATION_INVENTORY.md) | Current TypeScript data/Storage call-site inventory and Python disposition |
 | [P5_DECISIONS.md](P5_DECISIONS.md) | Provenance, accepted access defaults and deferred product choices |
 | [P5_TARGET_INVENTORY.json](P5_TARGET_INVENTORY.json) | Sanitized post-application hosted catalog and role/config state |
@@ -14,4 +14,4 @@ The completed P5 closure brief is archived as [P5_CLOSURE_PROMPT.md](P5_CLOSURE_
 | [P5_VERIFICATION.md](P5_VERIFICATION.md) | Local/hosted checks, environments, commands and limitations |
 | [P5_REPORT.md](P5_REPORT.md) | Completed as-built work, P5 closure and limitations |
 
-See [schema reconciliation](../schema-reconciliation.md), [MIGRATION_STATE.md](../../MIGRATION_STATE.md) and [MIGRATION_PLAN.md](../../MIGRATION_PLAN.md). Preserve original source folders and historical migrations. P6/P7 own shared rendering and page migrations.
+See [schema reconciliation](../schema-reconciliation.md), [MIGRATION_STATE.md](../foundation/MIGRATION_STATE.md) and [MIGRATION_PLAN.md](../foundation/MIGRATION_PLAN.md). Preserve original source folders and historical migrations. P6/P7 own shared rendering and page migrations.

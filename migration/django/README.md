@@ -2,19 +2,19 @@
 
 This is the active application. The former React/Vite and Express source is archived under [`../../legacy/`](../../legacy/) and is not part of the Django build or runtime. The locked Waitress/WhiteNoise runtime, settings, service boundary, and runbooks are maintained here; production deployment remains deferred. See [P10 readiness](../../docs/deployment/P10_READINESS.md).
 
-See the [P10 preparation handoff](../../HANDOFF_2026-10-15_P10_PREPARATION.md), [P7 finding closeout](../../docs/pages/P7_SR_CLOSEOUT_2026-10-13.md), [P7/P8 matrix](../../docs/pages/P7_P8_CLOSURE_MATRIX.md), and [P9 task](../../docs/parity/P9_IMPLEMENTATION_PROMPT.md), [acceptance matrix](../../docs/parity/P9_ACCEPTANCE_MATRIX.md), and [report](../../docs/parity/P9_REPORT.md). The older P7 session review remains a dated historical record.
+See the [P10 preparation handoff](../../docs/handoffs/HANDOFF_2026-10-15_P10_PREPARATION.md), [P7 finding closeout](../../docs/pages/P7_SR_CLOSEOUT_2026-10-13.md), [P7/P8 matrix](../../docs/pages/P7_P8_CLOSURE_MATRIX.md), and [P9 task](../../docs/parity/P9_IMPLEMENTATION_PROMPT.md), [acceptance matrix](../../docs/parity/P9_ACCEPTANCE_MATRIX.md), and [report](../../docs/parity/P9_REPORT.md). The older P7 session review remains a dated historical record.
 
 P4 development Auth and P5 hosted data/RLS/Storage/pooler acceptance pass; see [P4 report](../../docs/auth/P4_REPORT.md) and [P5 verification](../../docs/data/P5_VERIFICATION.md). P7 routes resolve directly to Django pages and application views; the React proxy and route rollback bridge have been retired.
 
 ## Local operation
 
-The supported local launch is the repository-root [`start-local.ps1`](../../start-local.ps1) command described in the [root README](../../README.md). It starts the `local-supabase` profile with loopback Supabase services, applies pending Supabase forward migrations without a reset, builds and collects static files, applies Django migrations to the local default database, and runs the Waitress server. It does not reset the local database.
+The supported local launch is the repository-root [`start-local.ps1`](../../start-local.ps1) command described in the [project README](../../docs/README.md). It starts the `local-supabase` profile with loopback Supabase services, applies pending Supabase forward migrations without a reset, builds and collects static files, applies Django migrations to the local default database, and runs the Waitress server. It does not reset the local database.
 
 The [P10 local runbook](../../docs/deployment/P10_LOCAL_RUNBOOK.md) contains the underlying manual setup, guarded local reset, demo-account recovery, health checks, and troubleshooting steps. `demo-http` remains a separate explicit profile for a hosted development/demo target. Do not use it for normal local launches or local reset operations.
 
 `/livez` reports process status; `/readyz` checks both database aliases; `/healthz` retains the earlier database-readiness behavior. The local profile uses HTTP on loopback, sets `DEBUG=False`, and disables secure-cookie and HTTPS-redirect flags only for local HTTP. Production settings retain secure cookies and HTTPS redirect. The [deployment runbook](../../docs/deployment/P10_DEPLOYMENT_RUNBOOK.md) describes the deferred same-host TLS proxy contract, and the [rollback runbook](../../docs/deployment/P10_ROLLBACK_RUNBOOK.md) separates code/traffic rollback from targeted data repair.
 
-The active runtime, P9/P10 local acceptance, and P11 local retirement are recorded in the [migration state](../../MIGRATION_STATE.md), [P10 release-candidate review](../../docs/deployment/P10_W5_RELEASE_CANDIDATE_REVIEW.md), and [P11 closeout](../../HANDOFF_2026-10-17_P11_LEGACY_RETIREMENT.md). Deployment and production soak remain deferred. Physical mobile testing and physical recording edge cases/audibility remain excluded or reserved for owner review.
+The active runtime, P9/P10 local acceptance, and P11 local retirement are recorded in the [migration state](../../docs/foundation/MIGRATION_STATE.md), [P10 release-candidate review](../../docs/deployment/P10_W5_RELEASE_CANDIDATE_REVIEW.md), and [P11 closeout](../../docs/handoffs/HANDOFF_2026-10-17_P11_LEGACY_RETIREMENT.md). Deployment and production soak remain deferred. Physical mobile testing and physical recording edge cases/audibility remain excluded or reserved for owner review.
 
 ## Test isolation and current handoff
 

@@ -3,7 +3,7 @@
 > **Current disposition - 2026-10-13:** SR-1 through SR-4 are closed. Source mappings, P4/P5 boundaries, the repaired W3/W7 layouts, and the six timezone results are recorded in [P7 finding closeout](P7_SR_CLOSEOUT_2026-10-13.md). The dated difference entries below preserve earlier snapshots.
 
 
-> **Review-time correction - 2026-10-13:** At the time of the independent review, P7 acceptance was open for SR-1 through SR-4. The later [P7 finding closeout](P7_SR_CLOSEOUT_2026-10-13.md) closed them; P8 deterministic acceptance is complete. Use the [current handoff](../../HANDOFF_2026-10-13_033145_IST.md) and [P7/P8 matrix](P7_P8_CLOSURE_MATRIX.md) for present status.
+> **Review-time correction - 2026-10-13:** At the time of the independent review, P7 acceptance was open for SR-1 through SR-4. The later [P7 finding closeout](P7_SR_CLOSEOUT_2026-10-13.md) closed them; P8 deterministic acceptance is complete. Use the [current handoff](../handoffs/HANDOFF_2026-10-13_033145_IST.md) and [P7/P8 matrix](P7_P8_CLOSURE_MATRIX.md) for present status.
 
 **Review correction — 2026-10-12 02:03:54 IST:** This is an implementation difference record, not blanket owner acceptance of every mismatch. Enforced application comparisons and requirement dispositions remain open per [P7 review](P7_REVIEW_2026-10-12.md).
 

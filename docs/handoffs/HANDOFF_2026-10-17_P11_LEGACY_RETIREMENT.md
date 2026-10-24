@@ -41,6 +41,6 @@ The ignored root `node_modules/` directory remains a local dependency cache; sou
 - P10's five local-first waves are complete and owner-accepted; P11 local retirement is complete. Deployment and hosted changes remain out of scope.
 - The worktree contains the P10/P11 changes as unstaged, uncommitted local work. No changes were staged or committed during this session; preserve them on resume.
 - The ignored root `node_modules/` cache is retained. All tracked React/Vite/Express source, manifests, build configuration and the former workflow are in `legacy/`.
-- No further phase work is authorized by this handoff. On resume, read this file, [MIGRATION_STATE.md](MIGRATION_STATE.md), and [MIGRATION_PLAN.md](MIGRATION_PLAN.md), then follow the owner's next instruction.
+- No further phase work is authorized by this handoff. On resume, read this file, [MIGRATION_STATE.md](../foundation/MIGRATION_STATE.md), and [MIGRATION_PLAN.md](../foundation/MIGRATION_PLAN.md), then follow the owner's next instruction.
 
-See [MIGRATION_PLAN.md](MIGRATION_PLAN.md), [MIGRATION_STATE.md](MIGRATION_STATE.md), and the [P10 release-candidate review](docs/deployment/P10_W5_RELEASE_CANDIDATE_REVIEW.md) for phase context.
+See [MIGRATION_PLAN.md](../foundation/MIGRATION_PLAN.md), [MIGRATION_STATE.md](../foundation/MIGRATION_STATE.md), and the [P10 release-candidate review](../deployment/P10_W5_RELEASE_CANDIDATE_REVIEW.md) for phase context.

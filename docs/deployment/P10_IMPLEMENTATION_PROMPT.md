@@ -1,6 +1,6 @@
 # P10: local-first release candidate before deployment
 
-**Updated:** 2026-10-17. **Status:** P9 and all five P10 implementation waves are complete; the owner reviewed and accepted the local release candidate. The synthetic login/template smoke passed against a fresh local server on port 8001; the existing port 8000 process remains unresponsive and untouched. Deployment is deferred. The owner later authorized local P11 retirement without deployment or soak entry gates; see the [P11 closeout](../../HANDOFF_2026-10-17_P11_LEGACY_RETIREMENT.md), [P10 closeout](P10_W5_RELEASE_CANDIDATE_REVIEW.md), and [historical preparation ledger](P10_READINESS.md).
+**Updated:** 2026-10-17. **Status:** P9 and all five P10 implementation waves are complete; the owner reviewed and accepted the local release candidate. The synthetic login/template smoke passed against a fresh local server on port 8001; the existing port 8000 process remains unresponsive and untouched. Deployment is deferred. The owner later authorized local P11 retirement without deployment or soak entry gates; see the [P11 closeout](../handoffs/HANDOFF_2026-10-17_P11_LEGACY_RETIREMENT.md), [P10 closeout](P10_W5_RELEASE_CANDIDATE_REVIEW.md), and [historical preparation ledger](P10_READINESS.md).
 
 ## 1. Objective and authority
 
@@ -80,4 +80,4 @@ The eventual P10 closeout must include:
 - P10 readiness update that preserves the 2026-10-15 preparation evidence and distinctly reports: local product readiness, hosted demo readiness, and actual deployment status.
 - Dated handoff with decisions, completed waves, remaining owner inputs, and the next authorized step.
 
-P10 is complete only when all five waves have evidence and the owner has reviewed the release candidate. Actual deployment remains a later explicit action. The owner's later 2026-10-17 decision authorizes local P11 legacy retirement without deployment, soak, telemetry, or recovery-reference entry gates; see the [P11 closeout](../../HANDOFF_2026-10-17_P11_LEGACY_RETIREMENT.md).
+P10 is complete only when all five waves have evidence and the owner has reviewed the release candidate. Actual deployment remains a later explicit action. The owner's later 2026-10-17 decision authorizes local P11 legacy retirement without deployment, soak, telemetry, or recovery-reference entry gates; see the [P11 closeout](../handoffs/HANDOFF_2026-10-17_P11_LEGACY_RETIREMENT.md).

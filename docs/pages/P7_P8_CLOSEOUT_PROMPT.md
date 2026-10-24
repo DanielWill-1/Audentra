@@ -4,7 +4,7 @@
 
 
 **Original brief date:** 2026-10-12 02:19:14 IST (Asia/Kolkata, UTC+05:30).
-**Status:** Executed and completed on 2026-10-13. P7 SR-1 through SR-4 and P8 deterministic acceptance are closed. P9 has started; see the [current handoff](../../HANDOFF_2026-10-13_033145_IST.md) and [P9 task](../parity/P9_IMPLEMENTATION_PROMPT.md).
+**Status:** Executed and completed on 2026-10-13. P7 SR-1 through SR-4 and P8 deterministic acceptance are closed. P9 has started; see the [current handoff](../handoffs/HANDOFF_2026-10-13_033145_IST.md) and [P9 task](../parity/P9_IMPLEMENTATION_PROMPT.md).
 **Scope:** Close every remaining requirement of all seven P7 waves and P8, including P7-R1–R5 and P8-R1–R6. Repair existing implementation and supply missing evidence. Successful execution must leave P7/P8 closed and P9 as the next phase. P8 is a separate prerequisite, not an eighth P7 wave.
 **Authority:** The owner explicitly expanded the P8-only closeout to complete P7 and P8 together. This supersedes the P8-only stopping boundary in the dated reviews/handoff and [previous closeout prompt](../services/P8_CLOSEOUT_PROMPT_2026-10-12.md). Existing review findings, development contracts and preservation limits still apply.
 **Baseline:** HEAD `acba9564752f1c121b81d17f59fca4d3f2b9b0f8` plus the preserved dirty tree. All 25 manifest routes have local owners; normal legacy fallback is zero. Fresh review passed 145 pytest tests and Django check. P7/P8 unconditional completion claims were superseded by dated reviews.
@@ -13,7 +13,7 @@ When asked to execute this prompt, work continuously through the entire P7/P8 cl
 
 ## Read first
 
-1. Latest owner instructions and applicable AGENTS.md; [dated handoff](../../HANDOFF_2026-10-12_020354_IST.md), [P8 review](../services/P8_REVIEW_2026-10-12.md), [P7 review](P7_REVIEW_2026-10-12.md), MIGRATION_STATE.md and MIGRATION_PLAN.md.
+1. Latest owner instructions and applicable AGENTS.md; [dated handoff](../handoffs/HANDOFF_2026-10-12_020354_IST.md), [P8 review](../services/P8_REVIEW_2026-10-12.md), [P7 review](P7_REVIEW_2026-10-12.md), MIGRATION_STATE.md and MIGRATION_PLAN.md.
 2. P8_REPORT.md, P8_CONTRACTS.md, P8_VERIFICATION.md and historical evidence in `docs/services/`; archived [P7/P8 brief](P7_P8_IMPLEMENTATION_PROMPT.md), all seven P7 wave reports/verification/assets/ownership snapshots and aggregate reports/differences.
 3. P3_CONTRACTS.md/P3_REVIEW.md, P4_CONTRACTS.md/P4_REPORT.md, P5_CONTRACTS.md and P5_VERIFICATION.md; preserve accepted provider, identity, CSRF, byte-limit, RLS and legacy-input semantics.
 4. Mounted source `src/pages/AIVoiceAutoFill.tsx`, `src/services/ai.ts` and related field mapping/playback; actual Django `static/js/p7_media.js`, `p7_voice.js`, `apps/application/views.py`, `templates/application/voice_autofill.html`, `apps/api/`, `apps/speech/`, `apps/ai/`, `apps/voice/` and relevant tests/browser fixture settings.

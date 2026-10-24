@@ -48,7 +48,7 @@ def prepare() -> None:
 def verify() -> None:
     output = ROOT / "static" / "css" / "app.css"
     if not output.is_file():
-        raise SystemExit("Compiled CSS is missing; run scripts/build_static.ps1 first.")
+        raise SystemExit("Compiled CSS is missing; run the platform-specific Tailwind build first.")
     css = output.read_text(encoding="utf-8")
     required_tokens = (
         "rgb(0 74 198/var(--tw-text-opacity,1))",

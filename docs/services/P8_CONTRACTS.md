@@ -1,6 +1,6 @@
 # P8 media bridge contracts
 
-**Current status (2026-10-13):** The deterministic P8 media, service, and actual-page contracts are closed under fake-media and synthetic-session coverage. See the [P8 report](P8_REPORT.md), [verification](P8_VERIFICATION.md), and [current handoff](../../HANDOFF_2026-10-13_033145_IST.md). Real-device and live-provider checks remain NOT RUN in P9. The review note below records the earlier state.
+**Current status (2026-10-13):** The deterministic P8 media, service, and actual-page contracts are closed under fake-media and synthetic-session coverage. See the [P8 report](P8_REPORT.md), [verification](P8_VERIFICATION.md), and [current handoff](../handoffs/HANDOFF_2026-10-13_033145_IST.md). Real-device and live-provider checks remain NOT RUN in P9. The review note below records the earlier state.
 
 **Review correction — 2026-10-12 02:03:54 IST:** These are intended contracts; full lifecycle/codec compliance is not yet established. See [P8 review](P8_REVIEW_2026-10-12.md) for reproduced defects and required proof.
 

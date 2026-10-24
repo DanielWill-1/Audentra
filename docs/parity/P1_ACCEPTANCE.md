@@ -10,7 +10,7 @@ The owner confirmed that the Supabase project currently configured in the privat
 
 P1 completion here means an accepted reference inventory, reviewed tooling and explicit carryovers. It does not mean the complete route/state/viewport matrix, live Auth, application RLS, interactive flows or hosted CI passed.
 
-The archived [P1 implementation brief](P1_IMPLEMENTATION_PROMPT.md) preserves the original scope and gates. At this P1 handoff, root prompt.md contained P2 and P2 had not yet been implemented. This is historical evidence; see [current migration state](../../MIGRATION_STATE.md) for subsequent P2/P3 status.
+The archived [P1 implementation brief](P1_IMPLEMENTATION_PROMPT.md) preserves the original scope and gates. At this P1 handoff, root prompt.md contained P2 and P2 had not yet been implemented. This is historical evidence; see [current migration state](../foundation/MIGRATION_STATE.md) for subsequent P2/P3 status.
 
 ## Reference review
 

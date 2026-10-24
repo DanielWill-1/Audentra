@@ -18,7 +18,7 @@ P9 implementation run: `p9-full-20261014-0723-utc`. `P9_START_METADATA.json` pre
 
 ## 0. Entry gate: establish facts before P9
 
-Read the [session review](../pages/P7_P8_SESSION_REVIEW_2026-10-13.md), [current handoff](../../HANDOFF_2026-10-13_033145_IST.md), [P7/P8 matrix](../pages/P7_P8_CLOSURE_MATRIX.md), [prior closure report with correction](../pages/P7_P8_CLOSURE_REPORT.md), [MIGRATION_STATE.md](../../MIGRATION_STATE.md), [MIGRATION_PLAN.md](../../MIGRATION_PLAN.md), [P1 acceptance/carryovers](P1_ACCEPTANCE.md), [P6 rollback](../rendering/P6_ROLLBACK.md), and P3/P4/P5 contracts and verification. Inspect applicable AGENTS.md and actual mounted source.
+Read the [session review](../pages/P7_P8_SESSION_REVIEW_2026-10-13.md), [current handoff](../handoffs/HANDOFF_2026-10-13_033145_IST.md), [P7/P8 matrix](../pages/P7_P8_CLOSURE_MATRIX.md), [prior closure report with correction](../pages/P7_P8_CLOSURE_REPORT.md), [MIGRATION_STATE.md](../foundation/MIGRATION_STATE.md), [MIGRATION_PLAN.md](../foundation/MIGRATION_PLAN.md), [P1 acceptance/carryovers](P1_ACCEPTANCE.md), [P6 rollback](../rendering/P6_ROLLBACK.md), and P3/P4/P5 contracts and verification. Inspect applicable AGENTS.md and actual mounted source.
 
 P7 entry gate is satisfied. SR-1 through SR-4 are closed in [P7 finding closeout](../pages/P7_SR_CLOSEOUT_2026-10-13.md): source-backed comparisons and real negative controls, paired visual review and layout repairs, actual-page invalid settings rejection, and six source/Django timezone cases. The owner has authorized P9 start. Keep the original review findings as historical evidence; do not transfer them to P9 or call P9 complete.
 

@@ -1,12 +1,12 @@
 # P7 complete page migration and P8 media bridge — master execution brief
 
 **Original update:** 2026-10-12
-**Status at the 2026-10-12 snapshot:** This brief recorded the then-current completion claim and its 145-test/50-capture evidence. The 2026-10-13 review reopened P7 SR-1 through SR-4; the later closeout closed those findings, and P8 deterministic acceptance is complete. See the [current P7/P8 matrix](P7_P8_CLOSURE_MATRIX.md) and [handoff](../../HANDOFF_2026-10-13_033145_IST.md).
+**Status at the 2026-10-12 snapshot:** This brief recorded the then-current completion claim and its 145-test/50-capture evidence. The 2026-10-13 review reopened P7 SR-1 through SR-4; the later closeout closed those findings, and P8 deterministic acceptance is complete. See the [current P7/P8 matrix](P7_P8_CLOSURE_MATRIX.md) and [handoff](../handoffs/HANDOFF_2026-10-13_033145_IST.md).
 **Scope:** One continuous task covering the seven P7 waves and the required P8 bridge. Keep the existing seven P7 wave names; P8 is a separate phase, not W8.
 **Authority at that snapshot:** The owner authorized the all-wave P7/P8 brief. P9 was a separate phase at that time and was later authorized; P9 is now in progress. P10/P11 remain separate.
 **Snapshot:** HEAD acba9564752f1c121b81d17f59fca4d3f2b9b0f8 plus the existing uncommitted P5/P6/P7 work. Preserve all of it.
 
-**Historical execution evidence:** At the time of this brief, source HEAD was `acba9564752f1c121b81d17f59fca4d3f2b9b0f8`. Later P7 closeout evidence and current route ownership are linked from the [P7 report](P7_REPORT.md) and [handoff](../../HANDOFF_2026-10-13_033145_IST.md). Physical-device/live-provider and P9 release acceptance remain open.
+**Historical execution evidence:** At the time of this brief, source HEAD was `acba9564752f1c121b81d17f59fca4d3f2b9b0f8`. Later P7 closeout evidence and current route ownership are linked from the [P7 report](P7_REPORT.md) and [handoff](../handoffs/HANDOFF_2026-10-13_033145_IST.md). Physical-device/live-provider and P9 release acceptance remain open.
 
 ## Objective and execution order
 

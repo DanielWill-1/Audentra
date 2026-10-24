@@ -3,7 +3,7 @@
 > **Current verification - 2026-10-13:** SR-1 through SR-4 are closed; see [P7 finding closeout](P7_SR_CLOSEOUT_2026-10-13.md) for the final strict W3-W7 runs, visual sheets, settings regression, timezone matrix, and aggregate checks. P9 has started after its acceptance matrix was created.
 
 
-> **Review-time correction - 2026-10-13:** At the time of the independent review, P7 acceptance was open for SR-1 through SR-4. The later [P7 finding closeout](P7_SR_CLOSEOUT_2026-10-13.md) closed them; P8 deterministic acceptance is complete. Use the [current handoff](../../HANDOFF_2026-10-13_033145_IST.md) and [P7/P8 matrix](P7_P8_CLOSURE_MATRIX.md) for present status.
+> **Review-time correction - 2026-10-13:** At the time of the independent review, P7 acceptance was open for SR-1 through SR-4. The later [P7 finding closeout](P7_SR_CLOSEOUT_2026-10-13.md) closed them; P8 deterministic acceptance is complete. Use the [current handoff](../handoffs/HANDOFF_2026-10-13_033145_IST.md) and [P7/P8 matrix](P7_P8_CLOSURE_MATRIX.md) for present status.
 
 **Review correction — 2026-10-12 02:03:54 IST:** These passing results retain their stated boundaries. They do not establish every required flow or P8 resource lifecycle. Fresh review passed 145 tests/Django check but reproduced media bugs; see [P7 review](P7_REVIEW_2026-10-12.md) and [P8 review](../services/P8_REVIEW_2026-10-12.md).
 

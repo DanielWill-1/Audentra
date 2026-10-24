@@ -3,7 +3,7 @@
 > **Current closeout status - 2026-10-13:** The open SR-1 through SR-4 findings from the independent review are closed. The authoritative evidence is in [P7_SR_CLOSEOUT_2026-10-13.md](P7_SR_CLOSEOUT_2026-10-13.md) and the updated [P7/P8 matrix](P7_P8_CLOSURE_MATRIX.md). Earlier review corrections below remain historical snapshots.
 
 
-> **Review-time correction - 2026-10-13:** At the time of the independent review, P7 acceptance was open for SR-1 through SR-4. The later [P7 finding closeout](P7_SR_CLOSEOUT_2026-10-13.md) closed them; P8 deterministic acceptance is complete. Use the [current handoff](../../HANDOFF_2026-10-13_033145_IST.md) and [P7/P8 matrix](P7_P8_CLOSURE_MATRIX.md) for present status.
+> **Review-time correction - 2026-10-13:** At the time of the independent review, P7 acceptance was open for SR-1 through SR-4. The later [P7 finding closeout](P7_SR_CLOSEOUT_2026-10-13.md) closed them; P8 deterministic acceptance is complete. Use the [current handoff](../handoffs/HANDOFF_2026-10-13_033145_IST.md) and [P7/P8 matrix](P7_P8_CLOSURE_MATRIX.md) for present status.
 
 **Review correction — 2026-10-12 02:03:54 IST:** Local route delivery is established; full P7 acceptance is incomplete. The disposition below is the historical execution claim, superseded by [P7 review](P7_REVIEW_2026-10-12.md) and [P8 review](../services/P8_REVIEW_2026-10-12.md). The executed brief is [archived](P7_P8_IMPLEMENTATION_PROMPT.md).
 

@@ -1,6 +1,6 @@
 # P7/P8 closeout report
 
-> **Latest status - 2026-10-13:** P7 SR-1 through SR-4 are closed, and P8 deterministic acceptance is complete within its documented boundaries. P9 started after its 25-route matrix was created. Earlier review corrections and "P9 not executed" statements below are historical snapshots; use the [current handoff](../../HANDOFF_2026-10-13_033145_IST.md), [P7 closeout](P7_SR_CLOSEOUT_2026-10-13.md), and [P9 report](../parity/P9_REPORT.md).
+> **Latest status - 2026-10-13:** P7 SR-1 through SR-4 are closed, and P8 deterministic acceptance is complete within its documented boundaries. P9 started after its 25-route matrix was created. Earlier review corrections and "P9 not executed" statements below are historical snapshots; use the [current handoff](../handoffs/HANDOFF_2026-10-13_033145_IST.md), [P7 closeout](P7_SR_CLOSEOUT_2026-10-13.md), and [P9 report](../parity/P9_REPORT.md).
 
 
 > **Review-time correction - 2026-10-13:** The independent review recorded P7 as open for SR-1 through SR-4; the later P7 closeout supersedes that status. P8 deterministic results remained valid. See the dated [session review](P7_P8_SESSION_REVIEW_2026-10-13.md) and the current handoff.

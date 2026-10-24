@@ -1,12 +1,12 @@
 # P10 local preparation handoff
 
-**Historical handoff:** This records the completed 2026-10-15 local-preparation sub-sprint only. The owner expanded P10 on 2026-10-16; see the [current P10 wave-plan handoff](HANDOFF_2026-10-16_P10_WAVE_PLAN.md) and [active implementation brief](docs/deployment/P10_IMPLEMENTATION_PROMPT.md). The evidence below remains valid for its original scope.
+**Historical handoff:** This records the completed 2026-10-15 local-preparation sub-sprint only. The owner expanded P10 on 2026-10-16; see the [current P10 wave-plan handoff](HANDOFF_2026-10-16_P10_WAVE_PLAN.md) and [active implementation brief](../deployment/P10_IMPLEMENTATION_PROMPT.md). The evidence below remains valid for its original scope.
 
 **Updated:** 2026-10-15. **Branch/HEAD:** `main` / `62159c601dedad226b3988c58d26baa4a8274888`. **Run:** `p10-20261015-runtime-01`.
 
 ## Result
 
-P9 remains complete within the revised owner scope. P10 local runtime/configuration preparation is implemented and verified; deployment/release verification remains deferred by the owner. The authoritative status is in the [P10 readiness ledger](docs/deployment/P10_READINESS.md), and the full command record is in [run evidence](docs/deployment/evidence/p10/p10-20261015-runtime-01/commands.md).
+P9 remains complete within the revised owner scope. P10 local runtime/configuration preparation is implemented and verified; deployment/release verification remains deferred by the owner. The authoritative status is in the [P10 readiness ledger](../deployment/P10_READINESS.md), and the full command record is in [run evidence](../deployment/evidence/p10/p10-20261015-runtime-01/commands.md).
 
 ## Delivered
 
@@ -40,12 +40,12 @@ P9 remains complete within the revised owner scope. P10 local runtime/configurat
 
 ## Evidence files
 
-- [Initial metadata](docs/deployment/evidence/p10/p10-20261015-runtime-01/metadata.json)
-- [Final metadata](docs/deployment/evidence/p10/p10-20261015-runtime-01/final-metadata.json)
-- [Initial source/config digests](docs/deployment/evidence/p10/p10-20261015-runtime-01/source-config-digests.json)
-- [Final source/config digests](docs/deployment/evidence/p10/p10-20261015-runtime-01/final-source-config-digests.json)
-- [Commands and outcomes](docs/deployment/evidence/p10/p10-20261015-runtime-01/commands.md)
-- [Production and local HTTP results](docs/deployment/evidence/p10/p10-20261015-runtime-01/production-profile.json)
-- [Cleanup record](docs/deployment/evidence/p10/p10-20261015-runtime-01/cleanup.json)
+- [Initial metadata](../deployment/evidence/p10/p10-20261015-runtime-01/metadata.json)
+- [Final metadata](../deployment/evidence/p10/p10-20261015-runtime-01/final-metadata.json)
+- [Initial source/config digests](../deployment/evidence/p10/p10-20261015-runtime-01/source-config-digests.json)
+- [Final source/config digests](../deployment/evidence/p10/p10-20261015-runtime-01/final-source-config-digests.json)
+- [Commands and outcomes](../deployment/evidence/p10/p10-20261015-runtime-01/commands.md)
+- [Production and local HTTP results](../deployment/evidence/p10/p10-20261015-runtime-01/production-profile.json)
+- [Cleanup record](../deployment/evidence/p10/p10-20261015-runtime-01/cleanup.json)
 
 The pre-existing P9/P5 worktree edits were preserved. The local static build and logs remain under ignored `migration/django/.state`; the runtime processes are stopped. No commit or push was made.

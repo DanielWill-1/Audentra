@@ -1,4 +1,4 @@
-"""Check local or production-style settings without revealing their values."""
+"""Check local, production, or Render settings without revealing their values."""
 
 from __future__ import annotations
 
@@ -15,6 +15,7 @@ PROFILE_MODULES = {
     "local-supabase": "config.settings.local_supabase",
     "demo-http": "config.settings.demo_http",
     "production": "config.settings.prod",
+    "render": "config.settings.render",
 }
 LOCAL_PROFILES = {"local-http", "local-supabase"}
 PROJECT_DIR = Path(__file__).resolve().parents[1]
@@ -262,7 +263,7 @@ def inspect_configuration(profile: str) -> dict[str, Any]:
         database_mode = (
             "local_supabase_restricted_postgresql" if local_database else "restricted_postgresql"
         )
-    elif profile in {"production", "demo-http"}:
+    elif profile in {"production", "demo-http", "render"}:
         failures.append(
             {
                 "setting": database_setting,
@@ -299,7 +300,7 @@ def inspect_configuration(profile: str) -> dict[str, Any]:
         failures.extend(provider_issues)
     else:
         warnings.extend(provider_issues)
-    if profile in {"production", "demo-http"}:
+    if profile in {"production", "demo-http", "render"}:
         if settings.SECURE_HSTS_SECONDS <= 0:
             warnings.append({"setting": "DJANGO_HSTS_SECONDS", "issue": "owner_decision_required"})
         warnings.extend(
